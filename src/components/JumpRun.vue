@@ -4,13 +4,18 @@
       Score: <span id="scoreSpan">{{ Math.round(score) }}</span>
     </div>
     <div class="col align-self-center">
+      Enemies: <span id="scoreSpan">{{ Enemies.length }}</span>
+    </div>
+    <div class="col align-self-center">
+      difficulty: <span id="scoreSpan">{{ difficulty }}</span>
+    </div>
+    <div class="col align-self-center">
       Highscore: <span id="scoreSpan">{{ Math.round(highscore) }}</span>
     </div>
   </div>
   <div class="game">
     <div id="char" :class="{}" :style="{ left: x + 'px', top: y + 'px' }"></div>
     <div
-      :id="Enemy.id"
       :class="Enemy.size"
       v-for="Enemy of Enemies"
       :key="Enemy"
@@ -25,68 +30,75 @@
       v-for="item of items"
       :key="item"
       :style="{
-        left: item.cords[0] + 'px',
-        top: item.cords[1] + 'px',
+        left: item.x + 'px',
+        top: item.y + 'px',
       }"
     ></div>
-
+    <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
-      id="btn"
       @click="start()"
       :class="{ startBtn: true == gameStarted }"
-      class="btn btn-success align-self-center shadow-none"
+      class="btn btn-success align-self-center shadow-none mt-1"
     >
       Start Game
+    </button>
+  </div>
+  <div class="d-flex flex-column">
+    <button
+      @click="enemiesSpawn = !enemiesSpawn"
+      class="btn btn-success align-self-center shadow-none mt-1"
+    >
+      Enemies: {{ enemiesSpawn }}
+    </button>
+    <button
+      @click="enemiesMove = !enemiesMove"
+      class="btn btn-success align-self-center shadow-none mt-1"
+    >
+      Enemiesmove: {{ enemiesMove }}
+    </button>
+    <button
+      @click="itemSpawn = !itemSpawn"
+      class="btn btn-success align-self-center shadow-none mt-1"
+    >
+      Items: {{ itemSpawn }}
     </button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-interface Enemy {
-  x: number;
-  y: number;
-  size: string;
-  id: string;
-  type: string;
-  color: string;
-  moveVektor: number[];
-}
-interface Sizes {
-  eSmall: 15;
-  eMedium: 20;
-  eBig: 25;
-}
-interface Item {
-  type: string;
-  cords: number[];
-  size: string;
-  timer: number;
-}
+import { skillTree } from "@/global";
+import * as type from "@/types";
 export default defineComponent({
+  setup() {
+    skillTree;
+  },
   data() {
     return {
+      // display
+      message: "",
+      messageType: "",
+      // debug
+      enemiesSpawn: true,
+      enemiesMove: true,
+      itemSpawn: true,
+      // gameSetup
+      gameStarted: false,
+      startingEnemies: 4,
       borderRight: 0,
       borderLeft: 0,
       borderUp: 0,
       borderDown: 0,
-      gameStarted: false,
-      difficulty: 1,
+      difficulty: 2,
       highscore: 0,
       score: 0,
       x: 0,
       y: 0,
       gameloopCounter: 0,
-      positionvar: 0,
-      items: [] as Item[],
+      items: [] as type.Item[],
       pressedKeys: {} as Record<string, boolean>,
-      Enemies: [] as Enemy[],
+      Enemies: [] as type.Enemy[],
     };
-  },
-  computed: {
-    checkDeath() {
-      return false;
-    },
   },
   mounted() {
     window.addEventListener("resize", () => {
@@ -95,14 +107,11 @@ export default defineComponent({
     setInterval(() => {
       this.gameStarted ? this.gameloop() : null;
     }, 1000 / 60);
-    this.borderRight = (window.innerWidth * (100 - 100 / 6)) / 100 - 2;
-    this.borderLeft = (window.innerWidth * (100 / 6)) / 100 + 2;
-    this.borderUp = window.innerHeight - 793;
-    this.borderDown = window.innerHeight - (window.innerHeight - 705);
-    this.y = this.borderDown - this.borderUp * 1.5;
-    this.x = this.borderRight - this.borderLeft * 2;
+    this.changeDisplaySize();
+    this.playerStartPosition();
   },
   methods: {
+    //game
     gameloop() {
       this.handlePlayerMovement();
       this.handleEnemyMovement();
@@ -110,31 +119,44 @@ export default defineComponent({
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
-      this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; //1sek
-      this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; //7sek
-      this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; //20sek
-      this.gameloopCounter % 1800 == 0 ? this.createEnemy() : null; //30sek
+      this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
+      this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; // 7sek
+      this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
+      this.gameloopCounter % 900 == 0 ? this.createEnemy() : null; // 15sek
     },
-    colisionHandling() {
-      let map = {
-        eSmall: 15,
-        eMedium: 20,
-        eBig: 25,
+
+    start() {
+      this.message = "";
+      this.gameloopCounter = 0;
+      this.score = 0;
+      this.difficulty = 2;
+      this.playerStartPosition();
+      this.Enemies = [] as type.Enemy[];
+      this.items = [] as type.Item[];
+      this.gameStarted = true;
+      window.onkeyup = (e: any) => {
+        this.pressedKeys[e.key] = false;
       };
+      window.onkeydown = (e: any) => {
+        this.pressedKeys[e.key] = true;
+      };
+      for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
+    },
+    playerStartPosition() {
+      this.y = this.borderDown - this.borderUp * 1.5;
+      this.x = this.borderRight - this.borderLeft * 2;
+    },
+    gameOver(message: string, messageType: string) {
+      this.gameStarted = false;
+      this.score > this.highscore ? (this.highscore = this.score) : null;
+      this.message = message;
+      this.messageType = messageType;
+    },
+    //colliosion
+
+    colisionHandling() {
       for (let item of this.items) {
-        if (
-          Math.sqrt(
-            (item.cords[0] +
-              map[item.size as keyof Sizes] / 2 -
-              (this.x + 7.5)) **
-              2 +
-              (item.cords[1] +
-                map[item.size as keyof Sizes] / 2 -
-                (this.y + 7.5)) **
-                2
-          ) <
-          map[item.size as keyof Sizes] / 2 + 7.5
-        ) {
+        if (this.collisionsCheck(item)) {
           switch (item.type) {
             case "coin":
               this.items.splice(
@@ -144,45 +166,64 @@ export default defineComponent({
               this.collectCoin();
               break;
             case "bomb":
+              this.explosionBomb(item);
               break;
           }
         }
       }
       for (let enemy of this.Enemies) {
-        if (
-          Math.sqrt(
-            (enemy.x + map[enemy.size as keyof Sizes] / 2 - (this.x + 7.5)) **
-              2 +
-              (enemy.y + map[enemy.size as keyof Sizes] / 2 - (this.y + 7.5)) **
-                2
-          ) <
-          map[enemy.size as keyof Sizes] / 2 + 7.5
-        ) {
-          this.gameStarted = false;
-          this.score > this.highscore ? (this.highscore = this.score) : null;
+        if (this.collisionsCheck(enemy)) {
+          this.gameOver("you got killed by an enemy", "alert alert-danger");
         }
       }
     },
-    collectCoin() {
-      this.score += this.difficulty * 300;
+    collisionsCheck(object: type.Enemy | type.Item, range?: number) {
+      let map = {
+        eSmall: 15,
+        eMedium: 20,
+        eBig: 25,
+      };
+      return (
+        Math.sqrt(
+          (object.x +
+            map[object.size as keyof type.Sizes] / 2 -
+            (this.x + 7.5)) **
+            2 +
+            (object.y +
+              map[object.size as keyof type.Sizes] / 2 -
+              (this.y + 7.5)) **
+              2
+        ) <
+        (map[object.size as keyof type.Sizes] * (range || 1)) / 2 + 7.5
+      );
     },
-    explosionBomb() {
-      return true;
+    //itemEvents
+    collectCoin() {
+      this.score += this.difficulty * 300; // 5sek
+    },
+
+    explosionBomb(item: type.Item) {
+      if (this.collisionsCheck(item, 5)) {
+        this.gameOver("you got exploded", "alert alert-danger");
+      }
     },
     despawnItems() {
       for (let item of this.items) {
         item.timer--;
-        item.timer < 0
-          ? this.items.splice(
-              this.items.findIndex((i) => i == item),
-              1
-            )
-          : null;
+        if (item.timer < 0) {
+          item.type == "bomb" ? this.explosionBomb(item) : null;
+          this.items.splice(
+            this.items.findIndex((i) => i == item),
+            1
+          );
+        }
       }
     },
     spawnItems() {
+      if (!this.itemSpawn) return;
       let type = "";
-      let cords = [] as number[];
+      let x = 0;
+      let y = 0;
       switch (this.getRandomInt(2)) {
         case 0:
           type = "coin";
@@ -191,73 +232,21 @@ export default defineComponent({
           type = "bomb";
           break;
       }
-      cords[0] =
+      x =
         this.getRandomInt(this.borderRight - this.borderLeft) + this.borderLeft;
-      cords[1] =
-        this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
+      y = this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       this.items.push({
         type: type,
-        cords: cords,
+        x: x,
+        y: y,
         size: "eMedium",
-        timer: 300, //5sek
+        timer: 300, // 5sek
       });
     },
-    handlePlayerMovement() {
-      if (this.pressedKeys["ArrowDown"]) {
-        this.down();
-      }
-      if (this.pressedKeys["ArrowLeft"]) {
-        this.left();
-      }
-      if (this.pressedKeys["ArrowRight"]) {
-        this.right();
-      }
-      if (this.pressedKeys["ArrowUp"]) {
-        this.up();
-      }
-    },
-    handleEnemyColorSwitch() {
-      for (let enemy of this.Enemies) {
-        if (enemy.type == "colorswitch") {
-          switch (this.getRandomInt(3)) {
-            case 0:
-              enemy.color = "rgb(99, 206, 50)";
-              break;
-            case 1:
-              enemy.color = "rgb(50, 206, 198)";
-              break;
-            case 2:
-              enemy.color = "rgb(84, 50, 206)";
-              break;
-          }
-        }
-      }
-    },
-    handleEnemyMovement() {
-      for (let enemy of this.Enemies) {
-        if (enemy.type == "curve") {
-          enemy.moveVektor[enemy.moveVektor.findIndex((v) => v != 1)] += 0.02;
-        }
-        enemy.x += enemy.moveVektor[0] * this.difficulty;
-        enemy.y += enemy.moveVektor[1] * this.difficulty;
 
-        if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown + 25) {
-          this.Enemies.splice(
-            this.Enemies.findIndex((e) => e == enemy),
-            1
-          );
-          this.createEnemy();
-        }
-        if (enemy.x < this.borderLeft - 25 || enemy.x > this.borderRight + 25) {
-          this.Enemies.splice(
-            this.Enemies.findIndex((e) => e == enemy),
-            1
-          );
-          this.createEnemy();
-        }
-      }
-    },
+    //Enemy
     createEnemy() {
+      if (!this.enemiesSpawn) return;
       let size = "";
       let x = 0;
       let y = 0;
@@ -270,11 +259,11 @@ export default defineComponent({
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown + 25;
+          y = this.borderDown;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
-          x = this.borderRight + 25;
+          x = this.borderRight;
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
@@ -302,15 +291,35 @@ export default defineComponent({
           color = "rgb(84, 50, 206)";
           break;
       }
-      switch (this.getRandomInt(2)) {
+      switch (this.getRandomInt(4)) {
         case 0:
           type = "curve";
           break;
         case 1:
           type = "colorswitch";
           break;
+        case 2:
+          type = "aimbot";
+          break;
+        case 3:
+          type = "chasebot";
+          break;
       }
-      this.Enemies[this.Enemies.length] = {
+
+      // type = "chasebot";
+
+      if (type == "aimbot") {
+        let deltax = this.x - x;
+        let deltay = this.y - y;
+        deltay /= Math.abs(deltax);
+        deltax /= Math.abs(deltax);
+        if (Math.abs(deltay) > 1.5) {
+          deltax /= Math.abs(deltay);
+          deltay /= Math.abs(deltay);
+        }
+        moveArray = [deltax, deltay];
+      }
+      this.Enemies.push({
         x: x,
         y: y,
         size: size,
@@ -318,27 +327,88 @@ export default defineComponent({
         type: type,
         color: color,
         moveVektor: moveArray,
-      };
+        timer: type == "chasebot" ? 300 : null,
+      });
     },
+
+    handleEnemyMovement() {
+      if (!this.enemiesMove) return;
+      for (let enemy of this.Enemies) {
+        if (enemy.type == "curve") {
+          enemy.moveVektor[enemy.moveVektor.findIndex((v) => v != 1)] +=
+            0.04 * Math.random();
+        }
+        if (enemy.type != "chasebot") {
+          enemy.x += enemy.moveVektor[0] * this.difficulty;
+          enemy.y += enemy.moveVektor[1] * this.difficulty;
+        } else {
+          let deltax = this.x - enemy.x;
+          let deltay = this.y - enemy.y;
+          deltay /= Math.abs(deltax);
+          deltax /= Math.abs(deltax);
+          if (Math.abs(deltay) > 1.5) {
+            deltax /= Math.abs(deltay);
+            deltay /= Math.abs(deltay);
+          }
+          enemy.x += deltax * 2;
+          enemy.y += deltay * 2;
+          enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
+        }
+
+        if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown + 25) {
+          this.respawnEnemy(enemy);
+        }
+        if (enemy.x < this.borderLeft - 25 || enemy.x > this.borderRight + 25) {
+          this.respawnEnemy(enemy);
+        }
+      }
+    },
+
+    respawnEnemy(enemy: type.Enemy) {
+      this.Enemies.splice(
+        this.Enemies.findIndex((e) => e == enemy),
+        1
+      );
+      this.createEnemy();
+    },
+
+    handleEnemyColorSwitch() {
+      for (let enemy of this.Enemies) {
+        if (enemy.type == "colorswitch") {
+          switch (this.getRandomInt(3)) {
+            case 0:
+              enemy.color = "rgb(99, 206, 50)";
+              break;
+            case 1:
+              enemy.color = "rgb(50, 206, 198)";
+              break;
+            case 2:
+              enemy.color = "rgb(84, 50, 206)";
+              break;
+          }
+        }
+      }
+    },
+
+    //rnd
     getRandomInt(max: number) {
       return Math.floor(Math.random() * max);
     },
-    start() {
-      this.score = 0;
-      this.difficulty = 2;
-      this.y = this.borderDown - this.borderUp * 1.5;
-      this.x = this.borderRight - this.borderLeft * 2;
-      this.Enemies = [] as Enemy[];
-      this.items = [] as Item[];
-      this.gameStarted = true;
-      window.onkeyup = (e: any) => {
-        this.pressedKeys[e.key] = false;
-      };
-      window.onkeydown = (e: any) => {
-        this.pressedKeys[e.key] = true;
-      };
-      for (let i = 0; i < 8; i++) this.createEnemy();
-      console.log("game started");
+
+    //playermovement
+    handlePlayerMovement() {
+      if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
+        this.down();
+      }
+      if (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) {
+        this.left();
+      }
+      if (this.pressedKeys["ArrowRight"] || this.pressedKeys["d"]) {
+        this.right();
+      }
+      if (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"]) {
+        this.up();
+      }
     },
     up() {
       if (this.y > this.borderUp) {
@@ -366,6 +436,8 @@ export default defineComponent({
         this.x < this.borderLeft - 1 ? (this.x = this.borderLeft - 1) : null;
       }
     },
+
+    //displaysize
     changeDisplaySize() {
       this.borderRight = (window.innerWidth * (100 - 100 / 6)) / 100 - 2;
       this.borderLeft = (window.innerWidth * (100 / 6)) / 100 + 2;
@@ -402,21 +474,18 @@ export default defineComponent({
   border-radius: 50%;
   width: 15px;
   height: 15px;
-  background-color: rgb(99, 206, 50);
 }
 .eMedium {
   position: absolute;
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  background-color: rgb(50, 206, 198);
 }
 .eBig {
   position: absolute;
   border-radius: 50%;
   width: 25px;
   height: 25px;
-  background-color: rgb(84, 50, 206);
 }
 .coin {
   position: absolute;
@@ -446,8 +515,5 @@ export default defineComponent({
 }
 .startBtn {
   display: none;
-}
-.btn {
-  padding: none !important;
 }
 </style>
