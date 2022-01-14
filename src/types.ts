@@ -1,23 +1,20 @@
 export interface Enemy {
   x: number;
   y: number;
-  size: string;
+  size: number;
   id: string;
   type: string;
   color: string;
   moveVektor: number[];
   timer: number | null;
 }
-export interface Sizes {
-  eSmall: 15;
-  eMedium: 20;
-  eBig: 25;
-}
+
 export interface Item {
   type: string;
+  color: string;
   x: number;
   y: number;
-  size: string;
+  size: number;
   timer: number;
 }
 export interface SkillTree {

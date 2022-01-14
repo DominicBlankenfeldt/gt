@@ -14,7 +14,8 @@
     </div>
   </div>
   <div class="game">
-    <div id="char" :class="{}" :style="{ left: x + 'px', top: y + 'px' }"></div>
+    <div :style="{ left: playerx + 'px', top: playery + 'px', width: playerSize+'px', height: playerSize+'px'}" 
+    style="position: absolute; border-radius: 50%; background-color: red;"></div>
     <div
       :class="Enemy.size"
       v-for="Enemy of Enemies"
@@ -22,8 +23,11 @@
       :style="{
         left: Enemy.x + 'px',
         top: Enemy.y + 'px',
+        width: Enemy.size+ 'px',
+        height: Enemy.size+ 'px',
         backgroundColor: Enemy.color,
       }"
+      style="position: absolute; border-radius: 50%;"
     ></div>
     <div
       :class="item.type"
@@ -32,7 +36,11 @@
       :style="{
         left: item.x + 'px',
         top: item.y + 'px',
+        width: item.size+ 'px',
+        height: item.size+ 'px',
+        backgroundColor: item.color,
       }"
+      style=" position: absolute; border-radius: 50%;"
     ></div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
@@ -113,7 +121,10 @@ export default defineComponent({
       enemiesMove: true,
       enemiesType:"",
       itemSpawn: true,
-
+      //player
+      playerx: 0,
+      playery: 0,
+      playerSize:15,
       // gameSetup
       gameStarted: false,
       startingEnemies: 4,
@@ -124,8 +135,6 @@ export default defineComponent({
       difficulty: 2,
       highscore: 0,
       score: 0,
-      x: 0,
-      y: 0,
       gameloopCounter: 0,
       items: [] as type.Item[],
       pressedKeys: {} as Record<string, boolean>,
@@ -175,8 +184,8 @@ export default defineComponent({
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
     playerStartPosition() {
-      this.y = this.borderDown - this.borderUp * 1.5;
-      this.x = this.borderRight - this.borderLeft * 2;
+      this.playery = this.borderDown - this.borderUp * 1.5;
+      this.playerx = this.borderRight - this.borderLeft * 2;
     },
     gameOver(message: string, messageType: string) {
       this.gameStarted = false;
@@ -218,15 +227,15 @@ export default defineComponent({
       return (
         Math.sqrt(
           (object.x +
-            map[object.size as keyof type.Sizes] / 2 -
-            (this.x + 7.5)) **
+            object.size / 2 -
+            (this.playerx + 7.5)) **
             2 +
             (object.y +
-              map[object.size as keyof type.Sizes] / 2 -
-              (this.y + 7.5)) **
+              object.size / 2 -
+              (this.playery + 7.5)) **
               2
         ) <
-        (map[object.size as keyof type.Sizes] * (range || 1)) / 2 + 7.5
+        (object.size * (range || 1)) / 2 + 7.5
       );
     },
     //itemEvents
@@ -256,12 +265,15 @@ export default defineComponent({
       let type = "";
       let x = 0;
       let y = 0;
+      let color ="";
       switch (this.getRandomInt(2)) {
         case 0:
           type = "coin";
+          color="rgb(199, 219, 15)";
           break;
         case 1:
           type = "bomb";
+          color="rgb(0, 0, 0)";
           break;
       }
       x =
@@ -269,9 +281,10 @@ export default defineComponent({
       y = this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       this.items.push({
         type: type,
+        color:color,
         x: x,
         y: y,
-        size: "eMedium",
+        size: 20,
         timer: 300, // 5sek
       });
     },
@@ -279,7 +292,7 @@ export default defineComponent({
     //Enemy
     createEnemy() {
       if (!this.enemiesSpawn) return;
-      let size = "";
+      let size = 0;
       let x = 0;
       let y = 0;
       let type = "";
@@ -311,15 +324,15 @@ export default defineComponent({
       }
       switch (this.getRandomInt(3)) {
         case 0:
-          size = "eSmall";
+          size = 15;
           color = "rgb(99, 206, 50)";
           break;
         case 1:
-          size = "eMedium";
+          size = 20;
           color = "rgb(50, 206, 198)";
           break;
         case 2:
-          size = "eBig";
+          size = 25;
           color = "rgb(84, 50, 206)";
           break;
       }
@@ -341,8 +354,8 @@ export default defineComponent({
       this.enemiesType? type = this.enemiesType:null;
 
       if (type == "aimbot") {
-        let deltax = this.x - x;
-        let deltay = this.y - y;
+        let deltax = this.playerx - x;
+        let deltay = this.playery - y;
         deltay /= Math.abs(deltax);
         deltax /= Math.abs(deltax);
         if (Math.abs(deltay) > 1.5) {
@@ -374,8 +387,8 @@ export default defineComponent({
           enemy.x += enemy.moveVektor[0] * this.difficulty;
           enemy.y += enemy.moveVektor[1] * this.difficulty;
         } else {
-          let deltax = this.x - enemy.x;
-          let deltay = this.y - enemy.y;
+          let deltax = this.playerx - enemy.x;
+          let deltay = this.playery - enemy.y;
           deltay /= Math.abs(deltax);
           deltax /= Math.abs(deltax);
           if (Math.abs(deltay) > 1.5) {
@@ -443,29 +456,29 @@ export default defineComponent({
       }
     },
     up() {
-      if (this.y > this.borderUp) {
-        this.y -= 5;
-        this.y < this.borderUp+2 ? (this.y = this.borderUp+2) : null;
+      if (this.playery > this.borderUp) {
+        this.playery -= 5;
+        this.playery < this.borderUp+2 ? (this.playery = this.borderUp+2) : null;
       }
     },
     down() {
-      if (this.y < this.borderDown) {
-        this.y += 5;
-        this.y > this.borderDown-17  ? (this.y = this.borderDown-17 ) : null;
+      if (this.playery < this.borderDown) {
+        this.playery += 5;
+        this.playery > this.borderDown-17  ? (this.playery = this.borderDown-17 ) : null;
       }
     },
     right() {
-      if (this.x < this.borderRight) {
-        this.x += 5;
-        this.x > this.borderRight - 15
-          ? (this.x = this.borderRight - 15)
+      if (this.playerx < this.borderRight) {
+        this.playerx += 5;
+        this.playerx > this.borderRight - 15
+          ? (this.playerx = this.borderRight - 15)
           : null;
       }
     },
     left() {
-      if (this.x > this.borderLeft) {
-        this.x -= 5;
-        this.x < this.borderLeft+1  ? (this.x = this.borderLeft+1 ) : null;
+      if (this.playerx > this.borderLeft) {
+        this.playerx -= 5;
+        this.playerx < this.borderLeft+1  ? (this.playerx = this.borderLeft+1 ) : null;
       }
     },
 
@@ -495,51 +508,12 @@ export default defineComponent({
   position: relative;
   z-index: 1;
 }
-#char {
-  position: absolute;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-  background-color: red;
-}
 .bottom{
   width: 100%;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   position: relative;
   padding: 0 !important;
-}
-.eSmall {
-  position: absolute;
-  border-radius: 50%;
-  width: 15px;
-  height: 15px;
-}
-.eMedium {
-  position: absolute;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-}
-.eBig {
-  position: absolute;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-}
-.coin {
-  position: absolute;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  background-color: rgb(199, 219, 15);
-}
-.bomb {
-  position: absolute;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  background-color: rgb(0, 0, 0);
 }
 .sideBlock {
   background-color: red;
