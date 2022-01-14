@@ -281,8 +281,10 @@ export default defineComponent({
           break;
       }
       x =
-        this.getRandomInt((this.borderRight - this.borderLeft)-20) + this.borderLeft;
-      y = this.getRandomInt((this.borderDown - this.borderUp)-20) + this.borderUp;
+        this.getRandomInt(this.borderRight - this.borderLeft - 20) +
+        this.borderLeft;
+      y =
+        this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
       this.items.push({
         type: type,
         color: color,

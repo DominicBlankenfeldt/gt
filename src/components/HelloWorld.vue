@@ -1,19 +1,15 @@
 <template>
-<div class="headline">
-  <div>here is something written</div>
-</div>
+  <div class="headline">
+    <div>here is something written</div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  methods: {
-  },
+  methods: {},
 });
 </script>
 
-<style scoped lang="scss">
-
-</style>
-
+<style scoped lang="scss"></style>
