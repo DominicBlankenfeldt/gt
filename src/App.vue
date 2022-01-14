@@ -19,7 +19,8 @@
 }
 
 #nav {
-  padding: 30px;
+  padding: 3vh;
+  height: 10vh;
   background-color: rgb(197, 122, 197);
   color: black;
   animation-name: banner;

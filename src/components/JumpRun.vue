@@ -43,7 +43,7 @@
       Start Game
     </button>
   </div>
-  <div class="d-flex flex-column">
+  <div class="d-flex flex-column bottom">
     <button
       @click="enemiesSpawn = !enemiesSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
@@ -56,6 +56,17 @@
     >
       Enemiesmove: {{ enemiesMove }}
     </button>
+    <div class="input-group w-25 align-self-center mt-1">
+  <label class="input-group-text" for="inputGroupSelect01">Enemie Type</label>
+  <select class="form-select" id="inputGroupSelect01" v-model="enemiesType">
+    <option selected value=""></option>
+    <option value="curve">curve</option>
+    <option value="colorswitch">colorswitch</option>
+    <option value="aimbot">aimbot</option>
+    <option value="chasebot">chasebot</option>
+  </select>
+
+</div>
     <button
       @click="itemSpawn = !itemSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
@@ -63,6 +74,25 @@
       Items: {{ itemSpawn }}
     </button>
   </div>
+
+  <!-- <div>
+    borderUp:{{borderUp}}
+  </div> -->
+   <!-- <div>
+    borderDown:{{borderDown}}
+  </div> -->
+   <!-- <div>
+    borderLeft:{{borderLeft}}
+  </div> -->
+   <!-- <div>
+    borderRight:{{borderRight}}
+  </div> -->
+  <!-- <div>
+    X:{{x}}
+  </div> -->
+  <!-- <div>
+    Y:{{y}}
+  </div> -->
 </template>
 
 <script lang="ts">
@@ -81,7 +111,9 @@ export default defineComponent({
       // debug
       enemiesSpawn: true,
       enemiesMove: true,
+      enemiesType:"",
       itemSpawn: true,
+
       // gameSetup
       gameStarted: false,
       startingEnemies: 4,
@@ -255,15 +287,15 @@ export default defineComponent({
       let moveArray = [] as number[];
       switch (this.getRandomInt(4)) {
         case 0:
-          y = this.borderUp - 25;
+          y = this.borderUp -25;
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown;
+          y = this.borderDown+25;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
-          x = this.borderRight;
+          x = this.borderRight+2;
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
@@ -272,10 +304,10 @@ export default defineComponent({
           break;
       }
       if (!x) {
-        x = this.getRandomInt(this.borderRight - this.borderLeft);
+        x = this.getRandomInt(this.borderRight - this.borderLeft)+this.borderLeft;
       }
       if (!y) {
-        y = this.getRandomInt(this.borderDown - this.borderUp);
+        y = this.getRandomInt(this.borderDown - this.borderUp)+this.borderUp;
       }
       switch (this.getRandomInt(3)) {
         case 0:
@@ -306,7 +338,7 @@ export default defineComponent({
           break;
       }
 
-      // type = "chasebot";
+      this.enemiesType? type = this.enemiesType:null;
 
       if (type == "aimbot") {
         let deltax = this.x - x;
@@ -413,13 +445,13 @@ export default defineComponent({
     up() {
       if (this.y > this.borderUp) {
         this.y -= 5;
-        this.y < this.borderUp ? (this.y = this.borderUp) : null;
+        this.y < this.borderUp+2 ? (this.y = this.borderUp+2) : null;
       }
     },
     down() {
       if (this.y < this.borderDown) {
         this.y += 5;
-        this.y > this.borderDown + 15 ? (this.y = this.borderDown + 15) : null;
+        this.y > this.borderDown-17  ? (this.y = this.borderDown-17 ) : null;
       }
     },
     right() {
@@ -433,16 +465,16 @@ export default defineComponent({
     left() {
       if (this.x > this.borderLeft) {
         this.x -= 5;
-        this.x < this.borderLeft - 1 ? (this.x = this.borderLeft - 1) : null;
+        this.x < this.borderLeft+1  ? (this.x = this.borderLeft+1 ) : null;
       }
     },
 
     //displaysize
     changeDisplaySize() {
-      this.borderRight = (window.innerWidth * (100 - 100 / 6)) / 100 - 2;
-      this.borderLeft = (window.innerWidth * (100 / 6)) / 100 + 2;
-      this.borderUp = window.innerHeight - 793;
-      this.borderDown = window.innerHeight - (window.innerHeight - 705);
+      this.borderRight = Math.round((window.innerWidth * (100 - 100 / 6)) / 100 - 2);
+      this.borderLeft = Math.round((window.innerWidth * (100 / 6)) / 100 + 2);
+      this.borderUp = window.innerHeight *0.2;
+      this.borderDown = (this.borderUp+550);
     },
   },
 });
@@ -459,6 +491,7 @@ export default defineComponent({
 }
 #scoreCard {
   background-color: white;
+  height: 5vh;
   position: relative;
   z-index: 1;
 }
@@ -468,6 +501,13 @@ export default defineComponent({
   width: 15px;
   height: 15px;
   background-color: red;
+}
+.bottom{
+  width: 100%;
+  z-index: 1;
+  background-color: rgb(255, 255, 255);
+  position: relative;
+  padding: 0 !important;
 }
 .eSmall {
   position: absolute;
