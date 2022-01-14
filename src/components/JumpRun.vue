@@ -72,6 +72,7 @@
     <option value="colorswitch">colorswitch</option>
     <option value="aimbot">aimbot</option>
     <option value="chasebot">chasebot</option>
+    <option value="getbigger">getbigger</option>
   </select>
 
 </div>
@@ -161,6 +162,7 @@ export default defineComponent({
       this.despawnItems();
       this.gameloopCounter++;
       this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
+this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
       this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; // 7sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
       this.gameloopCounter % 900 == 0 ? this.createEnemy() : null; // 15sek
@@ -336,7 +338,7 @@ export default defineComponent({
           color = "rgb(84, 50, 206)";
           break;
       }
-      switch (this.getRandomInt(4)) {
+      switch (this.getRandomInt(5)) {
         case 0:
           type = "curve";
           break;
@@ -348,6 +350,9 @@ export default defineComponent({
           break;
         case 3:
           type = "chasebot";
+          break;
+           case 4:
+          type = "getbigger";
           break;
       }
 
@@ -416,7 +421,11 @@ export default defineComponent({
       );
       this.createEnemy();
     },
-
+handleEnemyGetBigger(){
+for (let enemy of this.Enemies){
+enemy.type=="getbigger"?enemy.size+=2:null;
+}
+},
     handleEnemyColorSwitch() {
       for (let enemy of this.Enemies) {
         if (enemy.type == "colorswitch") {
