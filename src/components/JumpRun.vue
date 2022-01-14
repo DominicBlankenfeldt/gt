@@ -14,8 +14,15 @@
     </div>
   </div>
   <div class="game">
-    <div :style="{ left: playerx + 'px', top: playery + 'px', width: playerSize+'px', height: playerSize+'px'}" 
-    style="position: absolute; border-radius: 50%; background-color: red;"></div>
+    <div
+      :style="{
+        left: playerx + 'px',
+        top: playery + 'px',
+        width: playerSize + 'px',
+        height: playerSize + 'px',
+      }"
+      style="position: absolute; border-radius: 50%; background-color: red"
+    ></div>
     <div
       :class="Enemy.size"
       v-for="Enemy of Enemies"
@@ -23,11 +30,11 @@
       :style="{
         left: Enemy.x + 'px',
         top: Enemy.y + 'px',
-        width: Enemy.size+ 'px',
-        height: Enemy.size+ 'px',
+        width: Enemy.size + 'px',
+        height: Enemy.size + 'px',
         backgroundColor: Enemy.color,
       }"
-      style="position: absolute; border-radius: 50%;"
+      style="position: absolute; border-radius: 50%"
     ></div>
     <div
       :class="item.type"
@@ -36,11 +43,11 @@
       :style="{
         left: item.x + 'px',
         top: item.y + 'px',
-        width: item.size+ 'px',
-        height: item.size+ 'px',
+        width: item.size + 'px',
+        height: item.size + 'px',
         backgroundColor: item.color,
       }"
-      style=" position: absolute; border-radius: 50%;"
+      style="position: absolute; border-radius: 50%"
     ></div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
@@ -65,17 +72,18 @@
       Enemiesmove: {{ enemiesMove }}
     </button>
     <div class="input-group w-25 align-self-center mt-1">
-  <label class="input-group-text" for="inputGroupSelect01">Enemie Type</label>
-  <select class="form-select" id="inputGroupSelect01" v-model="enemiesType">
-    <option selected value=""></option>
-    <option value="curve">curve</option>
-    <option value="colorswitch">colorswitch</option>
-    <option value="aimbot">aimbot</option>
-    <option value="chasebot">chasebot</option>
-    <option value="getbigger">getbigger</option>
-  </select>
-
-</div>
+      <label class="input-group-text" for="inputGroupSelect01"
+        >Enemie Type</label
+      >
+      <select class="form-select" id="inputGroupSelect01" v-model="enemiesType">
+        <option selected value=""></option>
+        <option value="curve">curve</option>
+        <option value="colorswitch">colorswitch</option>
+        <option value="aimbot">aimbot</option>
+        <option value="chasebot">chasebot</option>
+        <option value="getbigger">getbigger</option>
+      </select>
+    </div>
     <button
       @click="itemSpawn = !itemSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
@@ -87,13 +95,13 @@
   <!-- <div>
     borderUp:{{borderUp}}
   </div> -->
-   <!-- <div>
+  <!-- <div>
     borderDown:{{borderDown}}
   </div> -->
-   <!-- <div>
+  <!-- <div>
     borderLeft:{{borderLeft}}
   </div> -->
-   <!-- <div>
+  <!-- <div>
     borderRight:{{borderRight}}
   </div> -->
   <!-- <div>
@@ -120,12 +128,12 @@ export default defineComponent({
       // debug
       enemiesSpawn: true,
       enemiesMove: true,
-      enemiesType:"",
+      enemiesType: "",
       itemSpawn: true,
       //player
       playerx: 0,
       playery: 0,
-      playerSize:15,
+      playerSize: 15,
       // gameSetup
       gameStarted: false,
       startingEnemies: 4,
@@ -162,7 +170,7 @@ export default defineComponent({
       this.despawnItems();
       this.gameloopCounter++;
       this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
-this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
+      this.gameloopCounter % 120 == 0 ? this.handleEnemyGetBigger() : null; // 2sek
       this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; // 7sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
       this.gameloopCounter % 900 == 0 ? this.createEnemy() : null; // 15sek
@@ -228,14 +236,8 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
       };
       return (
         Math.sqrt(
-          (object.x +
-            object.size / 2 -
-            (this.playerx + 7.5)) **
-            2 +
-            (object.y +
-              object.size / 2 -
-              (this.playery + 7.5)) **
-              2
+          (object.x + object.size / 2 - (this.playerx + 7.5)) ** 2 +
+            (object.y + object.size / 2 - (this.playery + 7.5)) ** 2
         ) <
         (object.size * (range || 1)) / 2 + 7.5
       );
@@ -267,23 +269,23 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
       let type = "";
       let x = 0;
       let y = 0;
-      let color ="";
+      let color = "";
       switch (this.getRandomInt(2)) {
         case 0:
           type = "coin";
-          color="rgb(199, 219, 15)";
+          color = "rgb(199, 219, 15)";
           break;
         case 1:
           type = "bomb";
-          color="rgb(0, 0, 0)";
+          color = "rgb(0, 0, 0)";
           break;
       }
       x =
-        this.getRandomInt(this.borderRight - this.borderLeft) + this.borderLeft;
-      y = this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
+        this.getRandomInt((this.borderRight - this.borderLeft)-20) + this.borderLeft;
+      y = this.getRandomInt((this.borderDown - this.borderUp)-20) + this.borderUp;
       this.items.push({
         type: type,
-        color:color,
+        color: color,
         x: x,
         y: y,
         size: 20,
@@ -302,15 +304,15 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
       let moveArray = [] as number[];
       switch (this.getRandomInt(4)) {
         case 0:
-          y = this.borderUp -25;
+          y = this.borderUp - 25;
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown+25;
+          y = this.borderDown + 25;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
-          x = this.borderRight+2;
+          x = this.borderRight + 2;
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
@@ -319,10 +321,12 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
           break;
       }
       if (!x) {
-        x = this.getRandomInt(this.borderRight - this.borderLeft)+this.borderLeft;
+        x =
+          this.getRandomInt(this.borderRight - this.borderLeft) +
+          this.borderLeft;
       }
       if (!y) {
-        y = this.getRandomInt(this.borderDown - this.borderUp)+this.borderUp;
+        y = this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       }
       switch (this.getRandomInt(3)) {
         case 0:
@@ -351,12 +355,12 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
         case 3:
           type = "chasebot";
           break;
-           case 4:
+        case 4:
           type = "getbigger";
           break;
       }
 
-      this.enemiesType? type = this.enemiesType:null;
+      this.enemiesType ? (type = this.enemiesType) : null;
 
       if (type == "aimbot") {
         let deltax = this.playerx - x;
@@ -421,11 +425,11 @@ this.gameloopCounter% 120==0?this.handleEnemyGetBigger():null; // 2sek
       );
       this.createEnemy();
     },
-handleEnemyGetBigger(){
-for (let enemy of this.Enemies){
-enemy.type=="getbigger"?enemy.size+=2:null;
-}
-},
+    handleEnemyGetBigger() {
+      for (let enemy of this.Enemies) {
+        enemy.type == "getbigger" ? (enemy.size += 2) : null;
+      }
+    },
     handleEnemyColorSwitch() {
       for (let enemy of this.Enemies) {
         if (enemy.type == "colorswitch") {
@@ -467,13 +471,17 @@ enemy.type=="getbigger"?enemy.size+=2:null;
     up() {
       if (this.playery > this.borderUp) {
         this.playery -= 5;
-        this.playery < this.borderUp+2 ? (this.playery = this.borderUp+2) : null;
+        this.playery < this.borderUp + 2
+          ? (this.playery = this.borderUp + 2)
+          : null;
       }
     },
     down() {
       if (this.playery < this.borderDown) {
         this.playery += 5;
-        this.playery > this.borderDown-17  ? (this.playery = this.borderDown-17 ) : null;
+        this.playery > this.borderDown - 17
+          ? (this.playery = this.borderDown - 17)
+          : null;
       }
     },
     right() {
@@ -487,16 +495,20 @@ enemy.type=="getbigger"?enemy.size+=2:null;
     left() {
       if (this.playerx > this.borderLeft) {
         this.playerx -= 5;
-        this.playerx < this.borderLeft+1  ? (this.playerx = this.borderLeft+1 ) : null;
+        this.playerx < this.borderLeft + 1
+          ? (this.playerx = this.borderLeft + 1)
+          : null;
       }
     },
 
     //displaysize
     changeDisplaySize() {
-      this.borderRight = Math.round((window.innerWidth * (100 - 100 / 6)) / 100 - 2);
+      this.borderRight = Math.round(
+        (window.innerWidth * (100 - 100 / 6)) / 100 - 2
+      );
       this.borderLeft = Math.round((window.innerWidth * (100 / 6)) / 100 + 2);
-      this.borderUp = window.innerHeight *0.2;
-      this.borderDown = (this.borderUp+550);
+      this.borderUp = window.innerHeight * 0.2;
+      this.borderDown = this.borderUp + 550;
     },
   },
 });
@@ -517,7 +529,7 @@ enemy.type=="getbigger"?enemy.size+=2:null;
   position: relative;
   z-index: 1;
 }
-.bottom{
+.bottom {
   width: 100%;
   z-index: 1;
   background-color: rgb(255, 255, 255);
