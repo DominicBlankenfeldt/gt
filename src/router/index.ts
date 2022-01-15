@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Games from "../views/Games.vue";
-import SpecialStuff from "../views/SkillTree.vue";
+import SkillTree from "../views/SkillTree.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,9 +24,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Games,
   },
   {
-    path: "/specialStuff",
-    name: "SpecialStuff",
-    component: SpecialStuff,
+    path: "/skillTree",
+    name: "SkillTree",
+    component: SkillTree,
   },
 ];
 

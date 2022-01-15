@@ -2,7 +2,7 @@
   <div id="nav">
     <div class="ball"></div>
     <router-link to="/home">Home</router-link> |
-    <router-link to="/specialStuff">Skill Tree</router-link> |
+    <router-link to="/skillTree">Skill Tree</router-link> |
     <router-link to="/games">Game</router-link> |
     <router-link to="/about">About</router-link>
   </div>

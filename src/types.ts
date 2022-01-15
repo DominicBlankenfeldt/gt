@@ -8,7 +8,6 @@ export interface Enemy {
   moveVektor: number[];
   timer: number | null;
 }
-
 export interface Item {
   type: string;
   color: string;
@@ -19,9 +18,10 @@ export interface Item {
 }
 export interface SkillTree {
   skillPoints: number;
+  usedSkillPoints:number;
   skills: Skill[];
 }
-interface Skill {
+export interface Skill {
   name: string;
   lvl: number;
 }

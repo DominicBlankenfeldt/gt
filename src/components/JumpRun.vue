@@ -52,7 +52,7 @@
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
       @click="start()"
-      :class="{ startBtn: true == gameStarted }"
+      v-if="!gameStarted"
       class="btn btn-success align-self-center shadow-none mt-1"
     >
       Start Game
@@ -84,12 +84,12 @@
         <option value="getbigger">getbigger</option>
       </select>
     </div>
-    <button
+    <!-- <button
       @click="itemSpawn = !itemSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
     >
       Items: {{ itemSpawn }}
-    </button>
+    </button> -->
   </div>
 
   <!-- <div>
@@ -133,7 +133,9 @@ export default defineComponent({
       //player
       playerx: 0,
       playery: 0,
+      playerSpeed: 5,
       playerSize: 15,
+      skillTree: skillTree,
       // gameSetup
       gameStarted: false,
       startingEnemies: 4,
@@ -150,6 +152,7 @@ export default defineComponent({
       Enemies: [] as type.Enemy[],
     };
   },
+
   mounted() {
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
@@ -200,6 +203,7 @@ export default defineComponent({
     gameOver(message: string, messageType: string) {
       this.gameStarted = false;
       this.score > this.highscore ? (this.highscore = this.score) : null;
+      this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
       this.message = message;
       this.messageType = messageType;
     },
@@ -457,46 +461,49 @@ export default defineComponent({
 
     //playermovement
     handlePlayerMovement() {
+      let multiplicator = 1;
+      this.pressedKeys["Control"] ? (multiplicator = 2) : null;
+      this.pressedKeys["Shift"] ? (multiplicator = 0.5) : null;
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
-        this.down();
+        this.down(multiplicator);
       }
       if (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) {
-        this.left();
+        this.left(multiplicator);
       }
       if (this.pressedKeys["ArrowRight"] || this.pressedKeys["d"]) {
-        this.right();
+        this.right(multiplicator);
       }
       if (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"]) {
-        this.up();
+        this.up(multiplicator);
       }
     },
-    up() {
+    up(multiplicator: number) {
       if (this.playery > this.borderUp) {
-        this.playery -= 5;
+        this.playery -= this.playerSpeed * multiplicator;
         this.playery < this.borderUp + 2
           ? (this.playery = this.borderUp + 2)
           : null;
       }
     },
-    down() {
+    down(multiplicator: number) {
       if (this.playery < this.borderDown) {
-        this.playery += 5;
+        this.playery += this.playerSpeed * multiplicator;
         this.playery > this.borderDown - 17
           ? (this.playery = this.borderDown - 17)
           : null;
       }
     },
-    right() {
+    right(multiplicator: number) {
       if (this.playerx < this.borderRight) {
-        this.playerx += 5;
+        this.playerx += this.playerSpeed * multiplicator;
         this.playerx > this.borderRight - 15
           ? (this.playerx = this.borderRight - 15)
           : null;
       }
     },
-    left() {
+    left(multiplicator: number) {
       if (this.playerx > this.borderLeft) {
-        this.playerx -= 5;
+        this.playerx -= this.playerSpeed * multiplicator;
         this.playerx < this.borderLeft + 1
           ? (this.playerx = this.borderLeft + 1)
           : null;
@@ -537,20 +544,5 @@ export default defineComponent({
   background-color: rgb(255, 255, 255);
   position: relative;
   padding: 0 !important;
-}
-.sideBlock {
-  background-color: red;
-  z-index: 1;
-  position: fixed;
-}
-.block {
-  width: 100%;
-  height: 30px;
-  z-index: 1;
-  background-color: blue;
-  position: fixed;
-}
-.startBtn {
-  display: none;
 }
 </style>
