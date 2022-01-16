@@ -31,7 +31,7 @@ export default defineComponent({
   padding: 0 !important;
 }
 .sideBlock {
-  height: 624px;
+  height: 599px;
   background-color: rgb(255, 255, 255);
   z-index: 1;
   position: relative;

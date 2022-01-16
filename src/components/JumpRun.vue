@@ -90,9 +90,7 @@
     >
       Items: {{ itemSpawn }}
     </button> -->
-  </div>
-
-  <!-- <div>
+      <!-- <div>
     borderUp:{{borderUp}}
   </div> -->
   <!-- <div>
@@ -110,6 +108,9 @@
   <!-- <div>
     Y:{{y}}
   </div> -->
+  </div>
+
+
 </template>
 
 <script lang="ts">
@@ -540,7 +541,8 @@ export default defineComponent({
   z-index: 1;
 }
 .bottom {
-  width: 100%;
+  width: 100vw;
+  margin-left: -16.7vw;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   position: relative;
