@@ -58,7 +58,7 @@
       Start Game
     </button>
   </div>
-  <div class="d-flex flex-column bottom">
+  <div class="d-flex flex-column bottom" v-if="!production">
     <button
       @click="enemiesSpawn = !enemiesSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
@@ -114,17 +114,18 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { skillTree } from "@/global";
+import { skillTree,production } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
-    skillTree;
+    skillTree;production;
   },
   data() {
     return {
       // display
       message: "",
       messageType: "",
+      production:production.value,
       // debug
       enemiesSpawn: true,
       enemiesMove: true,

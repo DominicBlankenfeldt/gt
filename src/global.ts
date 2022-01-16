@@ -6,3 +6,5 @@ export const skillTree = ref({
     usedSkillPoints:0,
     skills:[]as type.Skill[],
 }as type.SkillTree);
+
+export const production=ref(process.env.NODE_ENV === 'production'?true:false) 
