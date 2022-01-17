@@ -479,10 +479,10 @@ this.hardCoreMode?type="aimbot":null
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
 
-        if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown + 25) {
+        if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown) {
           this.respawnEnemy(enemy);
         }
-        if (enemy.x < this.borderLeft - 25 || enemy.x > this.borderRight + 25) {
+        if (enemy.x < this.borderLeft - 25 || enemy.x > this.borderRight + 2) {
           this.respawnEnemy(enemy);
         }
       }
