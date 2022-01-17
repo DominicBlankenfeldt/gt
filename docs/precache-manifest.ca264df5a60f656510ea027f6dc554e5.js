@@ -32,20 +32,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/potion/potion.gif"
   },
   {
-    "revision": "6e98741f76a80ece9f9d129bc9b0d19e",
+    "revision": "396324b1991ad07548ca23f7a3263c57",
     "url": "/gt/index.html"
   },
   {
-    "revision": "37383639a903539f2c8a",
-    "url": "/gt/js/about.d4f941ae.js"
+    "revision": "05861fc791e7bc879ba1",
+    "url": "/gt/js/about.72c03b84.js"
   },
   {
-    "revision": "51174fdddcc1d407241b",
-    "url": "/gt/js/app.940168eb.js"
+    "revision": "aae2ebbb1f6e406ee1c3",
+    "url": "/gt/js/app.9716fb06.js"
   },
   {
-    "revision": "d19d409c8942d636ec36",
-    "url": "/gt/js/chunk-vendors.cdbd8543.js"
+    "revision": "73d617bbe8deaf6cee80",
+    "url": "/gt/js/chunk-vendors.1295211a.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
