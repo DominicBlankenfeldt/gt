@@ -312,15 +312,15 @@ export default defineComponent({
           break;
         case 1:
           type = "bomb";
-          imgsrc = "/img/items/bomb/bomb.gif";
+          imgsrc = "blue";
           break;
         case 2:
           type = "growPotion";
-          imgsrc = "green";
+          imgsrc = "/img/items/potion/potion.gif";
           break;
         case 3:
           type = "clearField";
-          imgsrc = "blue";
+          imgsrc = "/img/items/bomb/bomb.gif";
           break;
       }
       x =
