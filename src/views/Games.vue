@@ -24,14 +24,14 @@ export default defineComponent({
 <style scoped lang="scss">
 .block {
   width: 100%;
-  height: 50px;
+  height: 5vh;
   z-index: 1;
   background-color: rgb(255, 255, 255);
   position: relative;
   padding: 0 !important;
 }
 .sideBlock {
-  height: 574px;
+  height: 599px;
   background-color: rgb(255, 255, 255);
   z-index: 1;
   position: relative;
