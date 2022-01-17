@@ -1,6 +1,7 @@
 <template>
   <div class="row" id="scoreCard">
     <div class="col align-self-center">
+      <img src="../../public/img/items/coin/coin.gif" alt="coin">
       Score: <span id="scoreSpan">{{ Math.round(score) }}</span>
     </div>
     <div class="col align-self-center">
@@ -10,6 +11,7 @@
       difficulty: <span id="scoreSpan">{{ difficulty }}</span>
     </div>
     <div class="col align-self-center">
+       <img src="../../public/img/items/coin/coin.gif" alt="coin">
       Highscore: <span id="scoreSpan">{{ Math.round(highscore) }}</span>
     </div>
   </div>
@@ -30,12 +32,11 @@
       :style="{
         left: Enemy.x + 'px',
         top: Enemy.y + 'px',
-        width: Enemy.size + 'px',
-        height: Enemy.size + 'px',
-        backgroundColor: Enemy.color,
+        width: Enemy.size  + 'px',
+        height: Enemy.size  + 'px',
       }"
       style="position: absolute; border-radius: 50%"
-    ></div>
+    ><img :src="Enemy.imgsrc" alt="enemy"></div>
     <div
       :class="item.type"
       v-for="item of items"
@@ -45,14 +46,15 @@
         top: item.y + 'px',
         width: item.size + 'px',
         height: item.size + 'px',
-        backgroundColor: item.color,
+        backgroundColor: item.imgsrc,
       }"
       style="position: absolute; border-radius: 50%"
-    ></div>
+    ><img :src="item.imgsrc" alt=""></div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
       @click="start()"
       v-if="!gameStarted"
+      id="startGameBtn"
       class="btn btn-success align-self-center shadow-none mt-1"
     >
       Start Game
@@ -155,6 +157,9 @@ export default defineComponent({
   },
 
   mounted() {
+    // start game if not started on enter press
+    document.addEventListener('keyup', (e) => e.code=="Enter" && !this.gameStarted && this.start());
+      
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
     });
@@ -209,7 +214,6 @@ export default defineComponent({
       this.messageType = messageType;
     },
     //colliosion
-
     colisionHandling() {
       for (let item of this.items) {
         if (this.collisionsCheck(item)) {
@@ -274,15 +278,15 @@ export default defineComponent({
       let type = "";
       let x = 0;
       let y = 0;
-      let color = "";
+      let imgsrc = "";
       switch (this.getRandomInt(2)) {
         case 0:
           type = "coin";
-          color = "rgb(199, 219, 15)";
+          imgsrc = "/img/items/coin/coin.gif";
           break;
         case 1:
           type = "bomb";
-          color = "rgb(0, 0, 0)";
+          imgsrc = "/img/items/bomb/bomb.gif";
           break;
       }
       x =
@@ -292,7 +296,7 @@ export default defineComponent({
         this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
       this.items.push({
         type: type,
-        color: color,
+        imgsrc: imgsrc,
         x: x,
         y: y,
         size: 20,
@@ -307,7 +311,7 @@ export default defineComponent({
       let x = 0;
       let y = 0;
       let type = "";
-      let color = "";
+      let imgsrc = "";
       let moveArray = [] as number[];
       switch (this.getRandomInt(4)) {
         case 0:
@@ -338,15 +342,15 @@ export default defineComponent({
       switch (this.getRandomInt(3)) {
         case 0:
           size = 15;
-          color = "rgb(99, 206, 50)";
+          imgsrc = "/img/char/enemy_pingu.png";
           break;
         case 1:
           size = 20;
-          color = "rgb(50, 206, 198)";
+          imgsrc = "/img/char/enemy_cupcake.gif";
           break;
         case 2:
           size = 25;
-          color = "rgb(84, 50, 206)";
+          imgsrc = "/img/char/enemy_gasman.gif"
           break;
       }
       switch (this.getRandomInt(5)) {
@@ -386,7 +390,7 @@ export default defineComponent({
         size: size,
         id: JSON.stringify(this.getRandomInt(100000000)),
         type: type,
-        color: color,
+        imgsrc: imgsrc,
         moveVektor: moveArray,
         timer: type == "chasebot" ? 300 : null,
       });
@@ -442,13 +446,13 @@ export default defineComponent({
         if (enemy.type == "colorswitch") {
           switch (this.getRandomInt(3)) {
             case 0:
-              enemy.color = "rgb(99, 206, 50)";
+              enemy.imgsrc = "rgb(99, 206, 50)";
               break;
             case 1:
-              enemy.color = "rgb(50, 206, 198)";
+              enemy.imgsrc = "rgb(50, 206, 198)";
               break;
             case 2:
-              enemy.color = "rgb(84, 50, 206)";
+              enemy.imgsrc = "rgb(84, 50, 206)";
               break;
           }
         }

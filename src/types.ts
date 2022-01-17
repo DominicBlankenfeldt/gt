@@ -4,13 +4,13 @@ export interface Enemy {
   size: number;
   id: string;
   type: string;
-  color: string;
+  imgsrc: string;
   moveVektor: number[];
   timer: number | null;
 }
 export interface Item {
   type: string;
-  color: string;
+  imgsrc: string;
   x: number;
   y: number;
   size: number;
