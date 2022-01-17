@@ -64,24 +64,30 @@
       Start Game
     </button>
   </div>
-  <div class="d-flex flex-column bottom" v-if="!production">
+  <div class="bottom"></div>
+  <div class="btn-group " role="group" aria-label="Basic checkbox toggle button group">
+  <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" v-model="hardCoreMode">
+  <label class="btn btn-outline-primary shadow-none  w-25" for="btncheck1">Hardcore Mode</label>
+</div>
+
+  <div class="d-flex flex-column" v-if="!production">
     <button
       @click="enemiesSpawn = !enemiesSpawn"
-      class="btn btn-success align-self-center shadow-none mt-1"
+      class="btn btn-success align-self-center shadow-none p-0"
     >
       Enemies: {{ enemiesSpawn }}
     </button>
     <button
       @click="enemiesMove = !enemiesMove"
-      class="btn btn-success align-self-center shadow-none mt-1"
+      class="btn btn-success align-self-center shadow-none p-0"
     >
       Enemiesmove: {{ enemiesMove }}
     </button>
-    <div class="input-group w-25 align-self-center mt-1">
+    <div class="input-group w-25 align-self-center p-0">
       <label class="input-group-text" for="inputGroupSelect01"
         >Enemie Type</label
       >
-      <select class="form-select" id="inputGroupSelect01" v-model="enemiesType">
+      <select class="form-select p-0" id="inputGroupSelect01" v-model="enemiesType">
         <option selected value=""></option>
         <option value="curve">curve</option>
         <!-- <option value="colorswitch">colorswitch</option> -->
@@ -90,12 +96,12 @@
         <option value="getbigger">getbigger</option>
       </select>
     </div>
-    <button
+    <!-- <button
       @click="itemSpawn = !itemSpawn"
-      class="btn btn-success align-self-center shadow-none mt-1"
+      class="btn btn-success align-self-center shadow-none p-0"
     >
       Items: {{ itemSpawn }}
-    </button>
+    </button> -->
     <!-- <div>
     borderUp:{{borderUp}}
   </div> -->
@@ -144,6 +150,7 @@ export default defineComponent({
       playerSize: 15,
       skillTree: skillTree,
       // gameSetup
+      hardCoreMode:false,
       growPotionID: 0,
       gameStarted: false,
       startingEnemies: 4,
@@ -197,6 +204,7 @@ export default defineComponent({
     },
 
     start() {
+      this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=4
       clearTimeout(this.growPotionID);
       this.playerSize = 15;
       this.message = "";
@@ -363,7 +371,7 @@ export default defineComponent({
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown + 25;
+          y = this.borderDown ;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
@@ -415,7 +423,7 @@ export default defineComponent({
         //   type = "colorswitch";
         //   break;
       }
-
+this.hardCoreMode?type="aimbot":null
       this.enemiesType ? (type = this.enemiesType) : null;
 
       if (type == "aimbot") {
@@ -599,6 +607,7 @@ export default defineComponent({
   z-index: 1;
 }
 .bottom {
+  height: 30px;
   width: 100vw;
   margin-left: -16.7vw;
   z-index: 1;
@@ -606,4 +615,5 @@ export default defineComponent({
   position: relative;
   padding: 0 !important;
 }
+
 </style>
