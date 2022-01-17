@@ -18,10 +18,11 @@ export interface Item {
 }
 export interface SkillTree {
   skillPoints: number;
-  usedSkillPoints:number;
+  usedSkillPoints: number;
   skills: Skill[];
 }
 export interface Skill {
   name: string;
   lvl: number;
+  maxlvl: number;
 }
