@@ -80,7 +80,7 @@
       <select class="form-select" id="inputGroupSelect01" v-model="enemiesType">
         <option selected value=""></option>
         <option value="curve">curve</option>
-        <option value="colorswitch">colorswitch</option>
+        <!-- <option value="colorswitch">colorswitch</option> -->
         <option value="aimbot">aimbot</option>
         <option value="chasebot">chasebot</option>
         <option value="getbigger">getbigger</option>
@@ -174,15 +174,18 @@ export default defineComponent({
     gameloop() {
       this.handlePlayerMovement();
       this.handleEnemyMovement();
-      this.score += this.difficulty;
+      this.score +=
+        this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
-      this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
+      //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
-      this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; // 7sek
+      this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
-      this.gameloopCounter % 900 == 0 ? this.createEnemy() : null; // 15sek
+      this.gameloopCounter % (900 + 3 * this.skillTree.skills[3].lvl) == 0
+        ? this.createEnemy()
+        : null;
     },
 
     start() {
@@ -228,6 +231,20 @@ export default defineComponent({
             case "bomb":
               this.explosionBomb(item);
               break;
+            case "growPotion":
+              this.items.splice(
+                this.items.findIndex((i) => i == item),
+                1
+              );
+              this.collectGrowPotion();
+              break;
+            case "clearField":
+              this.items.splice(
+                this.items.findIndex((i) => i == item),
+                1
+              );
+              this.collectClearField();
+              break;
           }
         }
       }
@@ -238,15 +255,14 @@ export default defineComponent({
       }
     },
     collisionsCheck(object: type.Enemy | type.Item, range?: number) {
-      let map = {
-        eSmall: 15,
-        eMedium: 20,
-        eBig: 25,
-      };
       return (
         Math.sqrt(
-          (object.x + object.size / 2 - (this.playerx + 7.5)) ** 2 +
-            (object.y + object.size / 2 - (this.playery + 7.5)) ** 2
+          (object.x + object.size / 2 - (this.playerx + this.playerSize / 2)) **
+            2 +
+            (object.y +
+              object.size / 2 -
+              (this.playery + this.playerSize / 2)) **
+              2
         ) <
         (object.size * (range || 1)) / 2 + 7.5
       );
@@ -255,7 +271,17 @@ export default defineComponent({
     collectCoin() {
       this.score += this.difficulty * 300; // 5sek
     },
-
+    collectGrowPotion() {
+      this.playerSize += 15;
+      setTimeout(() => {
+        this.playerSize -= 15;
+      }, 5000);
+    },
+    collectClearField() {
+      for (let enemy of [...this.Enemies]) {
+        this.respawnEnemy(enemy);
+      }
+    },
     explosionBomb(item: type.Item) {
       if (this.collisionsCheck(item, 5)) {
         this.gameOver("you got exploded", "alert alert-danger");
@@ -279,7 +305,7 @@ export default defineComponent({
       let x = 0;
       let y = 0;
       let imgsrc = "";
-      switch (this.getRandomInt(2)) {
+      switch (this.getRandomInt(4)) {
         case 0:
           type = "coin";
           imgsrc = "/img/items/coin/coin.gif";
@@ -287,6 +313,14 @@ export default defineComponent({
         case 1:
           type = "bomb";
           imgsrc = "/img/items/bomb/bomb.gif";
+          break;
+        case 2:
+          type = "growPotion";
+          imgsrc = "green";
+          break;
+        case 3:
+          type = "clearField";
+          imgsrc = "blue";
           break;
       }
       x =
@@ -353,22 +387,23 @@ export default defineComponent({
           imgsrc = "/img/char/enemy_gasman.gif"
           break;
       }
-      switch (this.getRandomInt(5)) {
+      switch (this.getRandomInt(4)) {
         case 0:
           type = "curve";
           break;
+
         case 1:
-          type = "colorswitch";
-          break;
-        case 2:
           type = "aimbot";
           break;
-        case 3:
+        case 2:
           type = "chasebot";
           break;
-        case 4:
+        case 3:
           type = "getbigger";
           break;
+        // case 4:
+        //   type = "colorswitch";
+        //   break;
       }
 
       this.enemiesType ? (type = this.enemiesType) : null;
@@ -404,8 +439,14 @@ export default defineComponent({
             0.04 * Math.random();
         }
         if (enemy.type != "chasebot") {
-          enemy.x += enemy.moveVektor[0] * this.difficulty;
-          enemy.y += enemy.moveVektor[1] * this.difficulty;
+          enemy.x +=
+            enemy.moveVektor[0] *
+            this.difficulty *
+            ((100 - this.skillTree.skills[2].lvl) / 100);
+          enemy.y +=
+            enemy.moveVektor[1] *
+            this.difficulty *
+            ((100 - this.skillTree.skills[2].lvl) / 100);
         } else {
           let deltax = this.playerx - enemy.x;
           let deltay = this.playery - enemy.y;
@@ -441,23 +482,23 @@ export default defineComponent({
         enemy.type == "getbigger" ? (enemy.size += 1) : null;
       }
     },
-    handleEnemyColorSwitch() {
-      for (let enemy of this.Enemies) {
-        if (enemy.type == "colorswitch") {
-          switch (this.getRandomInt(3)) {
-            case 0:
-              enemy.imgsrc = "rgb(99, 206, 50)";
-              break;
-            case 1:
-              enemy.imgsrc = "rgb(50, 206, 198)";
-              break;
-            case 2:
-              enemy.imgsrc = "rgb(84, 50, 206)";
-              break;
-          }
-        }
-      }
-    },
+    // handleEnemyColorSwitch() {
+    //   for (let enemy of this.Enemies) {
+    //     if (enemy.type == "colorswitch") {
+    //       switch (this.getRandomInt(3)) {
+    //         case 0:
+    //           enemy.color = "rgb(99, 206, 50)";
+    //           break;
+    //         case 1:
+    //           enemy.color = "rgb(50, 206, 198)";
+    //           break;
+    //         case 2:
+    //           enemy.color = "rgb(84, 50, 206)";
+    //           break;
+    //       }
+    //     }
+    //   }
+    // },
 
     //rnd
     getRandomInt(max: number) {
@@ -467,8 +508,12 @@ export default defineComponent({
     //playermovement
     handlePlayerMovement() {
       let multiplicator = 1;
-      this.pressedKeys["Control"] ? (multiplicator = 2) : null;
-      this.pressedKeys["Shift"] ? (multiplicator = 0.5) : null;
+      this.pressedKeys["Control"] && this.skillTree.skills[0].lvl
+        ? (multiplicator = 2)
+        : null;
+      this.pressedKeys["Shift"] && this.skillTree.skills[1].lvl
+        ? (multiplicator = 0.5)
+        : null;
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
       }
