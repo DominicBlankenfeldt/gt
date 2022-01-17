@@ -1,7 +1,7 @@
 <template>
   <div class="row" id="scoreCard">
     <div class="col align-self-center">
-      <img src="../../public/img/items/coin/coin.gif" alt="coin">
+      <img src="../../public/img/items/coin/coin.gif" alt="coin" />
       Score: <span id="scoreSpan">{{ Math.round(score) }}</span>
     </div>
     <div class="col align-self-center">
@@ -11,7 +11,7 @@
       difficulty: <span id="scoreSpan">{{ difficulty }}</span>
     </div>
     <div class="col align-self-center">
-       <img src="../../public/img/items/coin/coin.gif" alt="coin">
+      <img src="../../public/img/items/coin/coin.gif" alt="coin" />
       Highscore: <span id="scoreSpan">{{ Math.round(highscore) }}</span>
     </div>
   </div>
@@ -32,11 +32,13 @@
       :style="{
         left: Enemy.x + 'px',
         top: Enemy.y + 'px',
-        width: Enemy.size  + 'px',
-        height: Enemy.size  + 'px',
+        width: Enemy.size + 'px',
+        height: Enemy.size + 'px',
       }"
       style="position: absolute; border-radius: 50%"
-    ><img :src="Enemy.imgsrc" alt="enemy"></div>
+    >
+      <img :src="Enemy.imgsrc" alt="enemy" />
+    </div>
     <div
       :class="item.type"
       v-for="item of items"
@@ -49,7 +51,9 @@
         backgroundColor: item.imgsrc,
       }"
       style="position: absolute; border-radius: 50%"
-    ><img :src="item.imgsrc" alt=""></div>
+    >
+      <img :src="item.imgsrc" alt="" />
+    </div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
       @click="start()"
@@ -140,6 +144,7 @@ export default defineComponent({
       playerSize: 15,
       skillTree: skillTree,
       // gameSetup
+      growPotionID: 0,
       gameStarted: false,
       startingEnemies: 4,
       borderRight: 0,
@@ -158,8 +163,11 @@ export default defineComponent({
 
   mounted() {
     // start game if not started on enter press
-    document.addEventListener('keyup', (e) => e.code=="Enter" && !this.gameStarted && this.start());
-      
+    document.addEventListener(
+      "keyup",
+      (e) => e.code == "Enter" && !this.gameStarted && this.start()
+    );
+
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
     });
@@ -189,6 +197,8 @@ export default defineComponent({
     },
 
     start() {
+      clearTimeout(this.growPotionID);
+      this.playerSize = 15;
       this.message = "";
       this.gameloopCounter = 0;
       this.score = 0;
@@ -273,7 +283,7 @@ export default defineComponent({
     },
     collectGrowPotion() {
       this.playerSize += 15;
-      setTimeout(() => {
+      this.growPotionID = setTimeout(() => {
         this.playerSize -= 15;
       }, 5000);
     },
@@ -384,7 +394,7 @@ export default defineComponent({
           break;
         case 2:
           size = 25;
-          imgsrc = "/img/char/enemy_gasman.gif"
+          imgsrc = "/img/char/enemy_gasman.gif";
           break;
       }
       switch (this.getRandomInt(4)) {
