@@ -84,49 +84,48 @@
         <option value="getbigger">getbigger</option>
       </select>
     </div>
-    <!-- <button
+    <button
       @click="itemSpawn = !itemSpawn"
       class="btn btn-success align-self-center shadow-none mt-1"
     >
       Items: {{ itemSpawn }}
-    </button> -->
-      <!-- <div>
+    </button>
+    <!-- <div>
     borderUp:{{borderUp}}
   </div> -->
-  <!-- <div>
+    <!-- <div>
     borderDown:{{borderDown}}
   </div> -->
-  <!-- <div>
+    <!-- <div>
     borderLeft:{{borderLeft}}
   </div> -->
-  <!-- <div>
+    <!-- <div>
     borderRight:{{borderRight}}
   </div> -->
-  <!-- <div>
+    <!-- <div>
     X:{{x}}
   </div> -->
-  <!-- <div>
+    <!-- <div>
     Y:{{y}}
   </div> -->
   </div>
-
-
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { skillTree,production } from "@/global";
+import { skillTree, production } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
-    skillTree;production;
+    skillTree;
+    production;
   },
   data() {
     return {
       // display
       message: "",
       messageType: "",
-      production:production.value,
+      production: production.value,
       // debug
       enemiesSpawn: true,
       enemiesMove: true,
@@ -175,7 +174,7 @@ export default defineComponent({
       this.despawnItems();
       this.gameloopCounter++;
       this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
-      this.gameloopCounter % 120 == 0 ? this.handleEnemyGetBigger() : null; // 2sek
+      this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 420 == 0 ? this.spawnItems() : null; // 7sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
       this.gameloopCounter % 900 == 0 ? this.createEnemy() : null; // 15sek
@@ -435,7 +434,7 @@ export default defineComponent({
     },
     handleEnemyGetBigger() {
       for (let enemy of this.Enemies) {
-        enemy.type == "getbigger" ? (enemy.size += 2) : null;
+        enemy.type == "getbigger" ? (enemy.size += 1) : null;
       }
     },
     handleEnemyColorSwitch() {
