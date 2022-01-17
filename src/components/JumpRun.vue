@@ -318,7 +318,7 @@ export default defineComponent({
       switch (this.getRandomInt(4)) {
         case 0:
           type = "coin";
-          imgsrc = "/img/items/coin/coin.gif";
+          imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
           type = "bomb";
@@ -326,11 +326,11 @@ export default defineComponent({
           break;
         case 2:
           type = "growPotion";
-          imgsrc = "/img/items/potion/potion.gif";
+          imgsrc = "/gt/img/items/potion/potion.gif";
           break;
         case 3:
           type = "clearField";
-          imgsrc = "/img/items/bomb/bomb.gif";
+          imgsrc = "/gt/img/items/bomb/bomb.gif";
           break;
       }
       x =
@@ -386,15 +386,15 @@ export default defineComponent({
       switch (this.getRandomInt(3)) {
         case 0:
           size = 15;
-          imgsrc = "/img/char/enemy_pingu.png";
+          imgsrc = "/gt/img/char/enemy_pingu.png";
           break;
         case 1:
           size = 20;
-          imgsrc = "/img/char/enemy_cupcake.gif";
+          imgsrc = "/gt/img/char/enemy_cupcake.gif";
           break;
         case 2:
           size = 25;
-          imgsrc = "/img/char/enemy_gasman.gif";
+          imgsrc = "/gt/img/char/enemy_gasman.gif";
           break;
       }
       switch (this.getRandomInt(4)) {
