@@ -2,7 +2,10 @@
   <div class="row" id="scoreCard">
     <div class="col align-self-center">
       <img src="../../public/img/items/coin/coin.gif" alt="coin" />
-      Score: <span id="scoreSpan">{{ Math.round(score) }}</span>
+      Score &nbsp;
+      <span style="position:absolute">
+        <div v-for="player in allPlayers" :key="player.id"><span id="scoreSpan">{{player.id}}: {{ Math.round(player.score) }}</span></div>
+      </span>
     </div>
     <div class="col align-self-center">
       Enemies: <span id="scoreSpan">{{ Enemies.length }}</span>
@@ -17,18 +20,21 @@
   </div>
   <div class="game">
     <div
+      v-for="player in players"
+      :key="JSON.stringify(player)"
       :style="{
-        left: playerx + 'px',
-        top: playery + 'px',
-        width: playerSize + 'px',
-        height: playerSize + 'px',
+        left: player.x + 'px',
+        top: player.y + 'px',
+        width: player.size + 'px',
+        height: player.size + 'px',
+        backgroundColor: player.color
       }"
-      style="position: absolute; border-radius: 50%; background-color: red"
+      style="position: absolute; border-radius: 50%; "
     ></div>
     <div
       :class="Enemy.size"
       v-for="Enemy of Enemies"
-      :key="Enemy"
+      :key="Enemy.id"
       :style="{
         left: Enemy.x + 'px',
         top: Enemy.y + 'px',
@@ -42,7 +48,7 @@
     <div
       :class="item.type"
       v-for="item of items"
-      :key="item"
+      :key="JSON.stringify(item)"
       :style="{
         left: item.x + 'px',
         top: item.y + 'px',
@@ -52,7 +58,7 @@
       }"
       style="position: absolute; border-radius: 50%"
     >
-      <img :src="item.imgsrc" alt="" />
+      <img :src="item.imgsrc" />
     </div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
@@ -68,7 +74,7 @@
   <div class="btn-group " role="group" aria-label="Basic checkbox toggle button group">
   <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" v-model="hardCoreMode">
   <label class="btn btn-outline-primary shadow-none  w-25" for="btncheck1">Hardcore Mode</label>
-</div>
+  </div>
 
   <div class="d-flex flex-column" v-if="!production">
     <button
@@ -132,6 +138,11 @@ export default defineComponent({
     skillTree;
     production;
   },
+  computed:{
+    allPlayers():type.Player[]{
+      return [...this.players,...this.deadPlayers].sort((a,b)=>a.id<b.id?-1:1)
+    }
+  },
   data() {
     return {
       // display
@@ -144,10 +155,8 @@ export default defineComponent({
       enemiesType: "",
       itemSpawn: true,
       //player
-      playerx: 0,
-      playery: 0,
-      playerSpeed: 5,
-      playerSize: 15,
+      players: [] as type.Player[],
+      deadPlayers: [] as type.Player[],
       skillTree: skillTree,
       // gameSetup
       hardCoreMode:false,
@@ -160,7 +169,6 @@ export default defineComponent({
       borderDown: 0,
       difficulty: 2,
       highscore: 0,
-      score: 0,
       gameloopCounter: 0,
       items: [] as type.Item[],
       pressedKeys: {} as Record<string, boolean>,
@@ -187,10 +195,10 @@ export default defineComponent({
   methods: {
     //game
     gameloop() {
-      this.handlePlayerMovement();
+      for (let player of this.players) this.handlePlayerMovement(player);
       this.handleEnemyMovement();
-      this.score +=
-        this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
+      for (let player of this.players)
+        player.score += this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
@@ -206,10 +214,10 @@ export default defineComponent({
     start() {
       this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=4
       clearTimeout(this.growPotionID);
-      this.playerSize = 15;
+      for (let player of this.players) player.size = 15;
       this.message = "";
       this.gameloopCounter = 0;
-      this.score = 0;
+      for (let player of this.players) player.score = 0;
       this.difficulty = 2;
       this.playerStartPosition();
       this.Enemies = [] as type.Enemy[];
@@ -223,76 +231,108 @@ export default defineComponent({
       };
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
-    playerStartPosition() {
-      this.playery = this.borderDown - this.borderUp * 1.5;
-      this.playerx = this.borderRight - this.borderLeft * 2;
+    playerStartPosition() {      
+    const addNormalPlayer = (keys?:[up:string,down:string,left:string,right:string],color?:string,id?:string)=>{
+      this.players.push( {
+          x: 0,
+          y: 0,
+          score:0,
+          speed: 5,
+          size: 15,
+          id: id??"Player1",
+          color:color??"red",
+          doesMove(dir, pressedKeys) {
+            if (dir == "up") return pressedKeys[keys?.[0]??"ArrowUp"];
+            if (dir == "down") return pressedKeys[keys?.[1]??"ArrowDown"];
+            if (dir == "left") return pressedKeys[keys?.[2]??"ArrowLeft"];
+            if (dir == "right") return pressedKeys[keys?.[3]??"ArrowRight"];
+            return false;
+          },
+        })
+    }
+    this.deadPlayers=[]
+    this.players=[]
+    addNormalPlayer()
+    addNormalPlayer(["w","s","a","d"],"orange","Player2")
+    addNormalPlayer(["i","k","j","l"],"green","Player3")
+
+      for (let player of this.players) {
+        player.y = this.borderDown - this.borderUp * 1.5;
+        player.x = this.borderRight - this.borderLeft * 2;
+      }
     },
-    gameOver(message: string, messageType: string) {
-      this.gameStarted = false;
-      this.score > this.highscore ? (this.highscore = this.score) : null;
-      this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
-      this.message = message;
+    gameOver(player:type.Player,message: string, messageType: string) {
+      if (this.deadPlayers.some(p=>p.id==player.id)) return //when the player is already dead, discard, happens when you collide with more than one enemy in one tick
+
+      this.message = player.id+" "+message;
       this.messageType = messageType;
+      this.deadPlayers.push(player)
+      this.players=this.players.filter(p=>p.id!=player.id)
+      if (this.players.length==0){
+        this.gameStarted = false;
+        player.score > this.highscore ? (this.highscore = player.score) : null;
+        this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
+      }else{
+        setTimeout(()=>this.message="",2000)
+      }
     },
     //colliosion
     colisionHandling() {
-      for (let item of this.items) {
-        if (this.collisionsCheck(item)) {
-          switch (item.type) {
-            case "coin":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
-              this.collectCoin();
-              break;
-            case "bomb":
-              this.explosionBomb(item);
-              break;
-            case "growPotion":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
-              this.collectGrowPotion();
-              break;
-            case "clearField":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
-              this.collectClearField();
-              break;
+      for (let player of this.players) {
+        for (let item of this.items) {
+          if (this.collisionsCheck(player, item)) {
+            switch (item.type) {
+              case "coin":
+                this.items.splice(
+                  this.items.findIndex((i) => i == item),
+                  1
+                );
+                this.collectCoin(player);
+                break;
+              case "bomb":
+                this.explosionBomb(player, item);
+                break;
+              case "growPotion":
+                this.items.splice(
+                  this.items.findIndex((i) => i == item),
+                  1
+                );
+                this.collectGrowPotion(player);
+                break;
+              case "clearField":
+                this.items.splice(
+                  this.items.findIndex((i) => i == item),
+                  1
+                );
+                this.collectClearField();
+                break;
+            }
+          }
+        }
+        for (let enemy of this.Enemies) {
+          if (this.collisionsCheck(player, enemy)) {
+            this.gameOver(player,"got killed by an enemy", "alert alert-danger");
           }
         }
       }
-      for (let enemy of this.Enemies) {
-        if (this.collisionsCheck(enemy)) {
-          this.gameOver("you got killed by an enemy", "alert alert-danger");
-        }
-      }
     },
-    collisionsCheck(object: type.Enemy | type.Item, range?: number) {
-      return (
+    collisionsCheck(player: type.Player, object: type.Enemy | type.Item, range?: number) {
+  return (
         Math.sqrt(
-          (object.x + object.size / 2 - (this.playerx + this.playerSize / 2)) **
-            2 +
-            (object.y +
-              object.size / 2 -
-              (this.playery + this.playerSize / 2)) **
-              2
+          (object.x + object.size / 2 - (player.x + player.size / 2)) ** 2 +
+            (object.y + object.size / 2 - (player.y + player.size / 2)) ** 2
         ) <
         (object.size * (range || 1)) / 2 + 7.5
       );
     },
     //itemEvents
-    collectCoin() {
-      this.score += this.difficulty * 300; // 5sek
+    collectCoin(player:type.Player) {
+      player.score += this.difficulty * 300; // 5sek
     },
-    collectGrowPotion() {
-      this.playerSize += 15;
+    collectGrowPotion(player: type.Player) {
+      player.size += 15;
       this.growPotionID = setTimeout(() => {
-        this.playerSize -= 15;
+        player.size -= 15;
       }, 5000);
     },
     collectClearField() {
@@ -300,16 +340,18 @@ export default defineComponent({
         this.respawnEnemy(enemy);
       }
     },
-    explosionBomb(item: type.Item) {
-      if (this.collisionsCheck(item, 5)) {
-        this.gameOver("you got exploded", "alert alert-danger");
+    explosionBomb(player: type.Player, item: type.Item) {
+      if (this.collisionsCheck(player, item, 5)) {
+        this.gameOver(player,"got exploded", "alert alert-danger");
       }
     },
     despawnItems() {
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          item.type == "bomb" ? this.explosionBomb(item) : null;
+          item.type == "bomb"
+            ? this.players.forEach((player) => this.explosionBomb(player, item))
+            : null;
           this.items.splice(
             this.items.findIndex((i) => i == item),
             1
@@ -426,9 +468,10 @@ export default defineComponent({
 this.hardCoreMode?type="aimbot":null
       this.enemiesType ? (type = this.enemiesType) : null;
 
+      let targetPlayer = this.players[Math.floor(Math.random() * this.players.length)];
       if (type == "aimbot") {
-        let deltax = this.playerx - x;
-        let deltay = this.playery - y;
+        let deltax = targetPlayer.x - x;
+        let deltay = targetPlayer.y - y;
         deltay /= Math.abs(deltax);
         deltax /= Math.abs(deltax);
         if (Math.abs(deltay) > 1.5) {
@@ -446,6 +489,7 @@ this.hardCoreMode?type="aimbot":null
         imgsrc: imgsrc,
         moveVektor: moveArray,
         timer: type == "chasebot" ? 300 : null,
+        targetPlayerId: targetPlayer.id, //select a random player to chase/aim at
       });
     },
 
@@ -466,8 +510,8 @@ this.hardCoreMode?type="aimbot":null
             this.difficulty *
             ((100 - this.skillTree.skills[2].lvl) / 100);
         } else {
-          let deltax = this.playerx - enemy.x;
-          let deltay = this.playery - enemy.y;
+          let deltax = this.players.find((p) => p.id == enemy.targetPlayerId)?.x ?? 0 - enemy.x;
+          let deltay = this.players.find((p) => p.id == enemy.targetPlayerId)?.y ?? 0 - enemy.y;
           deltay /= Math.abs(deltax);
           deltax /= Math.abs(deltax);
           if (Math.abs(deltay) > 1.5) {
@@ -477,7 +521,7 @@ this.hardCoreMode?type="aimbot":null
           enemy.x += deltax * 2;
           enemy.y += deltay * 2;
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
-        }
+        } 
 
         if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown) {
           this.respawnEnemy(enemy);
@@ -498,7 +542,7 @@ this.hardCoreMode?type="aimbot":null
     handleEnemyGetBigger() {
       for (let enemy of this.Enemies) {
         enemy.type == "getbigger" ? (enemy.size += 1) : null;
-      }
+      } 
     },
     // handleEnemyColorSwitch() {
     //   for (let enemy of this.Enemies) {
@@ -524,7 +568,7 @@ this.hardCoreMode?type="aimbot":null
     },
 
     //playermovement
-    handlePlayerMovement() {
+    handlePlayerMovement(player: type.Player) {
       let multiplicator = 1;
       this.pressedKeys["Control"] && this.skillTree.skills[0].lvl
         ? (multiplicator = 2)
@@ -532,48 +576,46 @@ this.hardCoreMode?type="aimbot":null
       this.pressedKeys["Shift"] && this.skillTree.skills[1].lvl
         ? (multiplicator = 0.5)
         : null;
-      if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
-        this.down(multiplicator);
+      if (player.doesMove("down", this.pressedKeys)) {
+        this.down(player, multiplicator);
       }
-      if (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) {
-        this.left(multiplicator);
+      if (player.doesMove("left", this.pressedKeys)) {
+        this.left(player, multiplicator);
       }
-      if (this.pressedKeys["ArrowRight"] || this.pressedKeys["d"]) {
-        this.right(multiplicator);
+      if (player.doesMove("right", this.pressedKeys)) {
+        this.right(player, multiplicator);
       }
-      if (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"]) {
-        this.up(multiplicator);
+      if (player.doesMove("up", this.pressedKeys)) {
+        this.up(player, multiplicator);
       }
     },
-    up(multiplicator: number) {
-      if (this.playery > this.borderUp) {
-        this.playery -= this.playerSpeed * multiplicator;
-        this.playery < this.borderUp + 2
-          ? (this.playery = this.borderUp + 2)
+    up(player: type.Player, multiplicator: number) {
+      if (player.y > this.borderUp) {
+        player.y -= player.speed * multiplicator;
+        player.y < this.borderUp + 2 ? (player.y = this.borderUp + 2) : null;
+      }
+    },
+    down(player: type.Player, multiplicator: number) {
+      if (player.y < this.borderDown) {
+        player.y += player.speed * multiplicator;
+        player.y > this.borderDown - 17
+          ? (player.y = this.borderDown - 17)
           : null;
       }
     },
-    down(multiplicator: number) {
-      if (this.playery < this.borderDown) {
-        this.playery += this.playerSpeed * multiplicator;
-        this.playery > this.borderDown - 17
-          ? (this.playery = this.borderDown - 17)
+    right(player: type.Player, multiplicator: number) {
+      if (player.x < this.borderRight) {
+        player.x += player.speed * multiplicator;
+        player.x > this.borderRight - 15
+          ? (player.x = this.borderRight - 15)
           : null;
       }
     },
-    right(multiplicator: number) {
-      if (this.playerx < this.borderRight) {
-        this.playerx += this.playerSpeed * multiplicator;
-        this.playerx > this.borderRight - 15
-          ? (this.playerx = this.borderRight - 15)
-          : null;
-      }
-    },
-    left(multiplicator: number) {
-      if (this.playerx > this.borderLeft) {
-        this.playerx -= this.playerSpeed * multiplicator;
-        this.playerx < this.borderLeft + 1
-          ? (this.playerx = this.borderLeft + 1)
+    left(player: type.Player, multiplicator: number) {
+      if (player.x > this.borderLeft) {
+        player.x -= player.speed * multiplicator;
+        player.x < this.borderLeft + 1
+          ? (player.x = this.borderLeft + 1)
           : null;
       }
     },

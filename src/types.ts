@@ -1,3 +1,14 @@
+export interface Player {
+  x: number
+  y: number
+  speed: number
+  size: number
+  score: number
+  id: string 
+  color: string
+  doesMove: (direction: "down" | "up" | "right" | "left", pressedKeys: Record<string, boolean>) => boolean
+}
+
 export interface Enemy {
   x: number;
   y: number;
@@ -7,6 +18,7 @@ export interface Enemy {
   imgsrc: string;
   moveVektor: number[];
   timer: number | null;
+  targetPlayerId: Player["id"]
 }
 export interface Item {
   type: string;
