@@ -3,8 +3,12 @@
     <div class="col align-self-center">
       <img src="../../public/img/items/coin/coin.gif" alt="coin" />
       Score &nbsp;
-      <span style="position:absolute">
-        <div v-for="player in allPlayers" :key="player.id"><span id="scoreSpan">{{player.id}}: {{ Math.round(player.score) }}</span></div>
+      <span style="position: absolute">
+        <div v-for="player in allPlayers" :key="player.id">
+          <span id="scoreSpan"
+            >{{ player.id }}: {{ Math.round(player.score) }}</span
+          >
+        </div>
       </span>
     </div>
     <div class="col align-self-center">
@@ -19,32 +23,6 @@
     </div>
   </div>
   <div class="game">
-    <div
-      v-for="player in players"
-      :key="JSON.stringify(player)"
-      :style="{
-        left: player.x + 'px',
-        top: player.y + 'px',
-        width: player.size + 'px',
-        height: player.size + 'px',
-        backgroundColor: player.color
-      }"
-      style="position: absolute; border-radius: 50%; "
-    ></div>
-    <div
-      :class="Enemy.size"
-      v-for="Enemy of Enemies"
-      :key="Enemy.id"
-      :style="{
-        left: Enemy.x + 'px',
-        top: Enemy.y + 'px',
-        width: Enemy.size + 'px',
-        height: Enemy.size + 'px',
-      }"
-      style="position: absolute; border-radius: 50%"
-    >
-      <img :src="Enemy.imgsrc" alt="enemy" />
-    </div>
     <div
       :class="item.type"
       v-for="item of items"
@@ -71,9 +49,21 @@
     </button>
   </div>
   <div class="bottom"></div>
-  <div class="btn-group " role="group" aria-label="Basic checkbox toggle button group">
-  <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" v-model="hardCoreMode">
-  <label class="btn btn-outline-primary shadow-none  w-25" for="btncheck1">Hardcore Mode</label>
+  <div
+    class="btn-group"
+    role="group"
+    aria-label="Basic checkbox toggle button group"
+  >
+    <input
+      type="checkbox"
+      class="btn-check"
+      id="btncheck1"
+      autocomplete="off"
+      v-model="hardCoreMode"
+    />
+    <label class="btn btn-outline-primary shadow-none w-25" for="btncheck1"
+      >Hardcore Mode</label
+    >
   </div>
 
   <div class="d-flex flex-column" v-if="!production">
@@ -93,7 +83,11 @@
       <label class="input-group-text" for="inputGroupSelect01"
         >Enemie Type</label
       >
-      <select class="form-select p-0" id="inputGroupSelect01" v-model="enemiesType">
+      <select
+        class="form-select p-0"
+        id="inputGroupSelect01"
+        v-model="enemiesType"
+      >
         <option selected value=""></option>
         <option value="curve">curve</option>
         <!-- <option value="colorswitch">colorswitch</option> -->
@@ -139,10 +133,12 @@ export default defineComponent({
     skillTree;
     production;
   },
-  computed:{
-    allPlayers():type.Player[]{
-      return [...this.players,...this.deadPlayers].sort((a,b)=>a.id<b.id?-1:1)
-    }
+  computed: {
+    allPlayers(): type.Player[] {
+      return [...this.players, ...this.deadPlayers].sort((a, b) =>
+        a.id < b.id ? -1 : 1
+      );
+    },
   },
   data() {
     return {
@@ -160,7 +156,7 @@ export default defineComponent({
       deadPlayers: [] as type.Player[],
       skillTree: skillTree,
       // gameSetup
-      hardCoreMode:false,
+      hardCoreMode: false,
       growPotionID: 0,
       gameStarted: false,
       startingEnemies: 10,
@@ -200,7 +196,8 @@ export default defineComponent({
       for (let player of this.players) this.handlePlayerMovement(player);
       this.handleEnemyMovement();
       for (let player of this.players)
-        player.score += this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
+        player.score +=
+          this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
@@ -214,7 +211,9 @@ export default defineComponent({
     },
 
     start() {
-      this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=10
+      this.hardCoreMode
+        ? (this.startingEnemies = 400)
+        : (this.startingEnemies = 10);
       clearTimeout(this.growPotionID);
       for (let player of this.players) player.size = 15;
       this.message = "";
@@ -233,64 +232,67 @@ export default defineComponent({
       };
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
-    playerStartPosition() {      
-    const createNormalPlayer = (keys?:[up:string,down:string,left:string,right:string],color?:string,id?:string):type.Player=>{
-      return {
+    playerStartPosition() {
+      const createNormalPlayer = (
+        keys?: [up: string, down: string, left: string, right: string],
+        color?: string,
+        id?: string
+      ): type.Player => {
+        return {
           x: 0,
           y: 0,
-          score:0,
+          score: 0,
           speed: 5,
           size: 15,
-          id: id??"Player1",
-          color:color??"red",
+          id: id ?? "Player1",
+          color: color ?? "red",
           doesMove(dir, pressedKeys) {
-            if (dir == "up") return pressedKeys[keys?.[0]??"ArrowUp"];
-            if (dir == "down") return pressedKeys[keys?.[1]??"ArrowDown"];
-            if (dir == "left") return pressedKeys[keys?.[2]??"ArrowLeft"];
-            if (dir == "right") return pressedKeys[keys?.[3]??"ArrowRight"];
+            if (dir == "up") return pressedKeys[keys?.[0] ?? "ArrowUp"];
+            if (dir == "down") return pressedKeys[keys?.[1] ?? "ArrowDown"];
+            if (dir == "left") return pressedKeys[keys?.[2] ?? "ArrowLeft"];
+            if (dir == "right") return pressedKeys[keys?.[3] ?? "ArrowRight"];
             return false;
           },
-        }
-    }
-    this.deadPlayers=[]
-    this.players=[]
-    for (let i = 0;i<20;i++)
-     this.players.push(createNewAIPlayer())
+        };
+      };
+      this.deadPlayers = [];
+      this.players = [];
+      for (let i = 0; i < 20; i++) this.players.push(createNewAIPlayer());
 
       for (let player of this.players) {
         player.y = this.borderDown - this.borderUp * 1.5;
         player.x = this.borderRight - this.borderLeft * 2;
       }
     },
-    gameOver(player:type.Player,message: string, messageType: string) {
-      if (this.deadPlayers.some(p=>p.id==player.id)) return //when the player is already dead, discard, happens when you collide with more than one enemy in one tick
+    gameOver(player: type.Player, message: string, messageType: string) {
+      if (this.deadPlayers.some((p) => p.id == player.id)) return; //when the player is already dead, discard, happens when you collide with more than one enemy in one tick
 
-      this.message = player.id+" "+message;
+      this.message = player.id + " " + message;
       this.messageType = messageType;
-      this.deadPlayers.push(player)
-      this.players=this.players.filter(p=>p.id!=player.id)
-      if (this.players.length==0){
+      this.deadPlayers.push(player);
+      this.players = this.players.filter((p) => p.id != player.id);
+      if (this.players.length == 0) {
         this.gameStarted = false;
         player.score > this.highscore ? (this.highscore = player.score) : null;
         this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
-        if (player.score){
-          this.nextGeneration()
+        if (player.score) {
+          this.nextGeneration();
         }
-      }else{
-        setTimeout(()=>this.message="",2000)
+      } else {
+        setTimeout(() => (this.message = ""), 2000);
       }
     },
-    nextGeneration(){
+    nextGeneration() {
       this.gameloopCounter = 0;
       this.difficulty = 2;
       this.Enemies = [] as type.Enemy[];
       this.items = [] as type.Item[];
-      this.players=getNewGeneration(this.deadPlayers)
+      this.players = getNewGeneration(this.deadPlayers);
       for (let player of this.players) {
         player.y = this.borderDown - this.borderUp * 1.5;
         player.x = this.borderRight - this.borderLeft * 2;
       }
-      this.deadPlayers=[]
+      this.deadPlayers = [];
       this.gameStarted = true;
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
@@ -329,13 +331,21 @@ export default defineComponent({
         }
         for (let enemy of this.Enemies) {
           if (this.collisionsCheck(player, enemy)) {
-            this.gameOver(player,"got killed by an enemy", "alert alert-danger");
+            this.gameOver(
+              player,
+              "got killed by an enemy",
+              "alert alert-danger"
+            );
           }
         }
       }
     },
-    collisionsCheck(player: type.Player, object: type.Enemy | type.Item, range?: number) {
-  return (
+    collisionsCheck(
+      player: type.Player,
+      object: type.Enemy | type.Item,
+      range?: number
+    ) {
+      return (
         Math.sqrt(
           (object.x + object.size / 2 - (player.x + player.size / 2)) ** 2 +
             (object.y + object.size / 2 - (player.y + player.size / 2)) ** 2
@@ -344,7 +354,7 @@ export default defineComponent({
       );
     },
     //itemEvents
-    collectCoin(player:type.Player) {
+    collectCoin(player: type.Player) {
       player.score += this.difficulty * 300; // 5sek
     },
     collectGrowPotion(player: type.Player) {
@@ -360,7 +370,7 @@ export default defineComponent({
     },
     explosionBomb(player: type.Player, item: type.Item) {
       if (this.collisionsCheck(player, item, 5)) {
-        this.gameOver(player,"got exploded", "alert alert-danger");
+        this.gameOver(player, "got exploded", "alert alert-danger");
       }
     },
     despawnItems() {
@@ -431,7 +441,7 @@ export default defineComponent({
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown ;
+          y = this.borderDown;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
@@ -483,10 +493,11 @@ export default defineComponent({
         //   type = "colorswitch";
         //   break;
       }
-this.hardCoreMode?type="aimbot":null
+      this.hardCoreMode ? (type = "aimbot") : null;
       this.enemiesType ? (type = this.enemiesType) : null;
 
-      let targetPlayer = this.players[Math.floor(Math.random() * this.players.length)];
+      let targetPlayer =
+        this.players[Math.floor(Math.random() * this.players.length)];
       if (type == "aimbot") {
         let deltax = targetPlayer.x - x;
         let deltay = targetPlayer.y - y;
@@ -528,8 +539,12 @@ this.hardCoreMode?type="aimbot":null
             this.difficulty *
             ((100 - this.skillTree.skills[2].lvl) / 100);
         } else {
-          let deltax = this.players.find((p) => p.id == enemy.targetPlayerId)?.x ?? 0 - enemy.x;
-          let deltay = this.players.find((p) => p.id == enemy.targetPlayerId)?.y ?? 0 - enemy.y;
+          let deltax =
+            this.players.find((p) => p.id == enemy.targetPlayerId)?.x ??
+            0 - enemy.x;
+          let deltay =
+            this.players.find((p) => p.id == enemy.targetPlayerId)?.y ??
+            0 - enemy.y;
           deltay /= Math.abs(deltax);
           deltax /= Math.abs(deltax);
           if (Math.abs(deltay) > 1.5) {
@@ -539,7 +554,7 @@ this.hardCoreMode?type="aimbot":null
           enemy.x += deltax * 2;
           enemy.y += deltay * 2;
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
-        } 
+        }
 
         if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown) {
           this.respawnEnemy(enemy);
@@ -560,7 +575,7 @@ this.hardCoreMode?type="aimbot":null
     handleEnemyGetBigger() {
       for (let enemy of this.Enemies) {
         enemy.type == "getbigger" ? (enemy.size += 1) : null;
-      } 
+      }
     },
     // handleEnemyColorSwitch() {
     //   for (let enemy of this.Enemies) {
@@ -594,12 +609,17 @@ this.hardCoreMode?type="aimbot":null
       this.pressedKeys["Shift"] && this.skillTree.skills[1].lvl
         ? (multiplicator = 0.5)
         : null;
-      const AIInfo:type.AIInfo = {
+      const AIInfo: type.AIInfo = {
         enemies: this.Enemies,
         items: this.items,
-        border: [this.borderUp,this.borderDown,this.borderLeft,this.borderRight],
-        player: player
-      }
+        border: [
+          this.borderUp,
+          this.borderDown,
+          this.borderLeft,
+          this.borderRight,
+        ],
+        player: player,
+      };
       if (player.doesMove("down", this.pressedKeys, AIInfo)) {
         this.down(player, multiplicator);
       }
@@ -655,7 +675,6 @@ this.hardCoreMode?type="aimbot":null
     },
   },
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -682,5 +701,4 @@ this.hardCoreMode?type="aimbot":null
   position: relative;
   padding: 0 !important;
 }
-
 </style>
