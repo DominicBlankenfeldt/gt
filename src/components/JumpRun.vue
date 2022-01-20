@@ -5,39 +5,40 @@
       Score: <span id="scoreSpan">{{ Math.round(score) }}</span>
     </div>
     <div class="col align-self-center">
-      Enemies: <span id="scoreSpan">{{ Enemies.length }}</span>
+      Enemies: <span id="scoreSpan">{{ enemies.length }}</span>
     </div>
     <div class="col align-self-center">
       difficulty: <span id="scoreSpan">{{ difficulty }}</span>
     </div>
     <div class="col align-self-center">
       <img src="../../public/img/items/coin/coin.gif" alt="coin" />
-      Highscore: <span id="scoreSpan">{{ Math.round(highscore) }}</span>
+      Highscore: <span id="scoreSpan">{{ Math.round(player.highscore) }}</span>
     </div>
   </div>
   <div class="game">
     <div
       :style="{
-        left: playerx + 'px',
-        top: playery + 'px',
-        width: playerSize + 'px',
-        height: playerSize + 'px',
+        left: player.x + 'px',
+        top: player.y + 'px',
+        width: player.size + 'px',
+        height: player.size + 'px',
       }"
       style="position: absolute; border-radius: 50%; background-color: red"
     ></div>
     <div
-      :class="Enemy.size"
-      v-for="Enemy of Enemies"
-      :key="Enemy"
+      v-for="enemy of enemies"
+      :key="enemy"
       :style="{
-        left: Enemy.x + 'px',
-        top: Enemy.y + 'px',
-        width: Enemy.size + 'px',
-        height: Enemy.size + 'px',
+        left: enemy.x + 'px',
+        top: enemy.y + 'px',
       }"
       style="position: absolute; border-radius: 50%"
     >
-      <img :src="Enemy.imgsrc" alt="enemy" />
+      <img
+        :src="enemy.imgsrc"
+        alt="enemy"
+        :style="{ width: enemy.size + 'px', height: enemy.size + 'px' }"
+      />
     </div>
     <div
       :class="item.type"
@@ -46,13 +47,16 @@
       :style="{
         left: item.x + 'px',
         top: item.y + 'px',
-        width: item.size + 'px',
-        height: item.size + 'px',
+
         backgroundColor: item.imgsrc,
       }"
       style="position: absolute; border-radius: 50%"
     >
-      <img :src="item.imgsrc" alt="" />
+      <img
+        :src="item.imgsrc"
+        alt=""
+        :style="{ width: item.size + 'px', height: item.size + 'px' }"
+      />
     </div>
     <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
     <button
@@ -65,10 +69,22 @@
     </button>
   </div>
   <div class="bottom"></div>
-  <div class="btn-group " role="group" aria-label="Basic checkbox toggle button group">
-  <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" v-model="hardCoreMode">
-  <label class="btn btn-outline-primary shadow-none  w-25" for="btncheck1">Hardcore Mode</label>
-</div>
+  <div
+    class="btn-group"
+    role="group"
+    aria-label="Basic checkbox toggle button group"
+  >
+    <input
+      type="checkbox"
+      class="btn-check"
+      id="btncheck1"
+      autocomplete="off"
+      v-model="hardCoreMode"
+    />
+    <label class="btn btn-outline-primary shadow-none w-25" for="btncheck1"
+      >Hardcore Mode</label
+    >
+  </div>
 
   <div class="d-flex flex-column" v-if="!production">
     <button
@@ -87,7 +103,11 @@
       <label class="input-group-text" for="inputGroupSelect01"
         >Enemie Type</label
       >
-      <select class="form-select p-0" id="inputGroupSelect01" v-model="enemiesType">
+      <select
+        class="form-select p-0"
+        id="inputGroupSelect01"
+        v-model="enemiesType"
+      >
         <option selected value=""></option>
         <option value="curve">curve</option>
         <!-- <option value="colorswitch">colorswitch</option> -->
@@ -125,11 +145,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { skillTree, production } from "@/global";
+import { player, production } from "@/global";
 import * as type from "@/types";
+import * as API from '@/API';
 export default defineComponent({
   setup() {
-    skillTree;
+    player;
     production;
   },
   data() {
@@ -143,14 +164,10 @@ export default defineComponent({
       enemiesMove: true,
       enemiesType: "",
       itemSpawn: true,
-      //player
-      playerx: 0,
-      playery: 0,
-      playerSpeed: 5,
-      playerSize: 15,
-      skillTree: skillTree,
+//player
+player:player,
       // gameSetup
-      hardCoreMode:false,
+      hardCoreMode: false,
       growPotionID: 0,
       gameStarted: false,
       startingEnemies: 4,
@@ -159,22 +176,21 @@ export default defineComponent({
       borderUp: 0,
       borderDown: 0,
       difficulty: 2,
-      highscore: 0,
       score: 0,
       gameloopCounter: 0,
       items: [] as type.Item[],
       pressedKeys: {} as Record<string, boolean>,
-      Enemies: [] as type.Enemy[],
+      enemies: [] as type.Enemy[],
     };
   },
 
-  mounted() {
+  async mounted() {
     // start game if not started on enter press
     document.addEventListener(
       "keyup",
       (e) => e.code == "Enter" && !this.gameStarted && this.start()
     );
-
+   
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
     });
@@ -183,6 +199,12 @@ export default defineComponent({
     }, 1000 / 60);
     this.changeDisplaySize();
     this.playerStartPosition();
+    let result =await API.getPlayer()
+    if(result){
+      this.player=result.player
+    }
+    
+    console.log(await API.getPlayer())
   },
   methods: {
     //game
@@ -190,7 +212,7 @@ export default defineComponent({
       this.handlePlayerMovement();
       this.handleEnemyMovement();
       this.score +=
-        this.difficulty * ((this.skillTree.skills[4].lvl + 100) / 100);
+        this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
@@ -198,21 +220,23 @@ export default defineComponent({
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
-      this.gameloopCounter % (900 + 3 * this.skillTree.skills[3].lvl) == 0
+      this.gameloopCounter % (900 + 3 * this.player.skillTree.skills[3].lvl) == 0
         ? this.createEnemy()
         : null;
     },
 
     start() {
-      this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=4
+      this.hardCoreMode
+        ? (this.startingEnemies = 400)
+        : (this.startingEnemies = 4);
       clearTimeout(this.growPotionID);
-      this.playerSize = 15;
+      this.player.size = 15;
       this.message = "";
       this.gameloopCounter = 0;
       this.score = 0;
       this.difficulty = 2;
       this.playerStartPosition();
-      this.Enemies = [] as type.Enemy[];
+      this.enemies = [] as type.Enemy[];
       this.items = [] as type.Item[];
       this.gameStarted = true;
       window.onkeyup = (e: any) => {
@@ -224,13 +248,16 @@ export default defineComponent({
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
     playerStartPosition() {
-      this.playery = this.borderDown - this.borderUp * 1.5;
-      this.playerx = this.borderRight - this.borderLeft * 2;
+      this.player.y = this.borderDown - this.borderUp * 1.5;
+      this.player.x = this.borderRight - this.borderLeft * 2;
     },
     gameOver(message: string, messageType: string) {
       this.gameStarted = false;
-      this.score > this.highscore ? (this.highscore = this.score) : null;
-      this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
+      if(this.score > this.player.highscore){
+        this.player.highscore = this.score
+        API.addPlayer(this.player)
+        } 
+      this.player.skillTree.skillPoints = Math.floor(this.player.highscore / 1000);
       this.message = message;
       this.messageType = messageType;
     },
@@ -266,7 +293,7 @@ export default defineComponent({
           }
         }
       }
-      for (let enemy of this.Enemies) {
+      for (let enemy of this.enemies) {
         if (this.collisionsCheck(enemy)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
         }
@@ -275,12 +302,8 @@ export default defineComponent({
     collisionsCheck(object: type.Enemy | type.Item, range?: number) {
       return (
         Math.sqrt(
-          (object.x + object.size / 2 - (this.playerx + this.playerSize / 2)) **
-            2 +
-            (object.y +
-              object.size / 2 -
-              (this.playery + this.playerSize / 2)) **
-              2
+          (object.x + object.size / 2 - (this.player.x + this.player.size / 2)) ** 2 +
+            (object.y + object.size / 2 - (this.player.y + this.player.size / 2)) ** 2
         ) <
         (object.size * (range || 1)) / 2 + 7.5
       );
@@ -290,13 +313,13 @@ export default defineComponent({
       this.score += this.difficulty * 300; // 5sek
     },
     collectGrowPotion() {
-      this.playerSize += 15;
+      this.player.size += 15;
       this.growPotionID = setTimeout(() => {
-        this.playerSize -= 15;
+        this.player.size -= 15;
       }, 5000);
     },
     collectClearField() {
-      for (let enemy of [...this.Enemies]) {
+      for (let enemy of [...this.enemies]) {
         this.respawnEnemy(enemy);
       }
     },
@@ -371,7 +394,7 @@ export default defineComponent({
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown ;
+          y = this.borderDown;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
@@ -423,12 +446,12 @@ export default defineComponent({
         //   type = "colorswitch";
         //   break;
       }
-this.hardCoreMode?type="aimbot":null
+      this.hardCoreMode ? (type = "aimbot") : null;
       this.enemiesType ? (type = this.enemiesType) : null;
 
       if (type == "aimbot") {
-        let deltax = this.playerx - x;
-        let deltay = this.playery - y;
+        let deltax = this.player.x - x;
+        let deltay = this.player.y - y;
         deltay /= Math.abs(deltax);
         deltax /= Math.abs(deltax);
         if (Math.abs(deltay) > 1.5) {
@@ -437,7 +460,7 @@ this.hardCoreMode?type="aimbot":null
         }
         moveArray = [deltax, deltay];
       }
-      this.Enemies.push({
+      this.enemies.push({
         x: x,
         y: y,
         size: size,
@@ -451,7 +474,7 @@ this.hardCoreMode?type="aimbot":null
 
     handleEnemyMovement() {
       if (!this.enemiesMove) return;
-      for (let enemy of this.Enemies) {
+      for (let enemy of this.enemies) {
         if (enemy.type == "curve") {
           enemy.moveVektor[enemy.moveVektor.findIndex((v) => v != 1)] +=
             0.04 * Math.random();
@@ -460,14 +483,14 @@ this.hardCoreMode?type="aimbot":null
           enemy.x +=
             enemy.moveVektor[0] *
             this.difficulty *
-            ((100 - this.skillTree.skills[2].lvl) / 100);
+            ((100 - this.player.skillTree.skills[2].lvl) / 100);
           enemy.y +=
             enemy.moveVektor[1] *
             this.difficulty *
-            ((100 - this.skillTree.skills[2].lvl) / 100);
+            ((100 - this.player.skillTree.skills[2].lvl) / 100);
         } else {
-          let deltax = this.playerx - enemy.x;
-          let deltay = this.playery - enemy.y;
+          let deltax = this.player.x - enemy.x;
+          let deltay = this.player.y - enemy.y;
           deltay /= Math.abs(deltax);
           deltax /= Math.abs(deltax);
           if (Math.abs(deltay) > 1.5) {
@@ -489,14 +512,14 @@ this.hardCoreMode?type="aimbot":null
     },
 
     respawnEnemy(enemy: type.Enemy) {
-      this.Enemies.splice(
-        this.Enemies.findIndex((e) => e == enemy),
+      this.enemies.splice(
+        this.enemies.findIndex((e) => e == enemy),
         1
       );
       this.createEnemy();
     },
     handleEnemyGetBigger() {
-      for (let enemy of this.Enemies) {
+      for (let enemy of this.enemies) {
         enemy.type == "getbigger" ? (enemy.size += 1) : null;
       }
     },
@@ -526,15 +549,12 @@ this.hardCoreMode?type="aimbot":null
     //playermovement
     handlePlayerMovement() {
       let multiplicator = 1;
-      this.pressedKeys["Control"] && this.skillTree.skills[0].lvl
+      this.pressedKeys["Control"] && this.player.skillTree.skills[0].lvl
         ? (multiplicator = 2)
         : null;
-      this.pressedKeys["Shift"] && this.skillTree.skills[1].lvl
+      this.pressedKeys["Shift"] && this.player.skillTree.skills[1].lvl
         ? (multiplicator = 0.5)
         : null;
-      if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
-        this.down(multiplicator);
-      }
       if (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) {
         this.left(multiplicator);
       }
@@ -544,38 +564,39 @@ this.hardCoreMode?type="aimbot":null
       if (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"]) {
         this.up(multiplicator);
       }
+       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
+        this.down(multiplicator);
+      }
     },
     up(multiplicator: number) {
-      if (this.playery > this.borderUp) {
-        this.playery -= this.playerSpeed * multiplicator;
-        this.playery < this.borderUp + 2
-          ? (this.playery = this.borderUp + 2)
-          : null;
+      if (this.player.y > this.borderUp) {
+        this.player.y -= this.player.speed * multiplicator;
+        this.player.y < this.borderUp + 2 ? (this.player.y = this.borderUp + 2) : null;
       }
+      this.player.outlook="up";
     },
     down(multiplicator: number) {
-      if (this.playery < this.borderDown) {
-        this.playery += this.playerSpeed * multiplicator;
-        this.playery > this.borderDown - 17
-          ? (this.playery = this.borderDown - 17)
-          : null;
+      if (this.player.y < this.borderDown) {
+        this.player.y += this.player.speed * multiplicator;
+        this.player.y > this.borderDown - 17 ? (this.player.y = this.borderDown - 17) : null;
       }
+      this.player.outlook="down";
     },
     right(multiplicator: number) {
-      if (this.playerx < this.borderRight) {
-        this.playerx += this.playerSpeed * multiplicator;
-        this.playerx > this.borderRight - 15
-          ? (this.playerx = this.borderRight - 15)
+      if (this.player.x < this.borderRight) {
+        this.player.x += this.player.speed * multiplicator;
+        this.player.x > this.borderRight - 15
+          ? (this.player.x = this.borderRight - 15)
           : null;
       }
+      this.player.outlook="right";
     },
     left(multiplicator: number) {
-      if (this.playerx > this.borderLeft) {
-        this.playerx -= this.playerSpeed * multiplicator;
-        this.playerx < this.borderLeft + 1
-          ? (this.playerx = this.borderLeft + 1)
-          : null;
+      if (this.player.x > this.borderLeft) {
+        this.player.x -= this.player.speed * multiplicator;
+        this.player.x < this.borderLeft + 1 ? (this.player.x = this.borderLeft + 1) : null;
       }
+      this.player.outlook="left";
     },
 
     //displaysize
@@ -615,5 +636,4 @@ this.hardCoreMode?type="aimbot":null
   position: relative;
   padding: 0 !important;
 }
-
 </style>

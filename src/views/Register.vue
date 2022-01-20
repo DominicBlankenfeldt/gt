@@ -3,8 +3,8 @@
     <div class="card card-default w-75" style="margin-left: 12.5%">
       <div class="card-header header">Anmeldung</div>
       <div class="card-body">
-        <form @submit.prevent="login()" autocomplete="off">
-          <div class="m-4 alert alert-danger text-center" v-if="error">Username or password is not correct</div>
+        <form @submit.prevent="register()" autocomplete="off">
+          <div class="m-4 alert alert-danger text-center" v-if="error">{{ error }}</div>
           <div class="p-4 row">
             <label class="col-4" for="email">Email:</label>
             <div class="col-8">
@@ -17,9 +17,14 @@
               <input minlength="3" class="form-control" id="password" type="password" placeholder="passwort" v-model="password" autocomplete="off" />
             </div>
           </div>
-          <button class="loginBtn" type="submit" v-if="!loggingIn">Anmelden</button>
-          <span v-if="loggingIn" class="m-4 spinner-border spinner-border-sm text-primary"></span>
-          <button class="loginBtn" type="button" @click="register()">Registrieren</button>
+          <div class="p-4 row">
+            <label class="col-4" for="Password">Passwort bestätigen:</label>
+            <div class="col-8">
+              <input minlength="3" class="form-control" id="password" type="password" placeholder="passwort" v-model="confirmed" autocomplete="off" />
+            </div>
+          </div>
+          <button class="loginBtn" type="submit" v-if="!registering">Registrieren</button>
+          <span v-if="registering" class="m-4 spinner-border spinner-border-sm text-primary"></span>
         </form>
       </div>
     </div>
@@ -32,38 +37,30 @@ import * as API from '@/API';
 export default defineComponent({
   data() {
     return {
+      confirmed: '',
       password: '',
       email: '',
-      error: false,
-      loggingIn: false,
+      error: '',
+      registering: false,
     };
   },
   methods: {
-    async login() {
-      this.error = false;
-      this.loggingIn = true;
-      try {
-        await API.login(this.email, this.password);
-        console.log('admin logged in with:' + this.email);
-        this.email = '';
-        this.password = '';
-        this.$router.push('/');
-      } catch (e) {
-        this.error = true;
-        console.error({ "couldn't login": e });
-      } finally {
-        this.password = '';
-        this.loggingIn = false;
+    async register() {
+      if (this.confirmed !== this.password) {
+        this.error = 'Die passwörter stimmen nicht überein';
+        return;
       }
-    },
-    register() {
-      this.$router.push('/register');
+      this.registering = true;
+      try {
+        await API.register(this.email, this.password);
+      } catch (e) {
+        console.log("couldn't register", e);
+        this.error = 'Der Account konnte leider nicht registriert werden';
+      } finally {
+        this.registering = false;
+      }
     },
   },
 });
 </script>
-<style lang="scss" scoped>
-* {
-  font-family: Arial, Helvetica, sans-serif;
-}
-</style>
+<style lang="scss" scoped></style>

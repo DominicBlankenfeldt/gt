@@ -2,6 +2,10 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home.vue";
 import Games from "../views/Games.vue";
 import SkillTree from "../views/SkillTree.vue";
+import Register from "../views/Register.vue";
+import { getAuth, User } from '@firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { ref } from 'vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -28,11 +32,31 @@ const routes: Array<RouteRecordRaw> = [
     name: "SkillTree",
     component: SkillTree,
   },
+  {
+  path: "/register",
+  name: "Register",
+  component: Register,
+},
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
 });
+export const currentUser = ref<User | null>(null);
+const getCurrentUser = () => {
+  const auth = getAuth();
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      user => {
+        currentUser.value = user;
+        unsubscribe();
+        resolve(user);
+      },
+      reject
+    );
+  });
+};
 
 export default router;
