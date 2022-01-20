@@ -6,7 +6,13 @@ export interface Player {
   score: number
   id: string 
   color: string
-  doesMove: (direction: "down" | "up" | "right" | "left", pressedKeys: Record<string, boolean>) => boolean
+  doesMove: (direction: "down" | "up" | "right" | "left", pressedKeys: Record<string, boolean>, AIInfo:AIInfo) => boolean
+}
+export interface AIInfo {
+  enemies: Enemy[],
+  items: Item[],
+  border: [up:number,down:number,right:number,left:number],
+  player: Player
 }
 
 export interface Enemy {

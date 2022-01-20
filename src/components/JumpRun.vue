@@ -133,6 +133,7 @@
 import { defineComponent } from "vue";
 import { skillTree, production } from "@/global";
 import * as type from "@/types";
+import { createNewAIPlayer, getNewGeneration } from "@/AI";
 export default defineComponent({
   setup() {
     skillTree;
@@ -162,7 +163,7 @@ export default defineComponent({
       hardCoreMode:false,
       growPotionID: 0,
       gameStarted: false,
-      startingEnemies: 4,
+      startingEnemies: 10,
       borderRight: 0,
       borderLeft: 0,
       borderUp: 0,
@@ -192,6 +193,7 @@ export default defineComponent({
     this.changeDisplaySize();
     this.playerStartPosition();
   },
+
   methods: {
     //game
     gameloop() {
@@ -212,7 +214,7 @@ export default defineComponent({
     },
 
     start() {
-      this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=4
+      this.hardCoreMode?this.startingEnemies=400:this.startingEnemies=10
       clearTimeout(this.growPotionID);
       for (let player of this.players) player.size = 15;
       this.message = "";
@@ -232,8 +234,8 @@ export default defineComponent({
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
     playerStartPosition() {      
-    const addNormalPlayer = (keys?:[up:string,down:string,left:string,right:string],color?:string,id?:string)=>{
-      this.players.push( {
+    const createNormalPlayer = (keys?:[up:string,down:string,left:string,right:string],color?:string,id?:string):type.Player=>{
+      return {
           x: 0,
           y: 0,
           score:0,
@@ -248,13 +250,12 @@ export default defineComponent({
             if (dir == "right") return pressedKeys[keys?.[3]??"ArrowRight"];
             return false;
           },
-        })
+        }
     }
     this.deadPlayers=[]
     this.players=[]
-    addNormalPlayer()
-    addNormalPlayer(["w","s","a","d"],"orange","Player2")
-    addNormalPlayer(["i","k","j","l"],"green","Player3")
+    for (let i = 0;i<20;i++)
+     this.players.push(createNewAIPlayer())
 
       for (let player of this.players) {
         player.y = this.borderDown - this.borderUp * 1.5;
@@ -272,9 +273,26 @@ export default defineComponent({
         this.gameStarted = false;
         player.score > this.highscore ? (this.highscore = player.score) : null;
         this.skillTree.skillPoints = Math.floor(this.highscore / 1000);
+        if (player.score){
+          this.nextGeneration()
+        }
       }else{
         setTimeout(()=>this.message="",2000)
       }
+    },
+    nextGeneration(){
+      this.gameloopCounter = 0;
+      this.difficulty = 2;
+      this.Enemies = [] as type.Enemy[];
+      this.items = [] as type.Item[];
+      this.players=getNewGeneration(this.deadPlayers)
+      for (let player of this.players) {
+        player.y = this.borderDown - this.borderUp * 1.5;
+        player.x = this.borderRight - this.borderLeft * 2;
+      }
+      this.deadPlayers=[]
+      this.gameStarted = true;
+      for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
     //colliosion
     colisionHandling() {
@@ -576,16 +594,22 @@ this.hardCoreMode?type="aimbot":null
       this.pressedKeys["Shift"] && this.skillTree.skills[1].lvl
         ? (multiplicator = 0.5)
         : null;
-      if (player.doesMove("down", this.pressedKeys)) {
+      const AIInfo:type.AIInfo = {
+        enemies: this.Enemies,
+        items: this.items,
+        border: [this.borderUp,this.borderDown,this.borderLeft,this.borderRight],
+        player: player
+      }
+      if (player.doesMove("down", this.pressedKeys, AIInfo)) {
         this.down(player, multiplicator);
       }
-      if (player.doesMove("left", this.pressedKeys)) {
+      if (player.doesMove("left", this.pressedKeys, AIInfo)) {
         this.left(player, multiplicator);
       }
-      if (player.doesMove("right", this.pressedKeys)) {
+      if (player.doesMove("right", this.pressedKeys, AIInfo)) {
         this.right(player, multiplicator);
       }
-      if (player.doesMove("up", this.pressedKeys)) {
+      if (player.doesMove("up", this.pressedKeys, AIInfo)) {
         this.up(player, multiplicator);
       }
     },
@@ -631,6 +655,7 @@ this.hardCoreMode?type="aimbot":null
     },
   },
 });
+
 </script>
 
 <style lang="scss" scoped>
