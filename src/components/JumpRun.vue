@@ -254,11 +254,12 @@ export default defineComponent({
       this.gameStarted = false;
       if (this.score > this.player.highscore) {
         this.player.highscore = this.score;
+        this.player.skillTree.skillPoints = Math.floor(
+          this.player.highscore / 1000
+        );
         API.addPlayer(this.player);
       }
-      this.player.skillTree.skillPoints = Math.floor(
-        this.player.highscore / 1000
-      );
+
       this.message = message;
       this.messageType = messageType;
     },
