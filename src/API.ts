@@ -28,14 +28,23 @@ export async function login(email: string, password: string): Promise<void> {
     const docRef = await addDoc(collection(getFirestore(), docName), data);
     return docRef as DocumentReference<T>;
   }
-  export async function getAPI<T extends { id: string }>(docName: string): Promise<T> {
+  export async function getAPI<T extends { id: string }>(docName: string): Promise<T[]> {
     const docs: QueryDocumentSnapshot<DocumentData>[] = [];
     const querySnapshot = await getDocs(collection(getFirestore(), docName));
     querySnapshot.forEach(doc => {
       docs.push(doc);
     });
-    return docs.map(player => ({ ...player.data()})).splice(0,1)[0] as T;
+    return docs.map(exercises => ({ ...exercises.data(), id: exercises.id })) as T[];
   }
+  
+  export async function addLeaderBoard(leaderBoard: type.LeaderBoard[]): Promise<void> {
+    await addAPI<type.LeaderBoard[]>('leaderBoard', leaderBoard);
+  }
+  
+  export async function getLeaderBoard(): Promise<type.LeaderBoard[]> {
+    return getAPI<type.LeaderBoard>('leaderBoard');
+  }
+
   export async function addPlayer(player: type.Player): Promise<void> {
     const id = getAuth().currentUser?.uid;
     if (id) {
@@ -44,7 +53,6 @@ export async function login(email: string, password: string): Promise<void> {
       });
     }
   }
-
 
   export async function getPlayer(): Promise<any|null> {
     const id = getAuth().currentUser?.uid;

@@ -34,9 +34,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import * as API from '@/API';
+import { player } from "@/global";
 export default defineComponent({
+   setup() {
+    player;
+  },
   data() {
     return {
+      player:player,
       confirmed: '',
       password: '',
       email: '',
@@ -53,6 +58,7 @@ export default defineComponent({
       this.registering = true;
       try {
         await API.register(this.email, this.password);
+        API.addPlayer(this.player)
       } catch (e) {
         console.log("couldn't register", e);
         this.error = 'Der Account konnte leider nicht registriert werden';

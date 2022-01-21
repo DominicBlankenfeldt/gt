@@ -1,7 +1,5 @@
 import { ref } from "vue";
 import * as type from "@/types";
-import { currentUser } from '@/router';
-import * as API from '@/API';
 //player
 
 export const player=ref({

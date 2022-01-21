@@ -39,3 +39,7 @@ export interface Skill {
   lvl: number;
   maxlvl: number;
 }
+export interface LeaderBoard{
+  player:Player;
+  id:string;
+}

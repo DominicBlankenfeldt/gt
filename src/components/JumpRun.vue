@@ -167,6 +167,7 @@ export default defineComponent({
       //player
       player: player,
       // gameSetup
+      leaderBoard:[]as type.LeaderBoard[],
       hardCoreMode: false,
       growPotionID: 0,
       gameStarted: false,
@@ -203,6 +204,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
+  this.leaderBoard=await API.getLeaderBoard()
   },
   methods: {
     //game
@@ -258,6 +260,9 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
+      //  this.leaderBoard.push({player:this.player,id:this.player.id})
+      //  this.leaderBoard.sort((a,b)=>{return a.player.highscore-b.player.highscore})
+      //  this.leaderBoard.shift()
       }
 
       this.message = message;
