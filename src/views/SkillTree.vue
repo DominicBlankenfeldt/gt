@@ -1,6 +1,7 @@
 <template>
   <div>
-    Skill Points: {{ player.skillTree.skillPoints - player.skillTree.usedSkillPoints }}/{{
+    Skill Points:
+    {{ player.skillTree.skillPoints - player.skillTree.usedSkillPoints }}/{{
       player.skillTree.skillPoints
     }}
   </div>
@@ -21,9 +22,16 @@
 import { defineComponent } from "vue";
 import { player } from "@/global";
 import { Skill } from "@/types";
+import * as API from "@/API";
 export default defineComponent({
   setup() {
     player;
+  },
+  async mounted() {
+    let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
+    }
   },
   data() {
     return {
@@ -33,10 +41,17 @@ export default defineComponent({
   methods: {
     lvlSkill(skill: Skill) {
       if (!(skill.lvl < skill.maxlvl)) return;
-      if (!(this.player.skillTree.skillPoints - this.player.skillTree.usedSkillPoints > 0))
+      if (
+        !(
+          this.player.skillTree.skillPoints -
+            this.player.skillTree.usedSkillPoints >
+          0
+        )
+      )
         return;
       skill.lvl++;
       this.player.skillTree.usedSkillPoints++;
+      API.addPlayer(this.player);
     },
   },
 });

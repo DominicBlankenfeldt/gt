@@ -147,7 +147,7 @@
 import { defineComponent } from "vue";
 import { player, production } from "@/global";
 import * as type from "@/types";
-import * as API from '@/API';
+import * as API from "@/API";
 export default defineComponent({
   setup() {
     player;
@@ -164,8 +164,8 @@ export default defineComponent({
       enemiesMove: true,
       enemiesType: "",
       itemSpawn: true,
-//player
-player:player,
+      //player
+      player: player,
       // gameSetup
       hardCoreMode: false,
       growPotionID: 0,
@@ -190,7 +190,7 @@ player:player,
       "keyup",
       (e) => e.code == "Enter" && !this.gameStarted && this.start()
     );
-   
+
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
     });
@@ -199,12 +199,10 @@ player:player,
     }, 1000 / 60);
     this.changeDisplaySize();
     this.playerStartPosition();
-    let result =await API.getPlayer()
-    if(result){
-      this.player=result.player
+    let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
     }
-    
-    console.log(await API.getPlayer())
   },
   methods: {
     //game
@@ -220,7 +218,8 @@ player:player,
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
-      this.gameloopCounter % (900 + 3 * this.player.skillTree.skills[3].lvl) == 0
+      this.gameloopCounter % (900 + 3 * this.player.skillTree.skills[3].lvl) ==
+      0
         ? this.createEnemy()
         : null;
     },
@@ -253,11 +252,13 @@ player:player,
     },
     gameOver(message: string, messageType: string) {
       this.gameStarted = false;
-      if(this.score > this.player.highscore){
-        this.player.highscore = this.score
-        API.addPlayer(this.player)
-        } 
-      this.player.skillTree.skillPoints = Math.floor(this.player.highscore / 1000);
+      if (this.score > this.player.highscore) {
+        this.player.highscore = this.score;
+        API.addPlayer(this.player);
+      }
+      this.player.skillTree.skillPoints = Math.floor(
+        this.player.highscore / 1000
+      );
       this.message = message;
       this.messageType = messageType;
     },
@@ -302,8 +303,14 @@ player:player,
     collisionsCheck(object: type.Enemy | type.Item, range?: number) {
       return (
         Math.sqrt(
-          (object.x + object.size / 2 - (this.player.x + this.player.size / 2)) ** 2 +
-            (object.y + object.size / 2 - (this.player.y + this.player.size / 2)) ** 2
+          (object.x +
+            object.size / 2 -
+            (this.player.x + this.player.size / 2)) **
+            2 +
+            (object.y +
+              object.size / 2 -
+              (this.player.y + this.player.size / 2)) **
+              2
         ) <
         (object.size * (range || 1)) / 2 + 7.5
       );
@@ -564,23 +571,27 @@ player:player,
       if (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"]) {
         this.up(multiplicator);
       }
-       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
+      if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
       }
     },
     up(multiplicator: number) {
       if (this.player.y > this.borderUp) {
         this.player.y -= this.player.speed * multiplicator;
-        this.player.y < this.borderUp + 2 ? (this.player.y = this.borderUp + 2) : null;
+        this.player.y < this.borderUp + 2
+          ? (this.player.y = this.borderUp + 2)
+          : null;
       }
-      this.player.outlook="up";
+      this.player.outlook = "up";
     },
     down(multiplicator: number) {
       if (this.player.y < this.borderDown) {
         this.player.y += this.player.speed * multiplicator;
-        this.player.y > this.borderDown - 17 ? (this.player.y = this.borderDown - 17) : null;
+        this.player.y > this.borderDown - 17
+          ? (this.player.y = this.borderDown - 17)
+          : null;
       }
-      this.player.outlook="down";
+      this.player.outlook = "down";
     },
     right(multiplicator: number) {
       if (this.player.x < this.borderRight) {
@@ -589,14 +600,16 @@ player:player,
           ? (this.player.x = this.borderRight - 15)
           : null;
       }
-      this.player.outlook="right";
+      this.player.outlook = "right";
     },
     left(multiplicator: number) {
       if (this.player.x > this.borderLeft) {
         this.player.x -= this.player.speed * multiplicator;
-        this.player.x < this.borderLeft + 1 ? (this.player.x = this.borderLeft + 1) : null;
+        this.player.x < this.borderLeft + 1
+          ? (this.player.x = this.borderLeft + 1)
+          : null;
       }
-      this.player.outlook="left";
+      this.player.outlook = "left";
     },
 
     //displaysize
