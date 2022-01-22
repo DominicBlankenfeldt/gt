@@ -17,6 +17,7 @@ export interface Player{
   outlook: string;
   highscore:number;
   id:string;
+  email:string;
 }
 export interface Item {
   type: string;
@@ -31,15 +32,12 @@ export interface SkillTree {
   usedSkillPoints: number;
   skills: Skill[];
 }
-interface ref<SkillTree>{
-  value:SkillTree
+export interface ref<Player>{
+  value:Player
 }
 export interface Skill {
   name: string;
   lvl: number;
   maxlvl: number;
 }
-export interface LeaderBoard{
-  player:Player;
-  id:string;
-}
+

@@ -165,9 +165,9 @@ export default defineComponent({
       enemiesType: "",
       itemSpawn: true,
       //player
-      player: player,
+      player:player.value as type.Player,
+      bestPlayer:[] as type.Player[],
       // gameSetup
-      leaderBoard:[]as type.LeaderBoard[],
       hardCoreMode: false,
       growPotionID: 0,
       gameStarted: false,
@@ -204,7 +204,11 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
-  this.leaderBoard=await API.getLeaderBoard()
+    result=await API.getBestPlayers()
+    if(result){
+      this.bestPlayer=Object.values(result) as type.Player[]
+    }
+    
   },
   methods: {
     //game
@@ -234,7 +238,7 @@ export default defineComponent({
       this.player.size = 15;
       this.message = "";
       this.gameloopCounter = 0;
-      this.score = 0;
+      this.score = 10000;
       this.difficulty = 2;
       this.playerStartPosition();
       this.enemies = [] as type.Enemy[];
@@ -260,9 +264,13 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
-      //  this.leaderBoard.push({player:this.player,id:this.player.id})
-      //  this.leaderBoard.sort((a,b)=>{return a.player.highscore-b.player.highscore})
-      //  this.leaderBoard.shift()
+        for(let bPlayer of [...this.bestPlayer]){
+          bPlayer.email==this.player.email?this.bestPlayer.splice(this.bestPlayer.findIndex((b)=>b==bPlayer),1):null
+        }
+        this.bestPlayer.push({...this.player})
+        this.bestPlayer.sort((a,b)=>{return b.highscore-a.highscore})
+        this.bestPlayer.length>5?this.bestPlayer.pop():null
+        API.updateBestPlayers({...this.bestPlayer})
       }
 
       this.message = message;

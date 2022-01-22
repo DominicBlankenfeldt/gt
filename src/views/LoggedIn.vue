@@ -9,7 +9,9 @@
   <div>
       ranking
   </div>
-  
+ <div v-for="bPlayer of bestPlayer" :key="bPlayer">
+{{bPlayer.email.substring(0,bPlayer.email.indexOf('@'))}}: {{bPlayer.highscore}}
+ </div>
 </template>
 
 <script lang="ts">
@@ -19,12 +21,15 @@ import * as type from "@/types";
 export default defineComponent({
   data() {
     return {
-      leaderBoard:[]as type.LeaderBoard[],
+    bestPlayer:[] as type.Player[],
     };
   },
-  async mounted(){
-this.leaderBoard=await API.getLeaderBoard()
-  },
+async mounted(){
+  let result=await API.getBestPlayers()
+    if(result){
+      this.bestPlayer=Object.values(result) as type.Player[]
+    }
+},
   methods: {
        logout(){
       API.logout()
