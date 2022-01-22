@@ -10,7 +10,7 @@
       ranking
   </div>
  <div v-for="bestPlayer of bestPlayers" :key="bestPlayer">
-{{bestPlayer.email.substring(0,bestPlayer.email.indexOf('@'))}}: {{bestPlayer.highscore}}
+{{bestPlayer.email.substring(0,bestPlayer.email.indexOf('@'))}}: {{Math.round(bestPlayer.highscore)}}
  </div>
 </template>
 
