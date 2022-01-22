@@ -59,9 +59,7 @@
       </div>
     </div>
   </div>
-  <div class="container" v-if="user">
-
-  </div>
+  <div class="container" v-if="user"></div>
 </template>
 
 <script lang="ts">
@@ -80,10 +78,10 @@ export default defineComponent({
       loggingIn: false,
     };
   },
-  mounted(){
-if(this.user){
-this.$router.push('/loggedin')
-}
+  mounted() {
+    if (this.user) {
+      this.$router.push("/loggedin");
+    }
   },
   methods: {
     async login() {
@@ -106,7 +104,6 @@ this.$router.push('/loggedin')
     register() {
       this.$router.push("/register");
     },
- 
   },
 });
 </script>

@@ -21,7 +21,7 @@ export const player=ref({
   } as type.SkillTree,
   outlook:"up", //Blickrichtung
   highscore: 0,
-  email:"gast",
+  email:"gast@",
 })
 
 

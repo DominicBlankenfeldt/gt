@@ -165,8 +165,8 @@ export default defineComponent({
       enemiesType: "",
       itemSpawn: true,
       //player
-      player:player.value as type.Player,
-      bestPlayer:[] as type.Player[],
+      player: player.value as type.Player,
+      bestPlayers: [] as type.Player[],
       // gameSetup
       hardCoreMode: false,
       growPotionID: 0,
@@ -198,17 +198,16 @@ export default defineComponent({
     setInterval(() => {
       this.gameStarted ? this.gameloop() : null;
     }, 1000 / 60);
+
     this.changeDisplaySize();
     this.playerStartPosition();
-    let result = await API.getPlayer();
-    if (result) {
-      this.player = result.player;
-    }
-    result=await API.getBestPlayers()
-    if(result){
-      this.bestPlayer=Object.values(result) as type.Player[]
-    }
+
+    (await API.getPlayer()) ? (this.player = await API.getPlayer()) : null;
     
+    let result = await API.getBestPlayers();
+    if (result) {
+      this.bestPlayers = Object.values(result) as type.Player[];
+    }
   },
   methods: {
     //game
@@ -238,7 +237,7 @@ export default defineComponent({
       this.player.size = 15;
       this.message = "";
       this.gameloopCounter = 0;
-      this.score = 10000;
+      this.score = 0;
       this.difficulty = 2;
       this.playerStartPosition();
       this.enemies = [] as type.Enemy[];
@@ -264,15 +263,21 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
-        for(let bPlayer of [...this.bestPlayer]){
-          bPlayer.email==this.player.email?this.bestPlayer.splice(this.bestPlayer.findIndex((b)=>b==bPlayer),1):null
+        for (let bPlayer of [...this.bestPlayers]) {
+          bPlayer.email == this.player.email
+            ? this.bestPlayers.splice(
+                this.bestPlayers.findIndex((b) => b == bPlayer),
+                1
+              )
+            : null;
         }
-        this.bestPlayer.push({...this.player})
-        this.bestPlayer.sort((a,b)=>{return b.highscore-a.highscore})
-        this.bestPlayer.length>5?this.bestPlayer.pop():null
-        API.updateBestPlayers({...this.bestPlayer})
+        this.bestPlayers.push({ ...this.player });
+        this.bestPlayers.sort((a, b) => {
+          return b.highscore - a.highscore;
+        });
+        this.bestPlayers.length > 5 ? this.bestPlayers.pop() : null;
+        API.updateBestPlayers({ ...this.bestPlayers });
       }
-
       this.message = message;
       this.messageType = messageType;
     },
