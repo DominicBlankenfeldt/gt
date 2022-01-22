@@ -166,6 +166,7 @@ export default defineComponent({
       itemSpawn: true,
       //player
       player: player.value as type.Player,
+      isGrow: false,
       bestPlayers: [] as type.Player[],
       // gameSetup
       hardCoreMode: false,
@@ -202,9 +203,12 @@ export default defineComponent({
     this.changeDisplaySize();
     this.playerStartPosition();
 
-    (await API.getPlayer()) ? (this.player = await API.getPlayer()) : null;
-    
-    let result = await API.getBestPlayers();
+    let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
+    }
+
+    result = await API.getBestPlayers();
     if (result) {
       this.bestPlayers = Object.values(result) as type.Player[];
     }
@@ -214,12 +218,23 @@ export default defineComponent({
     gameloop() {
       this.handlePlayerMovement();
       this.handleEnemyMovement();
-      this.score +=
-        this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
+      if (this.isGrow) {
+        this.player.size = 30;
+        this.score +=
+          this.difficulty *
+          ((this.player.skillTree.skills[4].lvl + 100) / 100) *
+          1.2;
+      } else {
+        this.player.size = 15;
+        this.score +=
+          this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
+      }
+
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
       //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
+      this.gameloopCounter % 60 == 0 ? this.growSkull() : null; // 1sek
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
@@ -234,7 +249,7 @@ export default defineComponent({
         ? (this.startingEnemies = 400)
         : (this.startingEnemies = 4);
       clearTimeout(this.growPotionID);
-      this.player.size = 15;
+      this.isGrow = false;
       this.message = "";
       this.gameloopCounter = 0;
       this.score = 0;
@@ -255,7 +270,7 @@ export default defineComponent({
       this.player.y = this.borderDown - this.borderUp * 1.5;
       this.player.x = this.borderRight - this.borderLeft * 2;
     },
-    gameOver(message: string, messageType: string) {
+    async gameOver(message: string, messageType: string) {
       this.gameStarted = false;
       if (this.score > this.player.highscore) {
         this.player.highscore = this.score;
@@ -270,6 +285,10 @@ export default defineComponent({
                 1
               )
             : null;
+        }
+        let result = await API.getBestPlayers();
+        if (result) {
+          this.bestPlayers = Object.values(result) as type.Player[];
         }
         this.bestPlayers.push({ ...this.player });
         this.bestPlayers.sort((a, b) => {
@@ -291,9 +310,9 @@ export default defineComponent({
                 this.items.findIndex((i) => i == item),
                 1
               );
-              this.collectCoin();
+              this.collectCoin(item);
               break;
-            case "bomb":
+            case "skull":
               this.explosionBomb(item);
               break;
             case "growPotion":
@@ -335,13 +354,13 @@ export default defineComponent({
       );
     },
     //itemEvents
-    collectCoin() {
-      this.score += this.difficulty * 300; // 5sek
+    collectCoin(item: type.Item) {
+      this.score += this.difficulty * 15 * item.size;
     },
     collectGrowPotion() {
-      this.player.size += 15;
+      this.isGrow = true;
       this.growPotionID = setTimeout(() => {
-        this.player.size -= 15;
+        this.isGrow = false;
       }, 5000);
     },
     collectClearField() {
@@ -350,15 +369,24 @@ export default defineComponent({
       }
     },
     explosionBomb(item: type.Item) {
-      if (this.collisionsCheck(item, 5)) {
+      if (this.collisionsCheck(item)) {
         this.gameOver("you got exploded", "alert alert-danger");
+      }
+    },
+    growSkull() {
+      for (let item of this.items) {
+        if (item.type == "skull") {
+          item.size += 20;
+          item.x -= 10;
+          item.y -= 10;
+        }
       }
     },
     despawnItems() {
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          item.type == "bomb" ? this.explosionBomb(item) : null;
+          item.type == "skull" ? this.explosionBomb(item) : null;
           this.items.splice(
             this.items.findIndex((i) => i == item),
             1
@@ -371,14 +399,16 @@ export default defineComponent({
       let type = "";
       let x = 0;
       let y = 0;
+      let size = 20;
       let imgsrc = "";
       switch (this.getRandomInt(4)) {
         case 0:
           type = "coin";
+          size = this.getRandomInt(20) + 15;
           imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
-          type = "bomb";
+          type = "skull";
           imgsrc = "blue";
           break;
         case 2:
@@ -400,7 +430,7 @@ export default defineComponent({
         imgsrc: imgsrc,
         x: x,
         y: y,
-        size: 20,
+        size: size,
         timer: 300, // 5sek
       });
     },
