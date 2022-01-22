@@ -4,8 +4,7 @@ import * as type from "@/types";
 
 export const player=ref({
   id:"",
-  x: 0,
-  y: 0,
+  vector:[0,0],
   speed: 5,
   size: 15,
   skillTree: {

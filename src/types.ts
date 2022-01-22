@@ -1,18 +1,16 @@
 export interface Enemy {
-  x: number;
-  y: number;
+vector: Vector;
   size: number;
   id: string;
   type: EnemyType;
   imgsrc: string;
-  moveVektor: number[];
+  moveVector: Vector;
   timer: number | null;
 }
 export type EnemyType="curve"|"aimbot"|"chasebot"|"getbigger";
 
 export interface Player {
-  x: number;
-  y: number;
+  vector: Vector;
   speed: number;
   size: number;
   skillTree: SkillTree;
@@ -26,8 +24,7 @@ export type Outlook="up"|"down"|"right"|"left"
 export interface Item {
   type: Itemtype;
   imgsrc: string;
-  x: number;
-  y: number;
+  vector: Vector;
   size: number;
   timer: number;
 }
@@ -47,3 +44,4 @@ export interface Skill {
   maxlvl: number;
 }
 
+export type Vector=[number,number]
