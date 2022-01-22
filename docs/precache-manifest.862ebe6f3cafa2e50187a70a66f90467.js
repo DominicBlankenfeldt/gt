@@ -32,7 +32,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/potion/potion.gif"
   },
   {
-    "revision": "b31e7702c2ceb37dda9c8444d2c9d5dc",
+    "revision": "a373724fb05187b153bf72d0ab5b36bf",
     "url": "/gt/index.html"
   },
   {
@@ -40,8 +40,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.1efad27a.js"
   },
   {
-    "revision": "37b65c3310e6637e1e03",
-    "url": "/gt/js/app.4fdfff6f.js"
+    "revision": "aa5a369c9a5588a92775",
+    "url": "/gt/js/app.eccb1976.js"
   },
   {
     "revision": "e646165eee8879718eae",
