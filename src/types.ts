@@ -16,19 +16,23 @@ export interface Player {
   speed: number;
   size: number;
   skillTree: SkillTree;
-  outlook: string;
+  outlook: Outlook;
   highscore: number;
   id: string;
   email: string;
 }
+export type Outlook="up"|"down"|"right"|"left"
+
 export interface Item {
-  type: string;
+  type: Itemtype;
   imgsrc: string;
   x: number;
   y: number;
   size: number;
   timer: number;
 }
+export type Itemtype="coin"|"skull"|"growPotion"|"clearField"
+
 export interface SkillTree {
   skillPoints: number;
   usedSkillPoints: number;

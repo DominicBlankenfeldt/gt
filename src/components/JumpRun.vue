@@ -281,14 +281,9 @@ export default defineComponent({
 
         let result = await API.getBestPlayers();
         if (result) {
-          this.bestPlayers = Object.values(result) as type.Player[];
+          this.bestPlayers = [...Object.values(result) as type.Player[]];
         }
-        for (let bestPlayer of [...this.bestPlayers]) {
-          if (bestPlayer.email == this.player.email) {
-              this.bestPlayers.splice(this.bestPlayers.findIndex(b=>b.email === this.player.email),1) 
-            console.log(this.bestPlayers.findIndex(b=>b.email === this.player.email))
-          }
-        }
+        this.bestPlayers=this.bestPlayers.filter((b)=>b.email!==this.player.email)
         this.bestPlayers.push({ ...this.player });
         this.bestPlayers.sort((a, b) => {
           return b.highscore - a.highscore;
@@ -312,7 +307,7 @@ export default defineComponent({
               this.collectCoin(item);
               break;
             case "skull":
-              this.explosionBomb(item);
+              this.touchSkull(item);
               break;
             case "growPotion":
               this.items.splice(
@@ -367,7 +362,7 @@ export default defineComponent({
         this.respawnEnemy(enemy);
       }
     },
-    explosionBomb(item: type.Item) {
+    touchSkull(item: type.Item) {
       if (this.collisionsCheck(item)) {
         this.gameOver("you got exploded", "alert alert-danger");
       }
@@ -385,7 +380,6 @@ export default defineComponent({
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          item.type == "skull" ? this.explosionBomb(item) : null;
           this.items.splice(
             this.items.findIndex((i) => i == item),
             1
@@ -425,7 +419,7 @@ export default defineComponent({
       y =
         this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
       this.items.push({
-        type: type,
+        type: type as type.Itemtype,
         imgsrc: imgsrc,
         x: x,
         y: y,
@@ -487,7 +481,6 @@ export default defineComponent({
         case 0:
           type = "curve";
           break;
-
         case 1:
           type = "aimbot";
           break;
@@ -623,6 +616,24 @@ export default defineComponent({
         this.down(multiplicator);
       }
     },
+     left(multiplicator: number) {
+      if (this.player.x > this.borderLeft) {
+        this.player.x -= this.player.speed * multiplicator;
+        this.player.x < this.borderLeft + 1
+          ? (this.player.x = this.borderLeft + 1)
+          : null;
+      }
+      this.player.outlook = "left";
+    },
+      right(multiplicator: number) {
+      if (this.player.x < this.borderRight) {
+        this.player.x += this.player.speed * multiplicator;
+        this.player.x > this.borderRight - 15
+          ? (this.player.x = this.borderRight - 15)
+          : null;
+      }
+      this.player.outlook = "right";
+    },
     up(multiplicator: number) {
       if (this.player.y > this.borderUp) {
         this.player.y -= this.player.speed * multiplicator;
@@ -641,25 +652,6 @@ export default defineComponent({
       }
       this.player.outlook = "down";
     },
-    right(multiplicator: number) {
-      if (this.player.x < this.borderRight) {
-        this.player.x += this.player.speed * multiplicator;
-        this.player.x > this.borderRight - 15
-          ? (this.player.x = this.borderRight - 15)
-          : null;
-      }
-      this.player.outlook = "right";
-    },
-    left(multiplicator: number) {
-      if (this.player.x > this.borderLeft) {
-        this.player.x -= this.player.speed * multiplicator;
-        this.player.x < this.borderLeft + 1
-          ? (this.player.x = this.borderLeft + 1)
-          : null;
-      }
-      this.player.outlook = "left";
-    },
-
     //displaysize
     changeDisplaySize() {
       this.borderRight = Math.round(
