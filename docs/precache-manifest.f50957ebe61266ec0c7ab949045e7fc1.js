@@ -32,7 +32,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/potion/potion.gif"
   },
   {
-    "revision": "3872d03d64f60aca2cec708b3cb6dc47",
+    "revision": "b31e7702c2ceb37dda9c8444d2c9d5dc",
     "url": "/gt/index.html"
   },
   {
@@ -40,12 +40,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.1efad27a.js"
   },
   {
-    "revision": "433ecf362b9d505cc1e9",
-    "url": "/gt/js/app.b09b047e.js"
+    "revision": "37b65c3310e6637e1e03",
+    "url": "/gt/js/app.4fdfff6f.js"
   },
   {
-    "revision": "5d4a75da7fef45b4a87b",
-    "url": "/gt/js/chunk-vendors.3d8bfabf.js"
+    "revision": "e646165eee8879718eae",
+    "url": "/gt/js/chunk-vendors.61d46f2d.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",

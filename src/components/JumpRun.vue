@@ -491,7 +491,7 @@ export default defineComponent({
         y: y,
         size: size,
         id: JSON.stringify(this.getRandomInt(100000000)),
-        type: type,
+        type: type as type.EnemyType,
         imgsrc: imgsrc,
         moveVektor: moveArray,
         timer: type == "chasebot" ? 300 : null,

@@ -3,11 +3,13 @@ export interface Enemy {
   y: number;
   size: number;
   id: string;
-  type: "curve"|"aimbot"|"chasebot"|"getbigger";
+  type: EnemyType;
   imgsrc: string;
   moveVektor: number[];
   timer: number | null;
 }
+export type EnemyType="curve"|"aimbot"|"chasebot"|"getbigger";
+
 export interface Player {
   x: number;
   y: number;
