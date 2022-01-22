@@ -252,7 +252,7 @@ export default defineComponent({
       this.isGrow = false;
       this.message = "";
       this.gameloopCounter = 0;
-      this.score = 0;
+      this.score = this.player.highscore;
       this.difficulty = 2;
       this.playerStartPosition();
       this.enemies = [] as type.Enemy[];
@@ -278,17 +278,16 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
-        for (let bPlayer of [...this.bestPlayers]) {
-          bPlayer.email == this.player.email
-            ? this.bestPlayers.splice(
-                this.bestPlayers.findIndex((b) => b == bPlayer),
-                1
-              )
-            : null;
-        }
+
         let result = await API.getBestPlayers();
         if (result) {
           this.bestPlayers = Object.values(result) as type.Player[];
+        }
+        for (let bestPlayer of [...this.bestPlayers]) {
+          if (bestPlayer.email == this.player.email) {
+              this.bestPlayers.splice(this.bestPlayers.findIndex(b=>b.email === this.player.email),1) 
+            console.log(this.bestPlayers.findIndex(b=>b.email === this.player.email))
+          }
         }
         this.bestPlayers.push({ ...this.player });
         this.bestPlayers.sort((a, b) => {
