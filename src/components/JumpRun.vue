@@ -252,7 +252,7 @@ export default defineComponent({
       this.isGrow = false;
       this.message = "";
       this.gameloopCounter = 0;
-      this.score = this.player.highscore;
+      this.score = 0;
       this.difficulty = 2;
       this.playerStartPosition();
       this.enemies = [] as type.Enemy[];
