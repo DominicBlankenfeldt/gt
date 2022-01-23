@@ -66,6 +66,8 @@
 import { defineComponent } from "vue";
 import * as API from "@/API";
 import { currentUser } from "@/router";
+import { player} from "@/global";
+import * as type from "@/types";
 export default defineComponent({
   setup() {
     return { user: currentUser };
@@ -76,7 +78,13 @@ export default defineComponent({
       email: "",
       error: false,
       loggingIn: false,
+       player: player.value as type.Player,
     };
+  },
+  mounted() {
+    if (this.user) {
+      this.$router.push("/loggedin");
+    }
   },
   methods: {
     async login() {
@@ -87,7 +95,11 @@ export default defineComponent({
         console.log("admin logged in with:" + this.email);
         this.email = "";
         this.password = "";
-        this.$router.push("/");
+        this.$router.push("/loggedin");
+         let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
+    }
       } catch (e) {
         this.error = true;
         console.error({ "couldn't login": e });

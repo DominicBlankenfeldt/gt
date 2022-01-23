@@ -23,6 +23,7 @@ import { defineComponent } from "vue";
 import { player } from "@/global";
 import { Skill } from "@/types";
 import * as API from "@/API";
+import * as type from "@/types";
 export default defineComponent({
   setup() {
     player;
@@ -35,7 +36,7 @@ export default defineComponent({
   },
   data() {
     return {
-      player: player,
+      player: player.value as type.Player,
     };
   },
   methods: {

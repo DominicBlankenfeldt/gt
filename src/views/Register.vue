@@ -72,9 +72,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import * as API from "@/API";
+import * as type from "@/types";
+import { player } from "@/global";
 export default defineComponent({
+  setup() {
+    player;
+  },
   data() {
     return {
+      player: player.value as type.Player,
       confirmed: "",
       password: "",
       email: "",
@@ -91,6 +97,10 @@ export default defineComponent({
       this.registering = true;
       try {
         await API.register(this.email, this.password);
+        this.player.email = this.email;
+        API.addPlayer(this.player);
+        this.$router.push("/home");
+        this.$router.go(0);
       } catch (e) {
         console.log("couldn't register", e);
         this.error = "Der Account konnte leider nicht registriert werden";

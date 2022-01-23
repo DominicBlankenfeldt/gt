@@ -1,13 +1,10 @@
 import { ref } from "vue";
 import * as type from "@/types";
-import { currentUser } from '@/router';
-import * as API from '@/API';
 //player
 
 export const player=ref({
   id:"",
-  x: 0,
-  y: 0,
+  vector:[0,0],
   speed: 5,
   size: 15,
   skillTree: {
@@ -23,6 +20,7 @@ export const player=ref({
   } as type.SkillTree,
   outlook:"up", //Blickrichtung
   highscore: 0,
+  email:"gast@",
 })
 
 

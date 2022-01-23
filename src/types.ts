@@ -1,41 +1,47 @@
 export interface Enemy {
-  x: number;
-  y: number;
+vector: Vector;
   size: number;
   id: string;
-  type: string;
+  type: EnemyType;
   imgsrc: string;
-  moveVektor: number[];
+  moveVector: Vector;
   timer: number | null;
 }
-export interface Player{
-  x: number;
-  y: number;
+export type EnemyType="curve"|"aimbot"|"chasebot"|"getbigger";
+
+export interface Player {
+  vector: Vector;
   speed: number;
   size: number;
   skillTree: SkillTree;
-  outlook: string;
-  highscore:number;
-  id:string;
+  outlook: Outlook;
+  highscore: number;
+  id: string;
+  email: string;
 }
+export type Outlook="up"|"down"|"right"|"left"
+
 export interface Item {
-  type: string;
+  type: Itemtype;
   imgsrc: string;
-  x: number;
-  y: number;
+  vector: Vector;
   size: number;
   timer: number;
 }
+export type Itemtype="coin"|"skull"|"growPotion"|"clearField"
+
 export interface SkillTree {
   skillPoints: number;
   usedSkillPoints: number;
   skills: Skill[];
 }
-interface ref<SkillTree>{
-  value:SkillTree
+export interface ref<Player> {
+  value: Player
 }
 export interface Skill {
   name: string;
   lvl: number;
   maxlvl: number;
 }
+
+export type Vector=[number,number]

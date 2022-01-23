@@ -15,31 +15,37 @@
       Highscore:
       <span id="scoreSpan">{{ Math.round(player.highscore) }}</span>
     </div>
+    <div>gps:{{ Math.round(gps) }}</div>
   </div>
   <div class="d-flex justify-content-center">
     <div class="game">
       <div
         :style="{
-          left: player.x + 'px',
-          top: player.y + 'px',
+          left: player.vector[0] + 'px',
+          top: player.vector[1] + 'px',
           width: player.size + 'px',
           height: player.size + 'px',
         }"
-        style="position: absolute; border-radius: 50%; background-color: red"
+        style="position: absolute; background-color: red; border-radius: 50%"
       ></div>
       <div
         v-for="enemy of enemies"
         :key="enemy"
         :style="{
-          left: enemy.x + 'px',
-          top: enemy.y + 'px',
+          left: enemy.vector[0] + 'px',
+          top: enemy.vector[1] + 'px',
+          width: enemy.size + 'px',
+          height: enemy.size + 'px',
         }"
-        style="position: absolute; border-radius: 50%"
+        style="position: absolute"
       >
         <img
           :src="enemy.imgsrc"
           alt="enemy"
-          :style="{ width: enemy.size + 'px', height: enemy.size + 'px' }"
+          :style="{
+            width: enemy.size + 2 + 'px',
+            height: enemy.size + 2 + 'px',
+          }"
         />
       </div>
       <div
@@ -47,9 +53,8 @@
         v-for="item of items"
         :key="item"
         :style="{
-          left: item.x + 'px',
-          top: item.y + 'px',
-
+          left: item.vector[0] + 'px',
+          top: item.vector[1] + 'px',
           backgroundColor: item.imgsrc,
         }"
         style="position: absolute; border-radius: 50%"
@@ -59,14 +64,14 @@
           alt=""
           :style="{ width: item.size + 'px', height: item.size + 'px' }"
         />
-      </div>
-      <div v-if="message" id="Message" :class="messageType">
-        {{ message }}
-      </div>
-      <div class="container" v-if="!gameStarted">
-        <button class="btn" id="startGameBtn" @click="start()">
-          <a>Starten</a>
-        </button>
+        <div v-if="message" id="Message" :class="messageType">
+          {{ message }}
+        </div>
+        <div class="container" v-if="!gameStarted">
+          <button class="btn" id="startGameBtn" @click="start()">
+            <a>Starten</a>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -161,7 +166,9 @@ export default defineComponent({
       enemiesType: "",
       itemSpawn: true,
       //player
-      player: player,
+      player: player.value as type.Player,
+      isGrow: false,
+      bestPlayers: [] as type.Player[],
       // gameSetup
       hardCoreMode: false,
       growPotionID: 0,
@@ -174,6 +181,9 @@ export default defineComponent({
       difficulty: 2,
       score: 0,
       gameloopCounter: 0,
+      gameloopLastCounter: 0,
+      countgpsID: 0,
+      gps: 60,
       items: [] as type.Item[],
       pressedKeys: {} as Record<string, boolean>,
       enemies: [] as type.Enemy[],
@@ -193,11 +203,18 @@ export default defineComponent({
     setInterval(() => {
       this.gameStarted ? this.gameloop() : null;
     }, 1000 / 60);
+
     this.changeDisplaySize();
     this.playerStartPosition();
+
     let result = await API.getPlayer();
     if (result) {
       this.player = result.player;
+    }
+
+    result = await API.getBestPlayers();
+    if (result) {
+      this.bestPlayers = Object.values(result) as type.Player[];
     }
   },
   methods: {
@@ -209,12 +226,22 @@ export default defineComponent({
     gameloop() {
       this.handlePlayerMovement();
       this.handleEnemyMovement();
-      this.score +=
-        this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
+      if (this.isGrow) {
+        this.player.size = 30;
+        this.score +=
+          this.difficulty *
+          ((this.player.skillTree.skills[4].lvl + 100) / 100) *
+          1.2;
+      } else {
+        this.player.size = 15;
+        this.score +=
+          this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
+      }
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
       //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
+      this.gameloopCounter % 60 == 0 ? this.growSkull() : null; // 1sek
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
@@ -223,14 +250,20 @@ export default defineComponent({
         ? this.createEnemy()
         : null;
     },
-
+    countgps() {
+      this.countgpsID = setTimeout(() => {
+        this.gps = (this.gameloopCounter - this.gameloopLastCounter) * 2;
+        this.gameloopLastCounter = this.gameloopCounter;
+        this.countgps();
+      }, 500);
+    },
     start() {
       this.hardCoreMode
         ? (this.startingEnemies = 400)
         : (this.startingEnemies = 4);
-      clearTimeout(this.growPotionID);
-      this.player.size = 15;
+      this.isGrow = false;
       this.message = "";
+      this.gameloopLastCounter = 0;
       this.gameloopCounter = 0;
       this.score = 0;
       this.difficulty = 2;
@@ -245,12 +278,14 @@ export default defineComponent({
         this.pressedKeys[e.key] = true;
       };
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
+      clearTimeout(this.countgpsID);
+      this.countgps();
     },
     playerStartPosition() {
-      this.player.y = (this.borderDown - this.borderUp) / 1.5;
-      this.player.x = (this.borderRight + this.borderLeft) / 2;
+      this.player.vector[0] = this.borderRight - this.borderLeft * 2;
+      this.player.vector[1] = this.borderDown - this.borderUp * 1.5;
     },
-    gameOver(message: string, messageType: string) {
+    async gameOver(message: string, messageType: string) {
       this.gameStarted = false;
       if (this.score > this.player.highscore) {
         this.player.highscore = this.score;
@@ -258,8 +293,20 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
+        let result = await API.getBestPlayers();
+        if (result) {
+          this.bestPlayers = [...(Object.values(result) as type.Player[])];
+        }
+        this.bestPlayers = this.bestPlayers.filter(
+          (b) => b.email !== this.player.email
+        );
+        this.bestPlayers.push({ ...this.player });
+        this.bestPlayers.sort((a, b) => {
+          return b.highscore - a.highscore;
+        });
+        this.bestPlayers.length > 5 ? this.bestPlayers.pop() : null;
+        API.updateBestPlayers({ ...this.bestPlayers });
       }
-
       this.message = message;
       this.messageType = messageType;
     },
@@ -267,29 +314,19 @@ export default defineComponent({
     colisionHandling() {
       for (let item of this.items) {
         if (this.collisionsCheck(item)) {
+          if (item.type == "skull") {
+            this.touchSkull();
+            return;
+          }
+          this.items = this.items.filter((i) => i != item);
           switch (item.type) {
             case "coin":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
-              this.collectCoin();
-              break;
-            case "bomb":
-              this.explosionBomb(item);
+              this.collectCoin(item);
               break;
             case "growPotion":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
-              this.collectGrowPotion();
+              this.collectGrowPotion(item);
               break;
             case "clearField":
-              this.items.splice(
-                this.items.findIndex((i) => i == item),
-                1
-              );
               this.collectClearField();
               break;
           }
@@ -304,67 +341,72 @@ export default defineComponent({
     collisionsCheck(object: type.Enemy | type.Item, range?: number) {
       return (
         Math.sqrt(
-          (object.x +
+          (object.vector[0] +
             object.size / 2 -
-            (this.player.x + this.player.size / 2)) **
+            (this.player.vector[0] + this.player.size / 2)) **
             2 +
-            (object.y +
+            (object.vector[1] +
               object.size / 2 -
-              (this.player.y + this.player.size / 2)) **
+              (this.player.vector[1] + this.player.size / 2)) **
               2
         ) <
-        (object.size * (range || 1)) / 2 + 7.5
+        (object.size * (range || 1)) / 2 + this.player.size / 2
       );
     },
     //itemEvents
-    collectCoin() {
-      this.score += this.difficulty * 300; // 5sek
+    collectCoin(item: type.Item) {
+      this.score += this.difficulty * 15 * item.size;
     },
-    collectGrowPotion() {
-      this.player.size += 15;
+    collectGrowPotion(item: type.Item) {
+      this.isGrow = true;
+      clearTimeout(this.growPotionID);
       this.growPotionID = setTimeout(() => {
-        this.player.size -= 15;
-      }, 5000);
+        this.isGrow = false;
+      }, 200 * item.size);
     },
     collectClearField() {
       for (let enemy of [...this.enemies]) {
         this.respawnEnemy(enemy);
       }
     },
-    explosionBomb(item: type.Item) {
-      if (this.collisionsCheck(item, 5)) {
-        this.gameOver("you got exploded", "alert alert-danger");
+    touchSkull() {
+      this.gameOver("you got exploded", "alert alert-danger");
+    },
+    growSkull() {
+      for (let item of this.items) {
+        if (item.type == "skull") {
+          item.size += 20;
+          item.vector = this.subVec(item.vector, [10, 10]);
+        }
       }
     },
     despawnItems() {
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          item.type == "bomb" ? this.explosionBomb(item) : null;
-          this.items.splice(
-            this.items.findIndex((i) => i == item),
-            1
-          );
+          this.items = this.items.filter((i) => i != item);
         }
       }
     },
     spawnItems() {
       if (!this.itemSpawn) return;
       let type = "";
-      let x = 0;
-      let y = 0;
+      let vector = [0, 0] as type.Vector;
+      let size = 20;
       let imgsrc = "";
       switch (this.getRandomInt(4)) {
         case 0:
           type = "coin";
+          size = this.getRandomInt(20) + 15;
           imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
-          type = "bomb";
+          type = "skull";
           imgsrc = "blue";
           break;
         case 2:
           type = "growPotion";
+          size = this.getRandomInt(20) + 15;
           imgsrc = "/gt/img/items/potion/potion.gif";
           break;
         case 3:
@@ -372,17 +414,16 @@ export default defineComponent({
           imgsrc = "/gt/img/items/bomb/bomb.gif";
           break;
       }
-      x =
+      vector[0] =
         this.getRandomInt(this.borderRight - this.borderLeft - 20) +
         this.borderLeft;
-      y =
+      vector[1] =
         this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
       this.items.push({
-        type: type,
+        type: type as type.Itemtype,
         imgsrc: imgsrc,
-        x: x,
-        y: y,
-        size: 20,
+        vector: vector,
+        size: size,
         timer: 300, // 5sek
       });
     },
@@ -391,36 +432,36 @@ export default defineComponent({
     createEnemy() {
       if (!this.enemiesSpawn) return;
       let size = 0;
-      let x = 0;
-      let y = 0;
+      let vector = [0, 0] as type.Vector;
       let type = "";
       let imgsrc = "";
       let moveArray = [] as number[];
       switch (this.getRandomInt(4)) {
         case 0:
-          y = this.borderUp - 25;
+          vector[1] = this.borderUp - 25;
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
-          y = this.borderDown;
+          vector[1] = this.borderDown;
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
-          x = this.borderRight + 2;
+          vector[0] = this.borderRight + 2;
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
-          x = this.borderLeft - 25;
+          vector[0] = this.borderLeft - 25;
           moveArray = [1, (Math.random() - 0.5) * 2];
           break;
       }
-      if (!x) {
-        x =
+      if (!vector[0]) {
+        vector[0] =
           this.getRandomInt(this.borderRight - this.borderLeft) +
           this.borderLeft;
       }
-      if (!y) {
-        y = this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
+      if (!vector[1]) {
+        vector[1] =
+          this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       }
       switch (this.getRandomInt(3)) {
         case 0:
@@ -440,7 +481,6 @@ export default defineComponent({
         case 0:
           type = "curve";
           break;
-
         case 1:
           type = "aimbot";
           break;
@@ -458,24 +498,15 @@ export default defineComponent({
       this.enemiesType ? (type = this.enemiesType) : null;
 
       if (type == "aimbot") {
-        let deltax = this.player.x - x;
-        let deltay = this.player.y - y;
-        deltay /= Math.abs(deltax);
-        deltax /= Math.abs(deltax);
-        if (Math.abs(deltay) > 1.5) {
-          deltax /= Math.abs(deltay);
-          deltay /= Math.abs(deltay);
-        }
-        moveArray = [deltax, deltay];
+        moveArray = this.dirVec(this.player.vector, vector);
       }
       this.enemies.push({
-        x: x,
-        y: y,
+        vector: vector,
         size: size,
         id: JSON.stringify(this.getRandomInt(100000000)),
-        type: type,
+        type: type as type.EnemyType,
         imgsrc: imgsrc,
-        moveVektor: moveArray,
+        moveVector: moveArray as type.Vector,
         timer: type == "chasebot" ? 300 : null,
       });
     },
@@ -484,36 +515,39 @@ export default defineComponent({
       if (!this.enemiesMove) return;
       for (let enemy of this.enemies) {
         if (enemy.type == "curve") {
-          enemy.moveVektor[enemy.moveVektor.findIndex((v) => v != 1)] +=
-            0.04 * Math.random();
+          enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] > 0
+            ? (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] +=
+                0.02 * Math.random())
+            : (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] -=
+                0.02 * Math.random());
         }
         if (enemy.type != "chasebot") {
-          enemy.x +=
-            enemy.moveVektor[0] *
-            this.difficulty *
-            ((100 - this.player.skillTree.skills[2].lvl) / 100);
-          enemy.y +=
-            enemy.moveVektor[1] *
-            this.difficulty *
-            ((100 - this.player.skillTree.skills[2].lvl) / 100);
+          enemy.vector = this.addVec(
+            enemy.vector,
+            this.mulVec(
+              enemy.moveVector,
+              this.difficulty *
+                ((100 - this.player.skillTree.skills[2].lvl) / 100)
+            )
+          );
         } else {
-          let deltax = this.player.x - enemy.x;
-          let deltay = this.player.y - enemy.y;
-          deltay /= Math.abs(deltax);
-          deltax /= Math.abs(deltax);
-          if (Math.abs(deltay) > 1.5) {
-            deltax /= Math.abs(deltay);
-            deltay /= Math.abs(deltay);
-          }
-          enemy.x += deltax * 2;
-          enemy.y += deltay * 2;
+          enemy.vector = this.addVec(
+            enemy.vector,
+            this.mulVec(this.dirVec(this.player.vector, enemy.vector), 2)
+          );
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
 
-        if (enemy.y < this.borderUp - 25 || enemy.y > this.borderDown) {
+        if (
+          enemy.vector[0] < this.borderLeft - 25 ||
+          enemy.vector[0] > this.borderRight + 2
+        ) {
           this.respawnEnemy(enemy);
         }
-        if (enemy.x < this.borderLeft - 25 || enemy.x > this.borderRight + 2) {
+        if (
+          enemy.vector[1] < this.borderUp - 25 ||
+          enemy.vector[1] > this.borderDown
+        ) {
           this.respawnEnemy(enemy);
         }
       }
@@ -576,44 +610,63 @@ export default defineComponent({
         this.down(multiplicator);
       }
     },
+    left(multiplicator: number) {
+      if (this.player.vector[0] > this.borderLeft) {
+        this.player.vector[0] -= this.player.speed * multiplicator;
+        this.player.vector[0] < this.borderLeft + 1
+          ? (this.player.vector[0] = this.borderLeft + 1)
+          : null;
+      }
+      this.player.outlook = "left";
+    },
+    right(multiplicator: number) {
+      if (this.player.vector[0] < this.borderRight) {
+        this.player.vector[0] += this.player.speed * multiplicator;
+        this.player.vector[0] > this.borderRight - this.player.size
+          ? (this.player.vector[0] = this.borderRight - this.player.size)
+          : null;
+      }
+      this.player.outlook = "right";
+    },
     up(multiplicator: number) {
-      if (this.player.y > this.borderUp) {
-        this.player.y -= this.player.speed * multiplicator;
-        this.player.y < this.borderUp + 2
-          ? (this.player.y = this.borderUp + 2)
+      if (this.player.vector[1] > this.borderUp) {
+        this.player.vector[1] -= this.player.speed * multiplicator;
+        this.player.vector[1] < this.borderUp + 2
+          ? (this.player.vector[1] = this.borderUp + 2)
           : null;
       }
       this.player.outlook = "up";
     },
     down(multiplicator: number) {
-      if (this.player.y < this.borderDown) {
-        this.player.y += this.player.speed * multiplicator;
-        this.player.y > this.borderDown - 17
-          ? (this.player.y = this.borderDown - 17)
+      if (this.player.vector[1] < this.borderDown) {
+        this.player.vector[1] += this.player.speed * multiplicator;
+        this.player.vector[1] > this.borderDown - (this.player.size + 2)
+          ? (this.player.vector[1] = this.borderDown - (this.player.size + 2))
           : null;
       }
       this.player.outlook = "down";
     },
-    right(multiplicator: number) {
-      if (this.player.x < this.borderRight) {
-        this.player.x += this.player.speed * multiplicator;
-        this.player.x > this.borderRight - 15
-          ? (this.player.x = this.borderRight - 15)
-          : null;
-      }
-      this.player.outlook = "right";
+    //Vector calculate
+    addVec(vek1: type.Vector, vek2: type.Vector) {
+      return [vek1[0] + vek2[0], vek1[1] + vek2[1]] as type.Vector;
     },
-    left(multiplicator: number) {
-      if (this.player.x > this.borderLeft) {
-        this.player.x -= this.player.speed * multiplicator;
-        this.player.x < this.borderLeft + 1
-          ? (this.player.x = this.borderLeft + 1)
-          : null;
+    subVec(vek1: type.Vector, vek2: type.Vector) {
+      return [vek1[0] - vek2[0], vek1[1] - vek2[1]] as type.Vector;
+    },
+    dirVec(vek1: type.Vector, vek2: type.Vector) {
+      let deltaArray = this.subVec(vek1, vek2) as type.Vector;
+      deltaArray[1] /= Math.abs(deltaArray[0]);
+      deltaArray[0] /= Math.abs(deltaArray[0]);
+      if (Math.abs(deltaArray[1]) > 1.5) {
+        deltaArray[0] /= Math.abs(deltaArray[1]);
+        deltaArray[1] /= Math.abs(deltaArray[1]);
       }
-      this.player.outlook = "left";
+      return deltaArray;
+    },
+    mulVec(vec: type.Vector, mul: number) {
+      return [vec[0] * mul, vec[1] * mul] as type.Vector;
     },
     // displaysize
-
     changeDisplaySize() {
       this.borderRight = Math.round(
         window.innerWidth - (window.innerWidth / 100) * 15

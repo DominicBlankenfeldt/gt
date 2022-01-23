@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Games from "../views/Games.vue";
 import SkillTree from "../views/SkillTree.vue";
 import Register from "../views/Register.vue";
+import LoggedIn from "../views/LoggedIn.vue";
 import { getAuth, User } from '@firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ref } from 'vue';
@@ -37,6 +38,12 @@ const routes: Array<RouteRecordRaw> = [
   name: "Register",
   component: Register,
 },
+{
+  path: "/loggedin",
+  name: "LoggedIn",
+  component: LoggedIn,
+  meta: { requiresAuth: true },
+},
 ];
 
 const router = createRouter({
@@ -61,7 +68,7 @@ const getCurrentUser = () => {
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   if (!(await getCurrentUser()) && requiresAuth) {
-    next();
+    next('Home');
   }else{
     next()
   }
