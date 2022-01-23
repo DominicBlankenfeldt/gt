@@ -34,6 +34,7 @@ async mounted(){
        logout(){
       API.logout()
       this.$router.push("/home");
+      this.$router.go(0)
     }
   },
 });

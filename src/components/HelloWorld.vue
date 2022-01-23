@@ -59,7 +59,6 @@
       </div>
     </div>
   </div>
-  <div class="container" v-if="user"></div>
 </template>
 
 <script lang="ts">

@@ -102,6 +102,7 @@ export default defineComponent({
         this.player.email = this.email;
         API.addPlayer(this.player);
         this.$router.push("/home");
+        this.$router.go(0)
       } catch (e) {
         console.log("couldn't register", e);
         this.error = "Der Account konnte leider nicht registriert werden";
