@@ -1,13 +1,14 @@
 <template>
-  <div class="block"></div>
-  <div class="d-flex row" id="row">
-    <div class="sideBlock col-2"></div>
-    <div class="col-8" id="game">
+  <div class="d-flex justify-content-center"><div class="blockUp"></div></div>
+
+  <div class="row" id="row">
+    <div class="sideBlockLeft"></div>
+    <div class="" id="game">
       <game />
     </div>
-    <div class="sideBlock col-2"></div>
+    <div class="sideBlockRight"></div>
   </div>
-  <div class="block"></div>
+  <div class="d-flex justify-content-center"><div class="blockDown"></div></div>
 </template>
 
 <script lang="ts">
@@ -22,20 +23,44 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.block {
-  width: 100%;
-  height: 5vh;
-  z-index: 1;
-  background-color: rgb(255, 255, 255);
-  position: relative;
+.blockUp {
+  width: 75vw;
+  height: 60px;
+  z-index: 2;
+  background-color: rgb(10, 10, 10);
+  position: absolute;
   padding: 0 !important;
+  top: 13vh;
 }
-.sideBlock {
-  height: 599px;
-  background-color: rgb(255, 255, 255);
-  z-index: 1;
-  position: relative;
+.blockDown {
+  width: 75vw;
+  height: 60px;
+  z-index: 2;
+  background-color: rgb(10, 10, 10);
+  position: absolute;
   padding: 0 !important;
+  top: 86.5vh;
+}
+
+.sideBlockLeft {
+  height: 80vh;
+  width: 60px;
+  background-color: rgb(10, 10, 10);
+  z-index: 2;
+  position: absolute;
+  padding: 0 !important;
+  left: 12.5vw;
+  top: 13vh;
+}
+.sideBlockRight {
+  height: 80vh;
+  width: 60px;
+  background-color: rgb(10, 10, 10);
+  z-index: 2;
+  position: absolute;
+  padding: 0 !important;
+  left: calc(87.5vw - 60px);
+  top: 13vh;
 }
 #game {
   padding: 0 !important;

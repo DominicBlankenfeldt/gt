@@ -12,64 +12,66 @@
     </div>
     <div class="col align-self-center">
       <img src="../../public/img/items/coin/coin.gif" alt="coin" />
-      Highscore: <span id="scoreSpan">{{ Math.round(player.highscore) }}</span>
+      Highscore:
+      <span id="scoreSpan">{{ Math.round(player.highscore) }}</span>
     </div>
   </div>
-  <div class="game">
-    <div
-      :style="{
-        left: player.x + 'px',
-        top: player.y + 'px',
-        width: player.size + 'px',
-        height: player.size + 'px',
-      }"
-      style="position: absolute; border-radius: 50%; background-color: red"
-    ></div>
-    <div
-      v-for="enemy of enemies"
-      :key="enemy"
-      :style="{
-        left: enemy.x + 'px',
-        top: enemy.y + 'px',
-      }"
-      style="position: absolute; border-radius: 50%"
-    >
-      <img
-        :src="enemy.imgsrc"
-        alt="enemy"
-        :style="{ width: enemy.size + 'px', height: enemy.size + 'px' }"
-      />
-    </div>
-    <div
-      :class="item.type"
-      v-for="item of items"
-      :key="item"
-      :style="{
-        left: item.x + 'px',
-        top: item.y + 'px',
+  <div class="d-flex justify-content-center">
+    <div class="game">
+      <div
+        :style="{
+          left: player.x + 'px',
+          top: player.y + 'px',
+          width: player.size + 'px',
+          height: player.size + 'px',
+        }"
+        style="position: absolute; border-radius: 50%; background-color: red"
+      ></div>
+      <div
+        v-for="enemy of enemies"
+        :key="enemy"
+        :style="{
+          left: enemy.x + 'px',
+          top: enemy.y + 'px',
+        }"
+        style="position: absolute; border-radius: 50%"
+      >
+        <img
+          :src="enemy.imgsrc"
+          alt="enemy"
+          :style="{ width: enemy.size + 'px', height: enemy.size + 'px' }"
+        />
+      </div>
+      <div
+        :class="item.type"
+        v-for="item of items"
+        :key="item"
+        :style="{
+          left: item.x + 'px',
+          top: item.y + 'px',
 
-        backgroundColor: item.imgsrc,
-      }"
-      style="position: absolute; border-radius: 50%"
-    >
-      <img
-        :src="item.imgsrc"
-        alt=""
-        :style="{ width: item.size + 'px', height: item.size + 'px' }"
-      />
+          backgroundColor: item.imgsrc,
+        }"
+        style="position: absolute; border-radius: 50%"
+      >
+        <img
+          :src="item.imgsrc"
+          alt=""
+          :style="{ width: item.size + 'px', height: item.size + 'px' }"
+        />
+      </div>
+      <div v-if="message" id="Message" :class="messageType">
+        {{ message }}
+      </div>
+      <div class="container" v-if="!gameStarted">
+        <button class="btn" id="startGameBtn" @click="start()">
+          <a>Starten</a>
+        </button>
+      </div>
     </div>
-    <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
-    <button
-      @click="start()"
-      v-if="!gameStarted"
-      id="startGameBtn"
-      class="btn btn-success align-self-center shadow-none mt-1"
-    >
-      Start Game
-    </button>
   </div>
-  <div class="bottom"></div>
-  <div
+
+  <!-- <div
     class="btn-group"
     role="group"
     aria-label="Basic checkbox toggle button group"
@@ -110,37 +112,31 @@
       >
         <option selected value=""></option>
         <option value="curve">curve</option>
-        <!-- <option value="colorswitch">colorswitch</option> -->
+        <option value="colorswitch">colorswitch</option>
         <option value="aimbot">aimbot</option>
         <option value="chasebot">chasebot</option>
         <option value="getbigger">getbigger</option>
       </select>
     </div>
-    <!-- <button
+    <button
       @click="itemSpawn = !itemSpawn"
       class="btn btn-success align-self-center shadow-none p-0"
     >
       Items: {{ itemSpawn }}
-    </button> -->
-    <!-- <div>
-    borderUp:{{borderUp}}
+    </button>
+    <div>borderUp:{{ borderUp }}</div>
+    <div>borderDown:{{ borderDown }}</div>
+    <div>borderLeft:{{ borderLeft }}</div>
+    <div>borderRight:{{ borderRight }}</div>
+    <div>X:{{ x }}</div>
+    <div>Y:{{ y }}</div>
+    <button
+      class="btn btn-success align-self-center shadow-none p-0"
+      @click="sizer()"
+    >
+      sizes
+    </button>
   </div> -->
-    <!-- <div>
-    borderDown:{{borderDown}}
-  </div> -->
-    <!-- <div>
-    borderLeft:{{borderLeft}}
-  </div> -->
-    <!-- <div>
-    borderRight:{{borderRight}}
-  </div> -->
-    <!-- <div>
-    X:{{x}}
-  </div> -->
-    <!-- <div>
-    Y:{{y}}
-  </div> -->
-  </div>
 </template>
 
 <script lang="ts">
@@ -205,6 +201,10 @@ export default defineComponent({
     }
   },
   methods: {
+    // start testarea
+
+    // end testarea
+
     //game
     gameloop() {
       this.handlePlayerMovement();
@@ -247,8 +247,8 @@ export default defineComponent({
       for (let i = 0; i < this.startingEnemies; i++) this.createEnemy();
     },
     playerStartPosition() {
-      this.player.y = this.borderDown - this.borderUp * 1.5;
-      this.player.x = this.borderRight - this.borderLeft * 2;
+      this.player.y = (this.borderDown - this.borderUp) / 1.5;
+      this.player.x = (this.borderRight + this.borderLeft) / 2;
     },
     gameOver(message: string, messageType: string) {
       this.gameStarted = false;
@@ -528,7 +528,7 @@ export default defineComponent({
     },
     handleEnemyGetBigger() {
       for (let enemy of this.enemies) {
-        enemy.type == "getbigger" ? (enemy.size += 1) : null;
+        enemy.type == "getbigger" ? (enemy.size += 0.5) : null;
       }
     },
     // handleEnemyColorSwitch() {
@@ -612,42 +612,145 @@ export default defineComponent({
       }
       this.player.outlook = "left";
     },
+    // displaysize
 
-    //displaysize
     changeDisplaySize() {
       this.borderRight = Math.round(
-        (window.innerWidth * (100 - 100 / 6)) / 100 - 2
+        window.innerWidth - (window.innerWidth / 100) * 15
       );
-      this.borderLeft = Math.round((window.innerWidth * (100 / 6)) / 100 + 2);
-      this.borderUp = window.innerHeight * 0.2;
-      this.borderDown = this.borderUp + 550;
+      this.borderLeft = Math.round((window.innerWidth / 100) * 15);
+      this.borderUp = Math.round((window.innerHeight / 100) * 16);
+      this.borderDown = Math.round((window.innerHeight / 100) * 88);
     },
   },
 });
+
+function getElementById(arg0: string) {
+  throw new Error("Function not implemented.");
+}
 </script>
 
 <style lang="scss" scoped>
+* {
+  color: red;
+}
 .game {
+  background-image: url(/gt/img/spacefield.png);
+  background-repeat: repeat;
   // widht=1280px
-  width: 100%;
-  height: 550px;
-  border: 2px solid black;
-  background-color: rgb(255, 255, 255);
+  width: 75vw;
+  height: 80vh;
+  border: 60px solid black;
+  background-color: rgb(0, 0, 0);
   z-index: 1;
 }
 #scoreCard {
-  background-color: white;
+  font-weight: 1000;
   height: 5vh;
   position: relative;
   z-index: 1;
-}
-.bottom {
-  height: 30px;
-  width: 100vw;
-  margin-left: -16.7vw;
-  z-index: 1;
-  background-color: rgb(255, 255, 255);
-  position: relative;
   padding: 0 !important;
+  margin: 0 !important;
+}
+// button
+
+.container .btn {
+  position: relative;
+  width: 250px;
+  height: 55px;
+  margin: 20px;
+}
+
+.container .btn a {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  color: #fff;
+  z-index: 1;
+  font-size: 400;
+  font-weight: 300;
+  letter-spacing: 1px;
+  text-decoration: none;
+  overflow: hidden;
+  transition: 0.2s;
+  backdrop-filter: blur(15px);
+}
+
+.container .btn:hover a {
+  letter-spacing: 3px;
+}
+
+.container .btn a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.15), transparent);
+  transform: skewX(45deg) translateX(0);
+  transition: 0.2s;
+}
+
+.container .btn:hover a::before {
+  transform: skewX(45deg) translateX(200%);
+}
+.container .btn::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -5px;
+  width: 30px;
+  height: 10px;
+  background: #f00;
+  border-radius: 10px;
+  transition: 0.2s;
+  transition-delay: 0s;
+}
+.container .btn:hover::before {
+  bottom: 0;
+  height: 50%;
+  width: 80%;
+  border-radius: 30px;
+  transition-delay: 0.1s;
+}
+
+.container .btn::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -5px;
+  width: 30px;
+  height: 10px;
+  background: #f00;
+  border-radius: 10px;
+  transition: 0.2s;
+  transition-delay: 0s;
+}
+.container .btn:hover::after {
+  top: 0;
+  height: 50%;
+  width: 80%;
+  border-radius: 30px;
+  transition-delay: 0.2 s;
+}
+
+.container .btn:nth-child(1)::before,
+.container .btn:nth-child(1)::after {
+  background: #2bd2ff;
+  box-shadow: 0 0 5px #2bd2ff, 0 0 15px #2bd2ff, 0 0 30px #2bd2ff,
+    0 0 60px #2bd2ff;
 }
 </style>
