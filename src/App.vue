@@ -20,7 +20,6 @@ export default defineComponent({
 * {
   font-family: "Press Start 2P", cursive;
   font-weight: 1000;
-  color: rgb(255, 255, 255);
 }
 .site {
   background-image: url(/gt/img/space.jpg);
