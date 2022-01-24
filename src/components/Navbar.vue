@@ -4,6 +4,8 @@
     <router-link v-if="user" to="/home">Home</router-link>
     <a> | </a>
     <router-link v-if="user" to="/skillTree">Skill Tree</router-link>
+    <a v-if="user"> | </a
+    ><router-link v-if="user" to="/fleet">Space Flotte</router-link>
     <a v-if="user"> | </a> <router-link to="/games">Game</router-link> |
     <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
     <a v-if="user"> | </a>
