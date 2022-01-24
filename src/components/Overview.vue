@@ -18,7 +18,7 @@
       </div>
       <div class="col-4">
         <div>Username: {{ player.username }}</div>
-        <div>persönlicher highscore</div>
+        <div>Highscore: {{ player.highscore }}</div>
         <div>gespielte spiele/normal</div>
       </div>
       <div class="col-4">
