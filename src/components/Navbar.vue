@@ -1,7 +1,8 @@
 <template>
   <div id="nav">
+    <router-link v-if="!user" to="/">Login</router-link>
     <router-link v-if="user" to="/home">Home</router-link>
-    <a v-if="user"> | </a>
+    <a> | </a>
     <router-link v-if="user" to="/skillTree">Skill Tree</router-link>
     <a v-if="user"> | </a> <router-link to="/games">Game</router-link> |
     <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
