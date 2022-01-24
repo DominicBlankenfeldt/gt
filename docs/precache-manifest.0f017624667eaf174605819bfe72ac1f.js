@@ -20,6 +20,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_pingu.png"
   },
   {
+    "revision": "f8b19de8cb44ec5af71a52bc325fa40d",
+    "url": "/gt/img/char/playership.png"
+  },
+  {
     "revision": "584b960a374a4282500d36d85dd925ae",
     "url": "/gt/img/items/bomb/bomb.gif"
   },
@@ -32,20 +36,40 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/potion/potion.gif"
   },
   {
-    "revision": "9cf564c0bb099b83406cfe4edd1f92f2",
+    "revision": "67d068f63ed3372a904a1a498c2cc961",
+    "url": "/gt/img/items/skull/skull.png"
+  },
+  {
+    "revision": "c422e7995c16421b1ff7c79294790117",
+    "url": "/gt/img/ships.xcf"
+  },
+  {
+    "revision": "6469866f22acc122b7eb5d96b06e07e5",
+    "url": "/gt/img/space.jpg"
+  },
+  {
+    "revision": "a66b2de2a43007cef0543a3f1bd4f833",
+    "url": "/gt/img/spacefield.png"
+  },
+  {
+    "revision": "d21f07c1b611fcd18850fab269833904",
+    "url": "/gt/img/uiol/spaceshipinside.png"
+  },
+  {
+    "revision": "a39eb6f6928407067a458c1dee7e9360",
     "url": "/gt/index.html"
   },
   {
-    "revision": "0c6ffffe3f64bd50e611",
-    "url": "/gt/js/about.1efad27a.js"
+    "revision": "7c082e8d6d2e8a654133",
+    "url": "/gt/js/about.298df79d.js"
   },
   {
-    "revision": "4ebdb3e766cb0a234c92",
-    "url": "/gt/js/app.8e8dde64.js"
+    "revision": "651c2b1bf39b653c966d",
+    "url": "/gt/js/app.91d33a74.js"
   },
   {
-    "revision": "6ae2d2b59bb268562210",
-    "url": "/gt/js/chunk-vendors.dc619607.js"
+    "revision": "b17a12b21d9fd190c9b2",
+    "url": "/gt/js/chunk-vendors.126e4510.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
