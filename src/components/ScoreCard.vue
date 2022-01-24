@@ -11,6 +11,7 @@
 import { defineComponent } from "vue";
 import * as API from "@/API";
 import * as type from "@/types";
+
 export default defineComponent({
   data() {
     return {
@@ -23,10 +24,11 @@ export default defineComponent({
       this.bestPlayers = Object.values(result) as type.Player[];
     }
   },
+  components: {},
   methods: {
     logout() {
       API.logout();
-      this.$router.push("/home");
+      this.$router.push("/");
       this.$router.go(0);
     },
   },

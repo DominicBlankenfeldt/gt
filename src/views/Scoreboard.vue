@@ -1,8 +1,9 @@
 <template>
-  <div></div>
+  <ScoreCard />
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
+import ScoreCard from "@/components/ScoreCard.vue";
 export default defineComponent({
   setup() {
     return;
@@ -11,5 +12,8 @@ export default defineComponent({
     return;
   },
   methods: {},
+  components: {
+    ScoreCard,
+  },
 });
 </script>

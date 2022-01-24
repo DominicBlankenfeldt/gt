@@ -101,7 +101,7 @@ import * as API from "@/API";
         console.log("admin logged in with:" + this.email);
         this.email = "";
         this.password = "";
-        this.$router.push("/loggedin");
+        this.$router.push("/home");
         let result = await API.getPlayer();
         if (result) {
           this.player = result.player;

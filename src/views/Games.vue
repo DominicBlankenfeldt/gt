@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import game from "@/components/JumpRun.vue";
+import game from "@/components/SpaceGame.vue";
 
 export default defineComponent({
   components: {
