@@ -88,9 +88,36 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
+import * as API from "@/API";
 
 @Options({
   components: {},
+  methods: {
+    async login() {
+      this.error = false;
+      this.loggingIn = true;
+      try {
+        await API.login(this.email, this.password);
+        console.log("admin logged in with:" + this.email);
+        this.email = "";
+        this.password = "";
+        this.$router.push("/loggedin");
+        let result = await API.getPlayer();
+        if (result) {
+          this.player = result.player;
+        }
+      } catch (e) {
+        this.error = true;
+        console.error({ "couldn't login": e });
+      } finally {
+        this.password = "";
+        this.loggingIn = false;
+      }
+    },
+    register() {
+      this.$router.push("/register");
+    },
+  },
 })
 export default class Home extends Vue {}
 </script>
