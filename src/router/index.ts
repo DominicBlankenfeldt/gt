@@ -5,15 +5,22 @@ import SkillTree from "../views/SkillTree.vue";
 import Scoreboard from "../views/Scoreboard.vue";
 import Register from "../views/Register.vue";
 import LoggedIn from "../views/LoggedIn.vue";
+import Landing from "../views/Landing.vue";
 import { getAuth, User } from "@firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { ref } from "vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: "/",
+    name: "Landing",
+    component: Landing,
+  },
+  {
     path: "/home",
     name: "Home",
     component: Home,
+    meta: { requiresAuth: true },
   },
   {
     path: "/about",
@@ -33,11 +40,13 @@ const routes: Array<RouteRecordRaw> = [
     path: "/skillTree",
     name: "SkillTree",
     component: SkillTree,
+    meta: { requiresAuth: true },
   },
   {
     path: "/scoreboard",
     name: "Scoreboard",
     component: Scoreboard,
+    meta: { requiresAuth: true },
   },
   {
     path: "/register",
@@ -74,7 +83,7 @@ const getCurrentUser = () => {
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   if (!(await getCurrentUser()) && requiresAuth) {
-    next("Home");
+    next("/");
   } else {
     next();
   }

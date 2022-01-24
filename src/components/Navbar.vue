@@ -4,7 +4,7 @@
     <router-link to="/skillTree">Skill Tree</router-link> |
     <router-link to="/games">Game</router-link> |
     <router-link to="/scoreboard">Scoreboard</router-link> |
-    <router-link to="/about">About</router-link>
+    <router-link to="/about">About</router-link>|
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: "/gt/",
+  publicPath: "/gt",
   outputDir: "./docs",
   //pwa: {
   //workboxPluginMode: "InjectManifest",
