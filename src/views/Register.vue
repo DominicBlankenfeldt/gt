@@ -12,6 +12,21 @@
             {{ error }}
           </div>
           <div class="p-4 row">
+            <label class="col-4" for="username">Username:</label>
+            <div class="col-8">
+              <input
+                minlength="3"
+                class="form-control"
+                id="username"
+                type="text"
+                placeholder="username"
+                v-model="username"
+                autocomplete="off"
+                style="text-shadow: none"
+              />
+            </div>
+          </div>
+          <div class="p-4 row">
             <label class="col-4" for="email">Email:</label>
             <div class="col-8">
               <input
@@ -87,6 +102,9 @@ export default defineComponent({
       confirmed: "",
       password: "",
       email: "",
+      username: "",
+      img: "",
+      registeredAt: 0,
       error: "",
       registering: false,
     };
@@ -101,6 +119,9 @@ export default defineComponent({
       try {
         await API.register(this.email, this.password);
         this.player.email = this.email;
+        this.player.username = this.username;
+        this.player.img = this.img;
+        this.player.registeredAt = Date.now();
         API.addPlayer(this.player);
         this.$router.push("/home");
       } catch (e) {

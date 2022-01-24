@@ -2,9 +2,9 @@ import { ref } from "vue";
 import * as type from "@/types";
 //player
 
-export const player=ref({
-  id:"",
-  vector:[0,0],
+export const player = ref({
+  id: "",
+  vector: [0, 0],
   speed: 5,
   size: 15,
   skillTree: {
@@ -18,12 +18,13 @@ export const player=ref({
       { name: "scoreMultiplicator", lvl: 0, maxlvl: 20 },
     ] as type.Skill[],
   } as type.SkillTree,
-  outlook:"up", //Blickrichtung
+  outlook: "up", //Blickrichtung
   highscore: 0,
-  email:"gast@",
-})
-
-
+  email: "gast@",
+  username: "gast",
+  img: "",
+  registeredAt: 0,
+});
 
 export const production = ref(
   process.env.NODE_ENV === "production" ? true : false

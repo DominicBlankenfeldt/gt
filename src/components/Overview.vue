@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="col-4">
-        <div>Username: Name</div>
+        <div>Username: {{ player.username }}</div>
         <div>persönlicher highscore</div>
         <div>gespielte spiele/normal</div>
       </div>
@@ -44,12 +44,22 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import * as API from "@/API";
-import { currentUser } from "@/router";
 import { player } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
-    return { user: currentUser };
+    player;
+  },
+  data() {
+    return {
+      player: player.value as type.Player,
+    };
+  },
+  async mounted() {
+    let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
+    }
   },
 });
 </script>

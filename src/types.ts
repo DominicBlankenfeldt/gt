@@ -20,6 +20,7 @@ export interface Player {
   email: string;
   username: string;
   img: string;
+  registeredAt: number;
 }
 export type Outlook = "up" | "down" | "right" | "left";
 
