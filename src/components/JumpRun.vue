@@ -64,14 +64,14 @@
           alt=""
           :style="{ width: item.size + 'px', height: item.size + 'px' }"
         />
-        <div v-if="message" id="Message" :class="messageType">
-          {{ message }}
-        </div>
-        <div class="container" v-if="!gameStarted">
-          <button class="btn" id="startGameBtn" @click="start()">
-            <a>Starten</a>
-          </button>
-        </div>
+      </div>
+      <div v-if="message" id="Message" :class="messageType">
+        {{ message }}
+      </div>
+      <div class="container" v-if="!gameStarted">
+        <button class="btn" id="startGameBtn" @click="start()">
+          <a>Starten</a>
+        </button>
       </div>
     </div>
   </div>
@@ -282,8 +282,10 @@ export default defineComponent({
       this.countgps();
     },
     playerStartPosition() {
-      this.player.vector[0] = this.borderRight - this.borderLeft * 2;
-      this.player.vector[1] = this.borderDown - this.borderUp * 1.5;
+      this.player.vector[0] = window.innerWidth / 2;
+      // (this.borderRight + this.borderLeft)
+      this.player.vector[1] = window.innerHeight / 2;
+      // this.borderDown - this.borderUp;
     },
     async gameOver(message: string, messageType: string) {
       this.gameStarted = false;
@@ -669,11 +671,11 @@ export default defineComponent({
     // displaysize
     changeDisplaySize() {
       this.borderRight = Math.round(
-        window.innerWidth - (window.innerWidth / 100) * 15
+        window.innerWidth - (window.innerWidth / 100) * 12.5 - 60
       );
-      this.borderLeft = Math.round((window.innerWidth / 100) * 15);
-      this.borderUp = Math.round((window.innerHeight / 100) * 16);
-      this.borderDown = Math.round((window.innerHeight / 100) * 88);
+      this.borderLeft = Math.round((window.innerWidth / 100) * 12.5 + 60);
+      this.borderUp = Math.round((window.innerHeight / 100) * 13 + 60);
+      this.borderDown = Math.round((window.innerHeight / 100) * 93 - 61);
     },
   },
 });

@@ -22,6 +22,7 @@
                 placeholder="email"
                 v-model="email"
                 autocomplete="off"
+                style="text-shadow: none"
               />
             </div>
           </div>
@@ -36,6 +37,7 @@
                 placeholder="passwort"
                 v-model="password"
                 autocomplete="off"
+                style="text-shadow: none"
               />
             </div>
           </div>
@@ -50,6 +52,7 @@
                 placeholder="passwort"
                 v-model="confirmed"
                 autocomplete="off"
+                style="text-shadow: none"
               />
             </div>
           </div>
@@ -112,6 +115,9 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+* {
+  text-shadow: 2px 2px black;
+}
 .card {
   background-image: url(/gt/img/uiol/spaceshipinside.png);
   background-size: cover;

@@ -22,6 +22,7 @@
                 placeholder="email"
                 v-model="email"
                 autocomplete="off"
+                style="text-shadow: none"
               />
             </div>
           </div>
@@ -36,6 +37,7 @@
                 placeholder="passwort"
                 v-model="password"
                 autocomplete="off"
+                style="text-shadow: none"
               />
             </div>
           </div>
@@ -66,7 +68,7 @@
 import { defineComponent } from "vue";
 import * as API from "@/API";
 import { currentUser } from "@/router";
-import { player} from "@/global";
+import { player } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
@@ -78,7 +80,7 @@ export default defineComponent({
       email: "",
       error: false,
       loggingIn: false,
-       player: player.value as type.Player,
+      player: player.value as type.Player,
     };
   },
   mounted() {
@@ -96,10 +98,10 @@ export default defineComponent({
         this.email = "";
         this.password = "";
         this.$router.push("/loggedin");
-         let result = await API.getPlayer();
-    if (result) {
-      this.player = result.player;
-    }
+        let result = await API.getPlayer();
+        if (result) {
+          this.player = result.player;
+        }
       } catch (e) {
         this.error = true;
         console.error({ "couldn't login": e });
@@ -120,6 +122,7 @@ export default defineComponent({
   font-family: "Press Start 2P", cursive;
   font-weight: 1000;
   color: white;
+  text-shadow: 2px 2px black;
 }
 .card {
   background-image: url(/gt/img/uiol/spaceshipinside.png);
