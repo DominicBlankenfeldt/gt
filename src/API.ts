@@ -5,6 +5,7 @@ import { currentUser } from './router';
 import { ref } from 'vue';
 import * as type from "@/types";
 
+
 export async function login(email: string, password: string): Promise<void> {
   const auth = getAuth();
   await signInWithEmailAndPassword(auth, email, password);
@@ -51,8 +52,14 @@ export async function getAPI<T extends { id: string }>(docName: string): Promise
 //   const id = 'veaYiF5t1hObBq8ak9Ay';
 //   return id ? ((await getDoc(doc(getFirestore(), 'bestPlayers', id))).data() as type.Player[]) : null;
 // }
+
 export async function getBestPlayers(){
-  return query(collection(getFirestore(),'users'), orderBy('email'), limit(5));
+  const docs: QueryDocumentSnapshot<DocumentData>[] = [];
+  const querySnapshot =await getDocs(query(collection(getFirestore(),'users'), orderBy('player.highscore'), limit(5)))
+  querySnapshot.forEach(doc => {
+    docs.push(doc);
+  });
+  return docs.map(exercises => ({ ...exercises.data(), id: exercises.id })) ;
 }
 
 export async function addPlayer(player: type.Player): Promise<void> {
