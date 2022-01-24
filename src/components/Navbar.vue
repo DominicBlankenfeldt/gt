@@ -1,12 +1,35 @@
 <template>
   <div id="nav">
-    <router-link to="/home">Home</router-link> |
-    <router-link to="/skillTree">Skill Tree</router-link> |
-    <router-link to="/games">Game</router-link> |
-    <router-link to="/scoreboard">Scoreboard</router-link> |
+    <router-link v-if="user" to="/home">Home</router-link>
+    <a v-if="user"> | </a>
+    <router-link v-if="user" to="/skillTree">Skill Tree</router-link>
+    <a v-if="user"> | </a> <router-link to="/games">Game</router-link> |
+    <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
+    <a v-if="user"> | </a>
     <router-link to="/about">About</router-link>
+    <a v-if="user"> | </a>
+    <a v-if="user" @click="logout()">LogOut</a>
   </div>
 </template>
+
+<script>
+import { defineComponent } from "vue";
+import { currentUser } from "@/router";
+import * as API from "@/API";
+
+export default defineComponent({
+  setup() {
+    return { user: currentUser };
+  },
+  methods: {
+    logout() {
+      API.logout();
+      this.$router.push("/");
+      this.$router.go(0);
+    },
+  },
+});
+</script>
 
 <style lang="scss">
 #app {

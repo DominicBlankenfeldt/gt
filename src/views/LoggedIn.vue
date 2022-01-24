@@ -1,13 +1,5 @@
 <template>
-  <div class="d-flex justify-content-end">
-    <button
-      class="m-2"
-      @click="logout()"
-      style="height: 60px; width: 60px; text-align: center"
-    >
-      Log Out
-    </button>
-  </div>
+  <div class="d-flex justify-content-end"></div>
   <div>ranking</div>
   <div v-for="bestPlayer of bestPlayers" :key="bestPlayer">
     {{ bestPlayer.email.substring(0, bestPlayer.email.indexOf("@")) }}:

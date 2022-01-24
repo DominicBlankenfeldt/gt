@@ -6,7 +6,7 @@
   >
     <div class="card card-default w-75" style="margin-left: 12.5%">
       <div class="card-header header">Crew Autorisierung</div>
-      <div class="card-body">
+      <div class="card-body row">
         <form @submit.prevent="login()" autocomplete="off">
           <div class="m-4 alert alert-danger text-center" v-if="error">
             Username or password is not correct
