@@ -7,7 +7,7 @@
     <div class="card-body row gx-0">
       <div class="profile-pic col-4">
         <img
-          src="../../public/img/avatar_placeholder.png"
+          src="../../public/img/avatars/avatar_placeholder.png"
           alt=""
           style="height: 30vh; width: 15vw"
         />

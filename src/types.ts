@@ -1,5 +1,5 @@
 export interface Enemy {
-vector: Vector;
+  vector: Vector;
   size: number;
   id: string;
   type: EnemyType;
@@ -7,7 +7,7 @@ vector: Vector;
   moveVector: Vector;
   timer: number | null;
 }
-export type EnemyType="curve"|"aimbot"|"chasebot"|"getbigger";
+export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger";
 
 export interface Player {
   vector: Vector;
@@ -18,8 +18,10 @@ export interface Player {
   highscore: number;
   id: string;
   email: string;
+  username: string;
+  img: string;
 }
-export type Outlook="up"|"down"|"right"|"left"
+export type Outlook = "up" | "down" | "right" | "left";
 
 export interface Item {
   type: Itemtype;
@@ -28,7 +30,7 @@ export interface Item {
   size: number;
   timer: number;
 }
-export type Itemtype="coin"|"skull"|"growPotion"|"clearField"
+export type Itemtype = "coin" | "skull" | "growPotion" | "clearField";
 
 export interface SkillTree {
   skillPoints: number;
@@ -36,7 +38,7 @@ export interface SkillTree {
   skills: Skill[];
 }
 export interface ref<Player> {
-  value: Player
+  value: Player;
 }
 export interface Skill {
   name: string;
@@ -44,4 +46,4 @@ export interface Skill {
   maxlvl: number;
 }
 
-export type Vector=[number,number]
+export type Vector = [number, number];
