@@ -206,16 +206,16 @@ export default defineComponent({
 
     this.changeDisplaySize();
     this.playerStartPosition();
-
     let result = await API.getPlayer();
     if (result) {
       this.player = result.player;
     }
-
     result = await API.getBestPlayers();
     if (result) {
       this.bestPlayers = Object.values(result) as type.Player[];
     }
+    console.log(result);
+    console.log(this.bestPlayers);
   },
   methods: {
     // start testarea
@@ -307,7 +307,6 @@ export default defineComponent({
           return b.highscore - a.highscore;
         });
         this.bestPlayers.length > 5 ? this.bestPlayers.pop() : null;
-        API.updateBestPlayers({ ...this.bestPlayers });
       }
       this.message = message;
       this.messageType = messageType;
