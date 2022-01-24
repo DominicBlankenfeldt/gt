@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="col-4">
-        <div>profilname</div>
+        <div>Username: Name</div>
         <div>persönlicher highscore</div>
         <div>gespielte spiele/normal</div>
       </div>
