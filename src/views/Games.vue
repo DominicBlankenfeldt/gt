@@ -1,6 +1,7 @@
 <template>
-  <div class="d-flex justify-content-center"><div class="blockUp"></div></div>
-
+  <div class="d-flex justify-content-center">
+    <div class="blockUp"></div>
+  </div>
   <div class="row" id="row">
     <div class="sideBlockLeft"></div>
     <div class="" id="game">
@@ -8,14 +9,22 @@
     </div>
     <div class="sideBlockRight"></div>
   </div>
-  <div class="d-flex justify-content-center"><div class="blockDown"></div></div>
+  <div class="d-flex justify-content-center">
+    <div class="blockDown"></div>
+  </div>
+  <div v-if="!user">Logge dich ein um alle Features zu nutzen.</div>
 </template>
 
 <script lang="ts">
+import { currentUser } from "@/router";
+import * as API from "@/API";
 import { defineComponent } from "vue";
 import game from "@/components/SpaceGame.vue";
 
 export default defineComponent({
+  setup() {
+    return { user: currentUser };
+  },
   components: {
     game,
   },
