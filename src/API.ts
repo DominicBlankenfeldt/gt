@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { deleteDoc, DocumentData, getFirestore, QueryDocumentSnapshot, doc, DocumentReference, UpdateData, setDoc, getDoc } from 'firebase/firestore';
+import { deleteDoc, DocumentData, getFirestore, QueryDocumentSnapshot, doc, DocumentReference, UpdateData, setDoc, getDoc, limitToLast } from 'firebase/firestore';
 import { collection, addDoc, getDocs, updateDoc,query, orderBy, limit } from 'firebase/firestore';
 import { currentUser } from './router';
 import { ref } from 'vue';
@@ -44,18 +44,9 @@ export async function getAPI<T extends { id: string }>(docName: string): Promise
   return docs.map(exercises => ({ ...exercises.data(), id: exercises.id })) as T[];
 }
 
-// export async function updateBestPlayers(bestPlayers: type.Player[]): Promise<void> {
-//   await updateAPI<type.Player[]>('bestPlayers', 'veaYiF5t1hObBq8ak9Ay', bestPlayers);
-// }
-
-// export async function getBestPlayers(): Promise<type.Player[] | null> {
-//   const id = 'veaYiF5t1hObBq8ak9Ay';
-//   return id ? ((await getDoc(doc(getFirestore(), 'bestPlayers', id))).data() as type.Player[]) : null;
-// }
-
 export async function getBestPlayers(){
   const docs: QueryDocumentSnapshot<DocumentData>[] = [];
-  const querySnapshot =await getDocs(query(collection(getFirestore(),'users'), orderBy('player.highscore'), limit(5)))
+  const querySnapshot =await getDocs(query(collection(getFirestore(),'users'), orderBy('player.highscore'), limitToLast(5)))
   querySnapshot.forEach(doc => {
     docs.push(doc);
   });
