@@ -121,6 +121,9 @@ export default defineComponent({
         this.player.img = "";
         this.player.registeredAt = Date.now();
         this.player.playedGames = 0;
+        this.player.hardcoreMode = false;
+        this.player.highscoreHardcore = 0;
+        this.player.playedHardcore = 0;
         API.addPlayer(this.player);
         this.$router.push("/home");
       } catch (e) {

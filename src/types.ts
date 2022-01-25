@@ -16,12 +16,15 @@ export interface Player {
   skillTree: SkillTree;
   outlook: Outlook;
   highscore: number;
+  highscoreHardcore: number;
   id: string;
   email: string;
   username: string;
   img: string;
   registeredAt: number;
   playedGames: number;
+  hardcoreMode: boolean;
+  playedHardcore: number;
 }
 export type Outlook = "up" | "down" | "right" | "left";
 

@@ -20,11 +20,14 @@ export const player = ref({
   } as type.SkillTree,
   outlook: "up", //Blickrichtung
   highscore: 0,
+  highscoreHardcore: 0,
   email: "gast@",
   username: "gast",
   img: "",
   registeredAt: 0,
   playedGames: 0,
+  playedHardcore: 0,
+  hardcoreMode: false,
 });
 
 export const production = ref(

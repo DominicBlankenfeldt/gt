@@ -9,31 +9,47 @@
         <img
           src="../../public/img/avatars/avatar_placeholder.png"
           alt=""
-          style="height: 30vh; width: 20vw"
+          style="height: calc(20vw); width: 20vw"
         />
         <div>
           registriert seit: <br />
           {{ player.registeredAt }}
         </div>
       </div>
-      <div class="col-4 gy-2">
+      <div class="col-8 row">
         <div>Username: {{ player.username }}</div>
-        <div>Highscore: {{ player.highscore }}</div>
-        <div>gespielte Spiele: {{ player.playedGames }}</div>
-      </div>
-      <div class="col-4 gy-2 aling-content-start">
-        <div>space flotte</div>
-        <div>
-          highscore space-flotte (alle mitglieder highscore/anzahl spieler)
+        <div class="col-6 gy-2">
+          <div>Highscore: <br />{{ this.highscore }}</div>
+          <div>gespielte Spiele: <br />{{ player.playedGames }}</div>
+          <div>gespielte Hardcore <br />{{ player.playedHardcore }}</div>
+          <div>Highscore Hardcore <br />{{ player.highscoreHardcore }}</div>
+        </div>
+        <div class="col-6 gy-2 aling-content-start">
+          <div>Space Flotte:<br />*TODO*</div>
+          <div>
+            Highscore Flotte: <br />
+            (alle mitglieder highscore/anzahl spieler)
+          </div>
         </div>
       </div>
       <div>Skilltreecontent (TODO)</div>
-      <div>gespielte spiele/hardcore</div>
-      <div>highscore hardcore</div>
     </div>
     <div class="card-footer">
       <div class="features">
-        <div>hardcoremode enable</div>
+        <div class="row">
+          <div class="col-6">
+            <button
+              class="btn btn-outline-primary shadow-none w-50"
+              @click="toggleHardcoreMode()"
+            >
+              Hardcore Mode
+            </button>
+          </div>
+          <div class="col-6">
+            <div v-if="player.hardcoreMode">AN</div>
+            <div v-if="!player.hardcoreMode">AUS</div>
+          </div>
+        </div>
         <div>edit profil</div>
         <div>add friend</div>
       </div>
@@ -53,6 +69,8 @@ export default defineComponent({
   data() {
     return {
       player: player.value as type.Player,
+      highscore: 0,
+      hardCoreMode: false,
     };
   },
   async mounted() {
@@ -60,6 +78,13 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
+    this.highscore = Math.round(this.player.highscore);
+  },
+  methods: {
+    toggleHardcoreMode() {
+      this.player.hardcoreMode = !this.player.hardcoreMode;
+      API.addPlayer(this.player);
+    },
   },
 });
 </script>

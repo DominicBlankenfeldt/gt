@@ -258,10 +258,13 @@ export default defineComponent({
       }, 500);
     },
     start() {
-      this.hardCoreMode
-        ? (this.startingEnemies = 400)
+      this.player.hardcoreMode
+        ? ((this.startingEnemies = 400),
+          (this.player.playedHardcore = this.player.playedHardcore + 1),
+          API.addPlayer(this.player))
         : ((this.startingEnemies = 4),
-          (this.player.playedGames = this.player.playedGames + 1));
+          (this.player.playedGames = this.player.playedGames + 1),
+          API.addPlayer(this.player));
       this.isGrow = false;
       this.message = "";
       this.gameloopLastCounter = 0;
@@ -290,8 +293,13 @@ export default defineComponent({
     },
     async gameOver(message: string, messageType: string) {
       this.gameStarted = false;
-      if (this.score > this.player.highscore) {
-        this.player.highscore = this.score;
+      if (this.player.hardcoreMode) {
+        if (this.score > this.player.highscoreHardcore) {
+          this.player.highscoreHardcore = this.score;
+        }
+        API.addPlayer(this.player);
+      } else if (this.score > this.player.highscore) {
+        this.player.highscore = Math.floor(this.score);
         this.player.skillTree.skillPoints = Math.floor(
           this.player.highscore / 1000
         );

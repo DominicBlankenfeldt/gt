@@ -127,13 +127,13 @@ export default class Home extends Vue {}
   text-shadow: 2px 2px rgb(0, 0, 0);
 }
 h1 {
-  color: rgb(101, 211, 255);
+  color: rgb(255, 255, 255);
 }
 
 // card
 
 .card {
-  color: rgb(101, 211, 255);
+  color: rgb(255, 255, 255);
   background-image: url(/gt/img/uiol/spaceshipinside.png);
   background-size: cover;
 }
