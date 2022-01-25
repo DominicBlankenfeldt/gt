@@ -26,13 +26,7 @@ export default defineComponent({
     console.log(result)
   },
   components: {},
-  methods: {
-    logout() {
-      API.logout();
-      this.$router.push("/");
-      this.$router.go(0);
-    },
-  },
+  methods: {},
 });
 </script>
 <style lang="scss" scoped>

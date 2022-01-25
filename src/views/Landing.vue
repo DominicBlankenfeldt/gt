@@ -124,11 +124,16 @@ export default class Home extends Vue {}
 
 <style lang="scss" scoped>
 * {
-  text-shadow: 2px 2px black;
+  text-shadow: 2px 2px rgb(0, 0, 0);
 }
+h1 {
+  color: rgb(255, 255, 255);
+}
+
 // card
 
 .card {
+  color: rgb(255, 255, 255);
   background-image: url(/gt/img/uiol/spaceshipinside.png);
   background-size: cover;
 }
@@ -240,6 +245,7 @@ export default class Home extends Vue {}
 }
 // footer
 .footer {
+  color: white;
   background-color: rgba(255, 255, 255, 0.103);
   position: fixed;
   bottom: 0;

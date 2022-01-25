@@ -17,13 +17,20 @@
 
 <script lang="ts">
 import { currentUser } from "@/router";
-import * as API from "@/API";
 import { defineComponent } from "vue";
+import { player } from "@/global";
+import * as type from "@/types";
 import game from "@/components/SpaceGame.vue";
 
 export default defineComponent({
   setup() {
+    player;
     return { user: currentUser };
+  },
+  data() {
+    return {
+      player: player.value as type.Player,
+    };
   },
   components: {
     game,
@@ -32,6 +39,9 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+* {
+  color: white;
+}
 .blockUp {
   width: 75vw;
   height: 60px;

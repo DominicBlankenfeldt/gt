@@ -1,16 +1,105 @@
 <template>
   <div>this is going to be an overview</div>
+  <div class="card card-default w-75" style="margin-left: 12.5%">
+    <div class="card-header header row g-0">
+      <div><h3>Profil-Karte</h3></div>
+    </div>
+    <div class="card-body row gx-0">
+      <div class="profile-pic col-4">
+        <div v-if="player.img">
+          <img
+            :src="player.img"
+            alt=""
+            style="height: calc(20vw); width: 20vw"
+          />
+        </div>
+        <div v-if="player.img == ''">
+          <img
+            src="../../public/img/avatars/avatar_placeholder.png"
+            alt=""
+            style="height: calc(20vw); width: 20vw"
+          />
+        </div>
+        <div>
+          registriert seit: <br />
+          {{ player.registeredAt }}
+        </div>
+      </div>
+      <div class="col-8 row">
+        <div>
+          <h4>
+            Username:
+            <u>
+              {{ player.username }}
+            </u>
+          </h4>
+        </div>
+        <div class="col-6 gy-2">
+          <div>Highscore: <br />{{ player.highscore }}</div>
+          <div>gespielte Spiele: <br />{{ player.playedGames }}</div>
+          <div>gespielte Hardcore <br />{{ player.playedHardcore }}</div>
+          <div>Highscore Hardcore <br />{{ player.highscoreHardcore }}</div>
+        </div>
+        <div class="col-6 gy-2 aling-content-start">
+          <div>Space Flotte:<br />*TODO*</div>
+          <div>
+            Highscore Flotte: <br />
+            (alle mitglieder highscore/anzahl spieler)
+          </div>
+        </div>
+      </div>
+      <div>Skilltreecontent (TODO)</div>
+    </div>
+    <div class="card-footer">
+      <div class="features">
+        <div class="row">
+          <div class="col-6">
+            <button
+              class="btn btn-outline-primary shadow-none w-50"
+              @click="toggleHardcoreMode()"
+            >
+              Hardcore Mode
+            </button>
+          </div>
+          <div class="col-6">
+            <div v-if="player.hardcoreMode">AN</div>
+            <div v-if="!player.hardcoreMode">AUS</div>
+          </div>
+        </div>
+        <div>edit profil</div>
+        <div>add friend</div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import * as API from "@/API";
-import { currentUser } from "@/router";
 import { player } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
-    return { user: currentUser };
+    player;
+  },
+  data() {
+    return {
+      player: player.value as type.Player,
+      hardCoreMode: false,
+      editProfile: false,
+    };
+  },
+  async mounted() {
+    let result = await API.getPlayer();
+    if (result) {
+      this.player = result.player;
+    }
+  },
+  methods: {
+    toggleHardcoreMode() {
+      this.player.hardcoreMode = !this.player.hardcoreMode;
+      API.addPlayer(this.player);
+    },
   },
 });
 </script>
@@ -28,6 +117,12 @@ export default defineComponent({
   background-repeat: no-repeat;
 }
 .header {
+  background: rgba(39, 39, 39, 0.555);
+}
+.card-body {
+  background: rgba(39, 39, 39, 0.555);
+}
+.card-footer {
   background: rgba(39, 39, 39, 0.555);
 }
 // Buttons
