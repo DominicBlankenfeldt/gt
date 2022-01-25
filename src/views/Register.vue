@@ -103,8 +103,6 @@ export default defineComponent({
       password: "",
       email: "",
       username: "",
-      img: "",
-      registeredAt: 0,
       error: "",
       registering: false,
     };
@@ -120,8 +118,9 @@ export default defineComponent({
         await API.register(this.email, this.password);
         this.player.email = this.email;
         this.player.username = this.username;
-        this.player.img = this.img;
+        this.player.img = "";
         this.player.registeredAt = Date.now();
+        this.player.playedGames = 0;
         API.addPlayer(this.player);
         this.$router.push("/home");
       } catch (e) {

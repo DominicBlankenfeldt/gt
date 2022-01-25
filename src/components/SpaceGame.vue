@@ -260,7 +260,8 @@ export default defineComponent({
     start() {
       this.hardCoreMode
         ? (this.startingEnemies = 400)
-        : (this.startingEnemies = 4);
+        : ((this.startingEnemies = 4),
+          (this.player.playedGames = this.player.playedGames + 1));
       this.isGrow = false;
       this.message = "";
       this.gameloopLastCounter = 0;

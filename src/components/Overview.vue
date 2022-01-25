@@ -9,19 +9,19 @@
         <img
           src="../../public/img/avatars/avatar_placeholder.png"
           alt=""
-          style="height: 30vh; width: 15vw"
+          style="height: 30vh; width: 20vw"
         />
         <div>
           registriert seit: <br />
-          01/01/2000
+          {{ player.registeredAt }}
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-4 gy-2">
         <div>Username: {{ player.username }}</div>
         <div>Highscore: {{ player.highscore }}</div>
-        <div>gespielte spiele/normal</div>
+        <div>gespielte Spiele: {{ player.playedGames }}</div>
       </div>
-      <div class="col-4">
+      <div class="col-4 gy-2 aling-content-start">
         <div>space flotte</div>
         <div>
           highscore space-flotte (alle mitglieder highscore/anzahl spieler)
@@ -77,6 +77,12 @@ export default defineComponent({
   background-repeat: no-repeat;
 }
 .header {
+  background: rgba(39, 39, 39, 0.555);
+}
+.card-body {
+  background: rgba(39, 39, 39, 0.555);
+}
+.card-footer {
   background: rgba(39, 39, 39, 0.555);
 }
 // Buttons

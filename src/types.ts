@@ -21,6 +21,7 @@ export interface Player {
   username: string;
   img: string;
   registeredAt: number;
+  playedGames: number;
 }
 export type Outlook = "up" | "down" | "right" | "left";
 

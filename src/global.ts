@@ -24,6 +24,7 @@ export const player = ref({
   username: "gast",
   img: "",
   registeredAt: 0,
+  playedGames: 0,
 });
 
 export const production = ref(
