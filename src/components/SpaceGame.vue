@@ -34,8 +34,8 @@
         :style="{
           left: enemy.vector[0] + 'px',
           top: enemy.vector[1] + 'px',
-          width: enemy.size + 'px',
-          height: enemy.size + 'px',
+          width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+          height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
         }"
         style="position: absolute"
       >
@@ -43,8 +43,8 @@
           :src="enemy.imgsrc"
           alt="enemy"
           :style="{
-            width: enemy.size + 2 + 'px',
-            height: enemy.size + 2 + 'px',
+            width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+            height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
           }"
         />
       </div>
@@ -272,6 +272,7 @@ export default defineComponent({
       this.countgps();
     },
     playerStartPosition() {
+      //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
       this.player.vector[0] = window.innerWidth / 2;
       // (this.borderRight + this.borderLeft)
       this.player.vector[1] = window.innerHeight / 2;
@@ -292,11 +293,39 @@ export default defineComponent({
     //colliosion
     colisionHandling() {
       for (let item of this.items) {
-        if (this.collisionsCheck(item, this.player)) {
-          if (item.type == "blackHole") {
+        if (item.type == "blackHole") {
+          this.gravity(item, this.player);
+          for (let enemy of this.enemies) {
+            this.gravity(item, enemy);
+            if (this.collisionsCheck(item, enemy)) {
+              this.respawnEnemy(enemy);
+            }
+          }
+          for (let item2 of this.items) {
+            if (item != item2) {
+              if (item2.type != "blackHole") {
+                this.gravity(item, item2);
+                if (this.collisionsCheck(item, item2)) {
+                  this.despawnItem(item2);
+                }
+              }
+            }
+          }
+
+          if (this.collisionsCheck(item, this.player)) {
             this.touchBlackHole();
             return;
           }
+        }
+        if (item.type == "growPotion") {
+          for (let enemy of this.enemies) {
+            if (this.collisionsCheck(enemy, item)) {
+              this.despawnItem(item);
+              enemy.isGrow = true;
+            }
+          }
+        }
+        if (this.collisionsCheck(item, this.player)) {
           this.items = this.items.filter((i) => i != item);
           switch (item.type) {
             case "coin":
@@ -362,9 +391,12 @@ export default defineComponent({
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          this.items = this.items.filter((i) => i != item);
+          this.despawnItem(item);
         }
       }
+    },
+    despawnItem(item: type.Item) {
+      this.items = this.items.filter((i) => i != item);
     },
     spawnItems() {
       if (!this.itemSpawn) return;
@@ -486,6 +518,7 @@ export default defineComponent({
         imgsrc: imgsrc,
         moveVector: moveArray as type.Vector,
         timer: type == "chasebot" ? 300 : null,
+        isGrow: false,
       });
     },
 
@@ -516,16 +549,7 @@ export default defineComponent({
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
 
-        if (
-          enemy.vector[0] < this.borderLeft - 25 ||
-          enemy.vector[0] > this.borderRight + 2
-        ) {
-          this.respawnEnemy(enemy);
-        }
-        if (
-          enemy.vector[1] < this.borderUp - 25 ||
-          enemy.vector[1] > this.borderDown
-        ) {
+        if (this.borderCheck(enemy, "outer")) {
           this.respawnEnemy(enemy);
         }
       }
@@ -587,42 +611,97 @@ export default defineComponent({
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
       }
+      switch (this.borderCheck(this.player, "inner")) {
+        case "right":
+          this.player.vector[0] = this.borderRight - this.player.size;
+          break;
+        case "left":
+          this.player.vector[0] = this.borderLeft + 1;
+          break;
+        case "up":
+          this.player.vector[1] = this.borderUp + 1;
+          break;
+        case "down":
+          this.player.vector[1] = this.borderDown - (this.player.size + 2);
+          break;
+      }
     },
     left(multiplicator: number) {
       if (this.player.vector[0] > this.borderLeft) {
         this.player.vector[0] -= this.player.speed * multiplicator;
-        this.player.vector[0] < this.borderLeft + 1
-          ? (this.player.vector[0] = this.borderLeft + 1)
-          : null;
       }
       this.player.outlook = "left";
     },
     right(multiplicator: number) {
       if (this.player.vector[0] < this.borderRight) {
         this.player.vector[0] += this.player.speed * multiplicator;
-        this.player.vector[0] > this.borderRight - this.player.size
-          ? (this.player.vector[0] = this.borderRight - this.player.size)
-          : null;
       }
       this.player.outlook = "right";
     },
     up(multiplicator: number) {
       if (this.player.vector[1] > this.borderUp) {
         this.player.vector[1] -= this.player.speed * multiplicator;
-        this.player.vector[1] < this.borderUp + 2
-          ? (this.player.vector[1] = this.borderUp + 2)
-          : null;
       }
       this.player.outlook = "up";
     },
     down(multiplicator: number) {
       if (this.player.vector[1] < this.borderDown) {
         this.player.vector[1] += this.player.speed * multiplicator;
-        this.player.vector[1] > this.borderDown - (this.player.size + 2)
-          ? (this.player.vector[1] = this.borderDown - (this.player.size + 2))
-          : null;
       }
       this.player.outlook = "down";
+    },
+    borderCheck(
+      object: type.Enemy | type.Item | type.Player,
+      border: "inner" | "outer"
+    ) {
+      if (border == "inner") {
+        if (object.vector[0] > this.borderRight - object.size) {
+          return "right";
+        }
+        if (object.vector[0] < this.borderLeft + 1) {
+          return "left";
+        }
+        if (object.vector[1] < this.borderUp + 1) {
+          return "up";
+        }
+        if (object.vector[1] > this.borderDown - (object.size + 2)) {
+          return "down";
+        }
+      }
+      if (border == "outer") {
+        if (object.vector[0] > this.borderRight) {
+          return "right";
+        }
+        if (object.vector[0] < this.borderLeft + 1 - object.size) {
+          return "left";
+        }
+        if (object.vector[1] < this.borderUp + 1 - object.size) {
+          return "up";
+        }
+        if (object.vector[1] > this.borderDown) {
+          return "down";
+        }
+      }
+      return false;
+    },
+    gravity(
+      object1: type.Enemy | type.Item | type.Player,
+      object2: type.Enemy | type.Item | type.Player
+    ) {
+      if (
+        this.lenVec(
+          this.subVec(
+            this.addVec(object1.vector, object1.size / 2),
+            this.addVec(object2.vector, object2.size / 2)
+          )
+        ) <
+        object1.size + object2.size * 5
+      ) {
+        object2.vector = this.addVec(
+          object2.vector,
+          this.mulVec(this.dirVec(object1.vector, object2.vector), 0.5)
+        );
+      }
     },
     //Vector calculate
     addVec(vec1: type.Vector, vec2: type.Vector | number) {

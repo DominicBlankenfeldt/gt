@@ -6,6 +6,7 @@ vector: Vector;
   imgsrc: string;
   moveVector: Vector;
   timer: number | null;
+  isGrow:boolean;
 }
 export type EnemyType="curve"|"aimbot"|"chasebot"|"getbigger";
 
