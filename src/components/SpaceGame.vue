@@ -34,8 +34,8 @@
         :style="{
           left: enemy.vector[0] + 'px',
           top: enemy.vector[1] + 'px',
-          width: enemy.size + 'px',
-          height: enemy.size + 'px',
+          width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+          height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
         }"
         style="position: absolute"
       >
@@ -43,8 +43,8 @@
           :src="enemy.imgsrc"
           alt="enemy"
           :style="{
-            width: enemy.size + 2 + 'px',
-            height: enemy.size + 2 + 'px',
+            width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+            height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
           }"
         />
       </div>
@@ -206,34 +206,24 @@ export default defineComponent({
 
     this.changeDisplaySize();
     this.playerStartPosition();
-
     let result = await API.getPlayer();
     if (result) {
       this.player = result.player;
     }
-
-    result = await API.getBestPlayers();
-    if (result) {
-      this.bestPlayers = Object.values(result) as type.Player[];
-    }
   },
   methods: {
-    // start testarea
-
-    // end testarea
-
     //game
     gameloop() {
       this.handlePlayerMovement();
       this.handleEnemyMovement();
       if (this.isGrow) {
-        this.player.size = 30;
+        this.player.size = 40;
         this.score +=
           this.difficulty *
           ((this.player.skillTree.skills[4].lvl + 100) / 100) *
           1.2;
       } else {
-        this.player.size = 15;
+        this.player.size = 20;
         this.score +=
           this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
       }
@@ -241,7 +231,7 @@ export default defineComponent({
       this.despawnItems();
       this.gameloopCounter++;
       //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
-      this.gameloopCounter % 60 == 0 ? this.growSkull() : null; // 1sek
+      this.gameloopCounter % 60 == 0 ? this.growBlackHole() : null; // 1sek
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
@@ -286,6 +276,7 @@ export default defineComponent({
       this.countgps();
     },
     playerStartPosition() {
+      //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
       this.player.vector[0] = window.innerWidth / 2;
       // (this.borderRight + this.borderLeft)
       this.player.vector[1] = window.innerHeight / 2;
@@ -304,19 +295,6 @@ export default defineComponent({
           this.player.highscore / 1000
         );
         API.addPlayer(this.player);
-        let result = await API.getBestPlayers();
-        if (result) {
-          this.bestPlayers = [...(Object.values(result) as type.Player[])];
-        }
-        this.bestPlayers = this.bestPlayers.filter(
-          (b) => b.email !== this.player.email
-        );
-        this.bestPlayers.push({ ...this.player });
-        this.bestPlayers.sort((a, b) => {
-          return b.highscore - a.highscore;
-        });
-        this.bestPlayers.length > 5 ? this.bestPlayers.pop() : null;
-        API.updateBestPlayers({ ...this.bestPlayers });
       }
       this.message = message;
       this.messageType = messageType;
@@ -324,11 +302,39 @@ export default defineComponent({
     //colliosion
     colisionHandling() {
       for (let item of this.items) {
-        if (this.collisionsCheck(item)) {
-          if (item.type == "skull") {
-            this.touchSkull();
+        if (item.type == "blackHole") {
+          this.gravity(item, this.player);
+          for (let enemy of this.enemies) {
+            this.gravity(item, enemy);
+            if (this.collisionsCheck(item, enemy)) {
+              this.respawnEnemy(enemy);
+            }
+          }
+          for (let item2 of this.items) {
+            if (item != item2) {
+              if (item2.type != "blackHole") {
+                this.gravity(item, item2);
+                if (this.collisionsCheck(item, item2)) {
+                  this.despawnItem(item2);
+                }
+              }
+            }
+          }
+
+          if (this.collisionsCheck(item, this.player)) {
+            this.touchBlackHole();
             return;
           }
+        }
+        if (item.type == "growPotion") {
+          for (let enemy of this.enemies) {
+            if (this.collisionsCheck(enemy, item)) {
+              this.despawnItem(item);
+              enemy.isGrow = true;
+            }
+          }
+        }
+        if (this.collisionsCheck(item, this.player)) {
           this.items = this.items.filter((i) => i != item);
           switch (item.type) {
             case "coin":
@@ -344,24 +350,23 @@ export default defineComponent({
         }
       }
       for (let enemy of this.enemies) {
-        if (this.collisionsCheck(enemy)) {
+        if (this.collisionsCheck(enemy, this.player)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
         }
       }
     },
-    collisionsCheck(object: type.Enemy | type.Item, range?: number) {
+    collisionsCheck(
+      object1: type.Enemy | type.Item | type.Player,
+      object2: type.Enemy | type.Item | type.Player
+    ) {
       return (
-        Math.sqrt(
-          (object.vector[0] +
-            object.size / 2 -
-            (this.player.vector[0] + this.player.size / 2)) **
-            2 +
-            (object.vector[1] +
-              object.size / 2 -
-              (this.player.vector[1] + this.player.size / 2)) **
-              2
+        this.lenVec(
+          this.subVec(
+            this.addVec(object1.vector, object1.size / 2),
+            this.addVec(object2.vector, object2.size / 2)
+          )
         ) <
-        (object.size * (range || 1)) / 2 + this.player.size / 2
+        object1.size / 2 + object2.size / 2
       );
     },
     //itemEvents
@@ -380,13 +385,13 @@ export default defineComponent({
         this.respawnEnemy(enemy);
       }
     },
-    touchSkull() {
+    touchBlackHole() {
       this.gameOver("you got exploded", "alert alert-danger");
     },
-    growSkull() {
+    growBlackHole() {
       for (let item of this.items) {
-        if (item.type == "skull") {
-          item.size += 20;
+        if (item.type == "blackHole") {
+          item.size += 25;
           item.vector = this.subVec(item.vector, [10, 10]);
         }
       }
@@ -395,9 +400,12 @@ export default defineComponent({
       for (let item of this.items) {
         item.timer--;
         if (item.timer < 0) {
-          this.items = this.items.filter((i) => i != item);
+          this.despawnItem(item);
         }
       }
+    },
+    despawnItem(item: type.Item) {
+      this.items = this.items.filter((i) => i != item);
     },
     spawnItems() {
       if (!this.itemSpawn) return;
@@ -408,16 +416,16 @@ export default defineComponent({
       switch (this.getRandomInt(4)) {
         case 0:
           type = "coin";
-          size = this.getRandomInt(20) + 15;
+          size = this.getRandomInt(25) + 20;
           imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
-          type = "skull";
+          type = "blackHole";
           imgsrc = "blue";
           break;
         case 2:
           type = "growPotion";
-          size = this.getRandomInt(20) + 15;
+          size = this.getRandomInt(25) + 20;
           imgsrc = "/gt/img/items/potion/potion.gif";
           break;
         case 3:
@@ -476,15 +484,15 @@ export default defineComponent({
       }
       switch (this.getRandomInt(3)) {
         case 0:
-          size = 15;
+          size = 20;
           imgsrc = "/gt/img/char/enemy_pingu.png";
           break;
         case 1:
-          size = 20;
+          size = 25;
           imgsrc = "/gt/img/char/enemy_cupcake.gif";
           break;
         case 2:
-          size = 25;
+          size = 30;
           imgsrc = "/gt/img/char/enemy_gasman.gif";
           break;
       }
@@ -519,6 +527,7 @@ export default defineComponent({
         imgsrc: imgsrc,
         moveVector: moveArray as type.Vector,
         timer: type == "chasebot" ? 300 : null,
+        isGrow: false,
       });
     },
 
@@ -549,16 +558,7 @@ export default defineComponent({
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
 
-        if (
-          enemy.vector[0] < this.borderLeft - 25 ||
-          enemy.vector[0] > this.borderRight + 2
-        ) {
-          this.respawnEnemy(enemy);
-        }
-        if (
-          enemy.vector[1] < this.borderUp - 25 ||
-          enemy.vector[1] > this.borderDown
-        ) {
+        if (this.borderCheck(enemy, "outer")) {
           this.respawnEnemy(enemy);
         }
       }
@@ -620,52 +620,115 @@ export default defineComponent({
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
       }
+      switch (this.borderCheck(this.player, "inner")) {
+        case "right":
+          this.player.vector[0] = this.borderRight - this.player.size;
+          break;
+        case "left":
+          this.player.vector[0] = this.borderLeft + 1;
+          break;
+        case "up":
+          this.player.vector[1] = this.borderUp + 1;
+          break;
+        case "down":
+          this.player.vector[1] = this.borderDown - (this.player.size + 2);
+          break;
+      }
     },
     left(multiplicator: number) {
       if (this.player.vector[0] > this.borderLeft) {
         this.player.vector[0] -= this.player.speed * multiplicator;
-        this.player.vector[0] < this.borderLeft + 1
-          ? (this.player.vector[0] = this.borderLeft + 1)
-          : null;
       }
       this.player.outlook = "left";
     },
     right(multiplicator: number) {
       if (this.player.vector[0] < this.borderRight) {
         this.player.vector[0] += this.player.speed * multiplicator;
-        this.player.vector[0] > this.borderRight - this.player.size
-          ? (this.player.vector[0] = this.borderRight - this.player.size)
-          : null;
       }
       this.player.outlook = "right";
     },
     up(multiplicator: number) {
       if (this.player.vector[1] > this.borderUp) {
         this.player.vector[1] -= this.player.speed * multiplicator;
-        this.player.vector[1] < this.borderUp + 2
-          ? (this.player.vector[1] = this.borderUp + 2)
-          : null;
       }
       this.player.outlook = "up";
     },
     down(multiplicator: number) {
       if (this.player.vector[1] < this.borderDown) {
         this.player.vector[1] += this.player.speed * multiplicator;
-        this.player.vector[1] > this.borderDown - (this.player.size + 2)
-          ? (this.player.vector[1] = this.borderDown - (this.player.size + 2))
-          : null;
       }
       this.player.outlook = "down";
     },
+    borderCheck(
+      object: type.Enemy | type.Item | type.Player,
+      border: "inner" | "outer"
+    ) {
+      if (border == "inner") {
+        if (object.vector[0] > this.borderRight - object.size) {
+          return "right";
+        }
+        if (object.vector[0] < this.borderLeft + 1) {
+          return "left";
+        }
+        if (object.vector[1] < this.borderUp + 1) {
+          return "up";
+        }
+        if (object.vector[1] > this.borderDown - (object.size + 2)) {
+          return "down";
+        }
+      }
+      if (border == "outer") {
+        if (object.vector[0] > this.borderRight) {
+          return "right";
+        }
+        if (object.vector[0] < this.borderLeft + 1 - object.size) {
+          return "left";
+        }
+        if (object.vector[1] < this.borderUp + 1 - object.size) {
+          return "up";
+        }
+        if (object.vector[1] > this.borderDown) {
+          return "down";
+        }
+      }
+      return false;
+    },
+    gravity(
+      object1: type.Enemy | type.Item | type.Player,
+      object2: type.Enemy | type.Item | type.Player
+    ) {
+      if (
+        this.lenVec(
+          this.subVec(
+            this.addVec(object1.vector, object1.size / 2),
+            this.addVec(object2.vector, object2.size / 2)
+          )
+        ) <
+        object1.size + object2.size * 5
+      ) {
+        object2.vector = this.addVec(
+          object2.vector,
+          this.mulVec(this.dirVec(object1.vector, object2.vector), 0.5)
+        );
+      }
+    },
     //Vector calculate
-    addVec(vek1: type.Vector, vek2: type.Vector) {
-      return [vek1[0] + vek2[0], vek1[1] + vek2[1]] as type.Vector;
+    addVec(vec1: type.Vector, vec2: type.Vector | number) {
+      if (typeof vec2 == "number") {
+        return [vec1[0] + vec2, vec1[1] + vec2] as type.Vector;
+      } else {
+        return [vec1[0] + vec2[0], vec1[1] + vec2[1]] as type.Vector;
+      }
     },
-    subVec(vek1: type.Vector, vek2: type.Vector) {
-      return [vek1[0] - vek2[0], vek1[1] - vek2[1]] as type.Vector;
+    subVec(vec1: type.Vector, vec2: type.Vector | number) {
+      if (typeof vec2 == "number") {
+        return [vec1[0] - vec2, vec1[1] - vec2] as type.Vector;
+      } else {
+        return [vec1[0] - vec2[0], vec1[1] - vec2[1]] as type.Vector;
+      }
     },
-    dirVec(vek1: type.Vector, vek2: type.Vector) {
-      let deltaArray = this.subVec(vek1, vek2) as type.Vector;
+    dirVec(vec1: type.Vector, vec2: type.Vector) {
+      let deltaArray = this.subVec(vec1, vec2) as type.Vector;
       deltaArray[1] /= Math.abs(deltaArray[0]);
       deltaArray[0] /= Math.abs(deltaArray[0]);
       if (Math.abs(deltaArray[1]) > 1.5) {
@@ -674,8 +737,15 @@ export default defineComponent({
       }
       return deltaArray;
     },
-    mulVec(vec: type.Vector, mul: number) {
-      return [vec[0] * mul, vec[1] * mul] as type.Vector;
+    mulVec(vec1: type.Vector, vec2: type.Vector | number) {
+      if (typeof vec2 == "number") {
+        return [vec1[0] * vec2, vec1[1] * vec2] as type.Vector;
+      } else {
+        return [vec1[0] * vec2[0], vec1[1] * vec2[1]] as type.Vector;
+      }
+    },
+    lenVec(vec: type.Vector) {
+      return Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
     },
     // displaysize
     changeDisplaySize() {
@@ -688,10 +758,6 @@ export default defineComponent({
     },
   },
 });
-
-function getElementById(arg0: string) {
-  throw new Error("Function not implemented.");
-}
 </script>
 
 <style lang="scss" scoped>
