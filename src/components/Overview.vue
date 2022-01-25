@@ -6,11 +6,20 @@
     </div>
     <div class="card-body row gx-0">
       <div class="profile-pic col-4">
-        <img
-          src="../../public/img/avatars/avatar_placeholder.png"
-          alt=""
-          style="height: calc(20vw); width: 20vw"
-        />
+        <div v-if="player.img">
+          <img
+            :src="player.img"
+            alt=""
+            style="height: calc(20vw); width: 20vw"
+          />
+        </div>
+        <div v-if="player.img == ''">
+          <img
+            src="../../public/img/avatars/avatar_placeholder.png"
+            alt=""
+            style="height: calc(20vw); width: 20vw"
+          />
+        </div>
         <div>
           registriert seit: <br />
           {{ player.registeredAt }}
@@ -19,7 +28,7 @@
       <div class="col-8 row">
         <div>Username: {{ player.username }}</div>
         <div class="col-6 gy-2">
-          <div>Highscore: <br />{{ this.highscore }}</div>
+          <div>Highscore: <br />{{ player.highscore }}</div>
           <div>gespielte Spiele: <br />{{ player.playedGames }}</div>
           <div>gespielte Hardcore <br />{{ player.playedHardcore }}</div>
           <div>Highscore Hardcore <br />{{ player.highscoreHardcore }}</div>
@@ -69,7 +78,6 @@ export default defineComponent({
   data() {
     return {
       player: player.value as type.Player,
-      highscore: 0,
       hardCoreMode: false,
     };
   },
@@ -78,7 +86,6 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
-    this.highscore = Math.round(this.player.highscore);
   },
   methods: {
     toggleHardcoreMode() {
