@@ -26,7 +26,14 @@
         </div>
       </div>
       <div class="col-8 row">
-        <div>Username: {{ player.username }}</div>
+        <div>
+          <h4>
+            Username:
+            <u>
+              {{ player.username }}
+            </u>
+          </h4>
+        </div>
         <div class="col-6 gy-2">
           <div>Highscore: <br />{{ player.highscore }}</div>
           <div>gespielte Spiele: <br />{{ player.playedGames }}</div>
@@ -79,6 +86,7 @@ export default defineComponent({
     return {
       player: player.value as type.Player,
       hardCoreMode: false,
+      editProfile: false,
     };
   },
   async mounted() {
