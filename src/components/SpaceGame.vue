@@ -593,7 +593,11 @@ export default defineComponent({
         } else {
           enemy.vector = this.addVec(
             enemy.vector,
-            this.mulVec(this.dirVec(this.player.vector, enemy.vector), 2)
+
+            this.mulVec(this.difVec(
+              this.dirVec(this.player.vector, enemy.vector),
+              this.lenVec(this.dirVec(this.player.vector, enemy.vector))
+            ),2)
           );
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
@@ -822,6 +826,13 @@ export default defineComponent({
         return [vec1[0] * vec2, vec1[1] * vec2] as type.Vector;
       } else {
         return [vec1[0] * vec2[0], vec1[1] * vec2[1]] as type.Vector;
+      }
+    },
+    difVec(vec1: type.Vector, vec2: type.Vector | number) {
+      if (typeof vec2 == "number") {
+        return [vec1[0] / vec2, vec1[1] / vec2] as type.Vector;
+      } else {
+        return [vec1[0] / vec2[0], vec1[1] / vec2[1]] as type.Vector;
       }
     },
     lenVec(vec: type.Vector) {
