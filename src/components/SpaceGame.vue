@@ -13,7 +13,11 @@
     <div class="col align-self-center">
       <img src="../../public/img/items/coin/coin.gif" alt="coin" />
       Highscore:
-      <span id="scoreSpan">{{ Math.round(player.highscore) }}</span>
+      <span id="scoreSpan">{{
+        player.hardcoreMode
+          ? Math.round(player.highscoreHardcore)
+          : Math.round(player.highscore)
+      }}</span>
     </div>
     <div>gps:{{ Math.round(gps) }}</div>
   </div>
@@ -34,7 +38,7 @@
         :style="{
           left: enemy.vector[0] + 'px',
           top: enemy.vector[1] + 'px',
-          width:  enemy.size + 'px',
+          width: enemy.size + 'px',
           height: enemy.size + 'px',
         }"
         style="position: absolute"
@@ -303,9 +307,9 @@ export default defineComponent({
     colisionHandling() {
       for (let item of this.items) {
         if (item.type == "blackHole") {
-          this.gravity(item, this.player);
+          this.gravity(item, this.player, 5, 0.5);
           for (let enemy of this.enemies) {
-            this.gravity(item, enemy);
+            this.gravity(item, enemy, 5, 0.5);
             if (this.collisionsCheck(item, enemy)) {
               this.respawnEnemy(enemy);
             }
@@ -313,7 +317,7 @@ export default defineComponent({
           for (let item2 of this.items) {
             if (item != item2) {
               if (item2.type != "blackHole") {
-                this.gravity(item, item2);
+                this.gravity(item, item2, 5, 0.5);
                 if (this.collisionsCheck(item, item2)) {
                   this.despawnItem(item2);
                 }
@@ -330,8 +334,8 @@ export default defineComponent({
           for (let enemy of this.enemies) {
             if (this.collisionsCheck(enemy, item)) {
               this.despawnItem(item);
-              if(!enemy.isGrow){
-                enemy.size*=2
+              if (!enemy.isGrow) {
+                enemy.size *= 2;
               }
               enemy.isGrow = true;
             }
@@ -516,7 +520,7 @@ export default defineComponent({
         //   type = "colorswitch";
         //   break;
       }
-      this.hardCoreMode ? (type = "aimbot") : null;
+      this.player.hardcoreMode ? (type = "aimbot") : null;
       this.enemiesType ? (type = this.enemiesType) : null;
 
       if (type == "aimbot") {
@@ -698,7 +702,9 @@ export default defineComponent({
     },
     gravity(
       object1: type.Enemy | type.Item | type.Player,
-      object2: type.Enemy | type.Item | type.Player
+      object2: type.Enemy | type.Item | type.Player,
+      range: number,
+      speed: number
     ) {
       if (
         this.lenVec(
@@ -707,11 +713,11 @@ export default defineComponent({
             this.addVec(object2.vector, object2.size / 2)
           )
         ) <
-        object1.size + object2.size * 5
+        object1.size + object2.size * range
       ) {
         object2.vector = this.addVec(
           object2.vector,
-          this.mulVec(this.dirVec(object1.vector, object2.vector), 0.5)
+          this.mulVec(this.dirVec(object1.vector, object2.vector), speed)
         );
       }
     },
