@@ -40,16 +40,16 @@ export type Itemtype = "coin" | "blackHole" | "growPotion" | "clearField"|"magne
 
 export interface SkillTree {
   skillPoints: number;
-  usedSkillPoints: number;
   skills: Skill[];
 }
 export interface ref<Player> {
   value: Player;
 }
 export interface Skill {
-  name: string;
+  name: Skillname;
   lvl: number;
   maxlvl: number;
 }
+export type Skillname="fastAbility"|"slowAbility"|"bombAbility"|"slowEnemy"|"spawnLessEnemy"|"scoreMultiplicator"|"betterCoin"|"longerMagnet"|"betterGrowPotion"|"smallerBlackHole"
 
 export type Vector = [number, number];

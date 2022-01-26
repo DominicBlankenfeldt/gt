@@ -34,7 +34,7 @@
       ></div>
       <div
         v-for="enemy of enemies"
-        :key="enemy"
+        :key="enemy.id"
         :style="{
           left: enemy.vector[0] + 'px',
           top: enemy.vector[1] + 'px',
@@ -173,6 +173,8 @@ export default defineComponent({
       player: player.value as type.Player,
       isGrow: false,
       isMagnet: false,
+      bombCoolDown: false,
+      bombCoolDownID: 0,
       bestPlayers: [] as type.Player[],
       // gameSetup
       hardCoreMode: false,
@@ -226,24 +228,24 @@ export default defineComponent({
         this.player.size = 40;
         this.score +=
           this.difficulty *
-          this.percent(this.player.skillTree.skills[4].lvl, "in") *
-          1.2;
+          this.percent(this.findSkill("scoreMultiplicator"), "in") *
+          1.2 *
+          this.percent(this.findSkill("betterGrowPotion"), "in");
       } else {
         this.player.size = 20;
         this.score +=
           this.difficulty *
-          this.percent(this.player.skillTree.skills[4].lvl, "in");
+          this.percent(this.findSkill("scoreMultiplicator"), "in");
       }
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
       //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
-      this.gameloopCounter % 60 == 0 ? this.growBlackHole() : null; // 1sek
       this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
+      this.gameloopCounter % 60 == 0 ? this.growBlackHole() : null; // 1sek
       this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
       this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
-      this.gameloopCounter % (900 + 3 * this.player.skillTree.skills[3].lvl) ==
-      0
+      this.gameloopCounter % (900 + 3 * this.findSkill("spawnLessEnemy")) == 0
         ? this.createEnemy()
         : null;
     },
@@ -298,7 +300,7 @@ export default defineComponent({
         }
         API.addPlayer(this.player);
       } else if (this.score > this.player.highscore) {
-        this.player.highscore = Math.floor(this.score);
+        this.player.highscore = this.score;
         this.player.skillTree.skillPoints = Math.floor(
           this.player.highscore / 1000
         );
@@ -392,7 +394,11 @@ export default defineComponent({
     },
     //itemEvents
     collectCoin(item: type.Item) {
-      this.score += this.difficulty * 15 * item.size;
+      this.score +=
+        this.difficulty *
+        15 *
+        item.size *
+        this.percent(this.findSkill("betterCoin"), "in");
     },
     collectGrowPotion(item: type.Item) {
       this.isGrow = true;
@@ -406,7 +412,7 @@ export default defineComponent({
       clearTimeout(this.magnetID);
       this.magnetID = setTimeout(() => {
         this.isMagnet = false;
-      }, 300 * item.size);
+      }, 300 * item.size * this.percent(this.findSkill("longerMagnet"), "in"));
     },
     collectClearField() {
       for (let enemy of [...this.enemies]) {
@@ -419,7 +425,8 @@ export default defineComponent({
     growBlackHole() {
       for (let item of this.items) {
         if (item.type == "blackHole") {
-          item.size += 25;
+          item.size +=
+            20 * this.percent(this.findSkill("smallerBlackHole"), "de");
           item.vector = this.subVec(item.vector, [10, 10]);
         }
       }
@@ -449,6 +456,7 @@ export default defineComponent({
           break;
         case 1:
           type = "blackHole";
+          size = 20 * this.percent(this.findSkill("smallerBlackHole"), "de");
           imgsrc = "blue";
           break;
         case 2:
@@ -579,8 +587,7 @@ export default defineComponent({
             enemy.vector,
             this.mulVec(
               enemy.moveVector,
-              this.difficulty *
-                this.percent(this.player.skillTree.skills[2].lvl, "de")
+              this.difficulty * this.percent(this.findSkill("slowEnemy"), "de")
             )
           );
         } else {
@@ -628,14 +635,38 @@ export default defineComponent({
     // },
 
     //playermovement
+    bombAbility() {
+      if (this.bombCoolDown) return;
+      this.bombCoolDown = true;
+      this.bombCoolDownID = setTimeout(() => {
+        this.bombCoolDown = false;
+      }, 1000);
+      let bombs = [...this.items].filter((i) => i.type == "clearField");
+      if (bombs.length) {
+        bombs.sort((a, b) => {
+          return (
+            this.lenVec(this.subVec(a.vector, this.player.vector)) -
+            this.lenVec(this.subVec(b.vector, this.player.vector))
+          );
+        });
+        this.items.splice(
+          this.items.findIndex((i) => i == bombs[0]),
+          1
+        );
+        this.collectClearField();
+      }
+    },
     handlePlayerMovement() {
       let multiplicator = 1;
-      this.pressedKeys["Control"] && this.player.skillTree.skills[0].lvl
-        ? (multiplicator = 2)
-        : null;
-      this.pressedKeys["Shift"] && this.player.skillTree.skills[1].lvl
-        ? (multiplicator = 0.5)
-        : null;
+      if (this.pressedKeys["3"] && this.findSkill("bombAbility"))
+        this.bombAbility();
+
+      if (this.pressedKeys["1"] && this.findSkill("fastAbility"))
+        multiplicator = 2;
+
+      if (this.pressedKeys["2"] && this.findSkill("slowAbility"))
+        multiplicator = 0.5;
+
       if (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) {
         this.left(multiplicator);
       }
@@ -745,6 +776,11 @@ export default defineComponent({
     //rnd
     getRandomInt(max: number) {
       return Math.floor(Math.random() * max);
+    },
+    findSkill(skill: type.Skillname) {
+      return this.player.skillTree.skills[
+        this.player.skillTree.skills.findIndex((s) => s.name == skill)
+      ].lvl;
     },
     percent(number: number, change: "in" | "de") {
       if (change == "in") {

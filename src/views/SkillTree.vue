@@ -1,14 +1,14 @@
 <template>
   <div>
     Skill Points:
-    {{ player.skillTree.skillPoints - player.skillTree.usedSkillPoints }}/{{
+    {{ player.skillTree.skillPoints - usedSkillPoints }}/{{
       player.skillTree.skillPoints
     }}
   </div>
   <div class="d-flex flex-column">
     <button
       v-for="skill of player.skillTree.skills"
-      :key="skill"
+      :key="skill.name"
       class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
       @click="lvlSkill(skill)"
     >
@@ -39,19 +39,27 @@ export default defineComponent({
       player: player.value as type.Player,
     };
   },
+  computed: {
+    usedSkillPoints() {
+      let allSkilllvl = 0;
+      for (let skill of this.player.skillTree.skills) {
+        allSkilllvl += skill.lvl;
+      }
+      return allSkilllvl;
+    },
+  },
   methods: {
     lvlSkill(skill: Skill) {
       if (!(skill.lvl < skill.maxlvl)) return;
       if (
         !(
           this.player.skillTree.skillPoints -
-            this.player.skillTree.usedSkillPoints >
+            this.usedSkillPoints >
           0
         )
       )
         return;
       skill.lvl++;
-      this.player.skillTree.usedSkillPoints++;
       API.addPlayer(this.player);
     },
   },
