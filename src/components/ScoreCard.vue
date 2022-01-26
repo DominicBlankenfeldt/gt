@@ -1,8 +1,8 @@
 <template>
   <div class="d-flex justify-content-end"></div>
   <div>ranking</div>
-  <div v-for="bestPlayer of bestPlayers.reverse()" :key="bestPlayer">
-    {{ bestPlayer.email.substring(0, bestPlayer.email.indexOf("@")) }}:
+  <div v-for="bestPlayer of bestPlayers" :key="bestPlayer.player">
+    {{ bestPlayer.player.username }}:
     {{ Math.round(bestPlayer.player.highscore) }}
   </div>
 </template>
@@ -21,9 +21,9 @@ export default defineComponent({
   async mounted() {
     let result = await API.getBestPlayers();
     if (result) {
-      this.bestPlayers =result as type.Player[];
+      this.bestPlayers = result.reverse() as type.Player[];
     }
-    console.log(result)
+    console.log(result);
   },
   components: {},
   methods: {},

@@ -5,9 +5,6 @@
 import { defineComponent } from "vue";
 import ScoreCard from "@/components/ScoreCard.vue";
 export default defineComponent({
-  setup() {
-    return;
-  },
   data() {
     return;
   },

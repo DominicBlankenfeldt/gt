@@ -13,9 +13,15 @@ export const player = ref({
     skills: [
       { name: "fastAbility", lvl: 0, maxlvl: 1 },
       { name: "slowAbility", lvl: 0, maxlvl: 1 },
+      { name: "bombAbility", lvl: 0, maxlvl: 1 },
       { name: "slowEnemy", lvl: 0, maxlvl: 20 },
       { name: "spawnLessEnemy", lvl: 0, maxlvl: 20 },
       { name: "scoreMultiplicator", lvl: 0, maxlvl: 20 },
+      { name: "betterCoin", lvl: 0, maxlvl: 20 },
+      { name: "longerMagnet", lvl: 0, maxlvl: 20 },
+      { name: "betterGrowPotion", lvl: 0, maxlvl: 20 },
+      { name: "smallerBlackHole", lvl: 0, maxlvl: 20 },
+
     ] as type.Skill[],
   } as type.SkillTree,
   outlook: "up", //Blickrichtung
