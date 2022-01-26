@@ -21,9 +21,9 @@ export default defineComponent({
   async mounted() {
     let result = await API.getBestPlayers();
     if (result) {
-      this.bestPlayers =result as type.Player[];
+      this.bestPlayers = result as type.Player[];
     }
-    console.log(result)
+    console.log(result);
   },
   components: {},
   methods: {},

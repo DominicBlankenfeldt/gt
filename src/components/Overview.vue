@@ -38,7 +38,9 @@
           <div>Highscore: <br />{{ Math.round(player.highscore) }}</div>
           <div>gespielte Spiele: <br />{{ player.playedGames }}</div>
           <div>gespielte Hardcore <br />{{ player.playedHardcore }}</div>
-          <div>Highscore Hardcore <br />{{ Math.round(player.highscoreHardcore) }}</div>
+          <div>
+            Highscore Hardcore <br />{{ Math.round(player.highscoreHardcore) }}
+          </div>
         </div>
         <div class="col-6 gy-2 aling-content-start">
           <div>Space Flotte:<br />*TODO*</div>
