@@ -34,8 +34,8 @@
         :style="{
           left: enemy.vector[0] + 'px',
           top: enemy.vector[1] + 'px',
-          width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
-          height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+          width:  enemy.size + 'px',
+          height: enemy.size + 'px',
         }"
         style="position: absolute"
       >
@@ -43,8 +43,8 @@
           :src="enemy.imgsrc"
           alt="enemy"
           :style="{
-            width: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
-            height: enemy.isGrow ? enemy.size * 2 + 'px' : enemy.size + 'px',
+            width: enemy.size + 'px',
+            height: enemy.size + 'px',
           }"
         />
       </div>
@@ -330,6 +330,9 @@ export default defineComponent({
           for (let enemy of this.enemies) {
             if (this.collisionsCheck(enemy, item)) {
               this.despawnItem(item);
+              if(!enemy.isGrow){
+                enemy.size*=2
+              }
               enemy.isGrow = true;
             }
           }
