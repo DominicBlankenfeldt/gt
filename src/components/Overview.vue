@@ -8,17 +8,70 @@
       <div class="profile-pic col-4">
         <div v-if="player.img">
           <img
-            :src="player.img"
+            :src="`/gt/img/avatars/char_${player.img}.png`"
             alt=""
             style="height: calc(20vw); width: 20vw"
           />
         </div>
-        <div v-if="player.img == ''">
+        <div v-else>
           <img
-            src="../../public/img/avatars/avatar_placeholder.png"
+            src="/gt/img/avatars/avatar_placeholder.png"
             alt=""
             style="height: calc(20vw); width: 20vw"
           />
+        </div>
+        <div v-if="editProfile">
+          <!-- Button trigger modal -->
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+          >
+            Profilbild ändern
+          </button>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="exampleModal"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Profilbild</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div
+                    v-for="image of images"
+                    :key="image"
+                    @click="changeImg(image)"
+                    data-bs-dismiss="modal"
+                  >
+                    <img :src="`/gt/img/avatars/char_${image}.png`" alt="" />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Schließen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           registriert seit: <br />
@@ -66,8 +119,22 @@
             <div v-if="!player.hardcoreMode">AUS</div>
           </div>
         </div>
-        <div>edit profil</div>
-        <div>add friend</div>
+        <div v-if="!editProfile">
+          <button
+            class="btn btn-outline-primary shadow-none w-25"
+            @click="toggleEdit()"
+          >
+            Profil bearbeiten
+          </button>
+        </div>
+        <div v-if="editProfile">
+          <button
+            class="btn btn-outline-success shadow-none w-25"
+            @click="toggleEdit()"
+          >
+            Profil speichern
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -87,6 +154,8 @@ export default defineComponent({
       player: player.value as type.Player,
       hardCoreMode: false,
       editProfile: false,
+      img: "",
+      images: ["001", "002", "003", "004", "005"],
     };
   },
   async mounted() {
@@ -96,9 +165,16 @@ export default defineComponent({
     }
   },
   methods: {
+    changeImg(id: string) {
+      this.player.img = id;
+    },
     toggleHardcoreMode() {
       this.player.hardcoreMode = !this.player.hardcoreMode;
       API.addPlayer(this.player);
+    },
+    toggleEdit() {
+      this.editProfile = !this.editProfile;
+      console.log(this.editProfile);
     },
   },
 });
