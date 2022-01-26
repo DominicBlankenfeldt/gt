@@ -111,29 +111,27 @@
               class="btn btn-outline-primary shadow-none w-50"
               @click="toggleHardcoreMode()"
             >
-              Hardcore Mode
+              Hardcore Mode:{{ player.hardcoreMode ? "ON" : "OFF" }}
             </button>
           </div>
           <div class="col-6">
-            <div v-if="player.hardcoreMode">AN</div>
-            <div v-if="!player.hardcoreMode">AUS</div>
+            <div v-if="!editProfile">
+              <button
+                class="btn btn-outline-primary shadow-none w-50"
+                @click="toggleEdit()"
+              >
+                Profil bearbeiten
+              </button>
+            </div>
+            <div v-if="editProfile">
+              <button
+                class="btn btn-outline-success shadow-none w-25"
+                @click="toggleEdit()"
+              >
+                Profil speichern
+              </button>
+            </div>
           </div>
-        </div>
-        <div v-if="!editProfile">
-          <button
-            class="btn btn-outline-primary shadow-none w-25"
-            @click="toggleEdit()"
-          >
-            Profil bearbeiten
-          </button>
-        </div>
-        <div v-if="editProfile">
-          <button
-            class="btn btn-outline-success shadow-none w-25"
-            @click="toggleEdit()"
-          >
-            Profil speichern
-          </button>
         </div>
       </div>
     </div>
