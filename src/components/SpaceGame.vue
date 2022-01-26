@@ -224,12 +224,13 @@ export default defineComponent({
         this.player.size = 40;
         this.score +=
           this.difficulty *
-          ((this.player.skillTree.skills[4].lvl + 100) / 100) *
+          this.percent(this.player.skillTree.skills[4].lvl, "in") *
           1.2;
       } else {
         this.player.size = 20;
         this.score +=
-          this.difficulty * ((this.player.skillTree.skills[4].lvl + 100) / 100);
+          this.difficulty *
+          this.percent(this.player.skillTree.skills[4].lvl, "in");
       }
       this.colisionHandling();
       this.despawnItems();
@@ -554,7 +555,7 @@ export default defineComponent({
             this.mulVec(
               enemy.moveVector,
               this.difficulty *
-                ((100 - this.player.skillTree.skills[2].lvl) / 100)
+                this.percent(this.player.skillTree.skills[2].lvl, "de")
             )
           );
         } else {
@@ -600,11 +601,6 @@ export default defineComponent({
     //     }
     //   }
     // },
-
-    //rnd
-    getRandomInt(max: number) {
-      return Math.floor(Math.random() * max);
-    },
 
     //playermovement
     handlePlayerMovement() {
@@ -713,7 +709,7 @@ export default defineComponent({
             this.addVec(object2.vector, object2.size / 2)
           )
         ) <
-        object1.size + object2.size * range
+        (object1.size + object2.size) * range
       ) {
         object2.vector = this.addVec(
           object2.vector,
@@ -721,6 +717,20 @@ export default defineComponent({
         );
       }
     },
+    //rnd
+    getRandomInt(max: number) {
+      return Math.floor(Math.random() * max);
+    },
+    percent(number: number, change: "in" | "de") {
+      if (change == "in") {
+        return (number + 100) / 100;
+      }
+      if (change == "de") {
+        return number < 100 ? (100 - number) / 100 : 0;
+      }
+      return 1;
+    },
+
     //Vector calculate
     addVec(vec1: type.Vector, vec2: type.Vector | number) {
       if (typeof vec2 == "number") {
