@@ -36,7 +36,7 @@ export interface Item {
   size: number;
   timer: number;
 }
-export type Itemtype = "coin" | "blackHole" | "growPotion" | "clearField";
+export type Itemtype = "coin" | "blackHole" | "growPotion" | "clearField"|"magnet";
 
 export interface SkillTree {
   skillPoints: number;

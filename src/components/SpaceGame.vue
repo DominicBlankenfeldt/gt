@@ -172,10 +172,12 @@ export default defineComponent({
       //player
       player: player.value as type.Player,
       isGrow: false,
+      isMagnet: false,
       bestPlayers: [] as type.Player[],
       // gameSetup
       hardCoreMode: false,
       growPotionID: 0,
+      magnetID: 0,
       gameStarted: false,
       startingEnemies: 4,
       borderRight: 0,
@@ -261,6 +263,7 @@ export default defineComponent({
           (this.player.playedGames = this.player.playedGames + 1),
           API.addPlayer(this.player));
       this.isGrow = false;
+      this.isMagnet = false;
       this.message = "";
       this.gameloopLastCounter = 0;
       this.gameloopCounter = 0;
@@ -308,9 +311,9 @@ export default defineComponent({
     colisionHandling() {
       for (let item of this.items) {
         if (item.type == "blackHole") {
-          this.gravity(item, this.player, 5, 0.5);
+          this.gravity(item, this.player, 4, 0.5);
           for (let enemy of this.enemies) {
-            this.gravity(item, enemy, 5, 0.5);
+            this.gravity(item, enemy, 4, 0.5);
             if (this.collisionsCheck(item, enemy)) {
               this.respawnEnemy(enemy);
             }
@@ -318,7 +321,7 @@ export default defineComponent({
           for (let item2 of this.items) {
             if (item != item2) {
               if (item2.type != "blackHole") {
-                this.gravity(item, item2, 5, 0.5);
+                this.gravity(item, item2, 4, 0.5);
                 if (this.collisionsCheck(item, item2)) {
                   this.despawnItem(item2);
                 }
@@ -328,9 +331,13 @@ export default defineComponent({
 
           if (this.collisionsCheck(item, this.player)) {
             this.touchBlackHole();
-            return;
+          }
+        } else {
+          if (this.isMagnet) {
+            this.gravity(this.player, item, 2, 1);
           }
         }
+
         if (item.type == "growPotion") {
           for (let enemy of this.enemies) {
             if (this.collisionsCheck(enemy, item)) {
@@ -354,10 +361,16 @@ export default defineComponent({
             case "clearField":
               this.collectClearField();
               break;
+            case "magnet":
+              this.collectMagnet(item);
+              break;
           }
         }
       }
       for (let enemy of this.enemies) {
+        if (this.isMagnet) {
+          this.gravity(this.player, enemy, 2, -1);
+        }
         if (this.collisionsCheck(enemy, this.player)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
         }
@@ -387,6 +400,13 @@ export default defineComponent({
       this.growPotionID = setTimeout(() => {
         this.isGrow = false;
       }, 200 * item.size);
+    },
+    collectMagnet(item: type.Item) {
+      this.isMagnet = true;
+      clearTimeout(this.magnetID);
+      this.magnetID = setTimeout(() => {
+        this.isMagnet = false;
+      }, 300 * item.size);
     },
     collectClearField() {
       for (let enemy of [...this.enemies]) {
@@ -421,7 +441,7 @@ export default defineComponent({
       let vector = [0, 0] as type.Vector;
       let size = 20;
       let imgsrc = "";
-      switch (this.getRandomInt(4)) {
+      switch (this.getRandomInt(5)) {
         case 0:
           type = "coin";
           size = this.getRandomInt(25) + 20;
@@ -439,6 +459,11 @@ export default defineComponent({
         case 3:
           type = "clearField";
           imgsrc = "/gt/img/items/bomb/bomb.gif";
+          break;
+        case 4:
+          type = "magnet";
+          imgsrc = "green";
+          size = this.getRandomInt(25) + 20;
           break;
       }
       vector[0] =
