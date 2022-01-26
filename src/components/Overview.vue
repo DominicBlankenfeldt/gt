@@ -1,8 +1,7 @@
 <template>
-  <div>this is going to be an overview</div>
-  <div class="card card-default w-75" style="margin-left: 12.5%">
+  <div class="card card-default w-75 mt-5" style="margin-left: 12.5%">
     <div class="card-header header row g-0">
-      <div><h3>Profil-Karte</h3></div>
+      <!-- <div><h3>Profil-Karte</h3></div> -->
     </div>
     <div class="card-body row gx-0">
       <div class="profile-pic col-4">
