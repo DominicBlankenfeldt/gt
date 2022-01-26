@@ -64,7 +64,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "90a010f9ea54660f5c9276f41e7fc31b",
+    "revision": "e577583e3e90c3aa706f71970623a142",
     "url": "/gt/index.html"
   },
   {
@@ -72,8 +72,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.9a1d46c7.js"
   },
   {
-    "revision": "318be1b1ff47fd43f8f8",
-    "url": "/gt/js/app.fc82a8bb.js"
+    "revision": "faa708c47b2b21dc81a0",
+    "url": "/gt/js/app.8bf732f1.js"
   },
   {
     "revision": "003d08d6a1402de4acf8",

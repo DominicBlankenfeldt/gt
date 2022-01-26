@@ -371,7 +371,7 @@ export default defineComponent({
       }
       for (let enemy of this.enemies) {
         if (this.isMagnet) {
-          this.gravity(this.player, enemy, 2, -1);
+          this.gravity(this.player, enemy, 2, -0.5);
         }
         if (this.collisionsCheck(enemy, this.player)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
