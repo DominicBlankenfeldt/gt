@@ -78,7 +78,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import * as API from "@/API";
-import { player } from "@/global";
+import { checkPlayer,player } from "@/global";
 import * as type from "@/types";
 export default defineComponent({
   setup() {
@@ -96,6 +96,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
+    this.player=checkPlayer(this.player) as type.Player
   },
   methods: {
     toggleHardcoreMode() {

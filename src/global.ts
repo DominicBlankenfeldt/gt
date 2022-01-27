@@ -95,7 +95,6 @@ export function checkPlayer(checkedPlayer: type.Player) {
   if (checkedPlayer.hardcoreMode === undefined) {
     checkedPlayer.hardcoreMode = false
   }
-
   for (const skill of ["fastAbility", "slowAbility", "bombAbility"]) {
     if (checkSkill(checkedPlayer, skill)) {
       checkedPlayer.skillTree.skills.push({ name: skill as type.Skillname, lvl: 0, maxlvl: 1 })
