@@ -20,7 +20,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { player } from "@/global";
+import { checkPlayer,player } from "@/global";
 import { Skill } from "@/types";
 import * as API from "@/API";
 import * as type from "@/types";
@@ -33,6 +33,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
+    this.player=checkPlayer(this.player) as type.Player
   },
   data() {
     return {

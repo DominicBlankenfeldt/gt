@@ -150,7 +150,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { player, production } from "@/global";
+import { checkPlayer, player, production } from "@/global";
 import * as type from "@/types";
 import * as API from "@/API";
 export default defineComponent({
@@ -218,6 +218,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
+    this.player=checkPlayer(this.player) as type.Player
   },
   methods: {
     //game
