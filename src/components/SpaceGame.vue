@@ -79,7 +79,26 @@
       </div>
     </div>
   </div>
-
+  <div
+    :style="{
+      left: 0 + 'px',
+      top: borderDown + 5 + 'px',
+    }"
+    style="position: absolute; z-index: 3"
+    class="row col-12"
+  >
+    <div class="col-4"></div>
+    <div class="col-2">
+      <div v-if="isMagnet" style="z-index: 3">
+        Magnet:{{ Math.round(magnetDuration) }}
+      </div>
+    </div>
+    <div class="col-2">
+      <div v-if="isGrow" style="z-index: 3">
+        Grow:{{ Math.round(growDuration) }}
+      </div>
+    </div>
+  </div>
   <!-- <div
     class="btn-group"
     role="group"
@@ -163,6 +182,7 @@ export default defineComponent({
       // display
       message: "",
       messageType: "",
+      middlex: window.innerWidth / 2,
       production: production.value,
       // debug
       enemiesSpawn: true,
@@ -173,6 +193,8 @@ export default defineComponent({
       player: player.value as type.Player,
       isGrow: false,
       isMagnet: false,
+      growDuration: 0,
+      magnetDuration: 0,
       bombCoolDown: false,
       bombCoolDownID: 0,
       bestPlayers: [] as type.Player[],
@@ -218,7 +240,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
-    this.player=checkPlayer(this.player) as type.Player
+    this.player = checkPlayer(this.player) as type.Player;
   },
   methods: {
     //game
@@ -242,13 +264,17 @@ export default defineComponent({
       this.despawnItems();
       this.gameloopCounter++;
       //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
-      this.gameloopCounter % 20 == 0 ? this.handleEnemyGetBigger() : null; // 0.3sek
-      this.gameloopCounter % 60 == 0 ? this.growBlackHole() : null; // 1sek
-      this.gameloopCounter % 120 == 0 ? this.spawnItems() : null; // 2sek
-      this.gameloopCounter % 1200 == 0 ? (this.difficulty += 0.5) : null; // 20sek
-      this.gameloopCounter % (900 + 3 * this.findSkill("spawnLessEnemy")) == 0
-        ? this.createEnemy()
-        : null;
+      if (this.gameloopCounter % 20 == 0) this.handleEnemyGetBigger(); // 0.3sek
+      if (this.gameloopCounter % 60 == 0) this.growBlackHole(); // 1sek
+      if (this.gameloopCounter % 120 == 0) this.spawnItems(); // 2sek
+      if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5; // 20sek
+      if (
+        this.gameloopCounter %
+          (900 * this.percent(this.findSkill("spawnLessEnemy"), "in")) ==
+        0
+      )
+        this.createEnemy();
+      this.reduceDuartion();
     },
     countgps() {
       this.countgpsID = setTimeout(() => {
@@ -257,14 +283,14 @@ export default defineComponent({
         this.countgps();
       }, 500);
     },
-    start() {
+    async start() {
       this.player.hardcoreMode
         ? ((this.startingEnemies = 400),
-          (this.player.playedHardcore = this.player.playedHardcore + 1),
-          API.addPlayer(this.player))
+          this.player.playedHardcore++,
+          await API.addPlayer(this.player))
         : ((this.startingEnemies = 4),
-          (this.player.playedGames = this.player.playedGames + 1),
-          API.addPlayer(this.player));
+          this.player.playedGames++,
+          await API.addPlayer(this.player));
       this.isGrow = false;
       this.isMagnet = false;
       this.message = "";
@@ -298,17 +324,21 @@ export default defineComponent({
       if (this.player.hardcoreMode) {
         if (this.score > this.player.highscoreHardcore) {
           this.player.highscoreHardcore = this.score;
+          this.setSkillPoints();
         }
-        API.addPlayer(this.player);
+        await API.addPlayer(this.player);
       } else if (this.score > this.player.highscore) {
         this.player.highscore = this.score;
-        this.player.skillTree.skillPoints = Math.floor(
-          this.player.highscore / 1000
-        );
-        API.addPlayer(this.player);
+        this.setSkillPoints();
+        await API.addPlayer(this.player);
       }
       this.message = message;
       this.messageType = messageType;
+    },
+    setSkillPoints() {
+      this.player.skillTree.skillPoints =
+        Math.floor(this.player.highscore / 1000) +
+        Math.floor(this.player.highscoreHardcore / 250);
     },
     //colliosion
     colisionHandling() {
@@ -344,11 +374,21 @@ export default defineComponent({
         if (item.type == "growPotion") {
           for (let enemy of this.enemies) {
             if (this.collisionsCheck(enemy, item)) {
-              this.despawnItem(item);
               if (!enemy.isGrow) {
+                this.despawnItem(item);
                 enemy.size *= 2;
               }
               enemy.isGrow = true;
+            }
+          }
+        }
+        if (item.type == "magnet") {
+          for (let enemy of this.enemies) {
+            if (this.collisionsCheck(enemy, item)) {
+              if (!enemy.isMagnet) {
+                this.despawnItem(item);
+                enemy.isMagnet = true;
+              }
             }
           }
         }
@@ -373,6 +413,9 @@ export default defineComponent({
       for (let enemy of this.enemies) {
         if (this.isMagnet) {
           this.gravity(this.player, enemy, 2, -0.5);
+        }
+        if (enemy.isMagnet) {
+          this.gravity(enemy, this.player, 2, 0.5);
         }
         if (this.collisionsCheck(enemy, this.player)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
@@ -402,18 +445,35 @@ export default defineComponent({
         this.percent(this.findSkill("betterCoin"), "in");
     },
     collectGrowPotion(item: type.Item) {
+      if (!this.isGrow) {
+        this.player.vector = this.subVec(
+          this.player.vector,
+          this.player.size / 2
+        );
+      }
       this.isGrow = true;
-      clearTimeout(this.growPotionID);
-      this.growPotionID = setTimeout(() => {
-        this.isGrow = false;
-      }, 200 * item.size);
+      this.growDuration += 200 * item.size;
     },
     collectMagnet(item: type.Item) {
       this.isMagnet = true;
-      clearTimeout(this.magnetID);
-      this.magnetID = setTimeout(() => {
-        this.isMagnet = false;
-      }, 300 * item.size * this.percent(this.findSkill("longerMagnet"), "in"));
+      this.magnetDuration +=
+        300 * item.size * this.percent(this.findSkill("longerMagnet"), "in");
+    },
+    reduceDuartion() {
+      this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0);
+      this.isMagnet
+        ? (this.magnetDuration -= 1000 / 60)
+        : (this.magnetDuration = 0);
+      if (this.isGrow) {
+        if (this.growDuration <= 0) {
+          this.isGrow = false;
+          this.player.vector = this.addVec(
+            this.player.vector,
+            this.player.size / 2
+          );
+        }
+      }
+      if (this.magnetDuration <= 0) this.isMagnet = false;
     },
     collectClearField() {
       for (let enemy of [...this.enemies]) {
@@ -449,6 +509,15 @@ export default defineComponent({
       let vector = [0, 0] as type.Vector;
       let size = 20;
       let imgsrc = "";
+      vector[0] =
+        this.getRandomInt(this.borderRight - this.borderLeft - 20) +
+        this.borderLeft;
+      vector[1] =
+        this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
+      if (this.lenVec(this.subVec(vector, this.player.vector)) < 150) {
+        this.spawnItems();
+        return;
+      }
       switch (this.getRandomInt(5)) {
         case 0:
           type = "coin";
@@ -475,17 +544,12 @@ export default defineComponent({
           size = this.getRandomInt(25) + 20;
           break;
       }
-      vector[0] =
-        this.getRandomInt(this.borderRight - this.borderLeft - 20) +
-        this.borderLeft;
-      vector[1] =
-        this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
       this.items.push({
         type: type as type.Itemtype,
         imgsrc: imgsrc,
         vector: vector,
         size: size,
-        timer: 300, // 5sek
+        timer: 450, // 7.5sek
       });
     },
 
@@ -570,6 +634,7 @@ export default defineComponent({
         moveVector: moveArray as type.Vector,
         timer: type == "chasebot" ? 300 : null,
         isGrow: false,
+        isMagnet: false,
       });
     },
 
@@ -595,10 +660,13 @@ export default defineComponent({
           enemy.vector = this.addVec(
             enemy.vector,
 
-            this.mulVec(this.difVec(
-              this.dirVec(this.player.vector, enemy.vector),
-              this.lenVec(this.dirVec(this.player.vector, enemy.vector))
-            ),2)
+            this.mulVec(
+              this.difVec(
+                this.dirVec(this.player.vector, enemy.vector),
+                this.lenVec(this.dirVec(this.player.vector, enemy.vector))
+              ),
+              2
+            )
           );
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
@@ -841,6 +909,7 @@ export default defineComponent({
     },
     // displaysize
     changeDisplaySize() {
+      this.middlex = window.innerWidth / 2;
       this.borderRight = Math.round(
         window.innerWidth - (window.innerWidth / 100) * 12.5 - 60
       );

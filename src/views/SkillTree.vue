@@ -16,11 +16,17 @@
       <br />
       lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
     </button>
+    <button
+      class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
+      @click="resetSkillTree()"
+    >
+      reset Skilltree
+    </button>
   </div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import { checkPlayer,player } from "@/global";
+import { checkPlayer, player } from "@/global";
 import { Skill } from "@/types";
 import * as API from "@/API";
 import * as type from "@/types";
@@ -33,7 +39,7 @@ export default defineComponent({
     if (result) {
       this.player = result.player;
     }
-    this.player=checkPlayer(this.player) as type.Player
+    this.player = checkPlayer(this.player) as type.Player;
   },
   data() {
     return {
@@ -50,18 +56,20 @@ export default defineComponent({
     },
   },
   methods: {
-    lvlSkill(skill: Skill) {
+    async lvlSkill(skill: Skill) {
       if (!(skill.lvl < skill.maxlvl)) return;
-      if (
-        !(
-          this.player.skillTree.skillPoints -
-            this.usedSkillPoints >
-          0
-        )
-      )
+      if (!(this.player.skillTree.skillPoints - this.usedSkillPoints > 0))
         return;
       skill.lvl++;
-      API.addPlayer(this.player);
+      await API.addPlayer(this.player);
+    },
+    async resetSkillTree() {
+      this.player.skillTree.skillPoints -= this.usedSkillPoints;
+      for (let skill of this.player.skillTree.skills) {
+        this.player.skillTree.skillPoints += skill.lvl;
+        skill.lvl = 0;
+      }
+      await API.addPlayer(this.player);
     },
   },
 });

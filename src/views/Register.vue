@@ -1,6 +1,12 @@
 <template>
   <div
-    class="container d-flex align-items-stretch justify-content-center flex-column"
+    class="
+      container
+      d-flex
+      align-items-stretch
+      justify-content-center
+      flex-column
+    "
     style="height: calc(100vh - 200px)"
   >
     <div class="card card-default w-75" style="margin-left: 12.5%">
@@ -124,7 +130,7 @@ export default defineComponent({
         this.player.hardcoreMode = false;
         this.player.highscoreHardcore = 0;
         this.player.playedHardcore = 0;
-        API.addPlayer(this.player);
+        await API.addPlayer(this.player);
         this.$router.push("/home");
       } catch (e) {
         console.log("couldn't register", e);

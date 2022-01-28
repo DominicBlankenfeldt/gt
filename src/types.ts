@@ -7,6 +7,7 @@ export interface Enemy {
   moveVector: Vector;
   timer: number | null;
   isGrow: boolean;
+  isMagnet:boolean;
 }
 export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger";
 
