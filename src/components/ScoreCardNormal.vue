@@ -45,7 +45,7 @@
       <div
         class="col-12 row g-0"
         v-for="(bestPlayer, index) in bestPlayers"
-        :key="bestPlayer.player"
+        :key="bestPlayer.id"
       >
         <div v-if="index > 2">
           {{ bestPlayer?.player.username }} :

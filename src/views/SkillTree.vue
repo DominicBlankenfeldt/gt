@@ -40,17 +40,12 @@ export default defineComponent({
       this.player = result.player;
     }
     this.player = checkPlayer(this.player) as type.Player;
-    this.player.skillTree.skills.sort((a, b) => {
-          return a.name>b.name?1:-1;
-        })
-        .sort((a, b) => {
-          return a.maxlvl - b.maxlvl;
-        })
+    this.player.skillTree.skills .sort((a, b) => (a.name < b.name ? -1 : 1))
+     .sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
   },
   data() {
     return {
       player: player.value as type.Player,
-
     };
   },
   computed: {
