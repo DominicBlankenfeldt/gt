@@ -36,7 +36,12 @@ export interface Item {
   size: number;
   timer: number;
 }
-export type Itemtype = "coin" | "blackHole" | "growPotion" | "clearField"|"magnet";
+export type Itemtype =
+  | "coin"
+  | "blackHole"
+  | "growPotion"
+  | "clearField"
+  | "magnet";
 
 export interface SkillTree {
   skillPoints: number;
@@ -50,6 +55,20 @@ export interface Skill {
   lvl: number;
   maxlvl: number;
 }
-export type Skillname="fastAbility"|"slowAbility"|"bombAbility"|"slowEnemy"|"spawnLessEnemy"|"scoreMultiplicator"|"betterCoin"|"longerMagnet"|"betterGrowPotion"|"smallerBlackHole"
+export type Skillname =
+  | "fastAbility"
+  | "slowAbility"
+  | "bombAbility"
+  | "slowEnemy"
+  | "spawnLessEnemy"
+  | "scoreMultiplicator"
+  | "betterCoin"
+  | "longerMagnet"
+  | "betterGrowPotion"
+  | "smallerBlackHole";
 
 export type Vector = [number, number];
+
+export interface bestPlayer {
+  player: Player;
+}
