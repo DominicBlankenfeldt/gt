@@ -7,12 +7,7 @@
   </div>
   <div class="d-flex flex-column">
     <button
-      v-for="skill of player.skillTree.skills.sort((a, b) => {
-          return a.name>b.name?1:-1;
-        })
-        .sort((a, b) => {
-          return a.maxlvl - b.maxlvl;
-        })"
+      v-for="skill of player.skillTree.skills"
       :key="skill.name"
       class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
       @click="lvlSkill(skill)"
@@ -45,10 +40,17 @@ export default defineComponent({
       this.player = result.player;
     }
     this.player = checkPlayer(this.player) as type.Player;
+    this.player.skillTree.skills.sort((a, b) => {
+          return a.name>b.name?1:-1;
+        })
+        .sort((a, b) => {
+          return a.maxlvl - b.maxlvl;
+        })
   },
   data() {
     return {
       player: player.value as type.Player,
+
     };
   },
   computed: {
