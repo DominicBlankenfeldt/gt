@@ -89,16 +89,22 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import * as API from "@/API";
+import { currentUser } from "@/router";
 
 @Options({
   components: {},
+
+  mounted(){
+if(currentUser){
+  this.$router.push("/home");
+}
+  },
   methods: {
     async login() {
       this.error = false;
       this.loggingIn = true;
       try {
         await API.login(this.email, this.password);
-        console.log("admin logged in with:" + this.email);
         this.email = "";
         this.password = "";
         this.$router.push("/home");

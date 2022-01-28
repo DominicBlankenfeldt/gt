@@ -30,8 +30,17 @@
           width: player.size + 'px',
           height: player.size + 'px',
         }"
-        style="position: absolute; background-color: red; border-radius: 50%"
-      ></div>
+        style="position: absolute; border-radius: 50%"
+      >
+        <img
+          :src="`/gt/img/char/playership_${player.outlook}.png`"
+          alt=""
+          :style="{
+            width: player.size + 'px',
+            height: player.size + 'px',
+          }"
+        />
+      </div>
       <div
         v-for="enemy of enemies"
         :key="enemy.id"
@@ -527,7 +536,7 @@ export default defineComponent({
         case 1:
           type = "blackHole";
           size = 20 * this.percent(this.findSkill("smallerBlackHole"), "de");
-          imgsrc = "blue";
+          imgsrc = "/gt/img/items/darkhole/darkhole.png";
           break;
         case 2:
           type = "growPotion";
@@ -540,7 +549,7 @@ export default defineComponent({
           break;
         case 4:
           type = "magnet";
-          imgsrc = "green";
+          imgsrc = "/gt/img/items/magnet/magnet.png";
           size = this.getRandomInt(25) + 20;
           break;
       }
@@ -751,6 +760,33 @@ export default defineComponent({
       }
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
+      }
+      if (
+        (this.pressedKeys["ArrowRight"] || this.pressedKeys["a"]) &&
+        (this.pressedKeys["ArrowDown"] || this.pressedKeys["w"])
+      ) {
+        this.player.outlook = "downright";
+      }
+      if (
+        (this.pressedKeys["ArrowLeft"] ||
+        this.pressedKeys["a"]) && (this.pressedKeys["ArrowDown"] ||
+        this.pressedKeys["s"])
+      ) {
+        this.player.outlook = "downleft";
+      }
+      if (
+        (this.pressedKeys["ArrowRight"] ||
+        this.pressedKeys["d"]) && (this.pressedKeys["ArrowUp"] ||
+        this.pressedKeys["w"])
+      ) {
+        this.player.outlook = "upright";
+      }
+      if (
+       ( this.pressedKeys["ArrowLeft"] ||
+        this.pressedKeys["a"]) && (this.pressedKeys["ArrowUp"] ||
+        this.pressedKeys["w"])
+      ) {
+        this.player.outlook = "upleft";
       }
       switch (this.borderCheck(this.player, "inner")) {
         case "right":

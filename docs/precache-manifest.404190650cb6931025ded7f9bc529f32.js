@@ -48,6 +48,38 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/playership.png"
   },
   {
+    "revision": "5063e2f5ab544ce8b37c177608399f65",
+    "url": "/gt/img/char/playership_down.png"
+  },
+  {
+    "revision": "ce407abd09e1159f0e695cc421492538",
+    "url": "/gt/img/char/playership_downleft.png"
+  },
+  {
+    "revision": "44e0e2b21085aae09a73e6fde673bcfb",
+    "url": "/gt/img/char/playership_downright.png"
+  },
+  {
+    "revision": "6f82652c9ecdc63890c727cbaa8d3f27",
+    "url": "/gt/img/char/playership_left.png"
+  },
+  {
+    "revision": "b17fab42f180656fb4ca7b425992ee28",
+    "url": "/gt/img/char/playership_right.png"
+  },
+  {
+    "revision": "8ba7b11973f5d751dbcaee6da2abcad2",
+    "url": "/gt/img/char/playership_up.png"
+  },
+  {
+    "revision": "4d22534a6fd002b31405a731990d0050",
+    "url": "/gt/img/char/playership_upleft.png"
+  },
+  {
+    "revision": "8c00eda7797ec50f4a55ba5e3a6e4295",
+    "url": "/gt/img/char/playership_upright.png"
+  },
+  {
     "revision": "2f1e686338694976cd617a7839962206",
     "url": "/gt/img/crowns/bronze.png"
   },
@@ -66,6 +98,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "801a264bc03115117174ceb139e147e2",
     "url": "/gt/img/items/coin/coin.gif"
+  },
+  {
+    "revision": "7cdbbbba7940cac1db57860cf442d525",
+    "url": "/gt/img/items/darkhole/darkhole.png"
+  },
+  {
+    "revision": "7e716c6a5e119ac0edd91513133ff5fd",
+    "url": "/gt/img/items/magnet/magnet.png"
   },
   {
     "revision": "25628fa8faf6702b8df17b37541861e2",
@@ -92,7 +132,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "8daaea25040c835a0687c11e9e2f6055",
+    "revision": "d123094ff9fe3d0a19e350672d23075f",
     "url": "/gt/index.html"
   },
   {
@@ -100,8 +140,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.58146a90.js"
   },
   {
-    "revision": "3d4af1a83df73f7a7019",
-    "url": "/gt/js/app.9e6d964d.js"
+    "revision": "a2592e46be0a44586b6b",
+    "url": "/gt/js/app.f39df6b0.js"
   },
   {
     "revision": "04f71f694a5a0bae562f",

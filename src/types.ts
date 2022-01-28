@@ -28,7 +28,7 @@ export interface Player {
   hardcoreMode: boolean;
   playedHardcore: number;
 }
-export type Outlook = "up" | "down" | "right" | "left";
+export type Outlook = "up" | "down" | "right" | "left"|"upleft"|"upright"|"downleft"|"downright";
 
 export interface Item {
   type: Itemtype;
