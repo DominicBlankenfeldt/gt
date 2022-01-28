@@ -8,6 +8,22 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/avatars/char_001.png"
   },
   {
+    "revision": "6585c8e18940caf255865ee08b8fb14e",
+    "url": "/gt/img/avatars/char_002.png"
+  },
+  {
+    "revision": "04e2c969e6c1f63767578b5b3505d2c4",
+    "url": "/gt/img/avatars/char_003.png"
+  },
+  {
+    "revision": "590003678d70f917409a44a79b106fb5",
+    "url": "/gt/img/avatars/char_004.png"
+  },
+  {
+    "revision": "fb780ae51de70f54870d763c328b6051",
+    "url": "/gt/img/avatars/char_005.png"
+  },
+  {
     "revision": "a0ff9371ee1f55f4a70f4c9db7bd6588",
     "url": "/gt/img/char/enemy_cupcake.gif"
   },
@@ -30,6 +46,18 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "f8b19de8cb44ec5af71a52bc325fa40d",
     "url": "/gt/img/char/playership.png"
+  },
+  {
+    "revision": "2f1e686338694976cd617a7839962206",
+    "url": "/gt/img/crowns/bronze.png"
+  },
+  {
+    "revision": "b92e8fb5da6e9f4158f30af00cfd284a",
+    "url": "/gt/img/crowns/gold.png"
+  },
+  {
+    "revision": "6999fe20bc9b5c15278e0720ced0b5fc",
+    "url": "/gt/img/crowns/silver.png"
   },
   {
     "revision": "584b960a374a4282500d36d85dd925ae",
@@ -64,27 +92,27 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "e577583e3e90c3aa706f71970623a142",
+    "revision": "6872dec22cb919b7bc24e3f0a9b69011",
     "url": "/gt/index.html"
   },
   {
-    "revision": "78a0e88a0b059f3a0626",
-    "url": "/gt/js/about.9a1d46c7.js"
+    "revision": "c26eb8eeca0c8f2ee422",
+    "url": "/gt/js/about.abfe408d.js"
   },
   {
-    "revision": "faa708c47b2b21dc81a0",
-    "url": "/gt/js/app.8bf732f1.js"
+    "revision": "c9c3ab2ca9d060155e93",
+    "url": "/gt/js/app.8cb9eda3.js"
   },
   {
-    "revision": "003d08d6a1402de4acf8",
-    "url": "/gt/js/chunk-vendors.a04471f0.js"
+    "revision": "fc692354c7f47dc93bf4",
+    "url": "/gt/js/chunk-vendors.e87c22a8.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
     "url": "/gt/manifest.json"
   },
   {
-    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "revision": "735ab4f94fbcd57074377afca324c813",
     "url": "/gt/robots.txt"
   }
 ]);
