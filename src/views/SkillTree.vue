@@ -9,7 +9,7 @@
     <button
       v-for="skill of player.skillTree.skills
         .sort((a, b) => {
-          return a.name.localeCompare(b.name);
+          return a.name>b.name?1:-1;
         })
         .sort((a, b) => {
           return a.maxlvl - b.maxlvl;
