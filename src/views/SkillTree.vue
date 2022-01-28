@@ -7,7 +7,13 @@
   </div>
   <div class="d-flex flex-column">
     <button
-      v-for="skill of player.skillTree.skills"
+      v-for="skill of player.skillTree.skills
+        .sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        })
+        .sort((a, b) => {
+          return a.maxlvl - b.maxlvl;
+        })"
       :key="skill.name"
       class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
       @click="lvlSkill(skill)"
