@@ -69,6 +69,9 @@ export type Skillname =
 
 export type Vector = [number, number];
 
-export interface bestPlayer {
+export interface BestPlayers {
   player: Player;
+  email: string;
+  role: string;
+  id: string;
 }

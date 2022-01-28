@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex"></div>
-  <div style="font-size: 9vw"><u>ranking</u></div>
+  <div style="font-size: 8vw"><u>ranking</u></div>
   <div class="row g-0">
     <div class="col-12 row g-0">
       <div>
@@ -11,8 +11,8 @@
           class="col-12"
         />
       </div>
-      <div>player 1</div>
-      <div>highscore</div>
+      <div>{{ bestPlayers[0]?.player.username }}</div>
+      <div>{{ Math.round(bestPlayers[0]?.player.highscore) }}</div>
     </div>
     <div class="col-12 row g-0 justify-content-between">
       <div class="col-4">
@@ -24,8 +24,8 @@
             class="col-12"
           />
         </div>
-        <div>player 2</div>
-        <div>highscore</div>
+        <div>{{ bestPlayers[1]?.player.username }}</div>
+        <div>{{ Math.round(bestPlayers[1]?.player.highscore) }}</div>
       </div>
 
       <div class="col-4">
@@ -37,34 +37,50 @@
             class="col-12"
           />
         </div>
-        <div>player 3</div>
-        <div>highscore</div>
+        <div>{{ bestPlayers[2]?.player.username }}</div>
+        <div>{{ Math.round(bestPlayers[2]?.player.highscore) }}</div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 4:highscore</div>
+        <div>
+          {{ bestPlayers[3]?.player.username }} :
+          {{ Math.round(bestPlayers[3]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 5:highscore</div>
+        <div>
+          {{ bestPlayers[4]?.player.username }} :
+          {{ Math.round(bestPlayers[4]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 6:highscore</div>
+        <div>
+          {{ bestPlayers[5]?.player.username }} :
+          {{ Math.round(bestPlayers[5]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 7:highscore</div>
+        <div>
+          {{ bestPlayers[6]?.player.username }} :
+          {{ Math.round(bestPlayers[6]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 8:highscore</div>
+        <div>
+          {{ bestPlayers[7]?.player.username }} :
+          {{ Math.round(bestPlayers[7]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 9:highscore</div>
+        <div>
+          {{ bestPlayers[8]?.player.username }} :
+          {{ Math.round(bestPlayers[8]?.player.highscore) }}
+        </div>
       </div>
       <div class="col-12 row g-0">
-        <div>player 10:highscore</div>
-      </div>
-      <hr />
-      <div v-for="bestPlayer of bestPlayers" :key="bestPlayer.player">
-        {{ bestPlayer.player.username }}:
-        {{ Math.round(bestPlayer.player.highscore) }}
+        <div>
+          {{ bestPlayers[9]?.player.username }} :
+          {{ Math.round(bestPlayers[9]?.player.highscore) }}
+        </div>
       </div>
     </div>
   </div>
@@ -78,13 +94,13 @@ import * as type from "@/types";
 export default defineComponent({
   data() {
     return {
-      bestPlayers: [] as type.bestPlayer[],
+      bestPlayers: [] as type.BestPlayers[],
     };
   },
   async mounted() {
     let result = await API.getBestPlayers();
     if (result) {
-      this.bestPlayers = result.reverse() as unknown as type.bestPlayer[];
+      this.bestPlayers = result.reverse() as type.BestPlayers[];
     }
     console.log(result);
   },
