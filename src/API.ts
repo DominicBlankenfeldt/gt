@@ -86,12 +86,12 @@ export async function getAPI<T extends { id: string }>(
   })) as T[];
 }
 
-export async function getBestPlayers() {
+export async function getBestPlayers(sortBy:string) {
   const docs: QueryDocumentSnapshot<DocumentData>[] = [];
   const querySnapshot = await getDocs(
     query(
       collection(getFirestore(), "users"),
-      orderBy("player.highscore"),
+      orderBy(sortBy),
       limitToLast(5)
     )
   );

@@ -1,16 +1,21 @@
 <template>
-  <ScoreCard />
+  <ScoreCardNormal v-if="view == 'normal'" />
+  <ScoreCardHardcore v-if="view == 'hardcore'" />
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import ScoreCard from "@/components/ScoreCard.vue";
+import ScoreCardNormal from "@/components/ScoreCardNormal.vue";
+import ScoreCardHardcore from "@/components/ScoreCardHardcore.vue";
 export default defineComponent({
   data() {
-    return;
+    return {
+      view: "hardcore",
+    };
   },
   methods: {},
   components: {
-    ScoreCard,
+    ScoreCardNormal,
+    ScoreCardHardcore,
   },
 });
 </script>

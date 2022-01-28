@@ -1,6 +1,7 @@
 <template>
-  <div class="d-flex"></div>
-  <div style="font-size: 8vw"><u>ranking</u></div>
+  <div class="d-flex" style="margin-top: 15vh"></div>
+  <div style="font-size: 6vw"><u>ranking</u></div>
+  <div style="font-size: 4vw"><u>normal</u></div>
   <div class="row g-0">
     <div class="col-12 row g-0">
       <div>
@@ -40,46 +41,15 @@
         <div>{{ bestPlayers[2]?.player.username }}</div>
         <div>{{ Math.round(bestPlayers[2]?.player.highscore) }}</div>
       </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[3]?.player.username }} :
-          {{ Math.round(bestPlayers[3]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[4]?.player.username }} :
-          {{ Math.round(bestPlayers[4]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[5]?.player.username }} :
-          {{ Math.round(bestPlayers[5]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[6]?.player.username }} :
-          {{ Math.round(bestPlayers[6]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[7]?.player.username }} :
-          {{ Math.round(bestPlayers[7]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[8]?.player.username }} :
-          {{ Math.round(bestPlayers[8]?.player.highscore) }}
-        </div>
-      </div>
-      <div class="col-12 row g-0">
-        <div>
-          {{ bestPlayers[9]?.player.username }} :
-          {{ Math.round(bestPlayers[9]?.player.highscore) }}
+
+      <div
+        class="col-12 row g-0"
+        v-for="(bestPlayer, index) in bestPlayers"
+        :key="bestPlayer.player"
+      >
+        <div v-if="index > 2">
+          {{ bestPlayer?.player.username }} :
+          {{ Math.round(bestPlayer?.player.highscore) }}
         </div>
       </div>
     </div>
@@ -98,7 +68,7 @@ export default defineComponent({
     };
   },
   async mounted() {
-    let result = await API.getBestPlayers();
+    let result = await API.getBestPlayers("player.highscore");
     if (result) {
       this.bestPlayers = result.reverse() as type.BestPlayers[];
     }
