@@ -580,7 +580,7 @@ export default defineComponent({
           moveArray = [(Math.random() - 0.5) * 2, -1];
           break;
         case 2:
-          vector[0] = this.borderRight + 2;
+          vector[0] = this.borderRight;
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
@@ -768,23 +768,20 @@ export default defineComponent({
         this.player.outlook = "downright";
       }
       if (
-        (this.pressedKeys["ArrowLeft"] ||
-        this.pressedKeys["a"]) && (this.pressedKeys["ArrowDown"] ||
-        this.pressedKeys["s"])
+        (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) &&
+        (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"])
       ) {
         this.player.outlook = "downleft";
       }
       if (
-        (this.pressedKeys["ArrowRight"] ||
-        this.pressedKeys["d"]) && (this.pressedKeys["ArrowUp"] ||
-        this.pressedKeys["w"])
+        (this.pressedKeys["ArrowRight"] || this.pressedKeys["d"]) &&
+        (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"])
       ) {
         this.player.outlook = "upright";
       }
       if (
-       ( this.pressedKeys["ArrowLeft"] ||
-        this.pressedKeys["a"]) && (this.pressedKeys["ArrowUp"] ||
-        this.pressedKeys["w"])
+        (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) &&
+        (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"])
       ) {
         this.player.outlook = "upleft";
       }
