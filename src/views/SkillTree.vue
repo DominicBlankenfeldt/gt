@@ -1,23 +1,47 @@
 <template>
-  <div>
-    Skill Points:
-    {{ player.skillTree.skillPoints - usedSkillPoints }}/{{
-      player.skillTree.skillPoints
-    }}
-  </div>
-  <div class="d-flex flex-column">
+  <div style="margin-top: 8vh">
+    <div>
+      Skill Points:
+      {{ player.skillTree.skillPoints - usedSkillPoints }}/{{
+        player.skillTree.skillPoints
+      }}
+    </div>
+    <div class="row g-0">
+      <div class="d-flex flex-column col-6">
+        <div
+          v-for="(skill, index) of player.skillTree.skills"
+          :key="skill.name"
+        >
+          <button
+            v-if="index > 4"
+            class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+            @click="lvlSkill(skill)"
+          >
+            {{ skill.name }}
+            <br />
+            lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
+          </button>
+        </div>
+      </div>
+      <div class="d-flex flex-column col-6">
+        <div
+          v-for="(skill, index) of player.skillTree.skills"
+          :key="skill.name"
+        >
+          <button
+            v-if="index < 5"
+            class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+            @click="lvlSkill(skill)"
+          >
+            {{ skill.name }}
+            <br />
+            lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
+          </button>
+        </div>
+      </div>
+    </div>
     <button
-      v-for="skill of player.skillTree.skills"
-      :key="skill.name"
-      class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
-      @click="lvlSkill(skill)"
-    >
-      name: {{ skill.name }}
-      <br />
-      lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
-    </button>
-    <button
-      class="mt-1 w-25 btn btn-primary align-self-center shadow-none"
+      class="mt-2 btn btn-danger align-self-center shadow-none"
       @click="resetSkillTree()"
     >
       reset Skilltree
@@ -40,8 +64,9 @@ export default defineComponent({
       this.player = result.player;
     }
     this.player = checkPlayer(this.player) as type.Player;
-    this.player.skillTree.skills .sort((a, b) => (a.name < b.name ? -1 : 1))
-     .sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
+    this.player.skillTree.skills
+      .sort((a, b) => (a.name < b.name ? -1 : 1))
+      .sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1));
   },
   data() {
     return {
