@@ -195,7 +195,7 @@ export default defineComponent({
       generalSize: window.innerWidth / 1920,
       production: production.value,
       // debug
-      enemiesSpawn: false,
+      enemiesSpawn: true,
       enemiesMove: true,
       enemiesType: "",
       itemSpawn: true,
