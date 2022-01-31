@@ -192,6 +192,7 @@ export default defineComponent({
       message: "",
       messageType: "",
       middlex: window.innerWidth / 2,
+      generalSize: window.innerWidth / 1920,
       production: production.value,
       // debug
       enemiesSpawn: true,
@@ -250,6 +251,7 @@ export default defineComponent({
       this.player = result.player;
     }
     this.player = checkPlayer(this.player) as type.Player;
+    this.player.size *= this.generalSize;
   },
   methods: {
     //game
@@ -257,14 +259,14 @@ export default defineComponent({
       this.handlePlayerMovement();
       this.handleEnemyMovement();
       if (this.isGrow) {
-        this.player.size = 40;
+        this.player.size = this.player.originalSize * 2 * this.generalSize;
         this.score +=
           this.difficulty *
           this.percent(this.findSkill("scoreMultiplicator"), "in") *
           1.2 *
           this.percent(this.findSkill("betterGrowPotion"), "in");
       } else {
-        this.player.size = 20;
+        this.player.size = this.player.originalSize * this.generalSize;
         this.score +=
           this.difficulty *
           this.percent(this.findSkill("scoreMultiplicator"), "in");
@@ -448,10 +450,11 @@ export default defineComponent({
     //itemEvents
     collectCoin(item: type.Item) {
       this.score +=
-        this.difficulty *
-        15 *
-        item.size *
-        this.percent(this.findSkill("betterCoin"), "in");
+        (this.difficulty *
+          15 *
+          item.size *
+          this.percent(this.findSkill("betterCoin"), "in")) /
+        this.generalSize;
     },
     collectGrowPotion(item: type.Item) {
       if (!this.isGrow) {
@@ -461,12 +464,13 @@ export default defineComponent({
         );
       }
       this.isGrow = true;
-      this.growDuration += 200 * item.size;
+      this.growDuration += (200 * item.size) / this.generalSize;
     },
     collectMagnet(item: type.Item) {
       this.isMagnet = true;
       this.magnetDuration +=
-        300 * item.size * this.percent(this.findSkill("longerMagnet"), "in");
+        (300 * item.size * this.percent(this.findSkill("longerMagnet"), "in")) /
+        this.generalSize;
     },
     reduceDuartion() {
       this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0);
@@ -496,7 +500,9 @@ export default defineComponent({
       for (let item of this.items) {
         if (item.type == "blackHole") {
           item.size +=
-            20 * this.percent(this.findSkill("smallerBlackHole"), "de");
+            20 *
+            this.percent(this.findSkill("smallerBlackHole"), "de") *
+            this.generalSize;
           item.vector = this.subVec(item.vector, [10, 10]);
         }
       }
@@ -516,31 +522,37 @@ export default defineComponent({
       if (!this.itemSpawn) return;
       let type = "";
       let vector = [0, 0] as type.Vector;
-      let size = 20;
+      let size = 20 * this.generalSize;
       let imgsrc = "";
       vector[0] =
         this.getRandomInt(this.borderRight - this.borderLeft - 20) +
         this.borderLeft;
       vector[1] =
         this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp;
-      if (this.lenVec(this.subVec(vector, this.player.vector)) < 150) {
+      if (
+        this.lenVec(this.subVec(vector, this.player.vector)) <
+        150 * this.generalSize
+      ) {
         this.spawnItems();
         return;
       }
       switch (this.getRandomInt(5)) {
         case 0:
           type = "coin";
-          size = this.getRandomInt(25) + 20;
+          size = this.getRandomInt(25) + 20 * this.generalSize;
           imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
           type = "blackHole";
-          size = 20 * this.percent(this.findSkill("smallerBlackHole"), "de");
+          size =
+            20 *
+            this.percent(this.findSkill("smallerBlackHole"), "de") *
+            this.generalSize;
           imgsrc = "/gt/img/items/darkhole/darkhole.png";
           break;
         case 2:
           type = "growPotion";
-          size = this.getRandomInt(25) + 20;
+          size = this.getRandomInt(25) + 20 * this.generalSize;
           imgsrc = "/gt/img/items/potion/potion.gif";
           break;
         case 3:
@@ -550,7 +562,7 @@ export default defineComponent({
         case 4:
           type = "magnet";
           imgsrc = "/gt/img/items/magnet/magnet.png";
-          size = this.getRandomInt(25) + 20;
+          size = this.getRandomInt(25) + 20 * this.generalSize;
           break;
       }
       this.items.push({
@@ -599,15 +611,15 @@ export default defineComponent({
       }
       switch (this.getRandomInt(3)) {
         case 0:
-          size = 20;
+          size = 20 * this.generalSize;
           imgsrc = "/gt/img/char/enemy_pingu.png";
           break;
         case 1:
-          size = 25;
+          size = 25 * this.generalSize;
           imgsrc = "/gt/img/char/enemy_cupcake.gif";
           break;
         case 2:
-          size = 30;
+          size = 30 * this.generalSize;
           imgsrc = "/gt/img/char/enemy_gasman.gif";
           break;
       }
@@ -662,19 +674,20 @@ export default defineComponent({
             enemy.vector,
             this.mulVec(
               enemy.moveVector,
-              this.difficulty * this.percent(this.findSkill("slowEnemy"), "de")
+              this.difficulty *
+                this.percent(this.findSkill("slowEnemy"), "de") *
+                this.generalSize
             )
           );
         } else {
           enemy.vector = this.addVec(
             enemy.vector,
-
             this.mulVec(
               this.difVec(
                 this.dirVec(this.player.vector, enemy.vector),
                 this.lenVec(this.dirVec(this.player.vector, enemy.vector))
               ),
-              2
+              2 * this.generalSize
             )
           );
           enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
@@ -802,25 +815,29 @@ export default defineComponent({
     },
     left(multiplicator: number) {
       if (this.player.vector[0] > this.borderLeft) {
-        this.player.vector[0] -= this.player.speed * multiplicator;
+        this.player.vector[0] -=
+          this.player.speed * multiplicator * this.generalSize;
       }
       this.player.outlook = "left";
     },
     right(multiplicator: number) {
       if (this.player.vector[0] < this.borderRight) {
-        this.player.vector[0] += this.player.speed * multiplicator;
+        this.player.vector[0] +=
+          this.player.speed * multiplicator * this.generalSize;
       }
       this.player.outlook = "right";
     },
     up(multiplicator: number) {
       if (this.player.vector[1] > this.borderUp) {
-        this.player.vector[1] -= this.player.speed * multiplicator;
+        this.player.vector[1] -=
+          this.player.speed * multiplicator * this.generalSize;
       }
       this.player.outlook = "up";
     },
     down(multiplicator: number) {
       if (this.player.vector[1] < this.borderDown) {
-        this.player.vector[1] += this.player.speed * multiplicator;
+        this.player.vector[1] +=
+          this.player.speed * multiplicator * this.generalSize;
       }
       this.player.outlook = "down";
     },
@@ -942,6 +959,8 @@ export default defineComponent({
     },
     // displaysize
     changeDisplaySize() {
+      this.generalSize = window.innerWidth / 1920;
+      this.player.size = this.player.originalSize * this.generalSize;
       this.middlex = window.innerWidth / 2;
       this.borderRight = Math.round(
         window.innerWidth - (window.innerWidth / 100) * 12.5 - 60

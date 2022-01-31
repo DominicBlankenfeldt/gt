@@ -15,6 +15,7 @@ export interface Player {
   vector: Vector;
   speed: number;
   size: number;
+  originalSize:number;
   skillTree: SkillTree;
   outlook: Outlook;
   highscore: number;

@@ -6,7 +6,8 @@ export const player = ref({
   id: "",
   vector: [0, 0],
   speed: 5,
-  size: 15,
+  size: 20,
+  originalSize:20,
   skillTree: {
     skillPoints: 0,
     usedSkillPoints: 0,
@@ -39,6 +40,7 @@ export const player = ref({
 export function checkPlayer(checkedPlayer: type.Player) {
   checkedPlayer=checkedPlayer||{}
   checkedPlayer.id=checkedPlayer.id||""
+  checkedPlayer.originalSize=checkedPlayer.originalSize||20
   checkedPlayer.vector=checkedPlayer.vector||[0, 0]
   checkedPlayer.speed=checkedPlayer.speed||5
   checkedPlayer.skillTree=checkedPlayer.skillTree||{
