@@ -195,7 +195,7 @@ export default defineComponent({
       generalSize: window.innerWidth / 1920,
       production: production.value,
       // debug
-      enemiesSpawn: true,
+      enemiesSpawn: false,
       enemiesMove: true,
       enemiesType: "",
       itemSpawn: true,
@@ -892,7 +892,12 @@ export default defineComponent({
       ) {
         object2.vector = this.addVec(
           object2.vector,
-          this.mulVec(this.dirVec(object1.vector, object2.vector), speed)
+          this.mulVec(
+            this.dirVec(object1.vector, object2.vector),
+
+            speed *
+              (100 / this.lenVec(this.subVec(object1.vector, object2.vector)))
+          )
         );
       }
     },
