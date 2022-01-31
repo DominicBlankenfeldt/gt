@@ -539,7 +539,7 @@ export default defineComponent({
       switch (this.getRandomInt(5)) {
         case 0:
           type = "coin";
-          size = this.getRandomInt(25) + 20 * this.generalSize;
+          size = (this.getRandomInt(25) + 20) * this.generalSize;
           imgsrc = "/gt/img/items/coin/coin.gif";
           break;
         case 1:
@@ -552,7 +552,7 @@ export default defineComponent({
           break;
         case 2:
           type = "growPotion";
-          size = this.getRandomInt(25) + 20 * this.generalSize;
+          size = (this.getRandomInt(25) + 20) * this.generalSize;
           imgsrc = "/gt/img/items/potion/potion.gif";
           break;
         case 3:
@@ -562,7 +562,7 @@ export default defineComponent({
         case 4:
           type = "magnet";
           imgsrc = "/gt/img/items/magnet/magnet.png";
-          size = this.getRandomInt(25) + 20 * this.generalSize;
+          size = (this.getRandomInt(25) + 20) * this.generalSize;
           break;
       }
       this.items.push({
