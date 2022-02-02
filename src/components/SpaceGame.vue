@@ -22,7 +22,7 @@
     <div>gps:{{ Math.round(gps) }}</div>
   </div>
   <div class="d-flex justify-content-center">
-    <div class="game">
+    <div class="game" :class="{ noneCursor: gameStarted }">
       <div
         :style="{
           left: player.vector[0] + 'px',
@@ -192,7 +192,7 @@ export default defineComponent({
       message: "",
       messageType: "",
       middlex: window.innerWidth / 2,
-      generalSize: window.innerWidth / 1920,
+      generalSize: (window.innerWidth / 1920 + window.innerHeight / 955) / 2,
       production: production.value,
       // debug
       enemiesSpawn: true,
@@ -296,12 +296,9 @@ export default defineComponent({
     },
     async start() {
       this.player.hardcoreMode
-        ? ((this.startingEnemies = 400),
-          this.player.playedHardcore++,
-          await API.addPlayer(this.player))
-        : ((this.startingEnemies = 4),
-          this.player.playedGames++,
-          await API.addPlayer(this.player));
+        ? ((this.startingEnemies = 400), this.player.playedHardcore++)
+        : ((this.startingEnemies = 4), this.player.playedGames++);
+      await API.addPlayer(this.player);
       this.isGrow = false;
       this.isMagnet = false;
       this.message = "";
@@ -356,6 +353,9 @@ export default defineComponent({
       for (let item of this.items) {
         if (item.type == "blackHole") {
           this.gravity(item, this.player, 4, 0.5);
+          if (this.collisionsCheck(item, this.player)) {
+            this.touchBlackHole();
+          }
           for (let enemy of this.enemies) {
             this.gravity(item, enemy, 4, 0.5);
             if (this.collisionsCheck(item, enemy)) {
@@ -372,16 +372,11 @@ export default defineComponent({
               }
             }
           }
-
-          if (this.collisionsCheck(item, this.player)) {
-            this.touchBlackHole();
-          }
         } else {
           if (this.isMagnet) {
             this.gravity(this.player, item, 2, 1);
           }
         }
-
         if (item.type == "growPotion") {
           for (let enemy of this.enemies) {
             if (this.collisionsCheck(enemy, item)) {
@@ -423,10 +418,10 @@ export default defineComponent({
       }
       for (let enemy of this.enemies) {
         if (this.isMagnet) {
-          this.gravity(this.player, enemy, 2, -0.5);
+          this.gravity(this.player, enemy, 2, -0.3);
         }
         if (enemy.isMagnet) {
-          this.gravity(enemy, this.player, 2, 0.5);
+          this.gravity(enemy, this.player, 2, 0.7);
         }
         if (this.collisionsCheck(enemy, this.player)) {
           this.gameOver("you got killed by an enemy", "alert alert-danger");
@@ -581,10 +576,32 @@ export default defineComponent({
       let vector = [0, 0] as type.Vector;
       let type = "";
       let imgsrc = "";
-      let moveArray = [] as number[];
+      let moveArray = [0, 0] as type.Vector;
+      switch (this.getRandomInt(3)) {
+        case 0:
+          imgsrc = "/gt/img/char/enemy_pingu.png";
+          break;
+        case 1:
+          imgsrc = "/gt/img/char/enemy_cupcake.gif";
+          break;
+        case 2:
+          imgsrc = "/gt/img/char/enemy_gasman.gif";
+          break;
+      }
+      switch (this.getRandomInt(3)) {
+        case 0:
+          size = 20 * this.generalSize;
+          break;
+        case 1:
+          size = 25 * this.generalSize;
+          break;
+        case 2:
+          size = 30 * this.generalSize;
+          break;
+      }
       switch (this.getRandomInt(4)) {
         case 0:
-          vector[1] = this.borderUp - 25;
+          vector[1] = this.borderUp - size;
           moveArray = [(Math.random() - 0.5) * 2, 1];
           break;
         case 1:
@@ -596,10 +613,11 @@ export default defineComponent({
           moveArray = [-1, (Math.random() - 0.5) * 2];
           break;
         case 3:
-          vector[0] = this.borderLeft - 25;
+          vector[0] = this.borderLeft - size;
           moveArray = [1, (Math.random() - 0.5) * 2];
           break;
       }
+      moveArray = this.difVec(moveArray, this.lenVec(moveArray));
       if (!vector[0]) {
         vector[0] =
           this.getRandomInt(this.borderRight - this.borderLeft) +
@@ -608,20 +626,6 @@ export default defineComponent({
       if (!vector[1]) {
         vector[1] =
           this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
-      }
-      switch (this.getRandomInt(3)) {
-        case 0:
-          size = 20 * this.generalSize;
-          imgsrc = "/gt/img/char/enemy_pingu.png";
-          break;
-        case 1:
-          size = 25 * this.generalSize;
-          imgsrc = "/gt/img/char/enemy_cupcake.gif";
-          break;
-        case 2:
-          size = 30 * this.generalSize;
-          imgsrc = "/gt/img/char/enemy_gasman.gif";
-          break;
       }
       switch (this.getRandomInt(4)) {
         case 0:
@@ -653,7 +657,7 @@ export default defineComponent({
         type: type as type.EnemyType,
         imgsrc: imgsrc,
         moveVector: moveArray as type.Vector,
-        timer: type == "chasebot" ? 300 : null,
+        timer: type == "chasebot" ? 450 : null, //7.5 sek
         isGrow: false,
         isMagnet: false,
       });
@@ -683,10 +687,7 @@ export default defineComponent({
           enemy.vector = this.addVec(
             enemy.vector,
             this.mulVec(
-              this.difVec(
-                this.dirVec(this.player.vector, enemy.vector),
-                this.lenVec(this.dirVec(this.player.vector, enemy.vector))
-              ),
+              this.dirVec(this.player.vector, enemy.vector),
               2 * this.generalSize
             )
           );
@@ -863,10 +864,10 @@ export default defineComponent({
         if (object.vector[0] > this.borderRight) {
           return "right";
         }
-        if (object.vector[0] < this.borderLeft + 1 - object.size) {
+        if (object.vector[0] < this.borderLeft - 1 - object.size) {
           return "left";
         }
-        if (object.vector[1] < this.borderUp + 1 - object.size) {
+        if (object.vector[1] < this.borderUp - 1 - object.size) {
           return "up";
         }
         if (object.vector[1] > this.borderDown) {
@@ -887,16 +888,17 @@ export default defineComponent({
             this.addVec(object1.vector, object1.size / 2),
             this.addVec(object2.vector, object2.size / 2)
           )
-        ) <
+        ) *
+          this.generalSize <
         (object1.size + object2.size) * range
       ) {
         object2.vector = this.addVec(
           object2.vector,
           this.mulVec(
             this.dirVec(object1.vector, object2.vector),
-
             speed *
-              (100 / this.lenVec(this.subVec(object1.vector, object2.vector)))
+              (100 / this.lenVec(this.subVec(object1.vector, object2.vector))) *
+              this.generalSize
           )
         );
       }
@@ -937,12 +939,7 @@ export default defineComponent({
     },
     dirVec(vec1: type.Vector, vec2: type.Vector) {
       let deltaArray = this.subVec(vec1, vec2) as type.Vector;
-      deltaArray[1] /= Math.abs(deltaArray[0]);
-      deltaArray[0] /= Math.abs(deltaArray[0]);
-      if (Math.abs(deltaArray[1]) > 1.5) {
-        deltaArray[0] /= Math.abs(deltaArray[1]);
-        deltaArray[1] /= Math.abs(deltaArray[1]);
-      }
+      deltaArray = this.difVec(deltaArray, this.lenVec(deltaArray));
       return deltaArray;
     },
     mulVec(vec1: type.Vector, vec2: type.Vector | number) {
@@ -964,7 +961,8 @@ export default defineComponent({
     },
     // displaysize
     changeDisplaySize() {
-      this.generalSize = window.innerWidth / 1920;
+      this.generalSize =
+        (window.innerWidth / 1920 + window.innerHeight / 955) / 2;
       this.player.size = this.player.originalSize * this.generalSize;
       this.middlex = window.innerWidth / 2;
       this.borderRight = Math.round(
@@ -981,6 +979,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 * {
   color: red;
+}
+.noneCursor {
+  cursor: none;
 }
 .game {
   background-image: url(/gt/img/spacefield.png);

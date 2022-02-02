@@ -9,7 +9,7 @@
     <a v-if="user"> | </a> <router-link to="/games">Game</router-link> |
     <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
     <a v-if="user"> | </a>
-    <router-link to="/about">About</router-link>
+    <router-link to="/guide">Guide</router-link>
     <a v-if="user"> | </a>
     <a v-if="user" @click="logout()">LogOut</a>
   </div>
