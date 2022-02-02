@@ -1,16 +1,16 @@
 <template>
   <div class="d-flex justify-content-center">
-    <div class="blockUp"></div>
+    <!-- <div class="blockUp"></div>
   </div>
   <div class="row" id="row">
-    <div class="sideBlockLeft"></div>
+    <div class="sideBlockLeft"></div> -->
     <div class="" id="game">
       <game />
     </div>
-    <div class="sideBlockRight"></div>
+    <!-- <div class="sideBlockRight"></div>
   </div>
   <div class="d-flex justify-content-center">
-    <div class="blockDown"></div>
+    <div class="blockDown"></div> -->
   </div>
   <div v-if="!user">Logge dich ein um alle Features zu nutzen.</div>
 </template>

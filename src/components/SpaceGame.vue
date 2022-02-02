@@ -19,9 +19,15 @@
           : Math.round(player.highscore)
       }}</span>
     </div>
-    <div>gps:{{ Math.round(gps) }}</div>
+    <div v-if="!handyView">gps:{{ Math.round(gps) }}</div>
   </div>
-  <div class="d-flex justify-content-center">
+  <div class="d-flex">
+    <div class="">
+      <JoyStick
+        @change="handleChange('left', $event)"
+        style="transform: scale(0.4); margin-left: -9vw; margin-right: -9vw"
+      />
+    </div>
     <div class="game">
       <div
         :style="{
@@ -30,7 +36,7 @@
           width: player.size + 'px',
           height: player.size + 'px',
         }"
-        style="position: absolute; border-radius: 50%"
+        style="position: absolute"
       >
         <img
           :src="`/gt/img/char/playership_${player.outlook}.png`"
@@ -70,7 +76,7 @@
           top: item.vector[1] + 'px',
           backgroundColor: item.imgsrc,
         }"
-        style="position: absolute; border-radius: 50%"
+        style="position: absolute"
       >
         <img
           :src="item.imgsrc"
@@ -87,6 +93,12 @@
         </button>
       </div>
     </div>
+    <div class="">
+      <JoyStick
+        @change="handleChange('right', $event)"
+        style="transform: scale(0.4); margin-left: -9vw; margin-right: -9vw"
+      />
+    </div>
   </div>
   <div
     :style="{
@@ -96,13 +108,13 @@
     style="position: absolute; z-index: 3"
     class="row col-12"
   >
-    <div class="col-4"></div>
-    <div class="col-2">
+    <div class="col-2 col-md-4"></div>
+    <div class="col-4 col-md-2">
       <div v-if="isMagnet" style="z-index: 3">
         Magnet:{{ Math.round(magnetDuration) }}
       </div>
     </div>
-    <div class="col-2">
+    <div class="col-4 col-md-2">
       <div v-if="isGrow" style="z-index: 3">
         Grow:{{ Math.round(growDuration) }}
       </div>
@@ -178,21 +190,40 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import JoyStick from "@/components/JoyStick.vue";
 import { checkPlayer, player, production } from "@/global";
 import * as type from "@/types";
 import * as API from "@/API";
+
 export default defineComponent({
   setup() {
     player;
     production;
   },
+  components: {
+    JoyStick,
+  },
   data() {
     return {
+      //handy size
+      leftStick: {
+        x: 0,
+        y: 0,
+        speed: 0,
+        angle: 0,
+      },
+      rightStick: {
+        x: 0,
+        y: 0,
+        speed: 0,
+        angle: 0,
+      },
       // display
       message: "",
       messageType: "",
       middlex: window.innerWidth / 2,
       generalSize: window.innerWidth / 1920,
+      handyView: false,
       production: production.value,
       // debug
       enemiesSpawn: true,
@@ -957,17 +988,28 @@ export default defineComponent({
     lenVec(vec: type.Vector) {
       return Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
     },
+    //handy control
+    handleChange(id: any, { x, y, speed, angle }: any) {
+      const stick = id == "left" ? this.leftStick : this.rightStick;
+      stick.x = x;
+      stick.y = y;
+      stick.speed = speed;
+      stick.angle = angle;
+    },
     // displaysize
     changeDisplaySize() {
       this.generalSize = window.innerWidth / 1920;
       this.player.size = this.player.originalSize * this.generalSize;
       this.middlex = window.innerWidth / 2;
       this.borderRight = Math.round(
-        window.innerWidth - (window.innerWidth / 100) * 12.5 - 60
+        window.innerWidth - (window.innerWidth / 100) * 12.5
       );
-      this.borderLeft = Math.round((window.innerWidth / 100) * 12.5 + 60);
-      this.borderUp = Math.round((window.innerHeight / 100) * 13 + 60);
-      this.borderDown = Math.round((window.innerHeight / 100) * 93 - 61);
+      this.borderLeft = Math.round((window.innerWidth / 100) * 12.5);
+      this.borderUp = Math.round((window.innerHeight / 100) * 13);
+      this.borderDown = Math.round((window.innerHeight / 100) * 93 - 1);
+      window.innerHeight < 1000
+        ? (this.handyView = true)
+        : (this.handyView = false);
     },
   },
 });
@@ -983,7 +1025,7 @@ export default defineComponent({
   // widht=1280px
   width: 75vw;
   height: 80vh;
-  border: 60px solid black;
+  border: 0px solid black;
   background-color: rgb(0, 0, 0);
   z-index: 1;
 }
@@ -991,7 +1033,7 @@ export default defineComponent({
   font-weight: 1000;
   height: 5vh;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: 0 !important;
   margin: 0 !important;
 }
