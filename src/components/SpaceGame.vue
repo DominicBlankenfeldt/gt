@@ -286,6 +286,7 @@ export default defineComponent({
       )
         this.createEnemy();
       this.reduceDuartion();
+      this.handleEnemyRandom();
     },
     countgps() {
       this.countgpsID = setTimeout(() => {
@@ -576,7 +577,9 @@ export default defineComponent({
       let vector = [0, 0] as type.Vector;
       let type = "";
       let imgsrc = "";
+      let timer = -1;
       let moveArray = [0, 0] as type.Vector;
+      let dir = "";
       switch (this.getRandomInt(3)) {
         case 0:
           imgsrc = "/gt/img/char/enemy_pingu.png";
@@ -617,7 +620,7 @@ export default defineComponent({
           moveArray = [1, (Math.random() - 0.5) * 2];
           break;
       }
-      moveArray = this.difVec(moveArray, this.lenVec(moveArray));
+      moveArray = this.norVec(moveArray);
       if (!vector[0]) {
         vector[0] =
           this.getRandomInt(this.borderRight - this.borderLeft) +
@@ -627,7 +630,7 @@ export default defineComponent({
         vector[1] =
           this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       }
-      switch (this.getRandomInt(4)) {
+      switch (this.getRandomInt(6)) {
         case 0:
           type = "curve";
           break;
@@ -636,13 +639,29 @@ export default defineComponent({
           break;
         case 2:
           type = "chasebot";
+          timer = 450;
           break;
         case 3:
           type = "getbigger";
           break;
-        // case 4:
+        case 4:
+          type = "circle";
+          break;
+        case 5:
+          type = "random";
+          timer = 900;
+          break;
+        // case 6:
         //   type = "colorswitch";
         //   break;
+      }
+      switch (this.getRandomInt(2)) {
+        case 0:
+          dir = "left";
+          break;
+        case 1:
+          dir = "right";
+          break;
       }
       this.player.hardcoreMode ? (type = "aimbot") : null;
       this.enemiesType ? (type = this.enemiesType) : null;
@@ -657,7 +676,9 @@ export default defineComponent({
         type: type as type.EnemyType,
         imgsrc: imgsrc,
         moveVector: moveArray as type.Vector,
-        timer: type == "chasebot" ? 450 : null, //7.5 sek
+        timer: timer,
+        circle: type == "cicrle" ? false : null,
+        dir: dir as type.Dir,
         isGrow: false,
         isMagnet: false,
       });
@@ -666,6 +687,28 @@ export default defineComponent({
     handleEnemyMovement() {
       if (!this.enemiesMove) return;
       for (let enemy of this.enemies) {
+        if (enemy.type == "circle") {
+          if (enemy.timer > 4000) {
+            enemy.timer += 3 * Math.random();
+            this.respawnEnemy(enemy);
+          } else {
+            enemy.timer += this.getRandomInt(3) + this.difficulty + 2;
+            if (enemy.timer > 1000) {
+              enemy.circle = true;
+            }
+          }
+          if (enemy.circle) {
+            let acc = this.rotVec(enemy.moveVector, 90);
+            acc = this.divVec(acc, this.lenVec(acc));
+            acc = this.mulVec(acc, 0.02);
+            if (enemy.dir == "left") {
+              enemy.moveVector = this.addVec(enemy.moveVector, acc);
+            }
+            if (enemy.dir == "right") {
+              enemy.moveVector = this.subVec(enemy.moveVector, acc);
+            }
+          }
+        }
         if (enemy.type == "curve") {
           enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] > 0
             ? (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] +=
@@ -673,7 +716,16 @@ export default defineComponent({
             : (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] -=
                 0.02 * Math.random());
         }
-        if (enemy.type != "chasebot") {
+        if (enemy.type == "chasebot") {
+          enemy.vector = this.addVec(
+            enemy.vector,
+            this.mulVec(
+              this.dirVec(this.player.vector, enemy.vector),
+              2 * this.generalSize
+            )
+          );
+        } else {
+          enemy.moveVector = this.norVec(enemy.moveVector);
           enemy.vector = this.addVec(
             enemy.vector,
             this.mulVec(
@@ -683,19 +735,12 @@ export default defineComponent({
                 this.generalSize
             )
           );
-        } else {
-          enemy.vector = this.addVec(
-            enemy.vector,
-            this.mulVec(
-              this.dirVec(this.player.vector, enemy.vector),
-              2 * this.generalSize
-            )
-          );
-          enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
-
         if (this.borderCheck(enemy, "outer")) {
           this.respawnEnemy(enemy);
+        }
+        if (enemy.type == "chasebot" || enemy.type == "random") {
+          enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy);
         }
       }
     },
@@ -710,6 +755,18 @@ export default defineComponent({
     handleEnemyGetBigger() {
       for (let enemy of this.enemies) {
         enemy.type == "getbigger" ? (enemy.size += 0.5) : null;
+      }
+    },
+    handleEnemyRandom() {
+      for (let enemy of this.enemies) {
+        if (enemy.timer % 120 == 0) {
+          if (enemy.type == "random") {
+            enemy.moveVector = this.norVec([
+              (Math.random() - 0.5) * 2,
+              (Math.random() - 0.5) * 2,
+            ]);
+          }
+        }
       }
     },
     // handleEnemyColorSwitch() {
@@ -939,7 +996,7 @@ export default defineComponent({
     },
     dirVec(vec1: type.Vector, vec2: type.Vector) {
       let deltaArray = this.subVec(vec1, vec2) as type.Vector;
-      deltaArray = this.difVec(deltaArray, this.lenVec(deltaArray));
+      deltaArray = this.divVec(deltaArray, this.lenVec(deltaArray));
       return deltaArray;
     },
     mulVec(vec1: type.Vector, vec2: type.Vector | number) {
@@ -949,15 +1006,24 @@ export default defineComponent({
         return [vec1[0] * vec2[0], vec1[1] * vec2[1]] as type.Vector;
       }
     },
-    difVec(vec1: type.Vector, vec2: type.Vector | number) {
+    divVec(vec1: type.Vector, vec2: type.Vector | number) {
       if (typeof vec2 == "number") {
         return [vec1[0] / vec2, vec1[1] / vec2] as type.Vector;
       } else {
         return [vec1[0] / vec2[0], vec1[1] / vec2[1]] as type.Vector;
       }
     },
+    norVec(vec: type.Vector) {
+      return this.divVec(vec, this.lenVec(vec)) as type.Vector;
+    },
     lenVec(vec: type.Vector) {
       return Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
+    },
+    rotVec(vec: type.Vector, angle: number) {
+      let helpVec = [...vec];
+      helpVec[0] = vec[0] * Math.cos(angle) - vec[1] * Math.sin(angle);
+      helpVec[1] = vec[0] * Math.sin(angle) + vec[1] * Math.cos(angle);
+      return helpVec as type.Vector;
     },
     // displaysize
     changeDisplaySize() {

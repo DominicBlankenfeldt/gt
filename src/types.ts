@@ -5,11 +5,14 @@ export interface Enemy {
   type: EnemyType;
   imgsrc: string;
   moveVector: Vector;
-  timer: number | null;
+  timer: number;
+  circle:boolean|null;
+  dir:Dir;
   isGrow: boolean;
   isMagnet:boolean;
 }
-export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger";
+export type Dir="left"|"right"
+export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger"|"circle"|"random";
 
 export interface Player {
   vector: Vector;
