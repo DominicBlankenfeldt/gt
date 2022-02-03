@@ -30,7 +30,7 @@
       </div>
       <div>
         <img src="/gt/img/items/potion/potion.gif" alt="" />
-        A growpotion makes you and enemies bigger if you are grow you get more
+        A growpotion makes you and enemies bigger if you are grown you get more
         score
       </div>
       <div>
