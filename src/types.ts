@@ -5,6 +5,7 @@ export interface Enemy {
   type: EnemyType;
   imgsrc: string;
   moveVector: Vector;
+  spawnMoveVector:Vector;
   timer: number;
   circle:boolean|null;
   dir:Dir;
@@ -12,7 +13,7 @@ export interface Enemy {
   isMagnet:boolean;
 }
 export type Dir="left"|"right"
-export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger"|"circle"|"random";
+export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger"|"circle"|"random"|"spiral";
 
 export interface Player {
   vector: Vector;

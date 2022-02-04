@@ -630,7 +630,7 @@ export default defineComponent({
         vector[1] =
           this.getRandomInt(this.borderDown - this.borderUp) + this.borderUp;
       }
-      switch (this.getRandomInt(6)) {
+      switch (this.getRandomInt(7)) {
         case 0:
           type = "curve";
           break;
@@ -650,6 +650,10 @@ export default defineComponent({
         case 5:
           type = "random";
           timer = 900;
+          break;
+        case 6:
+          type = "spiral";
+          timer = 100;
           break;
         // case 6:
         //   type = "colorswitch";
@@ -675,6 +679,7 @@ export default defineComponent({
         id: JSON.stringify(this.getRandomInt(100000000)),
         type: type as type.EnemyType,
         imgsrc: imgsrc,
+        spawnMoveVector: moveArray as type.Vector,
         moveVector: moveArray as type.Vector,
         timer: timer,
         circle: type == "cicrle" ? false : null,
@@ -685,8 +690,30 @@ export default defineComponent({
     },
 
     handleEnemyMovement() {
+      let acc;
       if (!this.enemiesMove) return;
       for (let enemy of this.enemies) {
+        if (enemy.type == "spiral") {
+          if (enemy.timer > 0) {
+            enemy.timer--;
+          } else {
+            acc = this.rotVec(enemy.moveVector, 90);
+            acc = this.mulVec(acc, 0.04);
+            acc = this.addVec(enemy.moveVector, acc);
+            enemy.moveVector = this.addVec(enemy.moveVector, acc);
+            enemy.moveVector = this.norVec(enemy.moveVector);
+            enemy.vector = this.addVec(
+              enemy.vector,
+              this.mulVec(
+                enemy.spawnMoveVector,
+                this.difficulty *
+                  this.percent(this.findSkill("slowEnemy"), "de") *
+                  this.generalSize *
+                  0.3
+              )
+            );
+          }
+        }
         if (enemy.type == "circle") {
           if (enemy.timer > 4000) {
             enemy.timer += 3 * Math.random();
@@ -698,8 +725,7 @@ export default defineComponent({
             }
           }
           if (enemy.circle) {
-            let acc = this.rotVec(enemy.moveVector, 90);
-            acc = this.divVec(acc, this.lenVec(acc));
+            acc = this.rotVec(enemy.moveVector, 90);
             acc = this.mulVec(acc, 0.02);
             if (enemy.dir == "left") {
               enemy.moveVector = this.addVec(enemy.moveVector, acc);
