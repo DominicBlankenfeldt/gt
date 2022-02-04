@@ -44,12 +44,7 @@ export interface Item {
   size: number;
   timer: number;
 }
-export type Itemtype =
-  | "coin"
-  | "blackHole"
-  | "growPotion"
-  | "clearField"
-  | "magnet";
+export type Itemtype = "coin" | "blackHole" | "growPotion" | "clearField" | "magnet" | "slowEnemies" | "stopTime";
 
 export interface SkillTree {
   skillPoints: number;
@@ -73,7 +68,9 @@ export type Skillname =
   | "betterCoin"
   | "longerMagnet"
   | "betterGrowPotion"
-  | "smallerBlackHole";
+  | "smallerBlackHole"
+  | "longerSlowEnemies"
+  | "longerStopTime"
 
 export type Vector = [number, number];
 

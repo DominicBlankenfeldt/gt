@@ -21,6 +21,8 @@ export const player = ref({
       { name: "scoreMultiplicator", lvl: 0, maxlvl: 20 },
       { name: "betterCoin", lvl: 0, maxlvl: 20 },
       { name: "longerMagnet", lvl: 0, maxlvl: 20 },
+      { name: "longerSlowEnemies", lvl: 0, maxlvl: 20 },
+      { name: "longerStopTime", lvl: 0, maxlvl: 20 },
       { name: "betterGrowPotion", lvl: 0, maxlvl: 20 },
       { name: "smallerBlackHole", lvl: 0, maxlvl: 20 },
 
@@ -57,6 +59,8 @@ export function checkPlayer(checkedPlayer: type.Player) {
       { name: "scoreMultiplicator", lvl: 0, maxlvl: 20 },
       { name: "betterCoin", lvl: 0, maxlvl: 20 },
       { name: "longerMagnet", lvl: 0, maxlvl: 20 },
+      { name: "longerSlowEnemies", lvl: 0, maxlvl: 20 },
+      { name: "longerStopTime", lvl: 0, maxlvl: 20 },
       { name: "betterGrowPotion", lvl: 0, maxlvl: 20 },
       { name: "smallerBlackHole", lvl: 0, maxlvl: 20 },
 
@@ -77,7 +81,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
       checkedPlayer.skillTree.skills.push({ name: skill as type.Skillname, lvl: 0, maxlvl: 1 })
     }
   }
-  for (const skill of ["slowEnemy", "spawnLessEnemy", "scoreMultiplicator", "betterCoin", "longerMagnet", "betterGrowPotion", "smallerBlackHole"]) {
+  for (const skill of ["longerStopTime", "longerSlowEnemies", "slowEnemy", "spawnLessEnemy", "scoreMultiplicator", "betterCoin", "longerMagnet", "betterGrowPotion", "smallerBlackHole"]) {
     if (checkSkill(checkedPlayer, skill)) {
       checkedPlayer.skillTree.skills.push({ name: skill as type.Skillname, lvl: 0, maxlvl: 20 })
     }

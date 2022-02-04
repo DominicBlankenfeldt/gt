@@ -100,6 +100,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/bomb/bomb.gif"
   },
   {
+    "revision": "1f8c92289c6e1fe98fe43305f2ef7c92",
+    "url": "/gt/img/items/clock/clock.png"
+  },
+  {
     "revision": "801a264bc03115117174ceb139e147e2",
     "url": "/gt/img/items/coin/coin.gif"
   },
@@ -120,6 +124,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/skull/skull.png"
   },
   {
+    "revision": "7fac94372bc0eca5ee1236bce25b7ff6",
+    "url": "/gt/img/items/snowflake/snowflake.png"
+  },
+  {
     "revision": "c422e7995c16421b1ff7c79294790117",
     "url": "/gt/img/ships.xcf"
   },
@@ -136,7 +144,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "2382a3c79535454150f1ba7a0a872a6c",
+    "revision": "9006da86f97e76a22dd2a0261217c5ee",
     "url": "/gt/index.html"
   },
   {
@@ -144,8 +152,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.ea7858c3.js"
   },
   {
-    "revision": "bc760f46de6112dc75bb",
-    "url": "/gt/js/app.90d1bf05.js"
+    "revision": "77b583e3c215298849a8",
+    "url": "/gt/js/app.61d279a4.js"
   },
   {
     "revision": "5e0411535696092bbe11",
