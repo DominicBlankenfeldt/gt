@@ -7,7 +7,8 @@ export const player = ref({
   vector: [0, 0],
   speed: 5,
   size: 20,
-  originalSize:20,
+  moveVector: [0, 0],
+  originalSize: 20,
   skillTree: {
     skillPoints: 0,
     usedSkillPoints: 0,
@@ -38,12 +39,13 @@ export const player = ref({
 });
 //finish me
 export function checkPlayer(checkedPlayer: type.Player) {
-  checkedPlayer=checkedPlayer||{}
-  checkedPlayer.id=checkedPlayer.id||""
-  checkedPlayer.originalSize=checkedPlayer.originalSize||20
-  checkedPlayer.vector=checkedPlayer.vector||[0, 0]
-  checkedPlayer.speed=checkedPlayer.speed||5
-  checkedPlayer.skillTree=checkedPlayer.skillTree||{
+  checkedPlayer = checkedPlayer || {}
+  checkedPlayer.id = checkedPlayer.id || ""
+  checkedPlayer.originalSize = checkedPlayer.originalSize || 20
+  checkedPlayer.vector = checkedPlayer.vector || [0, 0]
+  checkedPlayer.moveVector = checkedPlayer.moveVector || [0, 0]
+  checkedPlayer.speed = checkedPlayer.speed || 5
+  checkedPlayer.skillTree = checkedPlayer.skillTree || {
     skillPoints: 0,
     usedSkillPoints: 0,
     skills: [
@@ -60,16 +62,16 @@ export function checkPlayer(checkedPlayer: type.Player) {
 
     ] as type.Skill[],
   } as type.SkillTree
-  checkedPlayer.outlook=checkedPlayer.outlook||"up"
-  checkedPlayer.highscore=checkedPlayer.highscore ||0 
-  checkedPlayer.highscoreHardcore=checkedPlayer.highscoreHardcore||0
-  checkedPlayer.email=checkedPlayer.email||"gast@"
-  checkedPlayer.username=checkedPlayer.username||"gast"
-  checkedPlayer.img=checkedPlayer.img||""
-  checkedPlayer.registeredAt=checkedPlayer.registeredAt||0
-  checkedPlayer.playedGames=checkedPlayer.playedGames||0
-  checkedPlayer.playedHardcore=checkedPlayer.playedHardcore||0
-  checkedPlayer.hardcoreMode=checkedPlayer.hardcoreMode||false
+  checkedPlayer.outlook = checkedPlayer.outlook || "up"
+  checkedPlayer.highscore = checkedPlayer.highscore || 0
+  checkedPlayer.highscoreHardcore = checkedPlayer.highscoreHardcore || 0
+  checkedPlayer.email = checkedPlayer.email || "gast@"
+  checkedPlayer.username = checkedPlayer.username || "gast"
+  checkedPlayer.img = checkedPlayer.img || ""
+  checkedPlayer.registeredAt = checkedPlayer.registeredAt || 0
+  checkedPlayer.playedGames = checkedPlayer.playedGames || 0
+  checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
+  checkedPlayer.hardcoreMode = checkedPlayer.hardcoreMode || false
   for (const skill of ["fastAbility", "slowAbility", "bombAbility"]) {
     if (checkSkill(checkedPlayer, skill)) {
       checkedPlayer.skillTree.skills.push({ name: skill as type.Skillname, lvl: 0, maxlvl: 1 })

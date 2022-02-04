@@ -290,6 +290,7 @@ export default defineComponent({
     countgps() {
       this.countgpsID = setTimeout(() => {
         this.gps = (this.gameloopCounter - this.gameloopLastCounter) * 2;
+        if (this.gps > 60) this.gps = 60;
         this.gameloopLastCounter = this.gameloopCounter;
         this.countgps();
       }, 500);
@@ -579,7 +580,7 @@ export default defineComponent({
       let timer = 0;
       let moveArray = [0, 0] as type.Vector;
       let circleDir = "";
-      switch (this.getRandomInt(3)) {
+      switch (this.getRandomInt(4)) {
         case 0:
           imgsrc = "/gt/img/char/enemy_pingu.png";
           break;
@@ -588,6 +589,9 @@ export default defineComponent({
           break;
         case 2:
           imgsrc = "/gt/img/char/enemy_gasman.gif";
+          break;
+        case 3:
+          imgsrc = "/gt/img/char/enemy_komet.png";
           break;
       }
       switch (this.getRandomInt(3)) {
@@ -743,7 +747,6 @@ export default defineComponent({
       } else {
         acc = this.rotVec(enemy.moveVector, 90);
         acc = this.mulVec(acc, enemy.circleRadius * 2);
-        acc = this.addVec(enemy.moveVector, acc);
         if (enemy.circleDir == "left") {
           enemy.moveVector = this.addVec(enemy.moveVector, acc);
         }
@@ -765,9 +768,9 @@ export default defineComponent({
     },
     moveCircleEnemy(enemy: type.Enemy) {
       let acc;
-      if (enemy.timer > 4000) {
+      if (enemy.timer > 5000) {
         enemy.timer += 3 * Math.random();
-        this.respawnEnemy(enemy);
+        enemy.moveVector = enemy.spawnMoveVector;
       } else {
         enemy.timer += this.getRandomInt(3) + this.difficulty + 2;
         if (enemy.timer > 1000) {
@@ -834,6 +837,7 @@ export default defineComponent({
     },
     handlePlayerMovement() {
       let multiplicator = 1;
+      this.player.moveVector = [0, 0];
       if (this.pressedKeys["3"] && this.findSkill("bombAbility"))
         this.bombAbility();
 
@@ -855,28 +859,38 @@ export default defineComponent({
       if (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"]) {
         this.down(multiplicator);
       }
-      if (
-        (this.pressedKeys["ArrowRight"] || this.pressedKeys["a"]) &&
-        (this.pressedKeys["ArrowDown"] || this.pressedKeys["w"])
-      ) {
+
+      this.player.moveVector = this.mulVec(
+        this.norVec(this.player.moveVector),
+        5
+      );
+      this.player.vector = this.addVec(
+        this.player.vector,
+        this.player.moveVector
+      );
+      if (this.player.moveVector[0] > 0) {
+        this.player.outlook = "right";
+      }
+      if (this.player.moveVector[0] < 0) {
+        this.player.outlook = "left";
+      }
+      if (this.player.moveVector[1] > 0) {
+        this.player.outlook = "down";
+      }
+      if (this.player.moveVector[1] < 0) {
+        this.player.outlook = "up";
+      }
+
+      if (this.player.moveVector[0] > 0 && this.player.moveVector[1] > 0) {
         this.player.outlook = "downright";
       }
-      if (
-        (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) &&
-        (this.pressedKeys["ArrowDown"] || this.pressedKeys["s"])
-      ) {
+      if (this.player.moveVector[0] < 0 && this.player.moveVector[1] > 0) {
         this.player.outlook = "downleft";
       }
-      if (
-        (this.pressedKeys["ArrowRight"] || this.pressedKeys["d"]) &&
-        (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"])
-      ) {
+      if (this.player.moveVector[0] > 0 && this.player.moveVector[1] < 0) {
         this.player.outlook = "upright";
       }
-      if (
-        (this.pressedKeys["ArrowLeft"] || this.pressedKeys["a"]) &&
-        (this.pressedKeys["ArrowUp"] || this.pressedKeys["w"])
-      ) {
+      if (this.player.moveVector[0] < 0 && this.player.moveVector[1] < 0) {
         this.player.outlook = "upleft";
       }
       switch (this.borderCheck(this.player, "inner")) {
@@ -887,40 +901,44 @@ export default defineComponent({
           this.player.vector[0] = this.borderLeft + 1;
           break;
         case "up":
-          this.player.vector[1] = this.borderUp + 1;
+          this.player.vector[1] = this.borderUp - 2;
           break;
         case "down":
-          this.player.vector[1] = this.borderDown - (this.player.size + 2);
+          this.player.vector[1] = this.borderDown - (this.player.size + 6);
           break;
       }
     },
     left(multiplicator: number) {
       if (this.player.vector[0] > this.borderLeft) {
-        this.player.vector[0] -=
-          this.player.speed * multiplicator * this.generalSize;
+        this.player.moveVector[0] =
+          this.player.speed * multiplicator * this.generalSize * -1;
       }
-      this.player.outlook = "left";
     },
     right(multiplicator: number) {
       if (this.player.vector[0] < this.borderRight) {
-        this.player.vector[0] +=
-          this.player.speed * multiplicator * this.generalSize;
+        if (this.player.moveVector[0] == 0) {
+          this.player.moveVector[0] =
+            this.player.speed * multiplicator * this.generalSize;
+        } else {
+          this.player.moveVector[0] = 0;
+        }
       }
-      this.player.outlook = "right";
     },
     up(multiplicator: number) {
       if (this.player.vector[1] > this.borderUp) {
-        this.player.vector[1] -=
-          this.player.speed * multiplicator * this.generalSize;
+        this.player.moveVector[1] =
+          this.player.speed * multiplicator * this.generalSize * -1;
       }
-      this.player.outlook = "up";
     },
     down(multiplicator: number) {
       if (this.player.vector[1] < this.borderDown) {
-        this.player.vector[1] +=
-          this.player.speed * multiplicator * this.generalSize;
+        if (this.player.moveVector[1] == 0) {
+          this.player.moveVector[1] =
+            this.player.speed * multiplicator * this.generalSize;
+        } else {
+          this.player.moveVector[1] = 0;
+        }
       }
-      this.player.outlook = "down";
     },
     borderCheck(
       object: type.Enemy | type.Item | type.Player,
@@ -933,10 +951,10 @@ export default defineComponent({
         if (object.vector[0] < this.borderLeft + 1) {
           return "left";
         }
-        if (object.vector[1] < this.borderUp + 1) {
+        if (object.vector[1] < this.borderUp - 2) {
           return "up";
         }
-        if (object.vector[1] > this.borderDown - (object.size + 2)) {
+        if (object.vector[1] > this.borderDown - (object.size + 6)) {
           return "down";
         }
       }
@@ -1037,7 +1055,11 @@ export default defineComponent({
       }
     },
     norVec(vec: type.Vector) {
-      return this.divVec(vec, this.lenVec(vec)) as type.Vector;
+      if (this.lenVec(vec) != 0) {
+        return this.divVec(vec, this.lenVec(vec)) as type.Vector;
+      } else {
+        return [0, 0] as type.Vector;
+      }
     },
     lenVec(vec: type.Vector) {
       return Math.sqrt(vec[0] ** 2 + vec[1] ** 2);

@@ -19,6 +19,7 @@ export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger" | "circle"
 export interface Player {
   vector: Vector;
   speed: number;
+  moveVector: Vector;
   size: number;
   originalSize: number;
   skillTree: SkillTree;
