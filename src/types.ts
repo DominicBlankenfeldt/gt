@@ -5,21 +5,22 @@ export interface Enemy {
   type: EnemyType;
   imgsrc: string;
   moveVector: Vector;
-  spawnMoveVector:Vector;
+  spawnMoveVector: Vector;
   timer: number;
-  circle:boolean|null;
-  dir:Dir;
+  circle: boolean | null;
+  circleRadius: number;
+  circleDir: Dir;
   isGrow: boolean;
-  isMagnet:boolean;
+  isMagnet: boolean;
 }
-export type Dir="left"|"right"
-export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger"|"circle"|"random"|"spiral";
+export type Dir = "left" | "right"
+export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger" | "circle" | "random" | "spiral";
 
 export interface Player {
   vector: Vector;
   speed: number;
   size: number;
-  originalSize:number;
+  originalSize: number;
   skillTree: SkillTree;
   outlook: Outlook;
   highscore: number;
@@ -33,7 +34,7 @@ export interface Player {
   hardcoreMode: boolean;
   playedHardcore: number;
 }
-export type Outlook = "up" | "down" | "right" | "left"|"upleft"|"upright"|"downleft"|"downright";
+export type Outlook = "up" | "down" | "right" | "left" | "upleft" | "upright" | "downleft" | "downright";
 
 export interface Item {
   type: Itemtype;

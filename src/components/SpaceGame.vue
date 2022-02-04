@@ -274,7 +274,6 @@ export default defineComponent({
       this.colisionHandling();
       this.despawnItems();
       this.gameloopCounter++;
-      //this.gameloopCounter % 60 == 0 ? this.handleEnemyColorSwitch() : null; // 1sek
       if (this.gameloopCounter % 20 == 0) this.handleEnemyGetBigger(); // 0.3sek
       if (this.gameloopCounter % 60 == 0) this.growBlackHole(); // 1sek
       if (this.gameloopCounter % 120 == 0) this.spawnItems(); // 2sek
@@ -490,7 +489,7 @@ export default defineComponent({
       }
     },
     touchBlackHole() {
-      this.gameOver("you got exploded", "alert alert-danger");
+      this.gameOver("you got sucked in", "alert alert-danger");
     },
     growBlackHole() {
       for (let item of this.items) {
@@ -577,9 +576,9 @@ export default defineComponent({
       let vector = [0, 0] as type.Vector;
       let type = "";
       let imgsrc = "";
-      let timer = -1;
+      let timer = 0;
       let moveArray = [0, 0] as type.Vector;
-      let dir = "";
+      let circleDir = "";
       switch (this.getRandomInt(3)) {
         case 0:
           imgsrc = "/gt/img/char/enemy_pingu.png";
@@ -655,16 +654,13 @@ export default defineComponent({
           type = "spiral";
           timer = 100;
           break;
-        // case 6:
-        //   type = "colorswitch";
-        //   break;
       }
       switch (this.getRandomInt(2)) {
         case 0:
-          dir = "left";
+          circleDir = "left";
           break;
         case 1:
-          dir = "right";
+          circleDir = "right";
           break;
       }
       this.player.hardcoreMode ? (type = "aimbot") : null;
@@ -676,80 +672,34 @@ export default defineComponent({
       this.enemies.push({
         vector: vector,
         size: size,
-        id: JSON.stringify(this.getRandomInt(100000000)),
+        id: JSON.stringify(Math.random()),
         type: type as type.EnemyType,
         imgsrc: imgsrc,
         spawnMoveVector: moveArray as type.Vector,
         moveVector: moveArray as type.Vector,
         timer: timer,
         circle: type == "cicrle" ? false : null,
-        dir: dir as type.Dir,
+        circleRadius: Math.random() * 0.03 + 0.01,
+        circleDir: circleDir as type.Dir,
         isGrow: false,
         isMagnet: false,
       });
     },
 
     handleEnemyMovement() {
-      let acc;
       if (!this.enemiesMove) return;
       for (let enemy of this.enemies) {
         if (enemy.type == "spiral") {
-          if (enemy.timer > 0) {
-            enemy.timer--;
-          } else {
-            acc = this.rotVec(enemy.moveVector, 90);
-            acc = this.mulVec(acc, 0.04);
-            acc = this.addVec(enemy.moveVector, acc);
-            enemy.moveVector = this.addVec(enemy.moveVector, acc);
-            enemy.moveVector = this.norVec(enemy.moveVector);
-            enemy.vector = this.addVec(
-              enemy.vector,
-              this.mulVec(
-                enemy.spawnMoveVector,
-                this.difficulty *
-                  this.percent(this.findSkill("slowEnemy"), "de") *
-                  this.generalSize *
-                  0.3
-              )
-            );
-          }
+          this.moveSpiralEnemy(enemy);
         }
         if (enemy.type == "circle") {
-          if (enemy.timer > 4000) {
-            enemy.timer += 3 * Math.random();
-            this.respawnEnemy(enemy);
-          } else {
-            enemy.timer += this.getRandomInt(3) + this.difficulty + 2;
-            if (enemy.timer > 1000) {
-              enemy.circle = true;
-            }
-          }
-          if (enemy.circle) {
-            acc = this.rotVec(enemy.moveVector, 90);
-            acc = this.mulVec(acc, 0.02);
-            if (enemy.dir == "left") {
-              enemy.moveVector = this.addVec(enemy.moveVector, acc);
-            }
-            if (enemy.dir == "right") {
-              enemy.moveVector = this.subVec(enemy.moveVector, acc);
-            }
-          }
+          this.moveCircleEnemy(enemy);
         }
         if (enemy.type == "curve") {
-          enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] > 0
-            ? (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] +=
-                0.02 * Math.random())
-            : (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] -=
-                0.02 * Math.random());
+          this.moveCurveEnemy(enemy);
         }
         if (enemy.type == "chasebot") {
-          enemy.vector = this.addVec(
-            enemy.vector,
-            this.mulVec(
-              this.dirVec(this.player.vector, enemy.vector),
-              2 * this.generalSize
-            )
-          );
+          this.moveChasebotEnemy(enemy);
         } else {
           enemy.moveVector = this.norVec(enemy.moveVector);
           enemy.vector = this.addVec(
@@ -770,7 +720,71 @@ export default defineComponent({
         }
       }
     },
-
+    moveChasebotEnemy(enemy: type.Enemy) {
+      enemy.vector = this.addVec(
+        enemy.vector,
+        this.mulVec(
+          this.dirVec(this.player.vector, enemy.vector),
+          2 * this.generalSize
+        )
+      );
+    },
+    moveCurveEnemy(enemy: type.Enemy) {
+      enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] > 0
+        ? (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] +=
+            0.02 * Math.random())
+        : (enemy.moveVector[enemy.moveVector.findIndex((v) => v != 1)] -=
+            0.02 * Math.random());
+    },
+    moveSpiralEnemy(enemy: type.Enemy) {
+      let acc;
+      if (enemy.timer > 0) {
+        enemy.timer--;
+      } else {
+        acc = this.rotVec(enemy.moveVector, 90);
+        acc = this.mulVec(acc, enemy.circleRadius * 2);
+        acc = this.addVec(enemy.moveVector, acc);
+        if (enemy.circleDir == "left") {
+          enemy.moveVector = this.addVec(enemy.moveVector, acc);
+        }
+        if (enemy.circleDir == "right") {
+          enemy.moveVector = this.subVec(enemy.moveVector, acc);
+        }
+        enemy.moveVector = this.norVec(enemy.moveVector);
+        enemy.vector = this.addVec(
+          enemy.vector,
+          this.mulVec(
+            enemy.spawnMoveVector,
+            this.difficulty *
+              this.percent(this.findSkill("slowEnemy"), "de") *
+              this.generalSize *
+              0.3
+          )
+        );
+      }
+    },
+    moveCircleEnemy(enemy: type.Enemy) {
+      let acc;
+      if (enemy.timer > 4000) {
+        enemy.timer += 3 * Math.random();
+        this.respawnEnemy(enemy);
+      } else {
+        enemy.timer += this.getRandomInt(3) + this.difficulty + 2;
+        if (enemy.timer > 1000) {
+          enemy.circle = true;
+        }
+      }
+      if (enemy.circle) {
+        acc = this.rotVec(enemy.moveVector, 90);
+        acc = this.mulVec(acc, enemy.circleRadius);
+        if (enemy.circleDir == "left") {
+          enemy.moveVector = this.addVec(enemy.moveVector, acc);
+        }
+        if (enemy.circleDir == "right") {
+          enemy.moveVector = this.subVec(enemy.moveVector, acc);
+        }
+      }
+    },
     respawnEnemy(enemy: type.Enemy) {
       this.enemies.splice(
         this.enemies.findIndex((e) => e == enemy),
@@ -795,23 +809,6 @@ export default defineComponent({
         }
       }
     },
-    // handleEnemyColorSwitch() {
-    //   for (let enemy of this.Enemies) {
-    //     if (enemy.type == "colorswitch") {
-    //       switch (this.getRandomInt(3)) {
-    //         case 0:
-    //           enemy.color = "rgb(99, 206, 50)";
-    //           break;
-    //         case 1:
-    //           enemy.color = "rgb(50, 206, 198)";
-    //           break;
-    //         case 2:
-    //           enemy.color = "rgb(84, 50, 206)";
-    //           break;
-    //       }
-    //     }
-    //   }
-    // },
 
     //playermovement
     bombAbility() {
