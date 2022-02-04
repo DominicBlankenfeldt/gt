@@ -40,6 +40,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_gasman.png"
   },
   {
+    "revision": "b8768f5072e6f7ca82adeac305065604",
+    "url": "/gt/img/char/enemy_komet.png"
+  },
+  {
     "revision": "86f8f8797f19ae6ce1230229f3f9f5d6",
     "url": "/gt/img/char/enemy_pingu.png"
   },
@@ -132,27 +136,27 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "bfb97109cfc5a98ecacaf866b9a0dbb8",
+    "revision": "2382a3c79535454150f1ba7a0a872a6c",
     "url": "/gt/index.html"
   },
   {
-    "revision": "6ebd6b540cda0af952e7",
-    "url": "/gt/js/about.ddc27c8b.js"
+    "revision": "fedf684690ae26b58e3f",
+    "url": "/gt/js/about.ea7858c3.js"
   },
   {
-    "revision": "a6f971277eba444bf157",
-    "url": "/gt/js/app.488744d2.js"
+    "revision": "bc760f46de6112dc75bb",
+    "url": "/gt/js/app.90d1bf05.js"
   },
   {
-    "revision": "7b072654a865155b71ab",
-    "url": "/gt/js/chunk-vendors.e0474a2e.js"
+    "revision": "5e0411535696092bbe11",
+    "url": "/gt/js/chunk-vendors.42533b75.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
     "url": "/gt/manifest.json"
   },
   {
-    "revision": "735ab4f94fbcd57074377afca324c813",
+    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/gt/robots.txt"
   }
 ]);
