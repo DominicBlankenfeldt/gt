@@ -337,6 +337,7 @@ export default defineComponent({
             this.playerStartPosition()
             this.enemies = [] as type.Enemy[]
             this.items = [] as type.Item[]
+            this.plasmas = [] as type.Plasma[]
             this.gameStarted = true
             window.onkeyup = (e: any) => {
                 this.pressedKeys[e.key] = false
