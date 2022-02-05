@@ -198,13 +198,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { checkPlayer, player, production } from '@/global'
+import { checkPlayer, player, production, bossFight } from '@/global'
 import * as type from '@/types'
 import * as API from '@/API'
 export default defineComponent({
     setup() {
         player
         production
+        bossFight
     },
     data() {
         return {
@@ -233,6 +234,7 @@ export default defineComponent({
             bombCoolDownDuration: 0,
             shotCoolDown: false,
             shotCoolDownDuration: 0,
+            bossFight: bossFight,
             plasmas: [] as type.Plasma[],
             // gameSetup
             hardCoreMode: false,
@@ -284,6 +286,8 @@ export default defineComponent({
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
+            if (!this.isStopTime) this.gameloopCounter2++
+            this.gameloopCounter++
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
@@ -292,8 +296,6 @@ export default defineComponent({
             if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
             this.reduceDuartion()
             this.handleEnemyRandom()
-            if (!this.isStopTime) this.gameloopCounter2++
-            this.gameloopCounter++
         },
         increaseScore() {
             if (this.isGrow) {
@@ -317,10 +319,15 @@ export default defineComponent({
             }, 500)
         },
         async start() {
-            this.player.hardcoreMode
-                ? ((this.startingEnemies = 400), this.player.playedHardcore++)
-                : ((this.startingEnemies = 4), this.player.playedGames++)
-            await API.addPlayer(this.player)
+            if (this.bossFight) {
+                this.bossPreparations()
+            } else {
+                this.player.hardcoreMode
+                    ? ((this.startingEnemies = 400), this.player.playedHardcore++)
+                    : ((this.startingEnemies = 4), this.player.playedGames++)
+                await API.addPlayer(this.player)
+                this.difficulty = 2
+            }
             this.isGrow = false
             this.isMagnet = false
             this.isStopTime = false
@@ -333,7 +340,6 @@ export default defineComponent({
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
-            this.difficulty = 2
             this.playerStartPosition()
             this.enemies = [] as type.Enemy[]
             this.items = [] as type.Item[]
@@ -348,6 +354,11 @@ export default defineComponent({
             for (let i = 0; i < this.startingEnemies; i++) this.createEnemy()
             clearTimeout(this.countgpsID)
             this.countgps()
+        },
+        bossPreparations() {
+            this.player.hardcoreMode = false
+            this.difficulty += this.player.defeatedBosses
+            this.startingEnemies += this.player.defeatedBosses
         },
         playerStartPosition() {
             //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
@@ -1150,7 +1161,7 @@ export default defineComponent({
     // widht=1280px
     width: 75vw;
     height: 80vh;
-    border: 0px solid black;
+    border: 1px solid black;
     background-color: rgb(0, 0, 0);
     z-index: 1;
 }

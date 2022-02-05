@@ -13,6 +13,14 @@ export interface Enemy {
   isGrow: boolean;
   isMagnet: boolean;
 }
+export interface BossEnemy{
+  vector: Vector;
+  size: number;
+  imgsrc: string;
+  moveVector: Vector;
+  HP:number;
+  maxHP:number
+}
 export type Dir = "left" | "right"
 export type EnemyType = "curve" | "aimbot" | "chasebot" | "getbigger" | "circle" | "random" | "spiral";
 
@@ -34,6 +42,7 @@ export interface Player {
   playedGames: number;
   hardcoreMode: boolean;
   playedHardcore: number;
+  defeatedBosses:number;
 }
 export type Outlook = "up" | "down" | "right" | "left" | "upleft" | "upright" | "downleft" | "downright";
 

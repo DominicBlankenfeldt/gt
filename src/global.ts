@@ -1,7 +1,8 @@
 import { ref } from "vue";
 import * as type from "@/types";
-//player
 
+export const bossFight=ref(false)
+//player
 export const player = ref({
   id: "",
   vector: [0, 0],
@@ -37,6 +38,7 @@ export const player = ref({
   registeredAt: 0,
   playedGames: 0,
   playedHardcore: 0,
+  defeatedBosses:0,
   hardcoreMode: false,
 });
 //finish me
@@ -76,6 +78,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
   checkedPlayer.registeredAt = checkedPlayer.registeredAt || 0
   checkedPlayer.playedGames = checkedPlayer.playedGames || 0
   checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
+  checkedPlayer.defeatedBosses=checkedPlayer.defeatedBosses||0
   checkedPlayer.hardcoreMode = checkedPlayer.hardcoreMode || false
   for (const skill of ["shotAbility", "fastAbility", "slowAbility", "bombAbility"]) {
     if (checkSkill(checkedPlayer, skill)) {
