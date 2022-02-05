@@ -220,6 +220,7 @@ export default defineComponent({
             difficulty: 2,
             score: 0,
             gameloopCounter: 0,
+            gameloopCounter2: 0,
             gameloopLastCounter: 0,
             countgpsID: 0,
             gps: 60,
@@ -254,6 +255,21 @@ export default defineComponent({
         gameloop() {
             this.handlePlayerMovement()
             this.handleEnemyMovement()
+            this.increaseScore()
+            this.colisionHandling()
+            this.despawnItems()
+            if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
+            if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
+            if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
+
+            if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
+            if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
+            this.reduceDuartion()
+            this.handleEnemyRandom()
+            if (!this.isStopTime) this.gameloopCounter2++
+            this.gameloopCounter++
+        },
+        increaseScore() {
             if (this.isGrow) {
                 this.player.size = this.player.originalSize * 2 * this.generalSize
                 this.score +=
@@ -265,16 +281,6 @@ export default defineComponent({
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score += this.difficulty * this.percent(this.findSkill('scoreMultiplicator'), 'in')
             }
-            this.colisionHandling()
-            this.despawnItems()
-            this.gameloopCounter++
-            if (this.gameloopCounter % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
-            if (this.gameloopCounter % 60 == 0) this.growBlackHole() // 1sek
-            if (this.gameloopCounter % 120 == 0) this.spawnItems() // 2sek
-            if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
-            if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
-            this.reduceDuartion()
-            this.handleEnemyRandom()
         },
         countgps() {
             this.countgpsID = setTimeout(() => {
