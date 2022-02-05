@@ -53,6 +53,13 @@ export interface SkillTree {
 export interface ref<Player> {
   value: Player;
 }
+export interface Plasma {
+  size: number;
+  moveVector: Vector;
+  vector: Vector;
+  imgsrc: string;
+  damage: number;
+}
 export interface Skill {
   name: Skillname;
   lvl: number;
@@ -62,6 +69,7 @@ export type Skillname =
   | "fastAbility"
   | "slowAbility"
   | "bombAbility"
+  | "shotAbility"
   | "slowEnemy"
   | "spawnLessEnemy"
   | "scoreMultiplicator"
@@ -71,6 +79,7 @@ export type Skillname =
   | "smallerBlackHole"
   | "longerSlowEnemies"
   | "longerStopTime"
+
 
 export type Vector = [number, number];
 

@@ -54,6 +54,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
       { name: "fastAbility", lvl: 0, maxlvl: 1 },
       { name: "slowAbility", lvl: 0, maxlvl: 1 },
       { name: "bombAbility", lvl: 0, maxlvl: 1 },
+      { name: "shotAbility", lvl: 0, maxlvl: 1 },
       { name: "slowEnemy", lvl: 0, maxlvl: 20 },
       { name: "spawnLessEnemy", lvl: 0, maxlvl: 20 },
       { name: "scoreMultiplicator", lvl: 0, maxlvl: 20 },
@@ -76,7 +77,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
   checkedPlayer.playedGames = checkedPlayer.playedGames || 0
   checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
   checkedPlayer.hardcoreMode = checkedPlayer.hardcoreMode || false
-  for (const skill of ["fastAbility", "slowAbility", "bombAbility"]) {
+  for (const skill of ["shotAbility", "fastAbility", "slowAbility", "bombAbility"]) {
     if (checkSkill(checkedPlayer, skill)) {
       checkedPlayer.skillTree.skills.push({ name: skill as type.Skillname, lvl: 0, maxlvl: 1 })
     }

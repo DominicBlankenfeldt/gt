@@ -5,6 +5,7 @@
             <p>With the key "1" you can speed up your movement if you unlock the ability in your skilltree</p>
             <p>With the key "2" you can slow down your movement if you unlock the ability in your skilltree</p>
             <p>With the key "3" you can remote ignition the nearest bomb if you unlock the ability in your skilltree</p>
+            <p>With the key "4" you can shoot at enemies (a hit gives you score) if you unlock the ability in your skilltree</p>
         </div>
     </div>
 

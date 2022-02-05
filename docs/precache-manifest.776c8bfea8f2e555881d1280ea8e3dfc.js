@@ -48,6 +48,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_pingu.png"
   },
   {
+    "revision": "97efa4a7b44f4631deadc04b8af5519d",
+    "url": "/gt/img/char/plasma.png"
+  },
+  {
     "revision": "f8b19de8cb44ec5af71a52bc325fa40d",
     "url": "/gt/img/char/playership.png"
   },
@@ -144,16 +148,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "9a52646121e0c9b195ff985aac843e1e",
+    "revision": "9125de42d8fe682166953c4d071b6d26",
     "url": "/gt/index.html"
   },
   {
-    "revision": "e5b2fd109e810bd6a9b1",
-    "url": "/gt/js/about.d6d5916e.js"
+    "revision": "8240c9805c3ff5640141",
+    "url": "/gt/js/about.fe6395cd.js"
   },
   {
-    "revision": "8cbe22e45c1e7acebe77",
-    "url": "/gt/js/app.976e167b.js"
+    "revision": "dcfea945e7f60ebde402",
+    "url": "/gt/js/app.97e6a177.js"
   },
   {
     "revision": "5e0411535696092bbe11",

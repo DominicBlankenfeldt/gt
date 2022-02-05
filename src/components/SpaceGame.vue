@@ -41,6 +41,26 @@
                 />
             </div>
             <div
+                v-for="plasma of plasmas"
+                :key="plasma"
+                :style="{
+                    left: plasma.vector[0] + 'px',
+                    top: plasma.vector[1] + 'px',
+                    width: plasma.size + 'px',
+                    height: plasma.size + 'px',
+                }"
+                style="position: absolute"
+            >
+                <img
+                    :src="plasma.imgsrc"
+                    alt="plasma"
+                    :style="{
+                        width: plasma.size + 'px',
+                        height: plasma.size + 'px',
+                    }"
+                />
+            </div>
+            <div
                 v-for="enemy of enemies"
                 :key="enemy.id"
                 :style="{
@@ -103,6 +123,9 @@
         </div>
         <div class="col-2">
             <div v-if="isSlowEnemies" style="z-index: 3">Slow enemies:{{ Math.round(slowEnemiesDuration) }}</div>
+        </div>
+        <div class="col-2">
+            <div v-if="shotCoolDown" style="z-index: 3">Shot:{{ Math.round(shotCoolDownDuration) }}</div>
         </div>
     </div>
     <!-- <div
@@ -207,8 +230,10 @@ export default defineComponent({
             slowEnemiesDuration: 0,
             stopTimeDuration: 0,
             bombCoolDown: false,
-            bombCoolDownID: 0,
-            bestPlayers: [] as type.Player[],
+            bombCoolDownDuration: 0,
+            shotCoolDown: false,
+            shotCoolDownDuration: 0,
+            plasmas: [] as type.Plasma[],
             // gameSetup
             hardCoreMode: false,
             gameStarted: false,
@@ -254,6 +279,7 @@ export default defineComponent({
         //game
         gameloop() {
             this.handlePlayerMovement()
+            this.handlePlasmaMovement()
             this.handleEnemyMovement()
             this.increaseScore()
             this.colisionHandling()
@@ -297,6 +323,12 @@ export default defineComponent({
             await API.addPlayer(this.player)
             this.isGrow = false
             this.isMagnet = false
+            this.isStopTime = false
+            this.isSlowEnemies = false
+            this.growDuration = 0
+            this.magnetDuration = 0
+            this.stopTimeDuration = 0
+            this.slowEnemiesDuration = 0
             this.message = ''
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
@@ -366,6 +398,12 @@ export default defineComponent({
                             }
                         }
                     }
+                    for (let plasma of this.plasmas) {
+                        this.gravity(item, plasma, 4, 0.5)
+                        if (this.collisionsCheck(item, plasma)) {
+                            this.deletePlasma(plasma)
+                        }
+                    }
                 } else {
                     if (this.isMagnet) {
                         this.gravity(this.player, item, 2, 1)
@@ -417,6 +455,12 @@ export default defineComponent({
                 }
             }
             for (let enemy of this.enemies) {
+                for (let plasma of this.plasmas) {
+                    if (this.collisionsCheck(enemy, plasma)) {
+                        this.respawnEnemy(enemy)
+                        this.score += 300 * this.difficulty
+                    }
+                }
                 if (this.isMagnet) {
                     this.gravity(this.player, enemy, 2, -0.3)
                 }
@@ -428,7 +472,7 @@ export default defineComponent({
                 }
             }
         },
-        collisionsCheck(object1: type.Enemy | type.Item | type.Player, object2: type.Enemy | type.Item | type.Player) {
+        collisionsCheck(object1: type.Enemy | type.Item | type.Player | type.Plasma, object2: type.Enemy | type.Item | type.Player | type.Plasma) {
             return (
                 this.lenVec(this.subVec(this.addVec(object1.vector, object1.size / 2), this.addVec(object2.vector, object2.size / 2))) <
                 object1.size / 2 + object2.size / 2
@@ -461,17 +505,22 @@ export default defineComponent({
             this.isStopTime ? (this.stopTimeDuration -= 1000 / 60) : (this.stopTimeDuration = 0)
             if (this.stopTimeDuration <= 0) this.isStopTime = false
             if (this.isStopTime) return
+
             this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0)
-            this.isMagnet ? (this.magnetDuration -= 1000 / 60) : (this.magnetDuration = 0)
-            this.isSlowEnemies ? (this.slowEnemiesDuration -= 1000 / 60) : (this.slowEnemiesDuration = 0)
-            if (this.slowEnemiesDuration <= 0) this.isSlowEnemies = false
             if (this.isGrow) {
                 if (this.growDuration <= 0) {
                     this.isGrow = false
                     this.player.vector = this.addVec(this.player.vector, this.player.size / 2)
                 }
             }
+            this.isMagnet ? (this.magnetDuration -= 1000 / 60) : (this.magnetDuration = 0)
             if (this.magnetDuration <= 0) this.isMagnet = false
+            this.isSlowEnemies ? (this.slowEnemiesDuration -= 1000 / 60) : (this.slowEnemiesDuration = 0)
+            if (this.slowEnemiesDuration <= 0) this.isSlowEnemies = false
+            this.bombCoolDown ? (this.bombCoolDownDuration -= 1000 / 60) : (this.bombCoolDownDuration = 0)
+            if (this.bombCoolDownDuration <= 0) this.bombCoolDown = false
+            this.shotCoolDown ? (this.shotCoolDownDuration -= 1000 / 60) : (this.shotCoolDownDuration = 0)
+            if (this.shotCoolDownDuration <= 0) this.shotCoolDown = false
         },
         collectClearField() {
             for (let enemy of [...this.enemies]) {
@@ -794,9 +843,7 @@ export default defineComponent({
         bombAbility() {
             if (this.bombCoolDown) return
             this.bombCoolDown = true
-            this.bombCoolDownID = setTimeout(() => {
-                this.bombCoolDown = false
-            }, 1000)
+            this.bombCoolDownDuration = 1000 * 60
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (bombs.length) {
                 bombs.sort((a, b) => {
@@ -809,10 +856,62 @@ export default defineComponent({
                 this.collectClearField()
             }
         },
+        shotAbility() {
+            let moveVector: type.Vector
+            if (this.isStopTime) return
+            if (this.shotCoolDown) return
+            switch (this.player.outlook) {
+                case 'up':
+                    moveVector = [0, -1]
+                    break
+                case 'down':
+                    moveVector = [0, 1]
+                    break
+                case 'left':
+                    moveVector = [-1, 0]
+                    break
+                case 'right':
+                    moveVector = [1, 0]
+                    break
+                case 'upright':
+                    moveVector = [1, -1]
+                    break
+                case 'upleft':
+                    moveVector = [-1, -1]
+                    break
+                case 'downleft':
+                    moveVector = [-1, 1]
+                    break
+                case 'downright':
+                    moveVector = [1, 1]
+                    break
+            }
+            this.shotCoolDown = true
+            this.shotCoolDownDuration = 1000
+            this.plasmas.push({
+                moveVector: moveVector,
+                vector: this.player.vector,
+                size: 5,
+                imgsrc: '/gt/img/char/plasma.png',
+                damage: 1,
+            } as type.Plasma)
+        },
+        handlePlasmaMovement() {
+            if (this.isStopTime) return
+            for (let plasma of this.plasmas) {
+                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7)
+                plasma.vector = this.addVec(plasma.vector, plasma.moveVector)
+                if (this.borderCheck(plasma, 'outer')) {
+                    this.deletePlasma(plasma)
+                }
+            }
+        },
+        deletePlasma(plasma: type.Plasma) {
+            this.plasmas = this.plasmas.filter(p => p != plasma)
+        },
         handlePlayerMovement() {
             let multiplicator = 1
             this.player.moveVector = [0, 0]
-            if (this.pressedKeys['3'] && this.findSkill('bombAbility')) this.bombAbility()
 
             if (this.pressedKeys['1'] && this.findSkill('fastAbility')) multiplicator = 2
 
@@ -833,6 +932,9 @@ export default defineComponent({
 
             this.player.moveVector = this.mulVec(this.norVec(this.player.moveVector), 5)
             this.player.vector = this.addVec(this.player.vector, this.player.moveVector)
+
+            if (this.pressedKeys['3'] && this.findSkill('bombAbility')) this.bombAbility()
+            if (this.pressedKeys['4'] && this.findSkill('shotAbility')) this.shotAbility()
             if (this.player.moveVector[0] > 0) {
                 this.player.outlook = 'right'
             }
@@ -901,7 +1003,7 @@ export default defineComponent({
                 }
             }
         },
-        borderCheck(object: type.Enemy | type.Item | type.Player, border: 'inner' | 'outer') {
+        borderCheck(object: type.Enemy | type.Item | type.Player | type.Plasma, border: 'inner' | 'outer') {
             if (border == 'inner') {
                 if (object.vector[0] > this.borderRight - object.size) {
                     return 'right'
@@ -932,7 +1034,12 @@ export default defineComponent({
             }
             return false
         },
-        gravity(object1: type.Enemy | type.Item | type.Player, object2: type.Enemy | type.Item | type.Player, range: number, speed: number) {
+        gravity(
+            object1: type.Enemy | type.Item | type.Player | type.Plasma,
+            object2: type.Enemy | type.Item | type.Player | type.Plasma,
+            range: number,
+            speed: number
+        ) {
             if (this.isStopTime) return
             if (
                 this.lenVec(this.subVec(this.addVec(object1.vector, object1.size / 2), this.addVec(object2.vector, object2.size / 2))) *
@@ -1020,10 +1127,10 @@ export default defineComponent({
             this.generalSize = (window.innerWidth / 1920 + window.innerHeight / 955) / 2
             this.player.size = this.player.originalSize * this.generalSize
             this.middlex = window.innerWidth / 2
-            this.borderRight = Math.round(window.innerWidth - (window.innerWidth / 100) * 12.5 - 60)
-            this.borderLeft = Math.round((window.innerWidth / 100) * 12.5 + 60)
-            this.borderUp = Math.round((window.innerHeight / 100) * 13 + 60)
-            this.borderDown = Math.round((window.innerHeight / 100) * 93 - 61)
+            this.borderRight = Math.round(window.innerWidth - (window.innerWidth / 100) * 12.5)
+            this.borderLeft = Math.round((window.innerWidth / 100) * 12.5)
+            this.borderUp = Math.round((window.innerHeight / 100) * 13)
+            this.borderDown = Math.round((window.innerHeight / 100) * 93 - 1)
         },
     },
 })
@@ -1042,7 +1149,7 @@ export default defineComponent({
     // widht=1280px
     width: 75vw;
     height: 80vh;
-    border: 60px solid black;
+    border: 0px solid black;
     background-color: rgb(0, 0, 0);
     z-index: 1;
 }
