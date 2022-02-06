@@ -18,7 +18,7 @@ export interface BossEnemy{
   size: number;
   imgsrc: string;
   moveVector: Vector;
-  HP:number;
+  hP:number;
   maxHP:number
 }
 export type Dir = "left" | "right"

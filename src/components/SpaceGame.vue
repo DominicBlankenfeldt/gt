@@ -1,25 +1,34 @@
 <template>
     <div class="row" id="scoreCard">
-        <div class="col align-self-center">
+        <div v-if="!bossFight" class="col-3 align-self-center">
             <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             Score:
-            <span id="scoreSpan">{{ Math.round(score) }}</span>
+            <span id="scoreSpan">
+                {{ Math.round(score) }}
+            </span>
         </div>
-        <div class="col align-self-center">
+        <div v-else class="col-3"></div>
+        <div class="col-2 align-self-center">
             Enemies:
             <span id="scoreSpan">{{ enemies.length }}</span>
         </div>
-        <div class="col align-self-center">
+        <div class="col-2 align-self-center">
             difficulty:
             <span id="scoreSpan">{{ difficulty }}</span>
         </div>
-        <div class="col align-self-center">
+        <div class="col-2 align-self-center">gps:{{ Math.round(gps) }}</div>
+        <div v-if="!bossFight" class="col-3 align-self-center">
             <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             Highscore:
             <span id="scoreSpan">{{ player.hardcoreMode ? Math.round(player.highscoreHardcore) : Math.round(player.highscore) }}</span>
         </div>
-        <div>gps:{{ Math.round(gps) }}</div>
+        <div v-else class="col-3"></div>
+        <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
+        <div v-if="bossEnemy.size">Boss HP:{{ bossEnemy.hP }}</div>
+        <div v-if="!bossFight && !player.hardcoreMode">normal Mode</div>
+        <div v-if="!bossFight && player.hardcoreMode">hardcore Mode</div>
     </div>
+
     <div class="d-flex justify-content-center">
         <div class="game" :class="{ noneCursor: gameStarted }">
             <div
@@ -37,6 +46,25 @@
                     :style="{
                         width: player.size + 'px',
                         height: player.size + 'px',
+                    }"
+                />
+            </div>
+            <div
+                v-if="bossEnemy.size"
+                :style="{
+                    left: bossEnemy.vector[0] + 'px',
+                    top: bossEnemy.vector[1] + 'px',
+                    width: bossEnemy.size + 'px',
+                    height: bossEnemy.size + 'px',
+                }"
+                style="position: absolute"
+            >
+                <img
+                    :src="bossEnemy.imgsrc"
+                    alt="bossEnemy"
+                    :style="{
+                        width: bossEnemy.size + 'px',
+                        height: bossEnemy.size + 'px',
                     }"
                 />
             </div>
@@ -111,7 +139,7 @@
         style="position: absolute; z-index: 3"
         class="row col-12"
     >
-        <div class="col-2"></div>
+        <div class="col-1"></div>
         <div class="col-2">
             <div v-if="isMagnet" style="z-index: 3">Magnet:{{ Math.round(magnetDuration) }}</div>
         </div>
@@ -236,6 +264,8 @@ export default defineComponent({
             shotCoolDownDuration: 0,
             bossFight: bossFight,
             plasmas: [] as type.Plasma[],
+            // boss
+            bossEnemy: {} as type.BossEnemy,
             // gameSetup
             hardCoreMode: false,
             gameStarted: false,
@@ -286,14 +316,16 @@ export default defineComponent({
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
+            if (this.bossFight) this.handleBossEnemyMovement()
             if (!this.isStopTime) this.gameloopCounter2++
             this.gameloopCounter++
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
-
-            if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
-            if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
+            if (!this.bossFight) {
+                if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
+                if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
+            }
             this.reduceDuartion()
             this.handleEnemyRandom()
         },
@@ -320,7 +352,7 @@ export default defineComponent({
         },
         async start() {
             if (this.bossFight) {
-                this.bossPreparations()
+                this.bossEnemyPreparations()
             } else {
                 this.player.hardcoreMode
                     ? ((this.startingEnemies = 400), this.player.playedHardcore++)
@@ -355,10 +387,36 @@ export default defineComponent({
             clearTimeout(this.countgpsID)
             this.countgps()
         },
-        bossPreparations() {
+        bossEnemyPreparations() {
             this.player.hardcoreMode = false
             this.difficulty += this.player.defeatedBosses
             this.startingEnemies += this.player.defeatedBosses
+            do {
+                this.bossEnemy.vector = [
+                    this.getRandomInt(this.borderRight - this.borderLeft - 20) + this.borderLeft,
+                    this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp,
+                ] as type.Vector
+            } while (this.lenVec(this.subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
+            this.bossEnemy.size = 50
+            this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.png'
+            this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
+            this.bossEnemy.maxHP = 10 * (this.player.defeatedBosses + 1)
+            this.bossEnemy.hP = this.bossEnemy.maxHP
+        },
+        handleBossEnemyMovement() {
+            if (this.bossEnemy.hP <= 0) this.gameOver('You have killed the boss', 'alert alert-success')
+            this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5)
+            this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
+            switch (this.borderCheck(this.bossEnemy, 'inner')) {
+                case 'left':
+                case 'right':
+                    this.bossEnemy.moveVector[0] *= -1
+                    break
+                case 'up':
+                case 'down':
+                    this.bossEnemy.moveVector[1] *= -1
+                    break
+            }
         },
         playerStartPosition() {
             //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
@@ -369,6 +427,7 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
+            if (bossFight) this.score = 0
             if (this.player.hardcoreMode) {
                 if (this.score > this.player.highscoreHardcore) {
                     this.player.highscoreHardcore = this.score
@@ -388,6 +447,16 @@ export default defineComponent({
         },
         //colliosion
         colisionHandling() {
+            if (this.bossFight) {
+                if (this.collisionsCheck(this.bossEnemy, this.player)) this.gameOver('you got killed by the boss', 'alert alert-danger')
+                for (let plasma of this.plasmas) {
+                    if (this.collisionsCheck(this.bossEnemy, plasma)) {
+                        this.bossEnemy.hP -= plasma.damage
+                        this.deletePlasma(plasma)
+                    }
+                }
+            }
+
             for (let item of this.items) {
                 if (item.type == 'blackHole') {
                     this.gravity(item, this.player, 4, 0.5)
@@ -469,6 +538,8 @@ export default defineComponent({
             for (let enemy of this.enemies) {
                 for (let plasma of this.plasmas) {
                     if (this.collisionsCheck(enemy, plasma)) {
+                        plasma.damage--
+                        if (plasma.damage <= 0) this.deletePlasma(plasma)
                         this.respawnEnemy(enemy)
                         this.score += 300 * this.difficulty
                     }
@@ -484,7 +555,10 @@ export default defineComponent({
                 }
             }
         },
-        collisionsCheck(object1: type.Enemy | type.Item | type.Player | type.Plasma, object2: type.Enemy | type.Item | type.Player | type.Plasma) {
+        collisionsCheck(
+            object1: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy,
+            object2: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy
+        ) {
             return (
                 this.lenVec(this.subVec(this.addVec(object1.vector, object1.size / 2), this.addVec(object2.vector, object2.size / 2))) <
                 object1.size / 2 + object2.size / 2
@@ -1015,7 +1089,7 @@ export default defineComponent({
                 }
             }
         },
-        borderCheck(object: type.Enemy | type.Item | type.Player | type.Plasma, border: 'inner' | 'outer') {
+        borderCheck(object: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy, border: 'inner' | 'outer') {
             if (border == 'inner') {
                 if (object.vector[0] > this.borderRight - object.size) {
                     return 'right'
