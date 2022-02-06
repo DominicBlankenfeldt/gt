@@ -126,7 +126,10 @@
             </div>
             <div class="container" v-if="!gameStarted">
                 <button class="btn" id="startGameBtn" @click="start()">
-                    <a>Starten</a>
+                    <a>{{ startButtonText }}</a>
+                </button>
+                <button v-if="cancelButtonText" class="btn" id="cancelGameBtn" @click="cancel()">
+                    <a>{{ cancelButtonText }}</a>
                 </button>
             </div>
         </div>
@@ -240,6 +243,8 @@ export default defineComponent({
             // display
             message: '',
             messageType: '',
+            startButtonText: 'start',
+            cancelButtonText: '',
             middlex: window.innerWidth / 2,
             generalSize: (window.innerWidth / 1920 + window.innerHeight / 955) / 2,
             production: production.value,
@@ -369,6 +374,8 @@ export default defineComponent({
             this.stopTimeDuration = 0
             this.slowEnemiesDuration = 0
             this.message = ''
+            this.startButtonText = 'start'
+            this.cancelButtonText = ''
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
@@ -387,8 +394,11 @@ export default defineComponent({
             clearTimeout(this.countgpsID)
             this.countgps()
         },
+        cancel() {
+            this.bossFight = false
+            this.$router.push('/home')
+        },
         bossEnemyPreparations() {
-            this.player.hardcoreMode = false
             this.difficulty += this.player.defeatedBosses
             this.startingEnemies += this.player.defeatedBosses
             do {
@@ -397,7 +407,7 @@ export default defineComponent({
                     this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp,
                 ] as type.Vector
             } while (this.lenVec(this.subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
-            this.bossEnemy.size = 50
+            this.bossEnemy.size = 50 * this.generalSize
             this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.png'
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             this.bossEnemy.maxHP = 10 * (this.player.defeatedBosses + 1)
@@ -408,9 +418,10 @@ export default defineComponent({
                 this.gameOver('You have killed the boss', 'alert alert-success')
                 this.player.weaponTree.weaponPoints++
                 this.player.defeatedBosses++
+                this.bossFight = false
                 await API.addPlayer(this.player)
             }
-            this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5)
+            this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5 * this.generalSize)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (this.borderCheck(this.bossEnemy, 'inner')) {
                 case 'left':
@@ -432,7 +443,11 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
-            if (bossFight) this.score = 0
+            if (this.bossFight) {
+                this.score = 0
+                this.startButtonText = 'try again'
+                this.cancelButtonText = 'cancel'
+            }
             if (this.player.hardcoreMode) {
                 if (this.score > this.player.highscoreHardcore) {
                     this.player.highscoreHardcore = this.score
@@ -453,7 +468,9 @@ export default defineComponent({
         //colliosion
         colisionHandling() {
             if (this.bossFight) {
-                if (this.collisionsCheck(this.bossEnemy, this.player)) this.gameOver('you got killed by the boss', 'alert alert-danger')
+                if (this.collisionsCheck(this.bossEnemy, this.player)) {
+                    this.gameOver('you got killed by the boss', 'alert alert-danger')
+                }
                 for (let plasma of this.plasmas) {
                     if (this.collisionsCheck(this.bossEnemy, plasma)) {
                         this.bossEnemy.hP -= plasma.damage
@@ -934,7 +951,7 @@ export default defineComponent({
         bombAbility() {
             if (this.bombCoolDown) return
             this.bombCoolDown = true
-            this.bombCoolDownDuration = 1000 * 60
+            this.bombCoolDownDuration = 1000
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (bombs.length) {
                 bombs.sort((a, b) => {
@@ -982,7 +999,7 @@ export default defineComponent({
             this.plasmas.push({
                 moveVector: moveVector,
                 vector: this.player.vector,
-                size: 5 + this.findWeaponUpgrade('biggerProjectile'),
+                size: 5 + this.findWeaponUpgrade('biggerProjectile') * this.generalSize,
                 imgsrc: '/gt/img/char/plasma.png',
                 damage: 1 + this.findWeaponUpgrade('moreDamage'),
             } as type.Plasma)
@@ -990,7 +1007,7 @@ export default defineComponent({
         handlePlasmaMovement() {
             if (this.isStopTime) return
             for (let plasma of this.plasmas) {
-                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7 + this.findWeaponUpgrade('fasterProjectile'))
+                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7 + this.findWeaponUpgrade('fasterProjectile') * this.generalSize)
                 plasma.vector = this.addVec(plasma.vector, plasma.moveVector)
                 if (this.borderCheck(plasma, 'outer')) {
                     this.deletePlasma(plasma)
@@ -1352,6 +1369,11 @@ export default defineComponent({
 
 .container .btn:nth-child(1)::before,
 .container .btn:nth-child(1)::after {
+    background: #2bd2ff;
+    box-shadow: 0 0 5px #2bd2ff, 0 0 15px #2bd2ff, 0 0 30px #2bd2ff, 0 0 60px #2bd2ff;
+}
+.container .btn:nth-child(2)::before,
+.container .btn:nth-child(2)::after {
     background: #2bd2ff;
     box-shadow: 0 0 5px #2bd2ff, 0 0 15px #2bd2ff, 0 0 30px #2bd2ff, 0 0 60px #2bd2ff;
 }
