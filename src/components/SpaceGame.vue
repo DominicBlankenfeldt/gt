@@ -403,8 +403,13 @@ export default defineComponent({
             this.bossEnemy.maxHP = 10 * (this.player.defeatedBosses + 1)
             this.bossEnemy.hP = this.bossEnemy.maxHP
         },
-        handleBossEnemyMovement() {
-            if (this.bossEnemy.hP <= 0) this.gameOver('You have killed the boss', 'alert alert-success')
+        async handleBossEnemyMovement() {
+            if (this.bossEnemy.hP <= 0) {
+                this.gameOver('You have killed the boss', 'alert alert-success')
+                this.player.weaponTree.weaponPoints++
+                this.player.defeatedBosses++
+                await API.addPlayer(this.player)
+            }
             this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (this.borderCheck(this.bossEnemy, 'inner')) {
@@ -977,15 +982,15 @@ export default defineComponent({
             this.plasmas.push({
                 moveVector: moveVector,
                 vector: this.player.vector,
-                size: 5,
+                size: 5 + this.findWeaponUpgrade('biggerProjectile'),
                 imgsrc: '/gt/img/char/plasma.png',
-                damage: 1,
+                damage: 1 + this.findWeaponUpgrade('moreDamage'),
             } as type.Plasma)
         },
         handlePlasmaMovement() {
             if (this.isStopTime) return
             for (let plasma of this.plasmas) {
-                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7)
+                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7 + this.findWeaponUpgrade('fasterProjectile'))
                 plasma.vector = this.addVec(plasma.vector, plasma.moveVector)
                 if (this.borderCheck(plasma, 'outer')) {
                     this.deletePlasma(plasma)
@@ -1145,8 +1150,11 @@ export default defineComponent({
         getRandomInt(max: number) {
             return Math.floor(Math.random() * max)
         },
-        findSkill(skill: type.Skillname) {
+        findSkill(skill: type.SkillName) {
             return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
+        },
+        findWeaponUpgrade(weaponUpgrade: type.WeaponUpgradeName) {
+            return this.player.weaponTree.weaponUpgrades[this.player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)].lvl
         },
         percent(number: number, change: 'in' | 'de') {
             if (change == 'in') {

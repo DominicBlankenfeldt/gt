@@ -134,6 +134,7 @@ export default defineComponent({
             hardCoreMode: false,
             editProfile: false,
             img: '',
+            highscoreMultiplier: 2500,
             images: ['001', '002', '003', '004', '005'],
         }
     },
@@ -156,21 +157,21 @@ export default defineComponent({
             this.editProfile = !this.editProfile
             console.log(this.editProfile)
         },
-        findSkill(skill: type.Skillname) {
+        findSkill(skill: type.SkillName) {
             this.player = checkPlayer(this.player) as type.Player
             return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
         },
         bossAvailable() {
-            return this.player.highscore >= 30000 * this.player.defeatedBosses
+            return this.player.highscore >= this.highscoreMultiplier * this.player.defeatedBosses
                 ? 'Boss fight available'
-                : `You need ${30000 * this.player.defeatedBosses} highscore`
+                : `You need ${this.highscoreMultiplier * this.player.defeatedBosses} highscore`
         },
         startBossFight() {
             if (!this.findSkill('shotAbility')) {
                 this.$router.push('/skillTree')
                 return
             }
-            if (this.player.highscore < 30000 * this.player.defeatedBosses) return
+            if (this.player.highscore < this.highscoreMultiplier * this.player.defeatedBosses) return
             this.bossFight = true
             this.$router.push('/games')
         },
