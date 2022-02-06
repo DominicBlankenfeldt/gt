@@ -978,7 +978,7 @@ export default defineComponent({
                     break
             }
             this.shotCoolDown = true
-            this.shotCoolDownDuration = 1000
+            this.shotCoolDownDuration = 3000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
             this.plasmas.push({
                 moveVector: moveVector,
                 vector: this.player.vector,
