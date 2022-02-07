@@ -527,9 +527,9 @@ export default defineComponent({
         },
         playerStartPosition() {
             //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
-            this.player.vector[0] = window.innerWidth / 2
+            this.player.vector[0] = this.borderRight / 2
             // (this.borderRight + this.borderLeft)
-            this.player.vector[1] = window.innerHeight / 2
+            this.player.vector[1] = this.borderDown / 2
             // this.borderDown - this.borderUp;
         },
         async gameOver(message: string, messageType: string) {
