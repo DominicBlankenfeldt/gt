@@ -139,6 +139,7 @@ export default defineComponent({
         }
     },
     async mounted() {
+        this.bossFight = false
         let result = await API.getPlayer()
         if (result) {
             this.player = result.player
