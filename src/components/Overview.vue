@@ -134,7 +134,7 @@ export default defineComponent({
             hardCoreMode: false,
             editProfile: false,
             img: '',
-            highscoreMultiplier: 2500,
+            highscoreMultiplier: 10000,
             images: ['001', '002', '003', '004', '005'],
         }
     },
