@@ -34,7 +34,7 @@
             </div>
             <div class="d-flex flex-column col-4">
                 <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
-                    <button class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickSkill(skill)">
+                    <button class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickWeaponUgrade(weaponUpgrade)">
                         {{ weaponUpgrade.name }}
                         <br />
                         lvl: {{ weaponUpgrade.lvl }}/{{ weaponUpgrade.maxlvl }}
@@ -57,27 +57,38 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { checkPlayer, player } from '@/global'
+import { currentUser } from '@/router'
 import * as API from '@/API'
 import * as type from '@/types'
 export default defineComponent({
     setup() {
         player
-    },
-    async mounted() {
-        let result = await API.getPlayer()
-        if (result) {
-            this.player = result.player
-        }
-        this.player = checkPlayer(this.player) as type.Player
-        this.player.skillTree.skills.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
+        currentUser
     },
     data() {
         return {
             player: player.value as type.Player,
             timer: 0,
             clicks: 0,
+            user: currentUser,
         }
     },
+    async mounted() {
+        if (this.user) {
+            try {
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
+                this.player = checkPlayer(this.player) as type.Player
+            } catch {
+                API.logout()
+            }
+        }
+
+        this.player.skillTree.skills.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
+    },
+
     computed: {
         usedSkillPoints() {
             let allSkilllvl = 0
@@ -102,7 +113,11 @@ export default defineComponent({
                 skill.lvl++
                 counter--
             }
-            await API.addPlayer(this.player)
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade, counter: number) {
             while (counter) {
@@ -111,7 +126,11 @@ export default defineComponent({
                 weaponUpgrade.lvl++
                 counter--
             }
-            await API.addPlayer(this.player)
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
         },
         async resetSkillTree() {
             this.player.skillTree.skillPoints -= this.usedSkillPoints
@@ -119,7 +138,11 @@ export default defineComponent({
                 this.player.skillTree.skillPoints += skill.lvl
                 skill.lvl = 0
             }
-            await API.addPlayer(this.player)
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
         },
         async resetWeaponTree() {
             this.player.weaponTree.weaponPoints -= this.usedWeaponPoints
@@ -127,7 +150,11 @@ export default defineComponent({
                 this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
                 weaponUpgrade.lvl = 0
             }
-            await API.addPlayer(this.player)
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
         },
         onClickSkill(skill: type.Skill) {
             this.clicks++

@@ -122,13 +122,16 @@ import { defineComponent } from 'vue'
 import * as API from '@/API'
 import { checkPlayer, player, bossFight } from '@/global'
 import * as type from '@/types'
+import { currentUser } from '@/router'
 export default defineComponent({
     setup() {
         player
         bossFight
+        currentUser
     },
     data() {
         return {
+            user: currentUser,
             bossFight: bossFight,
             player: player.value as type.Player,
             hardCoreMode: false,
@@ -140,11 +143,17 @@ export default defineComponent({
     },
     async mounted() {
         this.bossFight = false
-        let result = await API.getPlayer()
-        if (result) {
-            this.player = result.player
+        if (this.user) {
+            try {
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
+                this.player = checkPlayer(this.player) as type.Player
+            } catch {
+                API.logout()
+            }
         }
-        this.player = checkPlayer(this.player) as type.Player
     },
     methods: {
         changeImg(id: string) {
@@ -152,7 +161,11 @@ export default defineComponent({
         },
         async toggleHardcoreMode() {
             this.player.hardcoreMode = !this.player.hardcoreMode
-            await API.addPlayer(this.player)
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
         },
         toggleEdit() {
             this.editProfile = !this.editProfile

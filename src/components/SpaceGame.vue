@@ -89,6 +89,26 @@
                 />
             </div>
             <div
+                v-for="plasma of enemyPlasmas"
+                :key="plasma"
+                :style="{
+                    left: plasma.vector[0] + 'px',
+                    top: plasma.vector[1] + 'px',
+                    width: plasma.size + 'px',
+                    height: plasma.size + 'px',
+                }"
+                style="position: absolute"
+            >
+                <img
+                    :src="plasma.imgsrc"
+                    alt="plasma"
+                    :style="{
+                        width: plasma.size + 'px',
+                        height: plasma.size + 'px',
+                    }"
+                />
+            </div>
+            <div
                 v-for="enemy of enemies"
                 :key="enemy.id"
                 :style="{
@@ -136,13 +156,12 @@
     </div>
     <div
         :style="{
-            left: 0 + 'px',
-            top: borderDown + 5 + 'px',
+            left: 11 + '%',
+            top: 95 + '%',
         }"
         style="position: absolute; z-index: 3"
-        class="row col-12"
+        class="row col-10"
     >
-        <div class="col-1"></div>
         <div class="col-2">
             <div v-if="isMagnet" style="z-index: 3">Magnet:{{ Math.round(magnetDuration) }}</div>
         </div>
@@ -230,6 +249,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { checkPlayer, player, production, bossFight } from '@/global'
+import { currentUser } from '@/router'
 import * as type from '@/types'
 import * as API from '@/API'
 export default defineComponent({
@@ -237,10 +257,12 @@ export default defineComponent({
         player
         production
         bossFight
+        currentUser
     },
     data() {
         return {
             // display
+            user: currentUser,
             message: '',
             messageType: '',
             startButtonText: 'start',
@@ -271,6 +293,7 @@ export default defineComponent({
             plasmas: [] as type.Plasma[],
             // boss
             bossEnemy: {} as type.BossEnemy,
+            enemyPlasmas: [] as type.Plasma[],
             // gameSetup
             hardCoreMode: false,
             gameStarted: false,
@@ -305,11 +328,18 @@ export default defineComponent({
 
         this.changeDisplaySize()
         this.playerStartPosition()
-        let result = await API.getPlayer()
-        if (result) {
-            this.player = result.player
+        if (this.user) {
+            try {
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
+                this.player = checkPlayer(this.player) as type.Player
+            } catch {
+                API.logout()
+            }
         }
-        this.player = checkPlayer(this.player) as type.Player
+
         this.player.size *= this.generalSize
     },
     methods: {
@@ -321,9 +351,15 @@ export default defineComponent({
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
-            if (this.bossFight) this.handleBossEnemyMovement()
+
             if (!this.isStopTime) this.gameloopCounter2++
             this.gameloopCounter++
+            if (this.bossFight) {
+                this.handleBossEnemyMovement()
+                if (this.gameloopCounter % 120 == 0) {
+                    this.bossEnemyAbilitys()
+                }
+            }
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
@@ -356,23 +392,36 @@ export default defineComponent({
             }, 500)
         },
         async start() {
+            if (this.startButtonText == 'exit') {
+                this.$router.push('/home')
+                return
+            }
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
                 this.player.hardcoreMode
                     ? ((this.startingEnemies = 400), this.player.playedHardcore++)
                     : ((this.startingEnemies = 4), this.player.playedGames++)
-                await API.addPlayer(this.player)
                 this.difficulty = 2
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
             }
             this.isGrow = false
             this.isMagnet = false
             this.isStopTime = false
             this.isSlowEnemies = false
+            this.bombCoolDown = false
+            this.shotCoolDown = false
             this.growDuration = 0
             this.magnetDuration = 0
             this.stopTimeDuration = 0
             this.slowEnemiesDuration = 0
+            this.bombCoolDownDuration = 0
+            this.shotCoolDownDuration = 0
+
             this.message = ''
             this.startButtonText = 'start'
             this.cancelButtonText = ''
@@ -383,7 +432,7 @@ export default defineComponent({
             this.enemies = [] as type.Enemy[]
             this.items = [] as type.Item[]
             this.plasmas = [] as type.Plasma[]
-            this.gameStarted = true
+            ;(this.enemyPlasmas = [] as type.Plasma[]), (this.gameStarted = true)
             window.onkeyup = (e: any) => {
                 this.pressedKeys[e.key] = false
             }
@@ -399,8 +448,8 @@ export default defineComponent({
             this.$router.push('/home')
         },
         bossEnemyPreparations() {
-            this.difficulty += this.player.defeatedBosses
-            this.startingEnemies += this.player.defeatedBosses
+            this.difficulty = 2 + this.player.defeatedBosses
+            this.startingEnemies = 4 + this.player.defeatedBosses
             do {
                 this.bossEnemy.vector = [
                     this.getRandomInt(this.borderRight - this.borderLeft - 20) + this.borderLeft,
@@ -410,8 +459,44 @@ export default defineComponent({
             this.bossEnemy.size = 50 * this.generalSize
             this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.png'
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
-            this.bossEnemy.maxHP = 10 * (this.player.defeatedBosses + 1)
+            this.bossEnemy.maxHP = Math.round(5 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
             this.bossEnemy.hP = this.bossEnemy.maxHP
+        },
+        bossEnemyAbilitys() {
+            switch (this.getRandomInt(3)) {
+                case 0:
+                    this.bossEnemyAbilityShot()
+                    break
+                case 1:
+                    this.bossEnemyAbilityMove()
+                    break
+                case 2:
+                    this.bossEnemyAbilityBuffEnemies()
+                    break
+            }
+        },
+        bossEnemyAbilityShot() {
+            for (let i = 0; i < 3; i++) {
+                this.enemyPlasmas.push({
+                    moveVector: this.norVec(this.rotVec(this.bossEnemy.moveVector, 90 * (i + 1))),
+                    vector: this.addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
+                    size: 20 * this.generalSize,
+                    imgsrc: '/gt/img/char/plasma.png',
+                    damage: 1,
+                })
+            }
+        },
+        bossEnemyAbilityMove() {
+            this.bossEnemy.moveVector = this.dirVec(this.player.vector, this.bossEnemy.vector)
+        },
+        bossEnemyAbilityBuffEnemies() {
+            for (let enemy of this.enemies) {
+                if (!enemy.isGrow) {
+                    enemy.size *= 1.5
+                }
+                enemy.isGrow = true
+                enemy.isMagnet = true
+            }
         },
         async handleBossEnemyMovement() {
             if (this.bossEnemy.hP <= 0) {
@@ -419,7 +504,13 @@ export default defineComponent({
                 this.player.weaponTree.weaponPoints++
                 this.player.defeatedBosses++
                 this.bossFight = false
-                await API.addPlayer(this.player)
+                this.startButtonText = 'exit'
+                this.cancelButtonText = ''
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
             }
             this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5 * this.generalSize)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
@@ -453,11 +544,19 @@ export default defineComponent({
                     this.player.highscoreHardcore = this.score
                     this.setSkillPoints()
                 }
-                await API.addPlayer(this.player)
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
             } else if (this.score > this.player.highscore) {
                 this.player.highscore = this.score
                 this.setSkillPoints()
-                await API.addPlayer(this.player)
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
             }
             this.message = message
             this.messageType = messageType
@@ -478,7 +577,11 @@ export default defineComponent({
                     }
                 }
             }
-
+            for (let plasma of this.enemyPlasmas) {
+                if (this.collisionsCheck(this.player, plasma)) {
+                    this.gameOver('you got killed by plasma', 'alert alert-danger')
+                }
+            }
             for (let item of this.items) {
                 if (item.type == 'blackHole') {
                     this.gravity(item, this.player, 4, 0.5)
@@ -827,7 +930,7 @@ export default defineComponent({
                 moveVector: moveArray as type.Vector,
                 timer: timer,
                 circle: type == 'cicrle' ? false : null,
-                circleRadius: Math.random() * 0.03 + 0.01,
+                circleRadius: Math.random() * 0.02 + 0.01,
                 circleDir: circleDir as type.Dir,
                 isGrow: false,
                 isMagnet: false,
@@ -995,7 +1098,7 @@ export default defineComponent({
                     break
             }
             this.shotCoolDown = true
-            this.shotCoolDownDuration = 3000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
+            this.shotCoolDownDuration = 2000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
             this.plasmas.push({
                 moveVector: moveVector,
                 vector: this.player.vector,
@@ -1013,9 +1116,17 @@ export default defineComponent({
                     this.deletePlasma(plasma)
                 }
             }
+            for (let plasma of this.enemyPlasmas) {
+                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 5 * this.generalSize)
+                plasma.vector = this.addVec(plasma.vector, plasma.moveVector)
+                if (this.borderCheck(plasma, 'outer')) {
+                    this.deletePlasma(plasma)
+                }
+            }
         },
         deletePlasma(plasma: type.Plasma) {
             this.plasmas = this.plasmas.filter(p => p != plasma)
+            this.enemyPlasmas = this.enemyPlasmas.filter(p => p != plasma)
         },
         handlePlayerMovement() {
             let multiplicator = 1
@@ -1229,6 +1340,7 @@ export default defineComponent({
         },
         rotVec(vec: type.Vector, angle: number) {
             let helpVec = [...vec]
+            angle /= 180 / Math.PI
             helpVec[0] = vec[0] * Math.cos(angle) - vec[1] * Math.sin(angle)
             helpVec[1] = vec[0] * Math.sin(angle) + vec[1] * Math.cos(angle)
             return helpVec as type.Vector
@@ -1238,10 +1350,11 @@ export default defineComponent({
             this.generalSize = (window.innerWidth / 1920 + window.innerHeight / 955) / 2
             this.player.size = this.player.originalSize * this.generalSize
             this.middlex = window.innerWidth / 2
-            this.borderRight = Math.round(window.innerWidth - (window.innerWidth / 100) * 12.5)
-            this.borderLeft = Math.round((window.innerWidth / 100) * 12.5)
-            this.borderUp = Math.round((window.innerHeight / 100) * 13)
-            this.borderDown = Math.round((window.innerHeight / 100) * 93 - 1)
+
+            this.borderLeft = 0
+            this.borderUp = 0
+            this.borderRight = Math.round(window.innerWidth * 0.75)
+            this.borderDown = Math.round(window.innerHeight * 0.8)
         },
     },
 })
@@ -1263,6 +1376,8 @@ export default defineComponent({
     border: 1px solid black;
     background-color: rgb(0, 0, 0);
     z-index: 1;
+    position: relative;
+    overflow: hidden;
 }
 #scoreCard {
     font-weight: 1000;
