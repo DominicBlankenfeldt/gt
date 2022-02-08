@@ -136,9 +136,10 @@ export default defineComponent({
     methods: {
         async lvlSkill(skill: type.Skill, counter: number) {
             while (counter) {
-                if (!(skill.lvl < skill.maxlvl)) return
-                if (!(this.player.skillTree.skillPoints - this.usedSkillPoints > 0)) return
-                skill.lvl++
+                if (skill.lvl < skill.maxlvl)
+                    if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
+                        skill.lvl++
+                    }
                 counter--
             }
             try {
@@ -149,9 +150,10 @@ export default defineComponent({
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade, counter: number) {
             while (counter) {
-                if (!(weaponUpgrade.lvl < weaponUpgrade.maxlvl)) return
-                if (!(this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0)) return
-                weaponUpgrade.lvl++
+                if (weaponUpgrade.lvl < weaponUpgrade.maxlvl)
+                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
+                        weaponUpgrade.lvl++
+                    }
                 counter--
             }
             try {
