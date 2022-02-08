@@ -109,7 +109,7 @@
                         <button
                             class="btn btn-outline-primary shadow-none w-50"
                             @click="startBossFight"
-                            v-if="player.weaponTree.weaponAvaibleTypes < 3"
+                            v-if="player.weaponTree.weaponAvaibleTypes.length < 3"
                         >
                             {{ findSkill('shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}
                         </button>
@@ -185,16 +185,16 @@ export default defineComponent({
             return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
         },
         bossAvailable() {
-            return this.player.highscore >= this.highscoreMultiplier * this.player.defeatedBosses
+            return this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)
                 ? 'Boss fight available'
-                : `You need ${this.highscoreMultiplier * this.player.defeatedBosses} highscore`
+                : `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
         },
         startBossFight() {
             if (!this.findSkill('shotAbility')) {
                 this.$router.push('/skillTree')
                 return
             }
-            if (this.player.highscore < this.highscoreMultiplier * this.player.defeatedBosses) return
+            if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
             this.bossFight = true
             this.$router.push('/games')
         },
