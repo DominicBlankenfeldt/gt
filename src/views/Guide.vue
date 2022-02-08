@@ -55,6 +55,9 @@
                 <div style="height: 2vw; width: 2vw">
                     <img src="/gt/img/char/enemy_gasman.gif" alt="" />
                 </div>
+                <div style="height: 2vw; width: 2vw">
+                    <img src="/gt/img/char/enemy_komet.gif" alt="" />
+                </div>
             </div>
             <p class="mt-1">They will kill you. wink smiley</p>
         </div>
