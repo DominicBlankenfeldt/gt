@@ -24,6 +24,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/avatars/char_005.png"
   },
   {
+    "revision": "71219dbc489121e324577e129d405050",
+    "url": "/gt/img/boss/bossEnemy.gif"
+  },
+  {
+    "revision": "c276410bfe92b38ed82342ace4ad8ab2",
+    "url": "/gt/img/boss/bossEnemy.png"
+  },
+  {
     "revision": "a0ff9371ee1f55f4a70f4c9db7bd6588",
     "url": "/gt/img/char/enemy_cupcake.gif"
   },
@@ -38,6 +46,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "4e2cd9d3d9d434e29f22778fb19acb48",
     "url": "/gt/img/char/enemy_gasman.png"
+  },
+  {
+    "revision": "a8d375ca4605b0e642add53ad3d8f673",
+    "url": "/gt/img/char/enemy_komet.gif"
   },
   {
     "revision": "b8768f5072e6f7ca82adeac305065604",
@@ -148,20 +160,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "9125de42d8fe682166953c4d071b6d26",
+    "revision": "229256ee04daa1230869885ac8573322",
     "url": "/gt/index.html"
   },
   {
-    "revision": "8240c9805c3ff5640141",
-    "url": "/gt/js/about.fe6395cd.js"
+    "revision": "9f1455137ded1f70f19f",
+    "url": "/gt/js/about.334718ba.js"
   },
   {
-    "revision": "dcfea945e7f60ebde402",
-    "url": "/gt/js/app.97e6a177.js"
+    "revision": "d039d3474e8b0d418b9e",
+    "url": "/gt/js/app.f89ba7a2.js"
   },
   {
-    "revision": "5e0411535696092bbe11",
-    "url": "/gt/js/chunk-vendors.42533b75.js"
+    "revision": "6feed9009ad9f884843c",
+    "url": "/gt/js/chunk-vendors.4a017327.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
