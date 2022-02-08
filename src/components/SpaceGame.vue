@@ -460,7 +460,7 @@ export default defineComponent({
                 ] as type.Vector
             } while (this.lenVec(this.subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
             this.bossEnemy.size = 50 * this.generalSize
-            this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.png'
+            this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.gif'
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             this.bossEnemy.maxHP = Math.round(35 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
             this.bossEnemy.hP = this.bossEnemy.maxHP
@@ -849,7 +849,7 @@ export default defineComponent({
                     imgsrc = '/gt/img/char/enemy_gasman.gif'
                     break
                 case 3:
-                    imgsrc = '/gt/img/char/enemy_komet.png'
+                    imgsrc = '/gt/img/char/enemy_komet.gif'
                     break
             }
             switch (this.getRandomInt(3)) {
