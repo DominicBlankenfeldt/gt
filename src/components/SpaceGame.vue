@@ -1007,7 +1007,7 @@ export default defineComponent({
                     enemy.vector,
                     this.mulVec(
                         enemy.spawnMoveVector,
-                        this.difficulty * this.percent(this.findSkill('slowEnemy'), 'de') * this.generalSize * 0.3 * (this.isSlowEnemies ? 0.5 : 1)
+                        this.difficulty * this.percent(this.findSkill('slowEnemy'), 'de') * this.generalSize * 0.4 * (this.isSlowEnemies ? 0.5 : 1)
                     )
                 )
             }
