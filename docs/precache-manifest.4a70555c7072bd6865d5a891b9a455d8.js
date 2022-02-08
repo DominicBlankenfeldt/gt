@@ -140,7 +140,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/skull/skull.png"
   },
   {
-    "revision": "7fac94372bc0eca5ee1236bce25b7ff6",
+    "revision": "0bd5bfe59977de1802d94e7e7dd6768d",
     "url": "/gt/img/items/snowflake/snowflake.png"
   },
   {
@@ -160,7 +160,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "7c153d9b2a0ec5a1a32948b22912e74c",
+    "revision": "8a6c9d14fffbcf57c4cb24a63935c7ea",
     "url": "/gt/index.html"
   },
   {
@@ -168,8 +168,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.0b61c33e.js"
   },
   {
-    "revision": "e980e8294fd1435d20d3",
-    "url": "/gt/js/app.682e29a3.js"
+    "revision": "fabf67a38e01af32847c",
+    "url": "/gt/js/app.feda2044.js"
   },
   {
     "revision": "6feed9009ad9f884843c",

@@ -1,6 +1,6 @@
 <template>
     <div v-if="dataLoad">
-        <div class="row" id="scoreCard">
+        <div class="row g-0" id="scoreCard">
             <div v-if="!bossFight" class="col-3 align-self-center">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 Score:
@@ -165,19 +165,40 @@
             class="row col-10"
         >
             <div class="col-2">
-                <div v-if="isMagnet" style="z-index: 3">Magnet:{{ Math.round(magnetDuration) }}</div>
+                <div v-if="isMagnet" style="z-index: 3">
+                    Magnet:
+                    <br />
+                    {{ Math.round(magnetDuration) }}
+                </div>
             </div>
             <div class="col-2">
-                <div v-if="isGrow" style="z-index: 3">Grow:{{ Math.round(growDuration) }}</div>
+                <div v-if="isGrow" style="z-index: 3">
+                    Grow:
+                    <br />
+                    {{ Math.round(growDuration) }}
+                </div>
             </div>
             <div class="col-2">
-                <div v-if="isStopTime" style="z-index: 3">Stop time:{{ Math.round(stopTimeDuration) }}</div>
+                <div v-if="isSlowEnemies" style="z-index: 3">
+                    Slow enemies:
+                    <br />
+                    {{ Math.round(slowEnemiesDuration) }}
+                </div>
             </div>
             <div class="col-2">
-                <div v-if="isSlowEnemies" style="z-index: 3">Slow enemies:{{ Math.round(slowEnemiesDuration) }}</div>
+                <div v-if="isStopTime" style="z-index: 3">
+                    Stop time:
+                    <br />
+                    {{ Math.round(stopTimeDuration) }}
+                </div>
             </div>
+
             <div class="col-2">
-                <div v-if="shotCoolDown" style="z-index: 3">Shot:{{ Math.round(shotCoolDownDuration) }}</div>
+                <div v-if="shotCoolDown" style="z-index: 3">
+                    Shot:
+                    <br />
+                    {{ Math.round(shotCoolDownDuration) }}
+                </div>
             </div>
         </div>
         <!-- <div
