@@ -1,5 +1,5 @@
 <template>
-    <div class="card card-default w-75 mt-5" style="margin-left: 12.5%">
+    <div class="card card-default w-75 mt-5" style="margin-left: 12.5%" v-if="dataLoad">
         <div class="card-header header row g-0">
             <!-- <div><h3>Profil-Karte</h3></div> -->
         </div>
@@ -106,7 +106,11 @@
                 </div>
                 <div class="row mt-1">
                     <div class="col-6">
-                        <button class="btn btn-outline-primary shadow-none w-50" @click="startBossFight">
+                        <button
+                            class="btn btn-outline-primary shadow-none w-50"
+                            @click="startBossFight"
+                            v-if="player.weaponTree.weaponAvaibleTypes < 3"
+                        >
                             {{ findSkill('shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}
                         </button>
                     </div>
@@ -131,13 +135,14 @@ export default defineComponent({
     },
     data() {
         return {
+            dataLoad: false,
             user: currentUser,
             bossFight: bossFight,
-            player: player.value as type.Player,
+            player: {} as type.Player,
             hardCoreMode: false,
             editProfile: false,
             img: '',
-            highscoreMultiplier: 10000,
+            highscoreMultiplier: 25000,
             images: ['001', '002', '003', '004', '005'],
         }
     },
@@ -153,8 +158,12 @@ export default defineComponent({
             } catch {
                 API.logout()
             }
+        } else {
+            this.player = player.value as type.Player
         }
+        this.dataLoad = true
     },
+
     methods: {
         changeImg(id: string) {
             this.player.img = id

@@ -29,6 +29,8 @@ export const player = ref({
     } as type.SkillTree,
     weaponTree: {
         weaponPoints: 0,
+        weaponType: 'standard',
+        weaponAvaibleTypes: ['standard'],
         weaponUpgrades: [
             { name: 'moreDamage', lvl: 0, maxlvl: 10 },
             { name: 'biggerProjectile', lvl: 0, maxlvl: 10 },
@@ -59,6 +61,8 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.weaponTree =
         checkedPlayer.weaponTree ||
         ({
+            weaponType: 'standard',
+            weaponAvaibleTypes: ['standard'],
             weaponPoints: 0,
             weaponUpgrades: [
                 { name: 'moreDamage', lvl: 0, maxlvl: 10 },
@@ -72,6 +76,8 @@ export function checkPlayer(checkedPlayer: type.Player) {
             checkedPlayer.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0, maxlvl: 10 })
         }
     }
+    checkedPlayer.weaponTree.weaponType = checkedPlayer.weaponTree.weaponType || 'standard'
+    checkedPlayer.weaponTree.weaponAvaibleTypes = checkedPlayer.weaponTree.weaponAvaibleTypes || ['standard']
     checkedPlayer.skillTree =
         checkedPlayer.skillTree ||
         ({

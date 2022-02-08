@@ -47,8 +47,11 @@ export interface Player {
 }
 export interface WeaponTree {
     weaponPoints: number
+    weaponType: weaponType
+    weaponAvaibleTypes: weaponType[]
     weaponUpgrades: WeaponUpgrade[]
 }
+export type weaponType = 'standard' | 'shotgun' | 'MG'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number

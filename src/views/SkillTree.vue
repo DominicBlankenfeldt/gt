@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top: 8vh">
+    <div style="margin-top: 8vh" v-if="dataLoad">
         <div class="row g-0">
             <div class="col-2"></div>
             <div class="col-4">
@@ -33,6 +33,27 @@
                 </div>
             </div>
             <div class="d-flex flex-column col-4">
+                <div>
+                    <div class="mt-2 w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">weapontype:</div>
+                    <br />
+                    <select
+                        class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                        v-model="player.weaponTree.weaponType"
+                        @change="savePlayer()"
+                    >
+                        <option
+                            :selected="weaponAvaibleType == player.weaponTree.weaponType"
+                            :value="weaponAvaibleType"
+                            v-for="weaponAvaibleType of player.weaponTree.weaponAvaibleTypes"
+                            :key="weaponAvaibleType"
+                        >
+                            {{ weaponAvaibleType }}
+                        </option>
+                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 3" disabled>
+                            unlock more by fight the boss
+                        </option>
+                    </select>
+                </div>
                 <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
                     <button class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickWeaponUgrade(weaponUpgrade)">
                         {{ weaponUpgrade.name }}
@@ -67,12 +88,14 @@ export default defineComponent({
     },
     data() {
         return {
-            player: player.value as type.Player,
+            player: {} as type.Player,
             timer: 0,
             clicks: 0,
             user: currentUser,
+            dataLoad: false,
         }
     },
+
     async mounted() {
         if (this.user) {
             try {
@@ -84,9 +107,14 @@ export default defineComponent({
             } catch {
                 API.logout()
             }
+        } else {
+            this.player = player.value as type.Player
         }
-
         this.player.skillTree.skills.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
+        if (this.usedSkillPoints > this.player.skillTree.skillPoints) {
+            this.resetSkillTree()
+        }
+        this.dataLoad = true
     },
 
     computed: {
@@ -150,6 +178,13 @@ export default defineComponent({
                 this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
                 weaponUpgrade.lvl = 0
             }
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
+        },
+        async savePlayer() {
             try {
                 await API.addPlayer(this.player)
             } catch {
