@@ -20,6 +20,7 @@ export interface BossEnemy {
     moveVector: Vector
     hP: number
     maxHP: number
+    speed: number
 }
 export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
@@ -51,7 +52,7 @@ export interface WeaponTree {
     weaponAvaibleTypes: weaponType[]
     weaponUpgrades: WeaponUpgrade[]
 }
-export type weaponType = 'standard' | 'shotgun' | 'MG'
+export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
@@ -102,6 +103,8 @@ export interface Plasma {
     vector: Vector
     imgsrc: string
     damage: number
+    aim?: boolean
+    split?: boolean
 }
 
 export type Vector = [number, number]

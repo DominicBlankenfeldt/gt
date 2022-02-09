@@ -112,7 +112,7 @@
                         <button
                             class="btn btn-outline-primary shadow-none w-50"
                             @click="startBossFight"
-                            v-if="player.weaponTree.weaponAvaibleTypes.length < 3"
+                            v-if="player.weaponTree.weaponAvaibleTypes.length < 5"
                         >
                             {{ findSkill('shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}
                         </button>

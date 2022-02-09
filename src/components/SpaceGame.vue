@@ -381,7 +381,7 @@ export default defineComponent({
             this.gameloopCounter++
             if (this.bossFight) {
                 this.handleBossEnemyMovement()
-                if (this.gameloopCounter % 120 == 0) {
+                if (this.gameloopCounter % 90 == 0) {
                     this.bossEnemyAbilitys()
                 }
             }
@@ -487,9 +487,11 @@ export default defineComponent({
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             this.bossEnemy.maxHP = Math.round(50 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
             this.bossEnemy.hP = this.bossEnemy.maxHP
+            this.bossEnemy.speed = 5
         },
         bossEnemyAbilitys() {
-            switch (this.getRandomInt(3)) {
+            this.bossEnemy.speed = 5
+            switch (this.getRandomInt(4)) {
                 case 0:
                     this.bossEnemyAbilityShot()
                     break
@@ -498,6 +500,9 @@ export default defineComponent({
                     break
                 case 2:
                     this.bossEnemyAbilityBuffEnemies()
+                    break
+                case 3:
+                    this.bossEnemyAbilitySpeedUp()
                     break
             }
         },
@@ -515,6 +520,9 @@ export default defineComponent({
         bossEnemyAbilityMove() {
             this.bossEnemy.moveVector = this.dirVec(this.player.vector, this.bossEnemy.vector)
         },
+        bossEnemyAbilitySpeedUp() {
+            this.bossEnemy.speed = 7.5
+        },
         bossEnemyAbilityBuffEnemies() {
             for (let enemy of this.enemies) {
                 if (!enemy.isGrow) {
@@ -528,7 +536,7 @@ export default defineComponent({
             if (this.bossEnemy.hP <= 0) {
                 this.handleBossEnemyDead()
             }
-            this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5 * this.generalSize)
+            this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), this.bossEnemy.speed * this.generalSize)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (this.borderCheck(this.bossEnemy, 'inner')) {
                 case 'left':
@@ -547,11 +555,12 @@ export default defineComponent({
             this.bossFight = false
             this.startButtonText = 'exit'
             this.cancelButtonText = ''
-            let newWeaponAvaibleType = ['standard', 'shotgun', 'MG'] as type.weaponType[]
+            let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
             newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
             if (newWeaponAvaibleType.length > 0) {
                 this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[this.getRandomInt(newWeaponAvaibleType.length - 1)])
             }
+            this.bossEnemy = {} as type.BossEnemy
             try {
                 await API.addPlayer(this.player)
             } catch {
@@ -559,11 +568,7 @@ export default defineComponent({
             }
         },
         playerStartPosition() {
-            //this.player.vector=this.subVec(this.player.vector,[window.innerWidth / 2,window.innerHeight / 2])
-            this.player.vector[0] = this.borderRight / 2
-            // (this.borderRight + this.borderLeft)
-            this.player.vector[1] = this.borderDown / 2
-            // this.borderDown - this.borderUp;
+            this.player.vector = [this.borderRight / 2, this.borderDown / 2]
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
@@ -697,10 +702,25 @@ export default defineComponent({
             for (let enemy of this.enemies) {
                 for (let plasma of this.plasmas) {
                     if (this.collisionsCheck(enemy, plasma)) {
-                        plasma.damage--
-                        if (plasma.damage <= 0) this.deletePlasma(plasma)
+                        if (plasma.split) {
+                            for (let i = 0; i < 5; i++) {
+                                let moveVector = plasma.moveVector
+                                this.plasmas.push({
+                                    moveVector: this.rotVec(moveVector, (360 / 5) * i),
+                                    vector: plasma.vector,
+                                    size: plasma.size,
+                                    imgsrc: plasma.imgsrc,
+                                    damage: plasma.damage,
+                                } as type.Plasma)
+                            }
+                            this.deletePlasma(plasma)
+                        } else {
+                            plasma.damage--
+                            if (plasma.damage <= 0) this.deletePlasma(plasma)
+                        }
+
                         this.respawnEnemy(enemy)
-                        this.score += 20 * this.difficulty
+                        this.score += 50 * this.difficulty
                     }
                 }
                 if (this.isMagnet) {
@@ -803,12 +823,7 @@ export default defineComponent({
             let vector = [0, 0] as type.Vector
             let size = 20 * this.generalSize
             let imgsrc = ''
-            vector[0] = this.getRandomInt(this.borderRight - this.borderLeft - 20) + this.borderLeft
-            vector[1] = this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp
-            if (this.lenVec(this.subVec(vector, this.player.vector)) < 150 * this.generalSize) {
-                this.spawnItems()
-                return
-            }
+
             switch (this.getRandomInt(7)) {
                 case 0:
                     type = 'coin'
@@ -845,6 +860,10 @@ export default defineComponent({
                     size = (this.getRandomInt(25) + 20) * this.generalSize
                     break
             }
+            do {
+                vector[0] = this.getRandomInt(this.borderRight - this.borderLeft - size) + this.borderLeft
+                vector[1] = this.getRandomInt(this.borderDown - this.borderUp - size) + this.borderUp
+            } while (this.lenVec(this.subVec(vector, this.player.vector)) < 150 * this.generalSize)
             this.items.push({
                 type: type as type.Itemtype,
                 imgsrc: imgsrc,
@@ -1102,9 +1121,11 @@ export default defineComponent({
             }
         },
         shotAbility() {
-            let moveVector: type.Vector
             if (this.isStopTime) return
             if (this.shotCoolDown) return
+            if (this.player.hardcoreMode) return
+            let moveVector: type.Vector
+
             switch (this.player.outlook) {
                 case 'up':
                     moveVector = [0, -1]
@@ -1143,6 +1164,28 @@ export default defineComponent({
                         damage: 1 + this.findWeaponUpgrade('moreDamage'),
                     } as type.Plasma)
                     break
+                case 'aimgun':
+                    this.shotCoolDownDuration = 2000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
+                    this.plasmas.push({
+                        moveVector: moveVector,
+                        vector: this.player.vector,
+                        size: 5 + this.findWeaponUpgrade('biggerProjectile') * this.generalSize,
+                        imgsrc: '/gt/img/char/plasma.png',
+                        damage: 1 + this.findWeaponUpgrade('moreDamage'),
+                        aim: true,
+                    } as type.Plasma)
+                    break
+                case 'splitgun':
+                    this.shotCoolDownDuration = 2000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
+                    this.plasmas.push({
+                        moveVector: moveVector,
+                        vector: this.player.vector,
+                        size: 5 + this.findWeaponUpgrade('biggerProjectile') * this.generalSize,
+                        imgsrc: '/gt/img/char/plasma.png',
+                        damage: 1 + this.findWeaponUpgrade('moreDamage'),
+                        split: true,
+                    } as type.Plasma)
+                    break
                 case 'shotgun':
                     this.shotCoolDownDuration = 3000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
                     for (let i = 0; i < 3; i++) {
@@ -1157,12 +1200,26 @@ export default defineComponent({
                     break
                 case 'MG':
                     this.shotCoolDownDuration = 1000 * this.percent(this.findWeaponUpgrade('fasterReload') * 5, 'de')
+                    this.plasmas.push({
+                        moveVector: moveVector,
+                        vector: this.player.vector,
+                        size: 5 + this.findWeaponUpgrade('biggerProjectile') * this.generalSize,
+                        imgsrc: '/gt/img/char/plasma.png',
+                        damage: 1 + this.findWeaponUpgrade('moreDamage'),
+                    } as type.Plasma)
             }
         },
         handlePlasmaMovement() {
             if (this.isStopTime) return
             for (let plasma of this.plasmas) {
-                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), 7 + this.findWeaponUpgrade('fasterProjectile') * this.generalSize)
+                if (plasma.aim) {
+                    let enemies = [...this.enemies]
+                    enemies.sort((a, b) => {
+                        return this.lenVec(this.subVec(a.vector, this.player.vector)) - this.lenVec(this.subVec(b.vector, this.player.vector))
+                    })
+                    plasma.moveVector = this.addVec(plasma.moveVector, this.dirVec(enemies[0].vector, plasma.vector))
+                }
+                plasma.moveVector = this.mulVec(this.norVec(plasma.moveVector), (7 + this.findWeaponUpgrade('fasterProjectile')) * this.generalSize)
                 plasma.vector = this.addVec(plasma.vector, plasma.moveVector)
                 if (this.borderCheck(plasma, 'outer')) {
                     this.deletePlasma(plasma)
