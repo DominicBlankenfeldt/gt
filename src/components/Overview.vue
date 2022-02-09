@@ -5,8 +5,8 @@
         </div>
         <div class="card-body row gx-0">
             <div class="profile-pic col-4">
-                <div v-if="player.img">
-                    <img :src="`/gt/img/avatars/char_${player.img}.png`" alt="" style="height: calc(20vw); width: 20vw" />
+                <div v-if="playerLocal.img">
+                    <img :src="`/gt/img/avatars/char_${playerLocal.img}.png`" alt="" style="height: calc(20vw); width: 20vw" />
                 </div>
                 <div v-else>
                     <img src="/gt/img/avatars/avatar_placeholder.png" alt="" style="height: calc(20vw); width: 20vw" />
@@ -40,7 +40,7 @@
                 <div>
                     registered since:
                     <br />
-                    {{ player.registeredAt }}
+                    {{ playerLocal.registeredAt }}
                 </div>
             </div>
             <div class="col-8 row">
@@ -48,31 +48,31 @@
                     <h4 v-if="!editProfile">
                         Username:
                         <u>
-                            {{ player.username }}
+                            {{ playerLocal.username }}
                         </u>
                     </h4>
-                    <input v-else type="text" placeholder="username" v-model="player.username" />
+                    <input v-else type="text" placeholder="username" v-model="playerLocal.username" />
                 </div>
                 <div class="col-6 gy-2">
                     <div>
                         Highscore:
                         <br />
-                        {{ Math.round(player.highscore) }}
+                        {{ Math.round(playerLocal.highscore) }}
                     </div>
                     <div>
                         games played:
                         <br />
-                        {{ player.playedGames }}
+                        {{ playerLocal.playedGames }}
                     </div>
                     <div>
                         played hardcore:
                         <br />
-                        {{ player.playedHardcore }}
+                        {{ playerLocal.playedHardcore }}
                     </div>
                     <div>
                         Highscore Hardcore:
                         <br />
-                        {{ Math.round(player.highscoreHardcore) }}
+                        {{ Math.round(playerLocal.highscoreHardcore) }}
                     </div>
                 </div>
                 <div class="col-6 gy-2 aling-content-start">
@@ -95,7 +95,7 @@
                 <div class="row">
                     <div class="col-6">
                         <button class="btn btn-outline-primary shadow-none w-50" @click="toggleHardcoreMode()">
-                            Hardcore Mode:{{ player.hardcoreMode ? 'ON' : 'OFF' }}
+                            Hardcore Mode:{{ playerLocal.hardcoreMode ? 'ON' : 'OFF' }}
                         </button>
                     </div>
                     <div class="col-6">
