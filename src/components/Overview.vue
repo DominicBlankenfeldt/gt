@@ -5,8 +5,8 @@
         </div>
         <div class="card-body row gx-0">
             <div class="profile-pic col-4">
-                <div v-if="playerLocal.img">
-                    <img :src="`/gt/img/avatars/char_${playerLocal.img}.png`" alt="" style="height: calc(20vw); width: 20vw" />
+                <div v-if="player.img">
+                    <img :src="`/gt/img/avatars/char_${player.img}.png`" alt="" style="height: calc(20vw); width: 20vw" />
                 </div>
                 <div v-else>
                     <img src="/gt/img/avatars/avatar_placeholder.png" alt="" style="height: calc(20vw); width: 20vw" />
@@ -40,7 +40,7 @@
                 <div>
                     registered since:
                     <br />
-                    {{ playerLocal.registeredAt }}
+                    {{ player.registeredAt }}
                 </div>
             </div>
             <div class="col-8 row">
@@ -48,31 +48,31 @@
                     <h4 v-if="!editProfile">
                         Username:
                         <u>
-                            {{ playerLocal.username }}
+                            {{ player.username }}
                         </u>
                     </h4>
-                    <input v-else type="text" placeholder="username" v-model="playerLocal.username" />
+                    <input v-else type="text" placeholder="username" :value="player.username" @input="player.username = $event.target.value" />
                 </div>
                 <div class="col-6 gy-2">
                     <div>
                         Highscore:
                         <br />
-                        {{ Math.round(playerLocal.highscore) }}
+                        {{ Math.round(player.highscore) }}
                     </div>
                     <div>
                         games played:
                         <br />
-                        {{ playerLocal.playedGames }}
+                        {{ player.playedGames }}
                     </div>
                     <div>
                         played hardcore:
                         <br />
-                        {{ playerLocal.playedHardcore }}
+                        {{ player.playedHardcore }}
                     </div>
                     <div>
                         Highscore Hardcore:
                         <br />
-                        {{ Math.round(playerLocal.highscoreHardcore) }}
+                        {{ Math.round(player.highscoreHardcore) }}
                     </div>
                 </div>
                 <div class="col-6 gy-2 aling-content-start">
@@ -95,7 +95,7 @@
                 <div class="row">
                     <div class="col-6">
                         <button class="btn btn-outline-primary shadow-none w-50" @click="toggleHardcoreMode()">
-                            Hardcore Mode:{{ playerLocal.hardcoreMode ? 'ON' : 'OFF' }}
+                            Hardcore Mode:{{ player.hardcoreMode ? 'ON' : 'OFF' }}
                         </button>
                     </div>
                     <div class="col-6">
@@ -112,7 +112,7 @@
                         <button
                             class="btn btn-outline-primary shadow-none w-50"
                             @click="startBossFight"
-                            v-if="playerLocal.weaponTree.weaponAvaibleTypes.length < 5"
+                            v-if="player.weaponTree.weaponAvaibleTypes.length < 5"
                         >
                             {{ findSkill('shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}
                         </button>
@@ -141,7 +141,7 @@ export default defineComponent({
             dataLoad: false,
             user: currentUser,
             bossFight: bossFight,
-            playerLocal: {} as type.Player,
+            player: {} as type.Player,
             hardCoreMode: false,
             editProfile: false,
             img: '',
@@ -155,26 +155,26 @@ export default defineComponent({
             try {
                 let result = await API.getPlayer()
                 if (result) {
-                    this.playerLocal = result.player
+                    this.player = result.player
                 }
-                this.playerLocal = checkPlayer(this.playerLocal) as type.Player
+                this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
             }
         } else {
-            this.playerLocal = player.value as type.Player
+            this.player = player.value as type.Player
         }
         this.dataLoad = true
     },
 
     methods: {
         changeImg(id: string) {
-            this.playerLocal.img = id
+            this.player.img = id
         },
         async toggleHardcoreMode() {
-            this.playerLocal.hardcoreMode = !this.playerLocal.hardcoreMode
+            this.player.hardcoreMode = !this.player.hardcoreMode
             try {
-                await API.addPlayer(this.playerLocal)
+                await API.addPlayer(this.player)
             } catch {
                 API.logout()
             }
@@ -183,27 +183,27 @@ export default defineComponent({
             this.editProfile = !this.editProfile
             if (save) {
                 try {
-                    await API.addPlayer(this.playerLocal)
+                    await API.addPlayer(this.player)
                 } catch {
                     API.logout()
                 }
             }
         },
         findSkill(skill: type.SkillName) {
-            this.playerLocal = checkPlayer(this.playerLocal) as type.Player
-            return this.playerLocal.skillTree.skills[this.playerLocal.skillTree.skills.findIndex(s => s.name == skill)].lvl
+            this.player = checkPlayer(this.player) as type.Player
+            return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
         },
         bossAvailable() {
-            return this.playerLocal.highscore >= this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)
+            return this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)
                 ? 'Boss fight available'
-                : `You need ${this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)} highscore`
+                : `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
         },
         startBossFight() {
             if (!this.findSkill('shotAbility')) {
                 this.$router.push('/skillTree')
                 return
             }
-            if (this.playerLocal.highscore < this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)) return
+            if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
             this.bossFight = true
             this.$router.push('/games')
         },
