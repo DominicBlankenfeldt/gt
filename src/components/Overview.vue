@@ -51,7 +51,7 @@
                             {{ player.username }}
                         </u>
                     </h4>
-                    <input v-else type="text" :placeholder="player.username" v-model="player.username" />
+                    <input v-else type="text" placeholder="username" v-model="player.username" />
                 </div>
                 <div class="col-6 gy-2">
                     <div>
