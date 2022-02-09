@@ -156,6 +156,7 @@
                 </div>
             </div>
         </div>
+        <div v-if="!user && !gameStarted">Log in to use all features.</div>
         <div
             :style="{
                 left: 11 + '%',
@@ -417,6 +418,7 @@ export default defineComponent({
         },
         async start() {
             if (this.startButtonText == 'exit') {
+                this.startButtonText = 'start'
                 this.$router.push('/home')
                 return
             }
@@ -483,7 +485,7 @@ export default defineComponent({
             this.bossEnemy.size = 50 * this.generalSize
             this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.gif'
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
-            this.bossEnemy.maxHP = Math.round(35 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
+            this.bossEnemy.maxHP = Math.round(50 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
             this.bossEnemy.hP = this.bossEnemy.maxHP
         },
         bossEnemyAbilitys() {
@@ -522,23 +524,9 @@ export default defineComponent({
                 enemy.isMagnet = true
             }
         },
-        async handleBossEnemyMovement() {
+        handleBossEnemyMovement() {
             if (this.bossEnemy.hP <= 0) {
-                this.gameOver('You have killed the boss', 'alert alert-success')
-                this.player.defeatedBosses++
-                this.bossFight = false
-                this.startButtonText = 'exit'
-                this.cancelButtonText = ''
-                let newWeaponAvaibleType = ['standard', 'shotgun', 'MG'] as type.weaponType[]
-                newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
-                if (newWeaponAvaibleType.length > 0) {
-                    this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[this.getRandomInt(newWeaponAvaibleType.length - 1)])
-                }
-                try {
-                    await API.addPlayer(this.player)
-                } catch {
-                    API.logout()
-                }
+                this.handleBossEnemyDead()
             }
             this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), 5 * this.generalSize)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
@@ -551,6 +539,23 @@ export default defineComponent({
                 case 'down':
                     this.bossEnemy.moveVector[1] *= -1
                     break
+            }
+        },
+        async handleBossEnemyDead() {
+            this.gameOver('You have killed the boss', 'alert alert-success')
+            this.player.defeatedBosses++
+            this.bossFight = false
+            this.startButtonText = 'exit'
+            this.cancelButtonText = ''
+            let newWeaponAvaibleType = ['standard', 'shotgun', 'MG'] as type.weaponType[]
+            newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
+            if (newWeaponAvaibleType.length > 0) {
+                this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[this.getRandomInt(newWeaponAvaibleType.length - 1)])
+            }
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
             }
         },
         playerStartPosition() {
@@ -695,7 +700,7 @@ export default defineComponent({
                         plasma.damage--
                         if (plasma.damage <= 0) this.deletePlasma(plasma)
                         this.respawnEnemy(enemy)
-                        this.score += 300 * this.difficulty
+                        this.score += 20 * this.difficulty
                     }
                 }
                 if (this.isMagnet) {

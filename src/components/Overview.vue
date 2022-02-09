@@ -13,7 +13,9 @@
                 </div>
                 <div v-if="editProfile">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Profilbild ändern</button>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        change profile picture
+                    </button>
 
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -36,19 +38,20 @@
                     </div>
                 </div>
                 <div>
-                    registriert seit:
+                    registered since:
                     <br />
                     {{ player.registeredAt }}
                 </div>
             </div>
             <div class="col-8 row">
                 <div>
-                    <h4>
+                    <h4 v-if="!editProfile">
                         Username:
                         <u>
                             {{ player.username }}
                         </u>
                     </h4>
+                    <input v-else type="text" :placeholder="player.username" v-model="player.username" />
                 </div>
                 <div class="col-6 gy-2">
                     <div>
@@ -57,17 +60,17 @@
                         {{ Math.round(player.highscore) }}
                     </div>
                     <div>
-                        gespielte Spiele:
+                        games played:
                         <br />
                         {{ player.playedGames }}
                     </div>
                     <div>
-                        gespielte Hardcore
+                        played hardcore:
                         <br />
                         {{ player.playedHardcore }}
                     </div>
                     <div>
-                        Highscore Hardcore
+                        Highscore Hardcore:
                         <br />
                         {{ Math.round(player.highscoreHardcore) }}
                     </div>
@@ -81,7 +84,7 @@
                     <div>
                         Highscore Flotte:
                         <br />
-                        (alle mitglieder highscore/anzahl spieler)
+                        (all members highscore/number of players)
                     </div>
                 </div>
             </div>
@@ -97,10 +100,10 @@
                     </div>
                     <div class="col-6">
                         <div v-if="!editProfile">
-                            <button class="btn btn-outline-primary shadow-none w-50" @click="toggleEdit()">Profil bearbeiten</button>
+                            <button class="btn btn-outline-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
                         <div v-if="editProfile">
-                            <button class="btn btn-outline-success shadow-none w-25" @click="toggleEdit()">Profil speichern</button>
+                            <button class="btn btn-outline-success shadow-none w-25" @click="toggleEdit(true)">save profile</button>
                         </div>
                     </div>
                 </div>
@@ -176,9 +179,15 @@ export default defineComponent({
                 API.logout()
             }
         },
-        toggleEdit() {
+        async toggleEdit(save: boolean) {
             this.editProfile = !this.editProfile
-            console.log(this.editProfile)
+            if (save) {
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
+            }
         },
         findSkill(skill: type.SkillName) {
             this.player = checkPlayer(this.player) as type.Player

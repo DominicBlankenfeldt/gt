@@ -12,7 +12,6 @@
   <div class="d-flex justify-content-center">
     <div class="blockDown"></div> -->
     </div>
-    <div v-if="!user">Logge dich ein um alle Features zu nutzen.</div>
 </template>
 
 <script lang="ts">
