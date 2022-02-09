@@ -141,7 +141,7 @@ export default defineComponent({
             dataLoad: false,
             user: currentUser,
             bossFight: bossFight,
-            player: {} as type.Player,
+            playerLocal: {} as type.Player,
             hardCoreMode: false,
             editProfile: false,
             img: '',
@@ -155,26 +155,26 @@ export default defineComponent({
             try {
                 let result = await API.getPlayer()
                 if (result) {
-                    this.player = result.player
+                    this.playerLocal = result.player
                 }
-                this.player = checkPlayer(this.player) as type.Player
+                this.playerLocal = checkPlayer(this.playerLocal) as type.Player
             } catch {
                 API.logout()
             }
         } else {
-            this.player = player.value as type.Player
+            this.playerLocal = player.value as type.Player
         }
         this.dataLoad = true
     },
 
     methods: {
         changeImg(id: string) {
-            this.player.img = id
+            this.playerLocal.img = id
         },
         async toggleHardcoreMode() {
-            this.player.hardcoreMode = !this.player.hardcoreMode
+            this.playerLocal.hardcoreMode = !this.playerLocal.hardcoreMode
             try {
-                await API.addPlayer(this.player)
+                await API.addPlayer(this.playerLocal)
             } catch {
                 API.logout()
             }
@@ -183,27 +183,27 @@ export default defineComponent({
             this.editProfile = !this.editProfile
             if (save) {
                 try {
-                    await API.addPlayer(this.player)
+                    await API.addPlayer(this.playerLocal)
                 } catch {
                     API.logout()
                 }
             }
         },
         findSkill(skill: type.SkillName) {
-            this.player = checkPlayer(this.player) as type.Player
-            return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
+            this.playerLocal = checkPlayer(this.playerLocal) as type.Player
+            return this.playerLocal.skillTree.skills[this.playerLocal.skillTree.skills.findIndex(s => s.name == skill)].lvl
         },
         bossAvailable() {
-            return this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)
+            return this.playerLocal.highscore >= this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)
                 ? 'Boss fight available'
-                : `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
+                : `You need ${this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)} highscore`
         },
         startBossFight() {
             if (!this.findSkill('shotAbility')) {
                 this.$router.push('/skillTree')
                 return
             }
-            if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+            if (this.playerLocal.highscore < this.highscoreMultiplier * (this.playerLocal.defeatedBosses + 1)) return
             this.bossFight = true
             this.$router.push('/games')
         },
