@@ -376,7 +376,7 @@ export default defineComponent({
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
-
+            this.handleBossEnemyDead()
             if (!this.isStopTime) this.gameloopCounter2++
             this.gameloopCounter++
             if (this.bossFight) {
@@ -533,9 +533,6 @@ export default defineComponent({
             }
         },
         handleBossEnemyMovement() {
-            if (this.bossEnemy.hP <= 0) {
-                this.handleBossEnemyDead()
-            }
             this.bossEnemy.moveVector = this.mulVec(this.norVec(this.bossEnemy.moveVector), this.bossEnemy.speed * this.generalSize)
             this.bossEnemy.vector = this.addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (this.borderCheck(this.bossEnemy, 'inner')) {
@@ -550,21 +547,23 @@ export default defineComponent({
             }
         },
         async handleBossEnemyDead() {
-            this.gameOver('You have killed the boss', 'alert alert-success')
-            this.player.defeatedBosses++
-            this.bossFight = false
-            this.startButtonText = 'exit'
-            this.cancelButtonText = ''
-            let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
-            newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
-            if (newWeaponAvaibleType.length > 0) {
-                this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[this.getRandomInt(newWeaponAvaibleType.length - 1)])
-            }
-            this.bossEnemy = {} as type.BossEnemy
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
+            if (this.bossEnemy.hP <= 0) {
+                this.gameOver('You have killed the boss', 'alert alert-success')
+                this.player.defeatedBosses++
+                this.bossFight = false
+                this.startButtonText = 'exit'
+                this.cancelButtonText = ''
+                let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
+                newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
+                if (newWeaponAvaibleType.length > 0) {
+                    this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[this.getRandomInt(newWeaponAvaibleType.length - 1)])
+                }
+                this.bossEnemy = {} as type.BossEnemy
+                try {
+                    await API.addPlayer(this.player)
+                } catch {
+                    API.logout()
+                }
             }
         },
         playerStartPosition() {
@@ -1089,7 +1088,7 @@ export default defineComponent({
         handleEnemyGetBigger() {
             if (this.isStopTime) return
             for (let enemy of this.enemies) {
-                enemy.type == 'getbigger' ? (enemy.size += 0.5) : null
+                if (enemy.type == 'getbigger') enemy.size += 0.5
             }
         },
         handleEnemyRandom() {
@@ -1304,12 +1303,12 @@ export default defineComponent({
             }
         },
         left() {
-            if (this.player.vector[0] > this.borderLeft) {
+            if (!this.borderCheck(this.player, 'inner')) {
                 this.player.moveVector[0] = -1
             }
         },
         right() {
-            if (this.player.vector[0] < this.borderRight) {
+            if (!this.borderCheck(this.player, 'inner')) {
                 if (this.player.moveVector[0] == 0) {
                     this.player.moveVector[0] = 1
                 } else {
@@ -1318,12 +1317,12 @@ export default defineComponent({
             }
         },
         up() {
-            if (this.player.vector[1] > this.borderUp) {
+            if (!this.borderCheck(this.player, 'inner')) {
                 this.player.moveVector[1] = -1
             }
         },
         down() {
-            if (this.player.vector[1] < this.borderDown) {
+            if (!this.borderCheck(this.player, 'inner')) {
                 if (this.player.moveVector[1] == 0) {
                     this.player.moveVector[1] = 1
                 } else {
