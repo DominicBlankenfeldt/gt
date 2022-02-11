@@ -935,6 +935,7 @@ export default defineComponent({
                     break
                 case 3:
                     type = 'getbigger'
+                    timer = 1000
                     break
                 case 4:
                     type = 'circle'
@@ -1024,18 +1025,10 @@ export default defineComponent({
                 : (enemy.moveVector[enemy.moveVector.findIndex(v => v != 1)] -= 0.02 * Math.random())
         },
         moveSpiralEnemy(enemy: type.Enemy) {
-            let acc
             if (enemy.timer > 0) {
                 enemy.timer--
             } else {
-                acc = rotVec(enemy.moveVector, 90)
-                acc = mulVec(acc, enemy.circleRadius * 2)
-                if (enemy.circleDir == 'left') {
-                    enemy.moveVector = addVec(enemy.moveVector, acc)
-                }
-                if (enemy.circleDir == 'right') {
-                    enemy.moveVector = subVec(enemy.moveVector, acc)
-                }
+                this.circle(enemy, 2)
                 enemy.moveVector = norVec(enemy.moveVector)
                 enemy.vector = addVec(
                     enemy.vector,
@@ -1047,7 +1040,6 @@ export default defineComponent({
             }
         },
         moveCircleEnemy(enemy: type.Enemy) {
-            let acc
             if (enemy.timer > 5000) {
                 enemy.timer += 3 * Math.random()
                 enemy.moveVector = enemy.spawnMoveVector
@@ -1058,21 +1050,20 @@ export default defineComponent({
                 }
             }
             if (enemy.circle) {
-                acc = rotVec(enemy.moveVector, 90)
-                acc = mulVec(acc, enemy.circleRadius)
-                if (enemy.circleDir == 'left') {
-                    enemy.moveVector = addVec(enemy.moveVector, acc)
-                }
-                if (enemy.circleDir == 'right') {
-                    enemy.moveVector = subVec(enemy.moveVector, acc)
-                }
+                this.circle(enemy, 1)
+            }
+        },
+        circle(enemy: type.Enemy, radiusMultiplier: number) {
+            let acc = mulVec(rotVec(enemy.moveVector, 90), enemy.circleRadius * radiusMultiplier)
+            if (enemy.circleDir == 'left') {
+                enemy.moveVector = addVec(enemy.moveVector, acc)
+            }
+            if (enemy.circleDir == 'right') {
+                enemy.moveVector = subVec(enemy.moveVector, acc)
             }
         },
         respawnEnemy(enemy: type.Enemy) {
-            this.enemies.splice(
-                this.enemies.findIndex(e => e == enemy),
-                1
-            )
+            this.enemies = this.enemies.filter(e => e != enemy)
             this.createEnemy()
         },
         handleEnemyGetBigger() {
@@ -1084,8 +1075,8 @@ export default defineComponent({
         handleEnemyRandom() {
             if (this.isStopTime) return
             for (let enemy of this.enemies) {
-                if (enemy.timer % 120 == 0) {
-                    if (enemy.type == 'random') {
+                if (enemy.type == 'random') {
+                    if (enemy.timer % 120 == 0) {
                         enemy.moveVector = norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
                     }
                 }
@@ -1102,10 +1093,7 @@ export default defineComponent({
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))
                 })
-                this.items.splice(
-                    this.items.findIndex(i => i == bombs[0]),
-                    1
-                )
+                this.items = this.items.filter(i => i != bombs[0])
                 this.collectClearField()
             }
         },
