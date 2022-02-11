@@ -160,11 +160,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-<<<<<<< HEAD:docs/precache-manifest.29b689d97670e7f08e15c868f6364c21.js
-    "revision": "d71c102b1b47f45f44f057157f826769",
-=======
-    "revision": "9eae57351987afcb1c616ff4e1a0ccf2",
->>>>>>> 72c1a59bc2db116046cae88eaf849e4ebf1253b1:docs/precache-manifest.24cfe6498707e6823b6b9d3ce957635a.js
+    "revision": "7d008cf132b23b908624dbc4ace81c66",
     "url": "/gt/index.html"
   },
   {
@@ -172,13 +168,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.db4214b7.js"
   },
   {
-<<<<<<< HEAD:docs/precache-manifest.29b689d97670e7f08e15c868f6364c21.js
-    "revision": "57acd5347ffc0f66c60a",
-    "url": "/gt/js/app.4f1386df.js"
-=======
-    "revision": "72958ff9296302e3c5d2",
-    "url": "/gt/js/app.60544096.js"
->>>>>>> 72c1a59bc2db116046cae88eaf849e4ebf1253b1:docs/precache-manifest.24cfe6498707e6823b6b9d3ce957635a.js
+    "revision": "26283d518e2da60d745c",
+    "url": "/gt/js/app.4d2869d7.js"
   },
   {
     "revision": "255e815e09deed11d847",
