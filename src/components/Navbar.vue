@@ -8,7 +8,7 @@
         <router-link v-if="user" to="/fleet">Space Fleet</router-link>
         <a v-if="user">|</a>
         <router-link to="/games">Game</router-link>
-        |
+        <a>|</a>
         <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
         <a v-if="user">|</a>
         <router-link to="/guide">Guide</router-link>
@@ -36,7 +36,10 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+a {
+    margin-left: 1vw;
+}
 #nav {
     padding: 3vh;
     height: 8vh;

@@ -75,7 +75,7 @@ export async function addPlayer(player: type.Player): Promise<void> {
     }
 }
 
-export async function getPlayer(): Promise<any | null> {
+export async function getPlayer(): Promise<type.User | null> {
     const id = getAuth().currentUser?.uid
-    return id ? ((await getDoc(doc(getFirestore(), 'users', id))).data() as any) : null
+    return id ? ((await getDoc(doc(getFirestore(), 'users', id))).data() as type.User) : null
 }

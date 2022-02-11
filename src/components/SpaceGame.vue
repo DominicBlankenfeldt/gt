@@ -147,11 +147,23 @@
                     {{ message }}
                 </div>
                 <div class="container" v-if="!gameStarted">
-                    <button class="btn" id="startGameBtn" @click="start()">
+                    <button class="btn shadow-none" id="startGameBtn" @click="start()">
                         <a>{{ startButtonText }}</a>
                     </button>
-                    <button v-if="cancelButtonText" class="btn" id="cancelGameBtn" @click="cancel()">
+                    <button v-if="cancelButtonText" class="btn shadow-none" id="cancelGameBtn" @click="cancel()">
                         <a>{{ cancelButtonText }}</a>
+                    </button>
+                    <br />
+                    <button
+                        class="btn shadow-none"
+                        @click="startBossFight"
+                        v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
+                    >
+                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}</a>
+                    </button>
+                    <br />
+                    <button class="btn shadow-none" @click="toggleHardcoreMode()" v-if="!cancelButtonText">
+                        <a>Hardcore:{{ player.hardcoreMode ? 'ON' : 'OFF' }}</a>
                     </button>
                 </div>
             </div>
@@ -202,72 +214,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div
-    class="btn-group"
-    role="group"
-    aria-label="Basic checkbox toggle button group"
-  >
-    <input
-      type="checkbox"
-      class="btn-check"
-      id="btncheck1"
-      autocomplete="off"
-      v-model="hardCoreMode"
-    />
-    <label class="btn btn-outline-primary shadow-none w-25" for="btncheck1"
-      >Hardcore Mode</label
-    >
-  </div>
-
-  <div class="d-flex flex-column" v-if="!production">
-    <button
-      @click="enemiesSpawn = !enemiesSpawn"
-      class="btn btn-success align-self-center shadow-none p-0"
-    >
-      Enemies: {{ enemiesSpawn }}
-    </button>
-    <button
-      @click="enemiesMove = !enemiesMove"
-      class="btn btn-success align-self-center shadow-none p-0"
-    >
-      Enemiesmove: {{ enemiesMove }}
-    </button>
-    <div class="input-group w-25 align-self-center p-0">
-      <label class="input-group-text" for="inputGroupSelect01"
-        >Enemie Type</label
-      >
-      <select
-        class="form-select p-0"
-        id="inputGroupSelect01"
-        v-model="enemiesType"
-      >
-        <option selected value=""></option>
-        <option value="curve">curve</option>
-        <option value="colorswitch">colorswitch</option>
-        <option value="aimbot">aimbot</option>
-        <option value="chasebot">chasebot</option>
-        <option value="getbigger">getbigger</option>
-      </select>
-    </div>
-    <button
-      @click="itemSpawn = !itemSpawn"
-      class="btn btn-success align-self-center shadow-none p-0"
-    >
-      Items: {{ itemSpawn }}
-    </button>
-    <div>borderUp:{{ borderUp }}</div>
-    <div>borderDown:{{ borderDown }}</div>
-    <div>borderLeft:{{ borderLeft }}</div>
-    <div>borderRight:{{ borderRight }}</div>
-    <div>X:{{ x }}</div>
-    <div>Y:{{ y }}</div>
-    <button
-      class="btn btn-success align-self-center shadow-none p-0"
-      @click="sizer()"
-    >
-      sizes
-    </button>
-  </div> -->
     </div>
 </template>
 
@@ -286,6 +232,9 @@ export default defineComponent({
         production
         bossFight
         currentUser
+        return {
+            findSkill,
+        }
     },
     data() {
         return {
@@ -323,6 +272,7 @@ export default defineComponent({
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
+            highscoreMultiplier: 25000,
             // gameSetup
             hardCoreMode: false,
             gameStarted: false,
@@ -355,7 +305,10 @@ export default defineComponent({
         this.changeDisplaySize()
         if (this.user) {
             try {
-                this.player = await API.getPlayer()
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
                 this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
@@ -471,6 +424,20 @@ export default defineComponent({
         cancel() {
             this.bossFight = false
             this.$router.push('/home')
+        },
+        bossAvailable() {
+            return this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)
+                ? 'Boss fight available'
+                : `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
+        },
+        startBossFight() {
+            if (!findSkill(this.player, 'shotAbility')) {
+                this.$router.push('/skillTree')
+                return
+            }
+            if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+            this.bossFight = true
+            this.$router.push('/games')
         },
         bossEnemyPreparations() {
             this.difficulty = 2 + this.player.defeatedBosses
@@ -1400,6 +1367,14 @@ export default defineComponent({
                 )
             }
         },
+        async toggleHardcoreMode() {
+            this.player.hardcoreMode = !this.player.hardcoreMode
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
+        },
         // displaysize
         changeDisplaySize() {
             this.generalSize = (window.innerWidth / 1920 + window.innerHeight / 955) / 2
@@ -1442,14 +1417,12 @@ export default defineComponent({
     margin: 0 !important;
 }
 // button
-
 .container .btn {
     position: relative;
     width: 250px;
     height: 55px;
     margin: 20px;
 }
-
 .container .btn a {
     position: absolute;
     top: 0;
@@ -1474,11 +1447,9 @@ export default defineComponent({
     transition: 0.2s;
     backdrop-filter: blur(15px);
 }
-
 .container .btn:hover a {
     letter-spacing: 3px;
 }
-
 .container .btn a::before {
     content: '';
     position: absolute;
@@ -1490,7 +1461,6 @@ export default defineComponent({
     transform: skewX(45deg) translateX(0);
     transition: 0.2s;
 }
-
 .container .btn:hover a::before {
     transform: skewX(45deg) translateX(200%);
 }
@@ -1536,13 +1506,8 @@ export default defineComponent({
     transition-delay: 0.2 s;
 }
 
-.container .btn:nth-child(1)::before,
-.container .btn:nth-child(1)::after {
-    background: #2bd2ff;
-    box-shadow: 0 0 5px #2bd2ff, 0 0 15px #2bd2ff, 0 0 30px #2bd2ff, 0 0 60px #2bd2ff;
-}
-.container .btn:nth-child(2)::before,
-.container .btn:nth-child(2)::after {
+.container .btn::before,
+.container .btn::after {
     background: #2bd2ff;
     box-shadow: 0 0 5px #2bd2ff, 0 0 15px #2bd2ff, 0 0 30px #2bd2ff, 0 0 60px #2bd2ff;
 }
