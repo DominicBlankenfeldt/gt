@@ -1100,7 +1100,7 @@ export default defineComponent({
         shotAbility() {
             if (this.isStopTime) return
             if (this.shotCoolDown) return
-            if (this.player.hardcoreMode) return
+            if (this.player.hardcoreMode && !this.bossFight) return
             let moveVector: type.Vector
             switch (this.player.outlook) {
                 case 'up':
