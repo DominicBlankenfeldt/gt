@@ -103,7 +103,9 @@
                             <button class="btn btn-outline-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
                         <div v-if="editProfile">
-                            <button class="btn btn-outline-success shadow-none w-25" @click="toggleEdit(true)">save profile</button>
+                            <button class="btn btn-outline-success shadow-none w-25" @click="toggleEdit(true)" :disabled="player.username.length < 3">
+                                save profile
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -190,7 +192,6 @@ export default defineComponent({
             }
         },
         findSkill(skill: type.SkillName) {
-            this.player = checkPlayer(this.player) as type.Player
             return this.player.skillTree.skills[this.player.skillTree.skills.findIndex(s => s.name == skill)].lvl
         },
         bossAvailable() {
