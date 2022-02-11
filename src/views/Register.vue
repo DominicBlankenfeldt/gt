@@ -88,24 +88,25 @@
 import { defineComponent } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
-import { player } from '@/global'
+import { checkPlayer } from '@/global'
 export default defineComponent({
-    setup() {
-        player
-    },
     data() {
         return {
-            player: player.value as type.Player,
             confirmed: '',
             password: '',
             email: '',
             username: '',
             error: '',
             registering: false,
+            player: {} as type.Player,
         }
+    },
+    async mounted() {
+        this.player = checkPlayer(this.player)
     },
     methods: {
         async register() {
+            this.error = ''
             if (this.confirmed !== this.password) {
                 this.error = 'The passwords do not match'
                 return
@@ -113,7 +114,6 @@ export default defineComponent({
             this.registering = true
             try {
                 await API.register(this.email, this.password)
-                this.player.email = this.email
                 this.player.username = this.username
                 this.player.img = ''
                 this.player.registeredAt = Date.now()

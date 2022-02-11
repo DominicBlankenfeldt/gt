@@ -113,13 +113,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import * as API from '@/API'
-import { checkPlayer, player, bossFight } from '@/global'
+import { checkPlayer, bossFight } from '@/global'
 import * as type from '@/types'
 import { currentUser } from '@/router'
 import { findSkill } from '@/helpers'
 export default defineComponent({
     setup() {
-        player
         bossFight
         currentUser
     },
@@ -143,14 +142,11 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
-                this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
             }
-        } else {
-            this.player = player.value as type.Player
         }
-        // this.player = checkPlayer(this.player) as type.Player
+        this.player = checkPlayer(this.player) as type.Player
         this.dataLoad = true
     },
 

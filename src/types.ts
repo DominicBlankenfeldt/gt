@@ -37,7 +37,6 @@ export interface Player {
     highscore: number
     highscoreHardcore: number
     id: string
-    email: string
     username: string
     img: string
     registeredAt: number
@@ -66,7 +65,6 @@ export interface SkillTree {
 export interface Skill {
     name: SkillName
     lvl: number
-    maxlvl: number
 }
 export type SkillName =
     | 'fastAbility'

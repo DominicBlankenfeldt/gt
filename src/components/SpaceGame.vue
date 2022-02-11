@@ -156,13 +156,14 @@
                     <br />
                     <button
                         class="btn shadow-none"
-                        @click="startBossFight"
+                        @keydown.enter.prevent
+                        @click="startBossFight()"
                         v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
                     >
                         <a>{{ findSkill(player, 'shotAbility') ? bossAvailable() : 'Skill the shotAbility' }}</a>
                     </button>
                     <br />
-                    <button class="btn shadow-none" @click="toggleHardcoreMode()" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="toggleHardcoreMode()" v-if="!cancelButtonText">
                         <a>Hardcore:{{ player.hardcoreMode ? 'ON' : 'OFF' }}</a>
                     </button>
                 </div>
@@ -220,7 +221,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/vectors'
-import { checkPlayer, player, production, bossFight } from '@/global'
+import { checkPlayer, production, bossFight } from '@/global'
 import { findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/helpers'
 import { currentUser } from '@/router'
 import * as type from '@/types'
@@ -228,7 +229,6 @@ import * as API from '@/API'
 
 export default defineComponent({
     setup() {
-        player
         production
         bossFight
         currentUser
@@ -309,13 +309,11 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
-                this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
             }
-        } else {
-            this.player = player.value as type.Player
         }
+        this.player = checkPlayer(this.player) as type.Player
         this.player.size *= this.generalSize
         this.playerStartPosition()
         this.dataLoad = true
@@ -422,13 +420,21 @@ export default defineComponent({
             this.countgps()
         },
         cancel() {
+            this.bossEnemy = {} as type.BossEnemy
             this.bossFight = false
-            this.$router.push('/home')
+            this.startButtonText = 'start'
+            this.cancelButtonText = ''
+            this.message = ''
         },
         bossAvailable() {
-            return this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)
-                ? 'Boss fight available'
-                : `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
+            if (this.bossFight) {
+                return 'cancel'
+            }
+            if (this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)) {
+                return 'Boss fight available'
+            } else {
+                ;`You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
+            }
         },
         startBossFight() {
             if (!findSkill(this.player, 'shotAbility')) {
@@ -436,7 +442,7 @@ export default defineComponent({
                 return
             }
             if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
-            this.bossFight = true
+            this.bossFight = !this.bossFight
             this.$router.push('/games')
         },
         bossEnemyPreparations() {

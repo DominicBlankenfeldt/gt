@@ -2,12 +2,12 @@
     <div style="margin-top: 8vh" v-if="dataLoad">
         <div class="row g-0">
             <div class="col-2"></div>
-            <div class="col-4">
+            <div class="col-4" title="you get 1 skillpoint per 1000 highscore in normal mode">
                 Skill Points:
                 {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
             </div>
             <div class="col-2"></div>
-            <div class="col-4">
+            <div class="col-4" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
                 Weapon Points:
                 {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
             </div>
@@ -16,19 +16,29 @@
         <div class="row g-0">
             <div class="d-flex flex-column col-4">
                 <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
-                    <button v-if="index > 3" class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickSkill(skill)">
-                        {{ skill.name }}
+                    <button
+                        v-if="index > 3"
+                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        @click="onClickSkill(skill)"
+                        :title="skillDetails[skill.name].description"
+                    >
+                        {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
                     </button>
                 </div>
             </div>
             <div class="d-flex flex-column col-4">
                 <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
-                    <button v-if="index < 4" class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickSkill(skill)">
-                        {{ skill.name }}
+                    <button
+                        v-if="index < 4"
+                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        @click="onClickSkill(skill)"
+                        :title="skillDetails[skill.name].description"
+                    >
+                        {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{ skill.maxlvl }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
                     </button>
                 </div>
             </div>
@@ -55,10 +65,14 @@
                     </select>
                 </div>
                 <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
-                    <button class="mt-2 w-50 btn btn-primary align-self-center shadow-none" @click="onClickWeaponUgrade(weaponUpgrade)">
-                        {{ weaponUpgrade.name }}
+                    <button
+                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        @click="onClickWeaponUgrade(weaponUpgrade)"
+                        :title="weaponDetails[weaponUpgrade.name].description"
+                    >
+                        {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponUpgrade.maxlvl }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
                     </button>
                 </div>
             </div>
@@ -77,14 +91,17 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { checkPlayer, player } from '@/global'
+import { checkPlayer, skillDetails, weaponDetails } from '@/global'
 import { currentUser } from '@/router'
 import * as API from '@/API'
 import * as type from '@/types'
 export default defineComponent({
     setup() {
-        player
         currentUser
+        return {
+            skillDetails,
+            weaponDetails,
+        }
     },
     data() {
         return {
@@ -103,14 +120,14 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
-                this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
             }
-        } else {
-            this.player = player.value as type.Player
         }
-        this.player.skillTree.skills.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (a.maxlvl < b.maxlvl ? -1 : 1))
+        this.player = checkPlayer(this.player) as type.Player
+        this.player.skillTree.skills
+            .sort((a, b) => (a.name < b.name ? -1 : 1))
+            .sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
         if (this.usedSkillPoints > this.player.skillTree.skillPoints) {
             this.resetSkillTree()
         }
@@ -136,7 +153,7 @@ export default defineComponent({
     methods: {
         async lvlSkill(skill: type.Skill, counter: number) {
             while (counter) {
-                if (skill.lvl < skill.maxlvl)
+                if (skill.lvl < skillDetails[skill.name].maxlvl)
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
                         skill.lvl++
                     }
