@@ -347,15 +347,12 @@ export default defineComponent({
             this.changeDisplaySize()
         })
         setInterval(() => {
-            this.gameStarted ? this.gameloop() : null
+            if (this.gameStarted) this.gameloop()
         }, 1000 / 60)
         this.changeDisplaySize()
         if (this.user) {
             try {
-                let result = await API.getPlayer()
-                if (result) {
-                    this.player = result.player
-                }
+                this.player = await API.getPlayer()
                 this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
@@ -384,14 +381,13 @@ export default defineComponent({
                 if (this.gameloopCounter % 90 == 0) {
                     this.bossEnemyAbilitys()
                 }
+            } else {
+                if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
+                if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
             }
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
-            if (!this.bossFight) {
-                if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
-                if (this.gameloopCounter % (900 * this.percent(this.findSkill('spawnLessEnemy'), 'in')) == 0) this.createEnemy()
-            }
             this.reduceDuartion()
             this.handleEnemyRandom()
         },
@@ -476,18 +472,18 @@ export default defineComponent({
         bossEnemyPreparations() {
             this.difficulty = 2 + this.player.defeatedBosses
             this.startingEnemies = 4 + this.player.defeatedBosses
-            do {
-                this.bossEnemy.vector = [
-                    this.getRandomInt(this.borderRight - this.borderLeft - 20) + this.borderLeft,
-                    this.getRandomInt(this.borderDown - this.borderUp - 20) + this.borderUp,
-                ] as type.Vector
-            } while (this.lenVec(this.subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
             this.bossEnemy.size = 50 * this.generalSize
             this.bossEnemy.imgsrc = '/gt/img/boss/bossEnemy.gif'
             this.bossEnemy.moveVector = this.norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             this.bossEnemy.maxHP = Math.round(50 * (this.player.defeatedBosses + 1) * this.percent(this.player.defeatedBosses + 1 * 10, 'in'))
             this.bossEnemy.hP = this.bossEnemy.maxHP
             this.bossEnemy.speed = 5
+            do {
+                this.bossEnemy.vector = [
+                    this.getRandomInt(this.borderRight - this.borderLeft - this.bossEnemy.size) + this.borderLeft,
+                    this.getRandomInt(this.borderDown - this.borderUp - this.bossEnemy.size) + this.borderUp,
+                ] as type.Vector
+            } while (this.lenVec(this.subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
         },
         bossEnemyAbilitys() {
             this.bossEnemy.speed = 5
@@ -603,102 +599,32 @@ export default defineComponent({
             this.player.weaponTree.weaponPoints = Math.floor(this.player.highscoreHardcore / 500)
         },
         //colliosion
-        colisionHandling() {
-            if (this.bossFight) {
-                if (this.collisionsCheck(this.bossEnemy, this.player)) {
-                    this.gameOver('you got killed by the boss', 'alert alert-danger')
-                }
-                for (let plasma of this.plasmas) {
-                    if (this.collisionsCheck(this.bossEnemy, plasma)) {
-                        this.bossEnemy.hP -= plasma.damage
-                        this.deletePlasma(plasma)
-                    }
+        bossColision() {
+            if (this.collisionsCheck(this.bossEnemy, this.player)) {
+                this.gameOver('you got killed by the boss', 'alert alert-danger')
+            }
+            for (let plasma of this.plasmas) {
+                if (this.collisionsCheck(this.bossEnemy, plasma)) {
+                    this.bossEnemy.hP -= plasma.damage
+                    this.deletePlasma(plasma)
                 }
             }
+        },
+        plasmaColision(item?: type.Item | false, enemy?: type.Enemy | false) {
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
                     this.gameOver('you got killed by plasma', 'alert alert-danger')
                 }
             }
-            for (let item of this.items) {
-                if (item.type == 'blackHole') {
-                    this.gravity(item, this.player, 4, 0.5)
-                    if (this.collisionsCheck(item, this.player)) {
-                        this.touchBlackHole()
-                    }
-                    for (let enemy of this.enemies) {
-                        this.gravity(item, enemy, 4, 0.5)
-                        if (this.collisionsCheck(item, enemy)) {
-                            this.respawnEnemy(enemy)
-                        }
-                    }
-                    for (let item2 of this.items) {
-                        if (item != item2) {
-                            if (item2.type != 'blackHole') {
-                                this.gravity(item, item2, 4, 0.5)
-                                if (this.collisionsCheck(item, item2)) {
-                                    this.despawnItem(item2)
-                                }
-                            }
-                        }
-                    }
-                    for (let plasma of this.plasmas) {
-                        this.gravity(item, plasma, 4, 0.5)
-                        if (this.collisionsCheck(item, plasma)) {
-                            this.deletePlasma(plasma)
-                        }
-                    }
-                } else {
-                    if (this.isMagnet) {
-                        this.gravity(this.player, item, 2, 1)
-                    }
-                }
-                if (item.type == 'growPotion') {
-                    for (let enemy of this.enemies) {
-                        if (this.collisionsCheck(enemy, item)) {
-                            if (!enemy.isGrow) {
-                                this.despawnItem(item)
-                                enemy.size *= 2
-                            }
-                            enemy.isGrow = true
-                        }
-                    }
-                }
-                if (item.type == 'magnet') {
-                    for (let enemy of this.enemies) {
-                        if (this.collisionsCheck(enemy, item)) {
-                            if (!enemy.isMagnet) {
-                                this.despawnItem(item)
-                                enemy.isMagnet = true
-                            }
-                        }
-                    }
-                }
-                if (this.collisionsCheck(item, this.player)) {
-                    this.items = this.items.filter(i => i != item)
-                    switch (item.type) {
-                        case 'coin':
-                            this.collectCoin(item)
-                            break
-                        case 'growPotion':
-                            this.collectGrowPotion(item)
-                            break
-                        case 'clearField':
-                            this.collectClearField()
-                            break
-                        case 'magnet':
-                            this.collectMagnet(item)
-                            break
-                        case 'stopTime':
-                            this.collectStopTime(item)
-                            break
-                        case 'slowEnemies':
-                            this.collectSlowEnemies(item)
-                            break
+            if (item) {
+                for (let plasma of this.plasmas) {
+                    this.gravity(item, plasma, 4, 0.5)
+                    if (this.collisionsCheck(item, plasma)) {
+                        this.deletePlasma(plasma)
                     }
                 }
             }
-            for (let enemy of this.enemies) {
+            if (enemy) {
                 for (let plasma of this.plasmas) {
                     if (this.collisionsCheck(enemy, plasma)) {
                         if (plasma.split) {
@@ -722,6 +648,57 @@ export default defineComponent({
                         this.score += 50 * this.difficulty
                     }
                 }
+            }
+        },
+        blackHoleColision(item: type.Item) {
+            this.gravity(item, this.player, 4, 0.5)
+            if (this.collisionsCheck(item, this.player)) {
+                this.touchBlackHole()
+            }
+            for (let enemy of this.enemies) {
+                this.gravity(item, enemy, 4, 0.5)
+                if (this.collisionsCheck(item, enemy)) {
+                    this.respawnEnemy(enemy)
+                }
+            }
+            for (let item2 of this.items) {
+                if (item != item2) {
+                    if (item2.type != 'blackHole') {
+                        this.gravity(item, item2, 4, 0.5)
+                        if (this.collisionsCheck(item, item2)) {
+                            this.despawnItem(item2)
+                        }
+                    }
+                }
+            }
+            this.plasmaColision(item, false)
+        },
+        enemyItemColision(item: type.Item) {
+            if (item.type == 'growPotion') {
+                for (let enemy of this.enemies) {
+                    if (this.collisionsCheck(enemy, item)) {
+                        if (!enemy.isGrow) {
+                            this.despawnItem(item)
+                            enemy.size *= 2
+                        }
+                        enemy.isGrow = true
+                    }
+                }
+            }
+            if (item.type == 'magnet') {
+                for (let enemy of this.enemies) {
+                    if (this.collisionsCheck(enemy, item)) {
+                        if (!enemy.isMagnet) {
+                            this.despawnItem(item)
+                            enemy.isMagnet = true
+                        }
+                    }
+                }
+            }
+        },
+        enemyColision() {
+            for (let enemy of this.enemies) {
+                this.plasmaColision(false, enemy)
                 if (this.isMagnet) {
                     this.gravity(this.player, enemy, 2, -0.3)
                 }
@@ -732,6 +709,49 @@ export default defineComponent({
                     this.gameOver('you got killed by an enemy', 'alert alert-danger')
                 }
             }
+        },
+        playerItemColision(item: type.Item) {
+            this.items = this.items.filter(i => i != item)
+            switch (item.type) {
+                case 'coin':
+                    this.collectCoin(item)
+                    break
+                case 'growPotion':
+                    this.collectGrowPotion(item)
+                    break
+                case 'clearField':
+                    this.collectClearField()
+                    break
+                case 'magnet':
+                    this.collectMagnet(item)
+                    break
+                case 'stopTime':
+                    this.collectStopTime(item)
+                    break
+                case 'slowEnemies':
+                    this.collectSlowEnemies(item)
+                    break
+            }
+        },
+        colisionHandling() {
+            if (this.bossFight) {
+                this.bossColision()
+            }
+            this.plasmaColision()
+            for (let item of this.items) {
+                if (item.type == 'blackHole') {
+                    this.blackHoleColision(item)
+                } else {
+                    if (this.isMagnet) {
+                        this.gravity(this.player, item, 2, 1)
+                    }
+                }
+                this.enemyItemColision(item)
+                if (this.collisionsCheck(item, this.player)) {
+                    this.playerItemColision(item)
+                }
+            }
+            this.enemyColision()
         },
         collisionsCheck(
             object1: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy,

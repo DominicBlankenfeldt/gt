@@ -99,10 +99,7 @@ export default defineComponent({
     async mounted() {
         if (this.user) {
             try {
-                let result = await API.getPlayer()
-                if (result) {
-                    this.player = result.player
-                }
+                this.player = await API.getPlayer()
                 this.player = checkPlayer(this.player) as type.Player
             } catch {
                 API.logout()
