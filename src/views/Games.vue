@@ -11,7 +11,6 @@ import { defineComponent } from 'vue'
 import game from '@/components/SpaceGame.vue'
 
 export default defineComponent({
-    setup() {},
     data() {
         return {}
     },
