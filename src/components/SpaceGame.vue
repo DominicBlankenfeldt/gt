@@ -1246,19 +1246,19 @@ export default defineComponent({
             if (this.pressedKeys['2'] && this.findSkill('slowAbility')) multiplicator = 0.5
 
             if (this.pressedKeys['ArrowLeft'] || this.pressedKeys['a']) {
-                this.left(multiplicator)
+                this.left()
             }
             if (this.pressedKeys['ArrowRight'] || this.pressedKeys['d']) {
-                this.right(multiplicator)
+                this.right()
             }
             if (this.pressedKeys['ArrowUp'] || this.pressedKeys['w']) {
-                this.up(multiplicator)
+                this.up()
             }
             if (this.pressedKeys['ArrowDown'] || this.pressedKeys['s']) {
-                this.down(multiplicator)
+                this.down()
             }
 
-            this.player.moveVector = this.mulVec(this.norVec(this.player.moveVector), 5)
+            this.player.moveVector = this.mulVec(this.norVec(this.player.moveVector), this.player.speed * this.generalSize * multiplicator)
             this.player.vector = this.addVec(this.player.vector, this.player.moveVector)
 
             if (this.pressedKeys['3'] && this.findSkill('bombAbility')) this.bombAbility()
@@ -1303,29 +1303,29 @@ export default defineComponent({
                     break
             }
         },
-        left(multiplicator: number) {
+        left() {
             if (this.player.vector[0] > this.borderLeft) {
-                this.player.moveVector[0] = this.player.speed * multiplicator * this.generalSize * -1
+                this.player.moveVector[0] = -1
             }
         },
-        right(multiplicator: number) {
+        right() {
             if (this.player.vector[0] < this.borderRight) {
                 if (this.player.moveVector[0] == 0) {
-                    this.player.moveVector[0] = this.player.speed * multiplicator * this.generalSize
+                    this.player.moveVector[0] = 1
                 } else {
                     this.player.moveVector[0] = 0
                 }
             }
         },
-        up(multiplicator: number) {
+        up() {
             if (this.player.vector[1] > this.borderUp) {
-                this.player.moveVector[1] = this.player.speed * multiplicator * this.generalSize * -1
+                this.player.moveVector[1] = -1
             }
         },
-        down(multiplicator: number) {
+        down() {
             if (this.player.vector[1] < this.borderDown) {
                 if (this.player.moveVector[1] == 0) {
-                    this.player.moveVector[1] = this.player.speed * multiplicator * this.generalSize
+                    this.player.moveVector[1] = 1
                 } else {
                     this.player.moveVector[1] = 0
                 }
