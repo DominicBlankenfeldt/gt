@@ -109,7 +109,7 @@ export interface Plasma {
 
 export type Vector = [number, number]
 
-export interface BestPlayers {
+export interface User {
     player: Player
     email: string
     role: string

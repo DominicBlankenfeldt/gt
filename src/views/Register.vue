@@ -2,14 +2,14 @@
     <div class="container d-flex align-items-stretch justify-content-center flex-column" style="height: calc(100vh - 200px)">
         <div class="card card-default w-75" style="margin-left: 12.5%">
             <div></div>
-            <div class="card-header header">Tritt einer Raumschiffcrew bei.</div>
+            <div class="card-header header">Join a starship crew.</div>
             <div class="card-body">
                 <form @submit.prevent="register()" autocomplete="off">
                     <div class="m-4 alert alert-danger text-center" v-if="error">
                         {{ error }}
                     </div>
                     <div class="p-4 row">
-                        <label class="col-4" for="username">Username:</label>
+                        <label class="col-4" for="username">username:</label>
                         <div class="col-8">
                             <input
                                 minlength="3"
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="p-4 row">
-                        <label class="col-4" for="Password">Passwort:</label>
+                        <label class="col-4" for="Password">password:</label>
                         <div class="col-8">
                             <input
                                 minlength="6"
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="p-4 row">
-                        <label class="col-4" for="Password">Passwort bestätigen:</label>
+                        <label class="col-4" for="Password">Confirm Password:</label>
                         <div class="col-8">
                             <input
                                 minlength="6"
@@ -70,7 +70,7 @@
                     </div>
                     <div class="container" v-if="!registering">
                         <button class="btn" type="submit">
-                            <a v-if="!registering">Anheuern</a>
+                            <a v-if="!registering">register</a>
                         </button>
                     </div>
                     <div class="loader" v-if="registering">
@@ -107,7 +107,7 @@ export default defineComponent({
     methods: {
         async register() {
             if (this.confirmed !== this.password) {
-                this.error = 'Die passwörter stimmen nicht überein'
+                this.error = 'The passwords do not match'
                 return
             }
             this.registering = true
@@ -125,7 +125,7 @@ export default defineComponent({
                 this.$router.push('/home')
             } catch (e) {
                 console.log("couldn't register", e)
-                this.error = 'Der Account konnte leider nicht registriert werden'
+                this.error = 'Unfortunately, the account could not be registered'
             } finally {
                 this.registering = false
             }
