@@ -36,13 +36,15 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.outlook = checkedPlayer.outlook || 'up'
     checkedPlayer.highscore = checkedPlayer.highscore || 0
     checkedPlayer.highscoreHardcore = checkedPlayer.highscoreHardcore || 0
+    checkedPlayer.highscoreTotalchaos = checkedPlayer.highscoreTotalchaos || 0
     checkedPlayer.username = checkedPlayer.username || 'gast'
     checkedPlayer.img = checkedPlayer.img || ''
     checkedPlayer.registeredAt = checkedPlayer.registeredAt || 0
     checkedPlayer.playedGames = checkedPlayer.playedGames || 0
     checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
     checkedPlayer.defeatedBosses = checkedPlayer.defeatedBosses || 0
-    checkedPlayer.hardcoreMode = checkedPlayer.hardcoreMode || false
+    checkedPlayer.defeatedBossesHardcore = checkedPlayer.defeatedBossesHardcore || 0
+    checkedPlayer.playMode = checkedPlayer.playMode || 'normal'
     checkedPlayer.weaponTree =
         checkedPlayer.weaponTree ||
         ({
@@ -53,7 +55,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
         } as type.WeaponTree)
     for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload']) {
         if (checkWeaponUpgrade(checkedPlayer, weaponUpgrade)) {
-            checkedPlayer.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0, maxlvl: 10 })
+            checkedPlayer.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
         }
     }
     checkedPlayer.weaponTree.weaponType = checkedPlayer.weaponTree.weaponType || 'standard'

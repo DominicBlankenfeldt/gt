@@ -115,12 +115,7 @@ export default defineComponent({
             try {
                 await API.register(this.email, this.password)
                 this.player.username = this.username
-                this.player.img = ''
                 this.player.registeredAt = Date.now()
-                this.player.playedGames = 0
-                this.player.hardcoreMode = false
-                this.player.highscoreHardcore = 0
-                this.player.playedHardcore = 0
                 await API.addPlayer(this.player)
                 this.$router.push('/home')
             } catch (e) {

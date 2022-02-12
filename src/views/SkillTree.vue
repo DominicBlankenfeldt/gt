@@ -167,7 +167,7 @@ export default defineComponent({
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade, counter: number) {
             while (counter) {
-                if (weaponUpgrade.lvl < weaponUpgrade.maxlvl)
+                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
                     if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
                         weaponUpgrade.lvl++
                     }

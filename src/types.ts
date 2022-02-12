@@ -1,5 +1,6 @@
 export interface Enemy {
     vector: Vector
+    speed: number
     size: number
     id: string
     type: EnemyType
@@ -21,7 +22,9 @@ export interface BossEnemy {
     hP: number
     maxHP: number
     speed: number
+    type: BossType
 }
+export type BossType = 'normal' | 'hardcore'
 export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
@@ -33,18 +36,22 @@ export interface Player {
     originalSize: number
     skillTree: SkillTree
     weaponTree: WeaponTree
+    passivTree: PassivTree
     outlook: Outlook
     highscore: number
     highscoreHardcore: number
+    highscoreTotalchaos: number
     id: string
     username: string
     img: string
     registeredAt: number
     playedGames: number
-    hardcoreMode: boolean
+    playMode: PlayMode
     playedHardcore: number
     defeatedBosses: number
+    defeatedBossesHardcore: number
 }
+export type PlayMode = 'normal' | 'hardcore' | 'totalchaos'
 export interface WeaponTree {
     weaponPoints: number
     weaponType: weaponType
@@ -55,9 +62,14 @@ export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
-    maxlvl: number
 }
 export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload'
+export interface PassivTree {
+    passivType: PassivType
+    passivPoints: number
+    PassivAvaibleTypes: PassivType[]
+}
+export type PassivType = 'none'
 export interface SkillTree {
     skillPoints: number
     skills: Skill[]
