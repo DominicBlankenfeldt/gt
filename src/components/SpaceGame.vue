@@ -523,9 +523,6 @@ export default defineComponent({
             this.slowEnemiesDuration = 0
             this.bombCoolDownDuration = 0
             this.shotCoolDownDuration = 0
-            this.message = ''
-            this.startButtonText = 'start'
-            this.cancelButtonText = ''
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
@@ -534,6 +531,9 @@ export default defineComponent({
             this.items = [] as type.Item[]
             this.plasmas = [] as type.Plasma[]
             this.enemyPlasmas = [] as type.Plasma[]
+            this.message = ''
+            this.startButtonText = 'start'
+            this.cancelButtonText = ''
             this.gameStarted = true
             window.onkeyup = (e: any) => {
                 this.pressedKeys[e.key] = false
@@ -587,7 +587,6 @@ export default defineComponent({
             if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
             this.bossEnemy.type = type
             this.bossFight = true
-            this.$router.push('/games')
         },
         bossEnemyPreparations() {
             this.bossEnemy.size = 50 * this.generalSize
@@ -703,7 +702,6 @@ export default defineComponent({
         async handleBossEnemyDead() {
             if (this.bossEnemy.hP <= 0) {
                 this.gameOver('You have killed the boss', 'alert alert-success')
-                this.player.defeatedBosses++
                 this.bossFight = false
                 this.startButtonText = 'exit'
                 this.cancelButtonText = ''
@@ -711,12 +709,14 @@ export default defineComponent({
                 let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies'] as type.PassivType[]
                 switch (this.bossEnemy.type) {
                     case 'normal':
+                        this.player.defeatedBosses++
                         newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
                         if (newWeaponAvaibleType.length > 0) {
                             this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)])
                         }
                         break
                     case 'hardcore':
+                        this.player.defeatedBossesHardcore++
                         newPassivAvaibleType = newPassivAvaibleType.filter(n => this.player.passivTree.passivAvaibleTypes.every(p => n != p))
                         if (newPassivAvaibleType.length > 0) {
                             this.player.passivTree.passivAvaibleTypes.push(newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)])
@@ -736,6 +736,8 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
+            this.message = message
+            this.messageType = messageType
             if (this.bossFight) {
                 this.score = 0
                 this.startButtonText = 'try again'
@@ -776,8 +778,6 @@ export default defineComponent({
                     }
                     break
             }
-            this.message = message
-            this.messageType = messageType
         },
         setSkillPoints() {
             this.player.skillTree.skillPoints = Math.floor(this.player.highscore / 1000)
@@ -800,6 +800,7 @@ export default defineComponent({
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
                     this.gameOver('you got killed by plasma', 'alert alert-danger')
+                    return
                 }
             }
             if (item) {

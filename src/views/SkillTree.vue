@@ -91,9 +91,9 @@
                         @change="savePlayer()"
                     >
                         <option
-                            :selected="weaponAvaibleType == player.weaponTree.weaponType"
+                            :selected="passivAvaibleType == player.passivTree.passivType"
                             :value="passivAvaibleType"
-                            v-for="passivAvaibleType of player.passivTree.passiveAvaibleTypes"
+                            v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
                             :key="passivAvaibleType"
                         >
                             {{ passivAvaibleType }}
