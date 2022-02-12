@@ -116,7 +116,6 @@ import * as API from '@/API'
 import { checkPlayer, bossFight } from '@/global'
 import * as type from '@/types'
 import { currentUser } from '@/router'
-import { findSkill } from '@/helpers'
 export default defineComponent({
     setup() {
         bossFight

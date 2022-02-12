@@ -30,7 +30,6 @@ export default defineComponent({
         logout() {
             API.logout()
             this.$router.push('/')
-            this.$router.go(0)
         },
     },
 })

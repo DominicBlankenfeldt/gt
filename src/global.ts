@@ -43,8 +43,6 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
     checkedPlayer.defeatedBosses = checkedPlayer.defeatedBosses || 0
     checkedPlayer.hardcoreMode = checkedPlayer.hardcoreMode || false
-    checkedPlayer.weaponTree.weaponType = checkedPlayer.weaponTree.weaponType || 'standard'
-    checkedPlayer.weaponTree.weaponAvaibleTypes = checkedPlayer.weaponTree.weaponAvaibleTypes || ['standard']
     checkedPlayer.weaponTree =
         checkedPlayer.weaponTree ||
         ({
@@ -58,7 +56,8 @@ export function checkPlayer(checkedPlayer: type.Player) {
             checkedPlayer.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0, maxlvl: 10 })
         }
     }
-
+    checkedPlayer.weaponTree.weaponType = checkedPlayer.weaponTree.weaponType || 'standard'
+    checkedPlayer.weaponTree.weaponAvaibleTypes = checkedPlayer.weaponTree.weaponAvaibleTypes || ['standard']
     checkedPlayer.skillTree =
         checkedPlayer.skillTree ||
         ({
