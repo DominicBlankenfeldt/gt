@@ -1,20 +1,25 @@
 <template>
     <div style="margin-top: 8vh" v-if="dataLoad">
         <div class="row g-0">
-            <div class="col-2"></div>
-            <div class="col-4" title="you get 1 skillpoint per 1000 highscore in normal mode">
+            <div style="width: 12.5%"></div>
+            <div class="col-3" title="you get 1 skillpoint per 1000 highscore in normal mode">
                 Skill Points:
                 {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
             </div>
-            <div class="col-2"></div>
-            <div class="col-4" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
+            <div style="width: 12.5%"></div>
+            <div class="col-3" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
                 Weapon Points:
                 {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
+            </div>
+
+            <div class="col-3" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
+                Passiv Points:
+                {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
             </div>
         </div>
 
         <div class="row g-0">
-            <div class="d-flex flex-column col-4">
+            <div class="d-flex flex-column col-3">
                 <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
                     <button
                         v-if="index > 3"
@@ -28,7 +33,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-4">
+            <div class="d-flex flex-column col-3">
                 <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
                     <button
                         v-if="index < 4"
@@ -42,7 +47,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-4">
+            <div class="d-flex flex-column col-3">
                 <div>
                     <div class="mt-2 w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">weapontype:</div>
                     <br />
@@ -76,22 +81,60 @@
                     </button>
                 </div>
             </div>
+            <div class="d-flex flex-column col-3">
+                <div>
+                    <div class="mt-2 w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
+                    <br />
+                    <select
+                        class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                        v-model="player.passivTree.passivType"
+                        @change="savePlayer()"
+                    >
+                        <option
+                            :selected="weaponAvaibleType == player.weaponTree.weaponType"
+                            :value="passivAvaibleType"
+                            v-for="passivAvaibleType of player.passivTree.passiveAvaibleTypes"
+                            :key="passivAvaibleType"
+                        >
+                            {{ passivAvaibleType }}
+                        </option>
+                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 3" disabled>
+                            unlock more by fight the boss
+                        </option>
+                    </select>
+                </div>
+                <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
+                    <button
+                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        @click="onClickWeaponUgrade(weaponUpgrade)"
+                        :title="passivDetails[passivUpgrade.name].description"
+                        v-if="passivUpgrade.name == player.passivTree.passivType"
+                    >
+                        {{ passivDetails[passivUpgrade.name].name }}
+                        <br />
+                        lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="row g-0 mt-2">
-            <div class="col-2"></div>
-            <div class="col-4">
+            <div style="width: 12.5%"></div>
+            <div class="col-3">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetSkillTree()">reset Skilltree</button>
             </div>
-            <div class="col-2"></div>
-            <div class="col-4">
+            <div style="width: 12.5%"></div>
+            <div class="col-3">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetWeaponTree()">reset weapontree</button>
+            </div>
+            <div class="col-3">
+                <button class="btn btn-danger align-self-center shadow-none" @click="resetPassivTree()">reset passivtree</button>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { checkPlayer, skillDetails, weaponDetails } from '@/global'
+import { checkPlayer, skillDetails, weaponDetails, passivDetails } from '@/global'
 import { currentUser } from '@/router'
 import * as API from '@/API'
 import * as type from '@/types'
@@ -101,6 +144,7 @@ export default defineComponent({
         return {
             skillDetails,
             weaponDetails,
+            passivDetails,
         }
     },
     data() {
@@ -149,6 +193,13 @@ export default defineComponent({
             }
             return allWeaponlvl
         },
+        usedPassivPoints() {
+            let allPassivlvl = 0
+            for (let passivUpgrade of this.player.passivTree.passivUpgrades) {
+                allPassivlvl += passivUpgrade.lvl
+            }
+            return allPassivlvl
+        },
     },
     methods: {
         async lvlSkill(skill: type.Skill, counter: number) {
@@ -179,6 +230,20 @@ export default defineComponent({
                 API.logout()
             }
         },
+        async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade, counter: number) {
+            while (counter) {
+                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
+                    if (this.player.weaponTree.weaponPoints - this.usedPassivPoints > 0) {
+                        passivUpgrade.lvl++
+                    }
+                counter--
+            }
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
+        },
         async resetSkillTree() {
             this.player.skillTree.skillPoints -= this.usedSkillPoints
             for (let skill of this.player.skillTree.skills) {
@@ -196,6 +261,18 @@ export default defineComponent({
             for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) {
                 this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
                 weaponUpgrade.lvl = 0
+            }
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
+        },
+        async resetPassivTree() {
+            this.player.passivTree.passivPoints -= this.usedPassivPoints
+            for (let passivUpgrade of this.player.passivTree.passivUpgrades) {
+                this.player.passivTree.passivPoints += passivUpgrade.lvl
+                passivUpgrade.lvl = 0
             }
             try {
                 await API.addPlayer(this.player)
@@ -233,6 +310,19 @@ export default defineComponent({
             } else {
                 clearTimeout(this.timer)
                 this.lvlWeaponUpgrade(weaponUpgrade, 10)
+                this.clicks = 0
+            }
+        },
+        onClickPassivUgrade(passivUpgrade: type.PassivUpgrade) {
+            this.clicks++
+            if (this.clicks === 1) {
+                this.timer = setTimeout(() => {
+                    this.lvlPassivUpgrade(passivUpgrade, 1)
+                    this.clicks = 0
+                }, 200)
+            } else {
+                clearTimeout(this.timer)
+                this.lvlPassivUpgrade(passivUpgrade, 10)
                 this.clicks = 0
             }
         },

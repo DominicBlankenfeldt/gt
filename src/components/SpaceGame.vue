@@ -257,7 +257,7 @@
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/vectors'
 import { checkPlayer, production, bossFight } from '@/global'
-import { findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/helpers'
+import { findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/helpers'
 import { currentUser } from '@/router'
 import * as type from '@/types'
 import * as API from '@/API'
@@ -373,7 +373,16 @@ export default defineComponent({
                 }
             } else {
                 if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
-                if (this.gameloopCounter % (900 * percent(findSkill(this.player, 'spawnLessEnemy'), 'in')) == 0) this.createEnemy()
+                if (
+                    this.gameloopCounter %
+                        (900 *
+                            percent(findSkill(this.player, 'spawnLessEnemy'), 'in') *
+                            (this.player.passivTree.passivType == 'nerfEnemies'
+                                ? percent(findPassivUpgrade(this.player, 'nerfEnemies'), 'in') / 2
+                                : 1)) ==
+                    0
+                )
+                    this.createEnemy()
                 if (this.player.playMode == 'totalchaos') {
                     if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
                 }
@@ -464,10 +473,14 @@ export default defineComponent({
                     this.difficulty *
                     percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
                     1.2 *
-                    percent(findSkill(this.player, 'betterGrowPotion'), 'in')
+                    percent(findSkill(this.player, 'betterGrowPotion'), 'in') *
+                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
-                this.score += this.difficulty * percent(findSkill(this.player, 'scoreMultiplicator'), 'in')
+                this.score +=
+                    this.difficulty *
+                    percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
+                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
             }
         },
         countgps() {
@@ -695,9 +708,20 @@ export default defineComponent({
                 this.startButtonText = 'exit'
                 this.cancelButtonText = ''
                 let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
-                newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
-                if (newWeaponAvaibleType.length > 0) {
-                    this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)])
+                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies'] as type.PassivType[]
+                switch (this.bossEnemy.type) {
+                    case 'normal':
+                        newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
+                        if (newWeaponAvaibleType.length > 0) {
+                            this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)])
+                        }
+                        break
+                    case 'hardcore':
+                        newPassivAvaibleType = newPassivAvaibleType.filter(n => this.player.passivTree.passivAvaibleTypes.every(p => n != p))
+                        if (newPassivAvaibleType.length > 0) {
+                            this.player.passivTree.passivAvaibleTypes.push(newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)])
+                        }
+                        break
                 }
                 this.bossEnemy = {} as type.BossEnemy
                 try {
@@ -807,7 +831,12 @@ export default defineComponent({
                         }
 
                         this.respawnEnemy(enemy)
-                        this.score += 50 * this.difficulty
+                        this.score +=
+                            50 *
+                            this.difficulty *
+                            (this.player.passivTree.passivType == 'increaseScore'
+                                ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2
+                                : 1)
                     }
                 }
             }
@@ -926,7 +955,9 @@ export default defineComponent({
         },
         //itemEvents
         collectCoin(item: type.Item) {
-            this.score += (this.difficulty * 15 * item.size * percent(findSkill(this.player, 'betterCoin'), 'in')) / this.generalSize
+            this.score +=
+                ((this.difficulty * 15 * item.size * percent(findSkill(this.player, 'betterCoin'), 'in')) / this.generalSize) *
+                (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
         },
         collectGrowPotion(item: type.Item) {
             this.isGrow = true
@@ -1195,6 +1226,9 @@ export default defineComponent({
                                 percent(findSkill(this.player, 'slowEnemy'), 'de') *
                                 this.generalSize *
                                 (this.isSlowEnemies ? 0.5 : 1) *
+                                (this.player.passivTree.passivType == 'nerfEnemies'
+                                    ? percent(findPassivUpgrade(this.player, 'nerfEnemies'), 'de') / 2
+                                    : 1) *
                                 enemy.speed
                         )
                     )
@@ -1210,7 +1244,14 @@ export default defineComponent({
         moveChasebotEnemy(enemy: type.Enemy) {
             enemy.vector = addVec(
                 enemy.vector,
-                mulVec(dirVec(this.player.vector, enemy.vector), 2 * this.generalSize * (this.isSlowEnemies ? 0.5 : 1) * enemy.speed)
+                mulVec(
+                    dirVec(this.player.vector, enemy.vector),
+                    2 *
+                        this.generalSize *
+                        (this.isSlowEnemies ? 0.5 : 1) *
+                        (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies'), 'de') / 2 : 1) *
+                        enemy.speed
+                )
             )
         },
         moveCurveEnemy(enemy: type.Enemy) {
@@ -1231,6 +1272,9 @@ export default defineComponent({
                         this.difficulty *
                             percent(findSkill(this.player, 'slowEnemy'), 'de') *
                             this.generalSize *
+                            (this.player.passivTree.passivType == 'nerfEnemies'
+                                ? percent(findPassivUpgrade(this.player, 'nerfEnemies'), 'de') / 2
+                                : 1) *
                             0.4 *
                             (this.isSlowEnemies ? 0.5 : 1) *
                             enemy.speed
@@ -1330,57 +1374,127 @@ export default defineComponent({
             this.shotCoolDown = true
             switch (this.player.weaponTree.weaponType) {
                 case 'standard':
-                    this.shotCoolDownDuration = 2000 * percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de')
+                    this.shotCoolDownDuration =
+                        2000 *
+                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'de') / 2 : 1)
                     this.plasmas.push({
                         moveVector: moveVector,
                         vector: this.player.vector,
-                        size: 5 + findWeaponUpgrade(this.player, 'biggerProjectile') * this.generalSize,
+                        size:
+                            5 +
+                            findWeaponUpgrade(this.player, 'biggerProjectile') *
+                                this.generalSize *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         imgsrc: '/gt/img/char/plasma.png',
-                        damage: 1 + findWeaponUpgrade(this.player, 'moreDamage'),
+                        damage:
+                            1 +
+                            findWeaponUpgrade(this.player, 'moreDamage') *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                     } as type.Plasma)
                     break
                 case 'aimgun':
-                    this.shotCoolDownDuration = 2000 * percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de')
+                    this.shotCoolDownDuration =
+                        2000 *
+                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'de') / 2 : 1)
                     this.plasmas.push({
                         moveVector: moveVector,
                         vector: this.player.vector,
-                        size: 5 + findWeaponUpgrade(this.player, 'biggerProjectile') * this.generalSize,
+                        size:
+                            5 +
+                            findWeaponUpgrade(this.player, 'biggerProjectile') *
+                                this.generalSize *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         imgsrc: '/gt/img/char/plasma.png',
-                        damage: 1 + findWeaponUpgrade(this.player, 'moreDamage'),
+                        damage:
+                            1 +
+                            findWeaponUpgrade(this.player, 'moreDamage') *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         aim: true,
                     } as type.Plasma)
                     break
                 case 'splitgun':
-                    this.shotCoolDownDuration = 2000 * percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de')
+                    this.shotCoolDownDuration =
+                        2000 *
+                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'de') / 2 : 1)
                     this.plasmas.push({
                         moveVector: moveVector,
                         vector: this.player.vector,
-                        size: 5 + findWeaponUpgrade(this.player, 'biggerProjectile') * this.generalSize,
+                        size:
+                            5 +
+                            findWeaponUpgrade(this.player, 'biggerProjectile') *
+                                this.generalSize *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         imgsrc: '/gt/img/char/plasma.png',
-                        damage: 1 + findWeaponUpgrade(this.player, 'moreDamage'),
+                        damage:
+                            1 +
+                            findWeaponUpgrade(this.player, 'moreDamage') *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         split: true,
                     } as type.Plasma)
                     break
                 case 'shotgun':
-                    this.shotCoolDownDuration = 3000 * percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de')
+                    this.shotCoolDownDuration =
+                        3000 *
+                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'de') / 2 : 1)
                     for (let i = 0; i < 3; i++) {
                         this.plasmas.push({
                             moveVector: rotVec(moveVector, 15 * (i - 1)),
                             vector: this.player.vector,
-                            size: 2 + findWeaponUpgrade(this.player, 'biggerProjectile') * this.generalSize,
+                            size:
+                                2 +
+                                findWeaponUpgrade(this.player, 'biggerProjectile') *
+                                    this.generalSize *
+                                    (this.player.passivTree.passivType == 'increaseGun'
+                                        ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                        : 1),
                             imgsrc: '/gt/img/char/plasma.png',
-                            damage: 1 + findWeaponUpgrade(this.player, 'moreDamage'),
+                            damage:
+                                1 +
+                                findWeaponUpgrade(this.player, 'moreDamage') *
+                                    (this.player.passivTree.passivType == 'increaseGun'
+                                        ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                        : 1),
                         } as type.Plasma)
                     }
                     break
                 case 'MG':
-                    this.shotCoolDownDuration = 1000 * percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de')
+                    this.shotCoolDownDuration =
+                        1000 *
+                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'de') / 2 : 1)
                     this.plasmas.push({
                         moveVector: moveVector,
                         vector: this.player.vector,
-                        size: 5 + findWeaponUpgrade(this.player, 'biggerProjectile') * this.generalSize,
+                        size:
+                            5 +
+                            findWeaponUpgrade(this.player, 'biggerProjectile') *
+                                this.generalSize *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                         imgsrc: '/gt/img/char/plasma.png',
-                        damage: 1 + findWeaponUpgrade(this.player, 'moreDamage'),
+                        damage:
+                            1 +
+                            findWeaponUpgrade(this.player, 'moreDamage') *
+                                (this.player.passivTree.passivType == 'increaseGun'
+                                    ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2
+                                    : 1),
                     } as type.Plasma)
             }
         },
@@ -1394,7 +1508,12 @@ export default defineComponent({
                     })
                     plasma.moveVector = addVec(plasma.moveVector, dirVec(enemies[0].vector, plasma.vector))
                 }
-                plasma.moveVector = mulVec(norVec(plasma.moveVector), (7 + findWeaponUpgrade(this.player, 'fasterProjectile')) * this.generalSize)
+                plasma.moveVector = mulVec(
+                    norVec(plasma.moveVector),
+                    (7 + findWeaponUpgrade(this.player, 'fasterProjectile')) *
+                        this.generalSize *
+                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun'), 'in') / 2 : 1)
+                )
                 plasma.vector = addVec(plasma.vector, plasma.moveVector)
                 if (this.borderCheck(plasma, 'outer')) {
                     this.deletePlasma(plasma)
