@@ -233,7 +233,7 @@ export default defineComponent({
         async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade, counter: number) {
             while (counter) {
                 if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
-                    if (this.player.weaponTree.weaponPoints - this.usedPassivPoints > 0) {
+                    if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                         passivUpgrade.lvl++
                     }
                 counter--
