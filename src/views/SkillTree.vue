@@ -106,7 +106,7 @@
                 <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
                     <button
                         class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="onClickWeaponUgrade(weaponUpgrade)"
+                        @click="onClickPassivUgrade(passivUpgrade)"
                         :title="passivDetails[passivUpgrade.name].description"
                         v-if="passivUpgrade.name == player.passivTree.passivType"
                     >
