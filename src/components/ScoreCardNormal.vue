@@ -53,7 +53,6 @@ export default defineComponent({
         if (result) {
             this.bestPlayers = result.reverse() as type.User[]
         }
-        console.log(result)
     },
     components: {},
     methods: {},
