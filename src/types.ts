@@ -64,12 +64,19 @@ export interface WeaponUpgrade {
     lvl: number
 }
 export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload'
+
 export interface PassivTree {
     passivType: PassivType
     passivPoints: number
-    PassivAvaibleTypes: PassivType[]
+    passivAvaibleTypes: PassivType[]
+    passivUpgrades: PassivUpgrade[]
 }
-export type PassivType = 'none'
+export interface PassivUpgrade {
+    name: PassivUpgradeName
+    lvl: number
+}
+export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies'
+export type PassivType = 'none' | 'increaseScore' | 'increaseGun' | 'nerfEnemies'
 export interface SkillTree {
     skillPoints: number
     skills: Skill[]

@@ -23,6 +23,12 @@ export const weaponDetails = {
     fasterProjectile: { name: 'high frequency', maxlvl: 10, description: 'your plasma gets faster' },
     fasterReload: { name: 'load automatically', maxlvl: 10, description: 'increases your reload speed' },
 }
+export const passivDetails = {
+    increaseScore: { name: 'increaseScore', maxlvl: 50, description: '' },
+    increaseGun: { name: 'increaseGun', maxlvl: 50, description: '' },
+    nerfEnemies: { name: 'nerfEnemies', maxlvl: 50, description: '' },
+}
+
 //player
 
 export function checkPlayer(checkedPlayer: type.Player) {
@@ -86,11 +92,30 @@ export function checkPlayer(checkedPlayer: type.Player) {
             checkedPlayer.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
     }
+    checkedPlayer.passivTree =
+        checkedPlayer.passivTree ||
+        ({
+            passivType: 'none',
+            passivAvaibleTypes: ['none'],
+            passivPoints: 0,
+            passivUpgrades: [] as type.PassivUpgrade[],
+        } as type.PassivTree)
+    for (const passivUpgrade of ['increaseScore', 'increaseGun', 'nerfEnemies']) {
+        if (checkPassivUpgrade(checkedPlayer, passivUpgrade)) {
+            checkedPlayer.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
+        }
+    }
+    checkedPlayer.passivTree.passivType = checkedPlayer.passivTree.passivType || 'none'
+    checkedPlayer.passivTree.passivAvaibleTypes = checkedPlayer.passivTree.passivAvaibleTypes || ['none']
     return checkedPlayer
 }
+
 function checkWeaponUpgrade(checkedPlayer: type.Player, weaponUpgrade: string) {
     return checkedPlayer.weaponTree.weaponUpgrades[checkedPlayer.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)] === undefined
 }
 function checkSkill(checkedPlayer: type.Player, skill: string) {
     return checkedPlayer.skillTree.skills[checkedPlayer.skillTree.skills.findIndex(s => s.name == skill)] === undefined
+}
+function checkPassivUpgrade(checkedPlayer: type.Player, passivUpgrade: string) {
+    return checkedPlayer.passivTree.passivUpgrades[checkedPlayer.passivTree.passivUpgrades.findIndex(s => s.name == passivUpgrade)] === undefined
 }
