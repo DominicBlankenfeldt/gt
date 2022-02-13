@@ -49,6 +49,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.playedGames = checkedPlayer.playedGames || 0
     checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
     checkedPlayer.defeatedBosses = checkedPlayer.defeatedBosses || 0
+    checkedPlayer.defeatedBossesTotalchaos = checkedPlayer.defeatedBossesTotalchaos || 0
     checkedPlayer.defeatedBossesHardcore = checkedPlayer.defeatedBossesHardcore || 0
     checkedPlayer.playMode = checkedPlayer.playMode || 'normal'
     checkedPlayer.weaponTree =

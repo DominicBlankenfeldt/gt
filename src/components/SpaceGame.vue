@@ -190,16 +190,12 @@
                         class="btn shadow-none"
                         @keydown.enter.prevent
                         @click="startBossFight('hardcore')"
-                        v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
+                        v-if="player.passivTree.passivAvaibleTypes.length < 4 && !cancelButtonText"
                     >
                         <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : 'Skill the shotAbility' }}</a>
                     </button>
-                    <button
-                        class="btn shadow-none"
-                        @keydown.enter.prevent
-                        v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
-                    >
-                        <a>coming soon</a>
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
+                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : 'Skill the shotAbility' }}</a>
                     </button>
                 </div>
             </div>
@@ -308,6 +304,7 @@ export default defineComponent({
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
             highscoreMultiplier: 25000,
+            highscoreTotalchaosMultiplier: 25000,
             highscoreHardcoreMultiplier: 2500,
             // gameSetup
             hardCoreMode: false,
@@ -385,9 +382,9 @@ export default defineComponent({
                     0
                 )
                     this.createEnemy()
-                if (this.player.playMode == 'totalchaos') {
-                    if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
-                }
+            }
+            if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
+                if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
             }
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
@@ -574,6 +571,15 @@ export default defineComponent({
                     } else {
                         return `You need ${this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)} highscore`
                     }
+                case 'totalchaos':
+                    if (this.bossEnemy.type == 'totalchaos') {
+                        return 'cancel'
+                    }
+                    if (this.player.highscoreTotalchaos >= this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)) {
+                        return 'Boss fight available'
+                    } else {
+                        return `You need ${this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)} highscore`
+                    }
             }
         },
         startBossFight(type: type.BossType) {
@@ -591,6 +597,9 @@ export default defineComponent({
                     break
                 case 'hardcore':
                     if (this.player.highscoreHardcore < this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)) return
+                    break
+                case 'totalchaos':
+                    if (this.player.highscoreTotalchaos < this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)) return
                     break
             }
             this.bossEnemy.type = type
@@ -611,8 +620,15 @@ export default defineComponent({
                         25 * (this.player.defeatedBossesHardcore + 1) * percent(this.player.defeatedBossesHardcore + 1 * 10, 'in')
                     )
                     this.startingEnemies = 75 + this.player.defeatedBossesHardcore
-                    this.difficulty = 2 + this.player.defeatedBossesHardcore
+                    // this.difficulty = 2 + this.player.defeatedBossesHardcore
+
                     break
+                case 'totalchaos':
+                    this.bossEnemy.maxHP = Math.round(
+                        50 * (this.player.defeatedBossesTotalchaos + 1) * percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in')
+                    )
+                    this.startingEnemies = 4 + this.player.defeatedBossesTotalchaos
+                    this.difficulty = 2 + this.player.defeatedBossesTotalchaos
             }
 
             this.bossEnemy.hP = this.bossEnemy.maxHP
@@ -671,6 +687,18 @@ export default defineComponent({
                             damage: 1,
                         })
                     }
+                    break
+                case 'totalchaos':
+                    for (let i = 0; i < 7; i++) {
+                        this.enemyPlasmas.push({
+                            moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 7) * i + 90)),
+                            vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
+                            size: 20 * this.generalSize,
+                            imgsrc: '/gt/img/char/plasma.png',
+                            damage: 1,
+                        })
+                    }
+                    break
             }
         },
         bossEnemyAbilityMove() {
@@ -729,6 +757,9 @@ export default defineComponent({
                         if (newPassivAvaibleType.length > 0) {
                             this.player.passivTree.passivAvaibleTypes.push(newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)])
                         }
+                        break
+                    case 'totalchaos':
+                        this.player.defeatedBossesTotalchaos++
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
@@ -1350,7 +1381,6 @@ export default defineComponent({
             }
         },
         shotAbility() {
-            if (this.isStopTime) return
             if (this.shotCoolDown) return
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
             let moveVector: type.Vector
@@ -1508,7 +1538,6 @@ export default defineComponent({
             }
         },
         handlePlasmaMovement() {
-            if (this.isStopTime) return
             for (let plasma of this.plasmas) {
                 if (plasma.aim) {
                     let enemies = [...this.enemies]

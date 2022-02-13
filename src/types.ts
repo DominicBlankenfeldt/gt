@@ -24,7 +24,7 @@ export interface BossEnemy {
     speed: number
     type: BossType
 }
-export type BossType = 'normal' | 'hardcore'
+export type BossType = 'normal' | 'hardcore' | 'totalchaos'
 export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
@@ -50,6 +50,7 @@ export interface Player {
     playedHardcore: number
     defeatedBosses: number
     defeatedBossesHardcore: number
+    defeatedBossesTotalchaos: number
 }
 export type PlayMode = 'normal' | 'hardcore' | 'totalchaos'
 export interface WeaponTree {

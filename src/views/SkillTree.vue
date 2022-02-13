@@ -29,7 +29,9 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
+                        lvl: {{ skill.lvl }}/{{
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                        }}
                     </button>
                 </div>
             </div>
@@ -43,7 +45,9 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
+                        lvl: {{ skill.lvl }}/{{
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                        }}
                     </button>
                 </div>
             </div>
@@ -204,7 +208,7 @@ export default defineComponent({
     methods: {
         async lvlSkill(skill: type.Skill, counter: number) {
             while (counter) {
-                if (skill.lvl < skillDetails[skill.name].maxlvl)
+                if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
                         skill.lvl++
                     }
