@@ -27,7 +27,7 @@
             </div>
             <div v-else class="col-3"></div>
             <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
-            <div v-if="bossEnemy.size">Boss HP:{{ bossEnemy.hP }}</div>
+            <div v-if="bossEnemy.size">Boss HP:{{ Math.round(bossEnemy.hP) }}</div>
             <div v-else>{{ player.playMode }}</div>
         </div>
 
@@ -565,7 +565,6 @@ export default defineComponent({
                     } else {
                         return `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
                     }
-
                 case 'hardcore':
                     if (this.bossEnemy.type == 'hardcore') {
                         return 'cancel'
@@ -589,8 +588,10 @@ export default defineComponent({
             switch (type) {
                 case 'normal':
                     if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+                    break
                 case 'hardcore':
                     if (this.player.highscoreHardcore < this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)) return
+                    break
             }
             this.bossEnemy.type = type
             this.bossFight = true
@@ -621,7 +622,7 @@ export default defineComponent({
                     getRandomInt(this.borderRight - this.borderLeft - this.bossEnemy.size) + this.borderLeft,
                     getRandomInt(this.borderDown - this.borderUp - this.bossEnemy.size) + this.borderUp,
                 ] as type.Vector
-            } while (lenVec(subVec(this.bossEnemy.vector, this.player.vector)) < 150 * this.generalSize)
+            } while (lenVec(subVec(this.bossEnemy.vector, this.player.vector)) < 250 * this.generalSize)
         },
         bossEnemyAbilitys() {
             this.bossEnemy.speed = 5
@@ -1080,7 +1081,7 @@ export default defineComponent({
             do {
                 vector[0] = getRandomInt(this.borderRight - this.borderLeft - size) + this.borderLeft
                 vector[1] = getRandomInt(this.borderDown - this.borderUp - size) + this.borderUp
-            } while (lenVec(subVec(vector, this.player.vector)) < 150 * this.generalSize)
+            } while (lenVec(subVec(vector, this.player.vector)) < 200 * this.generalSize)
             this.items.push({
                 type: type as type.Itemtype,
                 imgsrc: imgsrc,
