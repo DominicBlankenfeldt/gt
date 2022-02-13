@@ -48,6 +48,7 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.registeredAt = checkedPlayer.registeredAt || 0
     checkedPlayer.playedGames = checkedPlayer.playedGames || 0
     checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
+    checkedPlayer.playedTotalchaos = checkedPlayer.playedTotalchaos || 0
     checkedPlayer.defeatedBosses = checkedPlayer.defeatedBosses || 0
     checkedPlayer.defeatedBossesTotalchaos = checkedPlayer.defeatedBossesTotalchaos || 0
     checkedPlayer.defeatedBossesHardcore = checkedPlayer.defeatedBossesHardcore || 0

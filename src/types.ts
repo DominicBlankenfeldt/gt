@@ -45,9 +45,10 @@ export interface Player {
     username: string
     img: string
     registeredAt: number
-    playedGames: number
     playMode: PlayMode
+    playedGames: number
     playedHardcore: number
+    playedTotalchaos: number
     defeatedBosses: number
     defeatedBossesHardcore: number
     defeatedBossesTotalchaos: number

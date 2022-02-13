@@ -499,9 +499,20 @@ export default defineComponent({
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
-                this.player.playMode == 'hardcore'
-                    ? ((this.startingEnemies = 50), this.player.playedHardcore++)
-                    : ((this.startingEnemies = 4), this.player.playedGames++)
+                switch (this.player.playMode) {
+                    case 'normal':
+                        this.startingEnemies = 4
+                        this.player.playedGames++
+                        break
+                    case 'hardcore':
+                        this.startingEnemies = 50
+                        this.player.playedHardcore++
+                        break
+                    case 'totalchaos':
+                        this.startingEnemies = 4
+                        this.player.playedTotalchaos++
+                        break
+                }
                 this.difficulty = 2
                 try {
                     await API.addPlayer(this.player)
@@ -514,14 +525,11 @@ export default defineComponent({
             this.isMagnet = false
             this.isStopTime = false
             this.isSlowEnemies = false
-            this.bombCoolDown = false
-            this.shotCoolDown = false
             this.growDuration = 0
             this.magnetDuration = 0
             this.stopTimeDuration = 0
             this.slowEnemiesDuration = 0
-            this.bombCoolDownDuration = 0
-            this.shotCoolDownDuration = 0
+            this.resetCoolDowns()
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
@@ -1008,8 +1016,12 @@ export default defineComponent({
             this.magnetDuration += (250 * item.size * percent(findSkill(this.player, 'longerMagnet'), 'in')) / this.generalSize
         },
         collectStopTime(item: type.Item) {
-            this.isStopTime = true
-            this.stopTimeDuration += (75 * item.size * percent(findSkill(this.player, 'longerStopTime'), 'in')) / this.generalSize
+            if (!this.bossFight) {
+                this.isStopTime = true
+                this.stopTimeDuration += (75 * item.size * percent(findSkill(this.player, 'longerStopTime'), 'in')) / this.generalSize
+            } else {
+                this.resetCoolDowns()
+            }
         },
         collectSlowEnemies(item: type.Item) {
             this.isSlowEnemies = true
@@ -1035,6 +1047,12 @@ export default defineComponent({
             if (this.bombCoolDownDuration <= 0) this.bombCoolDown = false
             this.shotCoolDown ? (this.shotCoolDownDuration -= 1000 / 60) : (this.shotCoolDownDuration = 0)
             if (this.shotCoolDownDuration <= 0) this.shotCoolDown = false
+        },
+        resetCoolDowns() {
+            this.bombCoolDown = false
+            this.shotCoolDown = false
+            this.bombCoolDownDuration = 0
+            this.shotCoolDownDuration = 0
         },
         collectClearField() {
             for (let enemy of [...this.enemies]) {

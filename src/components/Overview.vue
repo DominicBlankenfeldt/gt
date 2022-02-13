@@ -55,24 +55,34 @@
                 </div>
                 <div class="col-6 gy-2">
                     <div>
-                        Highscore:
+                        Highscore normal:
                         <br />
                         {{ Math.round(player.highscore) }}
                     </div>
                     <div>
-                        games played:
+                        Played normal:
                         <br />
                         {{ player.playedGames }}
                     </div>
                     <div>
-                        played hardcore:
+                        Highscore hardcore:
+                        <br />
+                        {{ Math.round(player.highscoreHardcore) }}
+                    </div>
+                    <div>
+                        Played hardcore:
                         <br />
                         {{ player.playedHardcore }}
                     </div>
                     <div>
-                        Highscore Hardcore:
+                        Highscore totalchaos:
                         <br />
-                        {{ Math.round(player.highscoreHardcore) }}
+                        {{ Math.round(player.highscoreTotalchaos) }}
+                    </div>
+                    <div>
+                        Played totalchaos:
+                        <br />
+                        {{ player.playedTotalchaos }}
                     </div>
                 </div>
                 <div class="col-6 gy-2 aling-content-start">
