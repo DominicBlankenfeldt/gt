@@ -586,7 +586,12 @@ export default defineComponent({
                 this.$router.push('/skillTree')
                 return
             }
-            if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+            switch (type) {
+                case 'normal':
+                    if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+                case 'hardcore':
+                    if (this.player.highscoreHardcore < this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)) return
+            }
             this.bossEnemy.type = type
             this.bossFight = true
         },
