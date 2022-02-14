@@ -40,7 +40,7 @@
                         width: player.size + 'px',
                         height: player.size + 'px',
                     }"
-                    style="position: absolute; border-radius: 50%"
+                    style="position: absolute"
                 >
                     <img
                         :src="`/gt/img/char/playership_${player.outlook}.png`"
@@ -140,7 +140,7 @@
                         top: item.vector[1] + 'px',
                         backgroundColor: item.imgsrc,
                     }"
-                    style="position: absolute; border-radius: 50%"
+                    style="position: absolute"
                 >
                     <img :src="item.imgsrc" alt="" :style="{ width: item.size + 'px', height: item.size + 'px' }" />
                 </div>
@@ -765,8 +765,8 @@ export default defineComponent({
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
+                await this.gameOver('You have killed the boss', 'alert alert-success')
             }
-            await this.gameOver('You have killed the boss', 'alert alert-success')
         },
         playerStartPosition() {
             this.player.vector = [this.borderRight / 2, this.borderDown / 2]
