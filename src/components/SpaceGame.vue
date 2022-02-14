@@ -332,8 +332,8 @@ export default defineComponent({
         window.addEventListener('resize', () => {
             this.changeDisplaySize()
         })
-        setInterval(() => {
-            if (this.gameStarted) this.gameloop()
+        setInterval(async () => {
+            if (this.gameStarted) await this.gameloop()
         }, 1000 / 60)
         this.changeDisplaySize()
         if (this.user) {
@@ -353,14 +353,14 @@ export default defineComponent({
     },
     methods: {
         //game
-        gameloop() {
+        async gameloop() {
             this.handlePlayerMovement()
             this.handlePlasmaMovement()
             this.handleEnemyMovement()
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
-            this.handleBossEnemyDead()
+            await this.handleBossEnemyDead()
             if (!this.isStopTime) this.gameloopCounter2++
             this.gameloopCounter++
             if (this.bossFight) {
@@ -490,7 +490,7 @@ export default defineComponent({
                 this.countgps()
             }, 500)
         },
-        async start() {
+        start() {
             if (this.startButtonText == 'exit') {
                 this.startButtonText = 'start'
                 this.$router.push('/home')
@@ -514,11 +514,6 @@ export default defineComponent({
                         break
                 }
                 this.difficulty = 2
-                try {
-                    await API.addPlayer(this.player)
-                } catch {
-                    API.logout()
-                }
             }
             this.player.speed = 5
             this.isGrow = false
@@ -745,7 +740,6 @@ export default defineComponent({
         },
         async handleBossEnemyDead() {
             if (this.bossEnemy.hP <= 0) {
-                this.gameOver('You have killed the boss', 'alert alert-success')
                 this.bossFight = false
                 this.startButtonText = 'exit'
                 this.cancelButtonText = ''
@@ -771,12 +765,8 @@ export default defineComponent({
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
-                try {
-                    await API.addPlayer(this.player)
-                } catch {
-                    API.logout()
-                }
             }
+            await this.gameOver('You have killed the boss', 'alert alert-success')
         },
         playerStartPosition() {
             this.player.vector = [this.borderRight / 2, this.borderDown / 2]
@@ -795,11 +785,6 @@ export default defineComponent({
                     if (this.score > this.player.highscore) {
                         this.player.highscore = this.score
                         this.setSkillPoints()
-                        try {
-                            await API.addPlayer(this.player)
-                        } catch {
-                            API.logout()
-                        }
                     }
                     break
                 case 'hardcore':
@@ -807,23 +792,19 @@ export default defineComponent({
                         this.player.highscoreHardcore = this.score
                         this.setSkillPoints()
                     }
-                    try {
-                        await API.addPlayer(this.player)
-                    } catch {
-                        API.logout()
-                    }
                     break
                 case 'totalchaos':
                     if (this.score > this.player.highscoreTotalchaos) {
                         this.player.highscoreTotalchaos = this.score
                         this.setSkillPoints()
                     }
-                    try {
-                        await API.addPlayer(this.player)
-                    } catch {
-                        API.logout()
-                    }
+
                     break
+            }
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
             }
         },
         setSkillPoints() {
@@ -832,9 +813,9 @@ export default defineComponent({
             this.player.passivTree.passivPoints = Math.floor(this.player.highscoreTotalchaos / 1000)
         },
         //colliosion
-        bossColision() {
+        async bossColision() {
             if (this.collisionsCheck(this.bossEnemy, this.player)) {
-                this.gameOver('you got killed by the boss', 'alert alert-danger')
+                await this.gameOver('you got killed by the boss', 'alert alert-danger')
             }
             for (let plasma of this.plasmas) {
                 if (this.collisionsCheck(this.bossEnemy, plasma)) {
@@ -843,10 +824,10 @@ export default defineComponent({
                 }
             }
         },
-        plasmaColision(item?: type.Item | false, enemy?: type.Enemy | false) {
+        async plasmaColision(item?: type.Item | false, enemy?: type.Enemy | false) {
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
-                    this.gameOver('you got killed by plasma', 'alert alert-danger')
+                    await this.gameOver('you got killed by plasma', 'alert alert-danger')
                     return
                 }
             }
@@ -935,7 +916,7 @@ export default defineComponent({
                 }
             }
         },
-        enemyColision() {
+        async enemyColision() {
             for (let enemy of this.enemies) {
                 this.plasmaColision(false, enemy)
                 if (this.isMagnet) {
@@ -945,7 +926,7 @@ export default defineComponent({
                     this.gravity(enemy, this.player, 2, 0.7)
                 }
                 if (this.collisionsCheck(enemy, this.player)) {
-                    this.gameOver('you got killed by an enemy', 'alert alert-danger')
+                    await this.gameOver('you got killed by an enemy', 'alert alert-danger')
                 }
             }
         },
@@ -1059,8 +1040,8 @@ export default defineComponent({
                 this.respawnEnemy(enemy)
             }
         },
-        touchBlackHole() {
-            this.gameOver('you got sucked in', 'alert alert-danger')
+        async touchBlackHole() {
+            await this.gameOver('you got sucked in', 'alert alert-danger')
         },
         growBlackHole() {
             if (this.isStopTime) return

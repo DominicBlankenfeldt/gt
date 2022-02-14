@@ -158,9 +158,16 @@ export default defineComponent({
             clicks: 0,
             user: currentUser,
             dataLoad: false,
+            counter: 0,
         }
     },
-
+    async unmounted() {
+        try {
+            await API.addPlayer(this.player)
+        } catch {
+            API.logout()
+        }
+    },
     async mounted() {
         if (this.user) {
             try {
@@ -214,11 +221,6 @@ export default defineComponent({
                     }
                 counter--
             }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade, counter: number) {
             while (counter) {
@@ -227,11 +229,6 @@ export default defineComponent({
                         weaponUpgrade.lvl++
                     }
                 counter--
-            }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
             }
         },
         async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade, counter: number) {
@@ -242,22 +239,12 @@ export default defineComponent({
                     }
                 counter--
             }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
         },
         async resetSkillTree() {
             this.player.skillTree.skillPoints -= this.usedSkillPoints
             for (let skill of this.player.skillTree.skills) {
                 this.player.skillTree.skillPoints += skill.lvl
                 skill.lvl = 0
-            }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
             }
         },
         async resetWeaponTree() {
@@ -266,11 +253,6 @@ export default defineComponent({
                 this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
                 weaponUpgrade.lvl = 0
             }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
         },
         async resetPassivTree() {
             this.player.passivTree.passivPoints -= this.usedPassivPoints
@@ -278,19 +260,8 @@ export default defineComponent({
                 this.player.passivTree.passivPoints += passivUpgrade.lvl
                 passivUpgrade.lvl = 0
             }
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
         },
-        async savePlayer() {
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
-        },
+
         onClickSkill(skill: type.Skill) {
             this.clicks++
             if (this.clicks === 1) {
