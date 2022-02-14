@@ -784,23 +784,21 @@ export default defineComponent({
                 case 'normal':
                     if (this.score > this.player.highscore) {
                         this.player.highscore = this.score
-                        this.setSkillPoints()
                     }
                     break
                 case 'hardcore':
                     if (this.score > this.player.highscoreHardcore) {
                         this.player.highscoreHardcore = this.score
-                        this.setSkillPoints()
                     }
                     break
                 case 'totalchaos':
                     if (this.score > this.player.highscoreTotalchaos) {
                         this.player.highscoreTotalchaos = this.score
-                        this.setSkillPoints()
                     }
 
                     break
             }
+            this.setSkillPoints()
             try {
                 await API.addPlayer(this.player)
             } catch {
