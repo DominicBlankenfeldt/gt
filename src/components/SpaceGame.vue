@@ -27,7 +27,7 @@
             </div>
             <div v-else class="col-3"></div>
             <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
-            <div v-if="bossEnemy.size">Boss HP:{{ Math.round(bossEnemy.hP) }}</div>
+            <div v-if="bossEnemy.size">Boss HP:{{ Math.ceil(bossEnemy.hP) }}</div>
             <div v-else>{{ player.playMode }}</div>
         </div>
 
