@@ -116,6 +116,11 @@
                     </div>
                 </div>
             </div>
+            <div class="footer">
+                <div class="footer-header">
+                    <a href="https://discord.gg/G3UHhTaUNf">Join us on discord</a>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -198,6 +203,7 @@ export default defineComponent({
 .card-footer {
     background: rgba(39, 39, 39, 0.555);
 }
+
 // Buttons
 .container .btn {
     position: relative;

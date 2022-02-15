@@ -68,8 +68,9 @@
             </div>
         </div>
         <div class="footer">
-            <div class="footer-header"><u>All information at a glance:</u></div>
-            <div class="footer-body">Help us improve Landing 111 and give us your feedback! This Website is under development.</div>
+            <div class="footer-header">
+                <a href="https://discord.gg/G3UHhTaUNf">Join us on discord</a>
+            </div>
         </div>
     </div>
 </template>
