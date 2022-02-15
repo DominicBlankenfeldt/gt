@@ -39,7 +39,6 @@ export function checkPlayer(checkedPlayer: type.Player) {
     checkedPlayer.vector = checkedPlayer.vector || [0, 0]
     checkedPlayer.moveVector = checkedPlayer.moveVector || [0, 0]
     checkedPlayer.speed = checkedPlayer.speed || 5
-    checkedPlayer.outlook = checkedPlayer.outlook || 'up'
     checkedPlayer.highscore = checkedPlayer.highscore || 0
     checkedPlayer.highscoreHardcore = checkedPlayer.highscoreHardcore || 0
     checkedPlayer.highscoreTotalchaos = checkedPlayer.highscoreTotalchaos || 0

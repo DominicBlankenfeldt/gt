@@ -2,13 +2,13 @@
     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <ScoreCardNormal />
+                <ScoreCard :bestPlayers="bestPlayersNormal" title="normal" highscore="highscore" />
             </div>
             <div class="carousel-item">
-                <ScoreCardHardcore />
+                <ScoreCard :bestPlayers="bestPlayersHardcore" title="hardcore" highscore="highscoreHardcore" />
             </div>
             <div class="carousel-item">
-                <ScoreCardTotalchaos />
+                <ScoreCard :bestPlayers="bestPlayersTotalchaos" title="totalchaos" highscore="highscoreTotalchaos" />
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -23,20 +23,35 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import ScoreCardNormal from '@/components/ScoreCardNormal.vue'
-import ScoreCardHardcore from '@/components/ScoreCardHardcore.vue'
-import ScoreCardTotalchaos from '@/components/ScoreCardTotalchaos.vue'
+import * as API from '@/API'
+import * as type from '@/types'
+import ScoreCard from '@/components/ScoreCard.vue'
 export default defineComponent({
     data() {
         return {
             view: 'hardcore',
+            bestPlayersNormal: [] as type.User[],
+            bestPlayersHardcore: [] as type.User[],
+            bestPlayersTotalchaos: [] as type.User[],
+        }
+    },
+    async mounted() {
+        let result = await API.getBestPlayers('player.highscore')
+        if (result) {
+            this.bestPlayersNormal = result.reverse() as type.User[]
+        }
+        result = await API.getBestPlayers('player.highscoreHardcore')
+        if (result) {
+            this.bestPlayersHardcore = result.reverse() as type.User[]
+        }
+        result = await API.getBestPlayers('player.highscoreTotalchaos')
+        if (result) {
+            this.bestPlayersTotalchaos = result.reverse() as type.User[]
         }
     },
     methods: {},
     components: {
-        ScoreCardNormal,
-        ScoreCardHardcore,
-        ScoreCardTotalchaos,
+        ScoreCard,
     },
 })
 </script>
