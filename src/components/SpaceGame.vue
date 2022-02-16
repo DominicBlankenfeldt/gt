@@ -386,8 +386,7 @@ export default defineComponent({
         start() {
             if (this.startButtonText == 'exit') {
                 this.startButtonText = 'start'
-                this.$router.push('/home')
-                return
+                this.cancel()
             }
             if (this.bossFight) {
                 this.bossEnemyPreparations()
@@ -579,7 +578,7 @@ export default defineComponent({
         setSkillPoints() {
             this.player.skillTree.skillPoints = Math.floor(this.player.highscore / 1000)
             this.player.weaponTree.weaponPoints = Math.floor(this.player.highscoreHardcore / 500)
-            this.player.passivTree.passivPoints = Math.floor(this.player.highscoreTotalchaos / 1000)
+            this.player.passivTree.passivPoints = Math.floor(this.player.highscoreTotalchaos / 2000)
         },
         // boss
         bossAvailable(type: type.BossType) {

@@ -20,6 +20,7 @@
                                 v-model="username"
                                 autocomplete="off"
                                 style="text-shadow: none"
+                                required
                             />
                         </div>
                     </div>
@@ -35,6 +36,7 @@
                                 v-model="email"
                                 autocomplete="off"
                                 style="text-shadow: none"
+                                required
                             />
                         </div>
                     </div>
@@ -50,6 +52,7 @@
                                 v-model="password"
                                 autocomplete="off"
                                 style="text-shadow: none"
+                                required
                             />
                         </div>
                     </div>
@@ -65,6 +68,7 @@
                                 v-model="confirmed"
                                 autocomplete="off"
                                 style="text-shadow: none"
+                                required
                             />
                         </div>
                     </div>
