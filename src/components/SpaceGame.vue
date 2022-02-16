@@ -366,7 +366,7 @@ export default defineComponent({
                             Math.round(
                                 percent(findSkill(this.player, 'spawnLessEnemy'), 'in') *
                                     (this.player.passivTree.passivType == 'nerfEnemies'
-                                        ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 2, 'in')
+                                        ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in')
                                         : 1)
                             )) ==
                     0
@@ -524,13 +524,13 @@ export default defineComponent({
                     percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
                     1.2 *
                     percent(findSkill(this.player, 'betterGrowPotion'), 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 2, 'in') : 1)
+                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score +=
                     this.difficulty *
                     percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 2, 'in') : 1)
+                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             }
         },
         countgps() {
@@ -836,7 +836,7 @@ export default defineComponent({
                             50 *
                             this.difficulty *
                             (this.player.passivTree.passivType == 'increaseScore'
-                                ? percent(findPassivUpgrade(this.player, 'increaseScore') / 2, 'in')
+                                ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
                     }
                 }
@@ -1188,7 +1188,7 @@ export default defineComponent({
                                 this.generalSize *
                                 (this.isSlowEnemies ? 0.5 : 1) *
                                 (this.player.passivTree.passivType == 'nerfEnemies'
-                                    ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 2, 'de')
+                                    ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de')
                                     : 1) *
                                 enemy.speed
                         )
@@ -1206,7 +1206,7 @@ export default defineComponent({
                     2 *
                         this.generalSize *
                         (this.isSlowEnemies ? 0.5 : 1) *
-                        (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 2, 'de') : 1) *
+                        (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de') : 1) *
                         enemy.speed
                 )
             )
@@ -1230,7 +1230,7 @@ export default defineComponent({
                             percent(findSkill(this.player, 'slowEnemy'), 'de') *
                             this.generalSize *
                             (this.player.passivTree.passivType == 'nerfEnemies'
-                                ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 2, 'de')
+                                ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de')
                                 : 1) *
                             0.4 *
                             (this.isSlowEnemies ? 0.5 : 1) *
