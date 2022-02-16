@@ -384,10 +384,6 @@ export default defineComponent({
             await this.handleBossEnemyDead()
         },
         start() {
-            if (this.startButtonText == 'exit') {
-                this.startButtonText = 'start'
-                this.cancel()
-            }
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
@@ -762,7 +758,7 @@ export default defineComponent({
         async handleBossEnemyDead() {
             if (this.bossEnemy.hP <= 0) {
                 this.bossFight = false
-                this.startButtonText = 'exit'
+                this.startButtonText = 'start'
                 this.cancelButtonText = ''
                 let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
                 let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies'] as type.PassivType[]
