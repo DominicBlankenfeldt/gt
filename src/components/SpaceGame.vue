@@ -889,9 +889,7 @@ export default defineComponent({
                 this.plasmaColision(false, enemy)
                 if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3)
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
-                if (this.collisionsCheck(enemy, this.player)) {
-                    await this.gameOver('you got killed by an enemy', 'alert alert-danger')
-                }
+                if (this.collisionsCheck(enemy, this.player)) await this.gameOver('you got killed by an enemy', 'alert alert-danger')
             }
         },
         playerItemColision(item: type.Item) {
@@ -921,11 +919,8 @@ export default defineComponent({
             if (this.bossFight) this.bossColision()
             this.plasmaColision()
             for (let item of this.items) {
-                if (item.type == 'blackHole') {
-                    this.blackHoleColision(item)
-                } else {
-                    if (this.isMagnet) this.gravity(this.player, item, 2, 1)
-                }
+                if (item.type == 'blackHole') this.blackHoleColision(item)
+                else if (this.isMagnet) this.gravity(this.player, item, 2, 1)
                 this.enemyItemColision(item)
                 if (this.collisionsCheck(item, this.player)) this.playerItemColision(item)
             }
