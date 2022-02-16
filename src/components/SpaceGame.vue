@@ -771,16 +771,14 @@ export default defineComponent({
                     case 'normal':
                         this.player.defeatedBosses++
                         newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
-                        if (newWeaponAvaibleType.length > 0) {
+                        if (newWeaponAvaibleType.length > 0)
                             this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)])
-                        }
                         break
                     case 'hardcore':
                         this.player.defeatedBossesHardcore++
                         newPassivAvaibleType = newPassivAvaibleType.filter(n => this.player.passivTree.passivAvaibleTypes.every(p => n != p))
-                        if (newPassivAvaibleType.length > 0) {
+                        if (newPassivAvaibleType.length > 0)
                             this.player.passivTree.passivAvaibleTypes.push(newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)])
-                        }
                         break
                     case 'totalchaos':
                         this.player.defeatedBossesTotalchaos++
@@ -1569,7 +1567,6 @@ export default defineComponent({
         toggleHardcoreMode() {
             this.player.playMode = 'hardcore'
         },
-
         toggleTotalchaosMode() {
             this.player.playMode = 'totalchaos'
         },
