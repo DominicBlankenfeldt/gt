@@ -586,25 +586,18 @@ export default defineComponent({
             switch (type) {
                 case 'normal':
                     if (this.bossEnemy.type == 'normal') return 'cancel'
-                    if (this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)) {
-                        return 'Boss fight available'
-                    } else {
-                        return `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
-                    }
+                    if (this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return 'Boss fight available'
+                    else return `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
                 case 'hardcore':
                     if (this.bossEnemy.type == 'hardcore') return 'cancel'
-                    if (this.player.highscoreHardcore >= this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)) {
+                    if (this.player.highscoreHardcore >= this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1))
                         return 'Boss fight available'
-                    } else {
-                        return `You need ${this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)} highscore`
-                    }
+                    else return `You need ${this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)} highscore`
                 case 'totalchaos':
                     if (this.bossEnemy.type == 'totalchaos') return 'cancel'
-                    if (this.player.highscoreTotalchaos >= this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)) {
+                    if (this.player.highscoreTotalchaos >= this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1))
                         return 'Boss fight available'
-                    } else {
-                        return `You need ${this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)} highscore`
-                    }
+                    else return `You need ${this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)} highscore`
             }
         },
         startBossFight(type: type.BossType) {
@@ -817,9 +810,7 @@ export default defineComponent({
             if (item) {
                 for (let plasma of this.plasmas) {
                     this.gravity(item, plasma, 4, 0.5)
-                    if (this.collisionsCheck(item, plasma)) {
-                        this.deletePlasma(plasma)
-                    }
+                    if (this.collisionsCheck(item, plasma)) this.deletePlasma(plasma)
                 }
             }
             if (enemy) {

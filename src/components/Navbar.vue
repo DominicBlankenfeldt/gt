@@ -1,19 +1,19 @@
 <template>
     <div id="nav">
-        <router-link v-if="!user" to="/">Login</router-link>
-        <router-link v-if="user" to="/home">Player-Card</router-link>
+        <router-link v-if="!user" to="/" @keydown.enter.prevent>Login</router-link>
+        <router-link v-if="user" to="/home" @keydown.enter.prevent>Player-Card</router-link>
         <a>|</a>
-        <router-link v-if="user" to="/skillTree">Skill Tree</router-link>
+        <router-link v-if="user" to="/skillTree" @keydown.enter.prevent>Skill Tree</router-link>
         <a v-if="user">|</a>
-        <router-link v-if="user" to="/fleet">Space Fleet</router-link>
+        <router-link v-if="user" to="/fleet" @keydown.enter.prevent>Space Fleet</router-link>
         <a v-if="user">|</a>
-        <router-link to="/games">Game</router-link>
+        <router-link to="/games" @keydown.enter.prevent>Game</router-link>
         <a>|</a>
-        <router-link v-if="user" to="/scoreboard">Scoreboard</router-link>
+        <router-link v-if="user" to="/scoreboard" @keydown.enter.prevent>Scoreboard</router-link>
         <a v-if="user">|</a>
-        <router-link to="/guide">Guide</router-link>
+        <router-link to="/guide" @keydown.enter.prevent>Guide</router-link>
         <a v-if="user">|</a>
-        <a v-if="user" @click="logout()">LogOut</a>
+        <a v-if="user" @click="logout()" @keydown.enter.prevent>LogOut</a>
     </div>
 </template>
 
