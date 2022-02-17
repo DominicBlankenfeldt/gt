@@ -134,3 +134,10 @@ export interface User {
     role: string
     id: string
 }
+
+export interface Field {
+    borderLeft: number
+    borderUp: number
+    borderRight: number
+    borderDown: number
+}

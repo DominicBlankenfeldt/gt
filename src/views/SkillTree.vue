@@ -58,7 +58,6 @@
                     <select
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.weaponTree.weaponType"
-                        @change="savePlayer()"
                     >
                         <option
                             :selected="weaponAvaibleType == player.weaponTree.weaponType"
@@ -92,7 +91,6 @@
                     <select
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.passivTree.passivType"
-                        @change="savePlayer()"
                     >
                         <option
                             :selected="passivAvaibleType == player.passivTree.passivType"

@@ -145,21 +145,21 @@
                         <a>{{ cancelButtonText }}</a>
                     </button>
                     <br />
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="toggleNormalMode()" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'normal'" v-if="!cancelButtonText">
                         <a>
                             normal:
                             <br />
                             {{ player.playMode == 'normal' ? 'ON' : 'OFF' }}
                         </a>
                     </button>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="toggleHardcoreMode()" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'hardcore'" v-if="!cancelButtonText">
                         <a>
                             hardcore:
                             <br />
                             {{ player.playMode == 'hardcore' ? 'ON' : 'OFF' }}
                         </a>
                     </button>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="toggleTotalchaosMode()" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'totalchaos'" v-if="!cancelButtonText">
                         <a>
                             total chaos:
                             <br />
@@ -241,9 +241,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/vectors'
+import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { checkPlayer, production, bossFight } from '@/global'
-import { findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/helpers'
+import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/game/helpers'
+import { weapons } from '@/game/weapons'
+import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
+import { createEnemy, createItems } from '@/game/createStuff'
+
 import { currentUser } from '@/router'
 import * as type from '@/types'
 import * as API from '@/API'
@@ -268,6 +272,12 @@ export default defineComponent({
             cancelButtonText: '',
             middlex: window.innerWidth / 2,
             generalSize: (window.innerWidth / 1920 + window.innerHeight / 955) / 2,
+            field: {
+                borderRight: 0,
+                borderLeft: 0,
+                borderUp: 0,
+                borderDown: 0,
+            } as type.Field,
             production: production.value,
             // debug
             enemiesSpawn: true,
@@ -301,10 +311,6 @@ export default defineComponent({
             hardCoreMode: false,
             gameStarted: false,
             startingEnemies: 4,
-            borderRight: 0,
-            borderLeft: 0,
-            borderUp: 0,
-            borderDown: 0,
             difficulty: 2,
             score: 0,
             gameloopCounter: 0,
@@ -346,6 +352,7 @@ export default defineComponent({
         //game
         async gameloop() {
             this.handlePlayerMovement()
+            this.handlePlayerAbilities()
             this.handlePlasmaMovement()
             this.handleEnemyMovement()
             this.increaseScore()
@@ -371,7 +378,7 @@ export default defineComponent({
                             )) ==
                     0
                 )
-                    this.createEnemy()
+                    createEnemy(this.enemies, this.generalSize, this.field, this.player)
             }
             if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
                 if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
@@ -434,7 +441,7 @@ export default defineComponent({
             window.onkeydown = (e: any) => {
                 this.pressedKeys[e.key] = true
             }
-            for (let i = 0; i < this.startingEnemies; i++) this.createEnemy()
+            for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player)
             clearTimeout(this.countgpsID)
             this.countgps()
         },
@@ -646,8 +653,8 @@ export default defineComponent({
             this.bossEnemy.speed = 5
             do {
                 this.bossEnemy.vector = [
-                    getRandomInt(this.borderRight - this.borderLeft - this.bossEnemy.size) + this.borderLeft,
-                    getRandomInt(this.borderDown - this.borderUp - this.bossEnemy.size) + this.borderUp,
+                    getRandomInt(this.field.borderRight - this.field.borderLeft - this.bossEnemy.size) + this.field.borderLeft,
+                    getRandomInt(this.field.borderDown - this.field.borderUp - this.bossEnemy.size) + this.field.borderUp,
                 ] as type.Vector
             } while (lenVec(subVec(this.bossEnemy.vector, this.player.vector)) < 250 * this.generalSize)
         },
@@ -721,8 +728,8 @@ export default defineComponent({
                 case 'totalchaos':
                     do {
                         this.bossEnemy.vector = [
-                            getRandomInt(this.borderRight - this.borderLeft - this.bossEnemy.size) + this.borderLeft,
-                            getRandomInt(this.borderDown - this.borderUp - this.bossEnemy.size) + this.borderUp,
+                            getRandomInt(this.field.borderRight - this.field.borderLeft - this.bossEnemy.size) + this.field.borderLeft,
+                            getRandomInt(this.field.borderDown - this.field.borderUp - this.bossEnemy.size) + this.field.borderUp,
                         ] as type.Vector
                     } while (lenVec(subVec(this.bossEnemy.vector, this.player.vector)) < 250 * this.generalSize)
                     break
@@ -744,7 +751,7 @@ export default defineComponent({
         handleBossEnemyMovement() {
             this.bossEnemy.moveVector = mulVec(norVec(this.bossEnemy.moveVector), this.bossEnemy.speed * this.generalSize)
             this.bossEnemy.vector = addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
-            switch (this.borderCheck(this.bossEnemy, 'inner')) {
+            switch (borderCheck(this.bossEnemy, 'inner', this.field)) {
                 case 'left':
                 case 'right':
                     this.bossEnemy.moveVector[0] *= -1
@@ -930,60 +937,7 @@ export default defineComponent({
         },
         //items
         spawnItems() {
-            if (!this.itemSpawn) return
-            if (this.isStopTime) return
-            let type = ''
-            let vector = [0, 0] as type.Vector
-            let size = 20 * this.generalSize
-            let imgsrc = ''
-
-            switch (getRandomInt(7)) {
-                case 0:
-                    type = 'coin'
-                    size = (getRandomInt(25) + 20) * this.generalSize
-                    imgsrc = '/gt/img/items/coin/coin.gif'
-                    break
-                case 1:
-                    type = 'blackHole'
-                    size = 20 * percent(findSkill(this.player, 'smallerBlackHole'), 'de') * this.generalSize
-                    imgsrc = '/gt/img/items/darkhole/darkhole.png'
-                    break
-                case 2:
-                    type = 'growPotion'
-                    size = (getRandomInt(25) + 20) * this.generalSize
-                    imgsrc = '/gt/img/items/potion/potion.gif'
-                    break
-                case 3:
-                    type = 'clearField'
-                    imgsrc = '/gt/img/items/bomb/bomb.gif'
-                    break
-                case 4:
-                    type = 'magnet'
-                    imgsrc = '/gt/img/items/magnet/magnet.png'
-                    size = (getRandomInt(25) + 20) * this.generalSize
-                    break
-                case 5:
-                    type = 'slowEnemies'
-                    imgsrc = '/gt/img/items/snowflake/snowflake.png'
-                    size = (getRandomInt(25) + 20) * this.generalSize
-                    break
-                case 6:
-                    type = 'stopTime'
-                    imgsrc = '/gt/img/items/clock/clock.png'
-                    size = (getRandomInt(25) + 20) * this.generalSize
-                    break
-            }
-            do {
-                vector[0] = getRandomInt(this.borderRight - this.borderLeft - size) + this.borderLeft
-                vector[1] = getRandomInt(this.borderDown - this.borderUp - size) + this.borderUp
-            } while (lenVec(subVec(vector, this.player.vector)) < 200 * this.generalSize)
-            this.items.push({
-                type: type as type.Itemtype,
-                imgsrc: imgsrc,
-                vector: vector,
-                size: size,
-                timer: 450, // 7.5sek
-            })
+            this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field) || this.items
         },
         collectCoin(item: type.Item) {
             this.score +=
@@ -1052,206 +1006,16 @@ export default defineComponent({
             this.items = this.items.filter(i => i != item)
         },
         //Enemy
-        createEnemy() {
-            if (!this.enemiesSpawn) return
-            let size = 0
-            let vector = [0, 0] as type.Vector
-            let type = ''
-            let imgsrc = ''
-            let timer = 0
-            let moveArray = [0, 0] as type.Vector
-            let circleDir = ''
-            switch (getRandomInt(4)) {
-                case 0:
-                    imgsrc = '/gt/img/char/enemy_pingu.png'
-                    break
-                case 1:
-                    imgsrc = '/gt/img/char/enemy_cupcake.gif'
-                    break
-                case 2:
-                    imgsrc = '/gt/img/char/enemy_gasman.gif'
-                    break
-                case 3:
-                    imgsrc = '/gt/img/char/enemy_komet.gif'
-                    break
-            }
-            switch (getRandomInt(3)) {
-                case 0:
-                    size = 20 * this.generalSize
-                    break
-                case 1:
-                    size = 25 * this.generalSize
-                    break
-                case 2:
-                    size = 30 * this.generalSize
-                    break
-            }
-            switch (getRandomInt(4)) {
-                case 0:
-                    vector[1] = this.borderUp - size
-                    moveArray = [(Math.random() - 0.5) * 2, 1]
-                    break
-                case 1:
-                    vector[1] = this.borderDown
-                    moveArray = [(Math.random() - 0.5) * 2, -1]
-                    break
-                case 2:
-                    vector[0] = this.borderRight
-                    moveArray = [-1, (Math.random() - 0.5) * 2]
-                    break
-                case 3:
-                    vector[0] = this.borderLeft - size
-                    moveArray = [1, (Math.random() - 0.5) * 2]
-                    break
-            }
-            moveArray = norVec(moveArray)
-            if (!vector[0]) vector[0] = getRandomInt(this.borderRight - this.borderLeft) + this.borderLeft
-            if (!vector[1]) vector[1] = getRandomInt(this.borderDown - this.borderUp) + this.borderUp
-            switch (getRandomInt(7)) {
-                case 0:
-                    type = 'curve'
-                    break
-                case 1:
-                    type = 'aimbot'
-                    break
-                case 2:
-                    type = 'chasebot'
-                    timer = 450
-                    break
-                case 3:
-                    type = 'getbigger'
-                    timer = 1000
-                    break
-                case 4:
-                    type = 'circle'
-                    break
-                case 5:
-                    type = 'random'
-                    timer = 900
-                    break
-                case 6:
-                    type = 'spiral'
-                    timer = 100
-                    break
-            }
-            switch (getRandomInt(2)) {
-                case 0:
-                    circleDir = 'left'
-                    break
-                case 1:
-                    circleDir = 'right'
-                    break
-            }
-            if (this.enemiesType) type = this.enemiesType
-
-            if (type == 'aimbot') moveArray = dirVec(this.player.vector, vector)
-            this.enemies.push({
-                speed: 1,
-                vector: vector,
-                size: size,
-                id: JSON.stringify(Math.random()),
-                type: type as type.EnemyType,
-                imgsrc: imgsrc,
-                spawnMoveVector: moveArray as type.Vector,
-                moveVector: moveArray as type.Vector,
-                timer: timer,
-                circle: false,
-                circleRadius: Math.random() * 0.02 + 0.01,
-                circleDir: circleDir as type.Dir,
-                isGrow: false,
-                isMagnet: false,
-            })
-        },
 
         handleEnemyMovement() {
             if (!this.enemiesMove) return
             if (this.isStopTime) return
-            for (let enemy of this.enemies) {
-                if (enemy.type == 'spiral') this.moveSpiralEnemy(enemy)
-                if (enemy.type == 'circle') this.moveCircleEnemy(enemy)
-                if (enemy.type == 'curve') this.moveCurveEnemy(enemy)
-                if (enemy.type == 'chasebot') {
-                    this.moveChasebotEnemy(enemy)
-                } else {
-                    enemy.moveVector = norVec(enemy.moveVector)
-                    enemy.vector = addVec(
-                        enemy.vector,
-                        mulVec(
-                            enemy.moveVector,
-                            this.difficulty *
-                                percent(findSkill(this.player, 'slowEnemy'), 'de') *
-                                this.generalSize *
-                                (this.isSlowEnemies ? 0.5 : 1) *
-                                (this.player.passivTree.passivType == 'nerfEnemies'
-                                    ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de')
-                                    : 1) *
-                                enemy.speed
-                        )
-                    )
-                }
-                if (this.borderCheck(enemy, 'outer')) this.respawnEnemy(enemy)
-                if (enemy.type == 'chasebot' || enemy.type == 'random') enemy.timer ? enemy.timer-- : this.respawnEnemy(enemy)
-            }
+            this.enemies = enemyMovement(this.enemies, this.difficulty, this.player, this.generalSize, this.isSlowEnemies, this.field)
         },
-        moveChasebotEnemy(enemy: type.Enemy) {
-            enemy.vector = addVec(
-                enemy.vector,
-                mulVec(
-                    dirVec(this.player.vector, enemy.vector),
-                    2 *
-                        this.generalSize *
-                        (this.isSlowEnemies ? 0.5 : 1) *
-                        (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de') : 1) *
-                        enemy.speed
-                )
-            )
-        },
-        moveCurveEnemy(enemy: type.Enemy) {
-            enemy.moveVector[enemy.moveVector.findIndex(v => v != 1)] > 0
-                ? (enemy.moveVector[enemy.moveVector.findIndex(v => v != 1)] += 0.02 * Math.random())
-                : (enemy.moveVector[enemy.moveVector.findIndex(v => v != 1)] -= 0.02 * Math.random())
-        },
-        moveSpiralEnemy(enemy: type.Enemy) {
-            if (enemy.timer > 0) {
-                enemy.timer--
-            } else {
-                this.circle(enemy, 2)
-                enemy.moveVector = norVec(enemy.moveVector)
-                enemy.vector = addVec(
-                    enemy.vector,
-                    mulVec(
-                        enemy.spawnMoveVector,
-                        this.difficulty *
-                            percent(findSkill(this.player, 'slowEnemy'), 'de') *
-                            this.generalSize *
-                            (this.player.passivTree.passivType == 'nerfEnemies'
-                                ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'de')
-                                : 1) *
-                            0.4 *
-                            (this.isSlowEnemies ? 0.5 : 1) *
-                            enemy.speed
-                    )
-                )
-            }
-        },
-        moveCircleEnemy(enemy: type.Enemy) {
-            if (enemy.timer > 5000) {
-                enemy.timer += 3 * Math.random()
-                enemy.moveVector = enemy.spawnMoveVector
-            } else {
-                enemy.timer += getRandomInt(3) + this.difficulty + 2
-                if (enemy.timer > 1000) enemy.circle = true
-            }
-            if (enemy.circle) this.circle(enemy, 1)
-        },
-        circle(enemy: type.Enemy, radiusMultiplier: number) {
-            let acc = mulVec(rotVec(enemy.moveVector, 90), enemy.circleRadius * radiusMultiplier)
-            if (enemy.circleDir == 'left') enemy.moveVector = addVec(enemy.moveVector, acc)
-            if (enemy.circleDir == 'right') enemy.moveVector = subVec(enemy.moveVector, acc)
-        },
+
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
-            this.createEnemy()
+            createEnemy(this.enemies, this.generalSize, this.field, this.player)
         },
         handleEnemyGetBigger() {
             if (this.isStopTime) return
@@ -1267,6 +1031,15 @@ export default defineComponent({
         },
 
         //playermovement
+        handlePlayerMovement() {
+            const newPlayer = playerMovement(this.player, this.pressedKeys, this.field, this.lastDirection, this.generalSize)
+            this.player = newPlayer.player
+            this.lastDirection = newPlayer.lastDirection
+        },
+        handlePlayerAbilities() {
+            if (this.pressedKeys['3'] && findSkill(this.player, 'bombAbility')) this.bombAbility()
+            if (this.pressedKeys['4'] && findSkill(this.player, 'shotAbility')) this.shotAbility()
+        },
         bombAbility() {
             if (this.bombCoolDown) return
             this.bombCoolDown = true
@@ -1283,261 +1056,19 @@ export default defineComponent({
         shotAbility() {
             if (this.shotCoolDown) return
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
-            let moveVector: type.Vector
-            switch (this.lastDirection) {
-                case 0:
-                    moveVector = [0, -1]
-                    break
-                case 180:
-                    moveVector = [0, 1]
-                    break
-                case 270:
-                    moveVector = [-1, 0]
-                    break
-                case 90:
-                    moveVector = [1, 0]
-                    break
-                case 45:
-                    moveVector = [1, -1]
-                    break
-                case 315:
-                    moveVector = [-1, -1]
-                    break
-                case 225:
-                    moveVector = [-1, 1]
-                    break
-                case 135:
-                    moveVector = [1, 1]
-                    break
-                default:
-                    moveVector = [0, 0]
-            }
             this.shotCoolDown = true
-            switch (this.player.weaponTree.weaponType) {
-                case 'standard':
-                    this.shotCoolDownDuration =
-                        2000 *
-                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'de') : 1)
-                    this.plasmas.push({
-                        moveVector: moveVector,
-                        vector: this.player.vector,
-                        size:
-                            5 +
-                            findWeaponUpgrade(this.player, 'biggerProjectile') *
-                                this.generalSize *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        imgsrc: '/gt/img/char/plasma.png',
-                        damage:
-                            1 +
-                            findWeaponUpgrade(this.player, 'moreDamage') *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                    } as type.Plasma)
-                    break
-                case 'aimgun':
-                    this.shotCoolDownDuration =
-                        2000 *
-                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'de') : 1)
-                    this.plasmas.push({
-                        moveVector: moveVector,
-                        vector: this.player.vector,
-                        size:
-                            5 +
-                            findWeaponUpgrade(this.player, 'biggerProjectile') *
-                                this.generalSize *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        imgsrc: '/gt/img/char/plasma.png',
-                        damage:
-                            1 +
-                            findWeaponUpgrade(this.player, 'moreDamage') *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        aim: true,
-                    } as type.Plasma)
-                    break
-                case 'splitgun':
-                    this.shotCoolDownDuration =
-                        2000 *
-                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'de') : 1)
-                    this.plasmas.push({
-                        moveVector: moveVector,
-                        vector: this.player.vector,
-                        size:
-                            5 +
-                            findWeaponUpgrade(this.player, 'biggerProjectile') *
-                                this.generalSize *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        imgsrc: '/gt/img/char/plasma.png',
-                        damage:
-                            1 +
-                            findWeaponUpgrade(this.player, 'moreDamage') *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        split: true,
-                    } as type.Plasma)
-                    break
-                case 'shotgun':
-                    this.shotCoolDownDuration =
-                        3000 *
-                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'de') : 1)
-                    for (let i = 0; i < 3; i++) {
-                        this.plasmas.push({
-                            moveVector: rotVec(moveVector, 15 * (i - 1)),
-                            vector: this.player.vector,
-                            size:
-                                2 +
-                                findWeaponUpgrade(this.player, 'biggerProjectile') *
-                                    this.generalSize *
-                                    (this.player.passivTree.passivType == 'increaseGun'
-                                        ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                        : 1),
-                            imgsrc: '/gt/img/char/plasma.png',
-                            damage:
-                                1 +
-                                findWeaponUpgrade(this.player, 'moreDamage') *
-                                    (this.player.passivTree.passivType == 'increaseGun'
-                                        ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                        : 1),
-                        } as type.Plasma)
-                    }
-                    break
-                case 'MG':
-                    this.shotCoolDownDuration =
-                        1000 *
-                        percent(findWeaponUpgrade(this.player, 'fasterReload') * 5, 'de') *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'de') : 1)
-                    this.plasmas.push({
-                        moveVector: moveVector,
-                        vector: this.player.vector,
-                        size:
-                            5 +
-                            findWeaponUpgrade(this.player, 'biggerProjectile') *
-                                this.generalSize *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                        imgsrc: '/gt/img/char/plasma.png',
-                        damage:
-                            1 +
-                            findWeaponUpgrade(this.player, 'moreDamage') *
-                                (this.player.passivTree.passivType == 'increaseGun'
-                                    ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in')
-                                    : 1),
-                    } as type.Plasma)
-            }
+            let weapon = weapons(this.player, this.generalSize, this.lastDirection)
+            this.shotCoolDownDuration = weapon.shotCoolDownDuration
+            for (let p of weapon.plasmas) this.plasmas.push(p)
         },
         handlePlasmaMovement() {
-            for (let plasma of this.plasmas) {
-                if (plasma.aim) {
-                    let enemies = [...this.enemies]
-                    enemies.sort((a, b) => {
-                        return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))
-                    })
-                    plasma.moveVector = addVec(plasma.moveVector, dirVec(enemies[0].vector, plasma.vector))
-                }
-                plasma.moveVector = mulVec(
-                    norVec(plasma.moveVector),
-                    (7 + findWeaponUpgrade(this.player, 'fasterProjectile')) *
-                        this.generalSize *
-                        (this.player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(this.player, 'increaseGun') / 2, 'in') : 1)
-                )
-                plasma.vector = addVec(plasma.vector, plasma.moveVector)
-                if (this.borderCheck(plasma, 'outer')) this.deletePlasma(plasma)
-            }
-            for (let plasma of this.enemyPlasmas) {
-                plasma.moveVector = mulVec(norVec(plasma.moveVector), 5 * this.generalSize)
-                plasma.vector = addVec(plasma.vector, plasma.moveVector)
-                if (this.borderCheck(plasma, 'outer')) this.deletePlasma(plasma)
-            }
+            const newPlasmas = plasmaMovement(this.plasmas, this.enemyPlasmas, this.enemies, this.player, this.generalSize, this.field)
+            this.plasmas = newPlasmas.plasmas
+            this.enemyPlasmas = newPlasmas.enemyPlasmas
         },
         deletePlasma(plasma: type.Plasma) {
             this.plasmas = this.plasmas.filter(p => p != plasma)
             this.enemyPlasmas = this.enemyPlasmas.filter(p => p != plasma)
-        },
-        handlePlayerMovement() {
-            let multiplicator = 1
-            this.player.moveVector = [0, 0]
-
-            if (this.pressedKeys['1'] && findSkill(this.player, 'fastAbility')) multiplicator = 2
-            if (this.pressedKeys['2'] && findSkill(this.player, 'slowAbility')) multiplicator = 0.5
-            if (this.pressedKeys['3'] && findSkill(this.player, 'bombAbility')) this.bombAbility()
-            if (this.pressedKeys['4'] && findSkill(this.player, 'shotAbility')) this.shotAbility()
-            if (this.pressedKeys['ArrowLeft'] || this.pressedKeys['a']) this.left()
-            if (this.pressedKeys['ArrowRight'] || this.pressedKeys['d']) this.right()
-            if (this.pressedKeys['ArrowUp'] || this.pressedKeys['w']) this.up()
-            if (this.pressedKeys['ArrowDown'] || this.pressedKeys['s']) this.down()
-
-            this.player.moveVector = mulVec(norVec(this.player.moveVector), this.player.speed * this.generalSize * multiplicator)
-            this.player.vector = addVec(this.player.vector, this.player.moveVector)
-            if (this.player.moveVector[0] > 0) this.lastDirection = 90
-            if (this.player.moveVector[0] < 0) this.lastDirection = 270
-            if (this.player.moveVector[1] > 0) this.lastDirection = 180
-            if (this.player.moveVector[1] < 0) this.lastDirection = 0
-            if (this.player.moveVector[0] > 0 && this.player.moveVector[1] > 0) this.lastDirection = 135
-            if (this.player.moveVector[0] < 0 && this.player.moveVector[1] > 0) this.lastDirection = 225
-            if (this.player.moveVector[0] > 0 && this.player.moveVector[1] < 0) this.lastDirection = 45
-            if (this.player.moveVector[0] < 0 && this.player.moveVector[1] < 0) this.lastDirection = 315
-
-            switch (this.borderCheck(this.player, 'inner')) {
-                case 'right':
-                    this.player.vector[0] = this.borderRight - this.player.size
-                    break
-                case 'left':
-                    this.player.vector[0] = this.borderLeft + 1
-                    break
-                case 'up':
-                    this.player.vector[1] = this.borderUp - 2
-                    break
-                case 'down':
-                    this.player.vector[1] = this.borderDown - (this.player.size + 6)
-                    break
-            }
-        },
-        left() {
-            if (!this.borderCheck(this.player, 'inner')) this.player.moveVector[0] = -1
-        },
-        right() {
-            if (!this.borderCheck(this.player, 'inner')) {
-                if (this.player.moveVector[0] == 0) this.player.moveVector[0] = 1
-                else this.player.moveVector[0] = 0
-            }
-        },
-        up() {
-            if (!this.borderCheck(this.player, 'inner')) this.player.moveVector[1] = -1
-        },
-        down() {
-            if (!this.borderCheck(this.player, 'inner')) {
-                if (this.player.moveVector[1] == 0) this.player.moveVector[1] = 1
-                else this.player.moveVector[1] = 0
-            }
-        },
-        borderCheck(object: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy, border: 'inner' | 'outer') {
-            if (border == 'inner') {
-                if (object.vector[0] > this.borderRight - object.size) return 'right'
-                if (object.vector[0] < this.borderLeft + 1) return 'left'
-                if (object.vector[1] < this.borderUp - 2) return 'up'
-                if (object.vector[1] > this.borderDown - (object.size + 6)) return 'down'
-            }
-            if (border == 'outer') {
-                if (object.vector[0] > this.borderRight) return 'right'
-                if (object.vector[0] < this.borderLeft - 1 - object.size) return 'left'
-                if (object.vector[1] < this.borderUp - 1 - object.size) return 'up'
-                if (object.vector[1] > this.borderDown) return 'down'
-            }
-            return false
         },
         gravity(
             object1: type.Enemy | type.Item | type.Player | type.Plasma,
@@ -1556,27 +1087,18 @@ export default defineComponent({
                 )
             }
         },
-        toggleNormalMode() {
-            this.player.playMode = 'normal'
-        },
-        toggleHardcoreMode() {
-            this.player.playMode = 'hardcore'
-        },
-        toggleTotalchaosMode() {
-            this.player.playMode = 'totalchaos'
-        },
         // displaysize
         changeDisplaySize() {
             this.generalSize = (window.innerWidth / 1920 + window.innerHeight / 955) / 2
             this.player.size = this.player.originalSize * this.generalSize
             this.middlex = window.innerWidth / 2
-            this.borderLeft = 0
-            this.borderUp = 0
-            this.borderRight = Math.round(window.innerWidth * 0.75)
-            this.borderDown = Math.round(window.innerHeight * 0.8)
+            this.field.borderLeft = 0
+            this.field.borderUp = 0
+            this.field.borderRight = Math.round(window.innerWidth * 0.75)
+            this.field.borderDown = Math.round(window.innerHeight * 0.8)
         },
         playerStartPosition() {
-            this.player.vector = [this.borderRight / 2, this.borderDown / 2]
+            this.player.vector = [this.field.borderRight / 2, this.field.borderDown / 2]
         },
     },
 })

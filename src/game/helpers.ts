@@ -20,3 +20,22 @@ export function percent(number: number, change: 'in' | 'de') {
     }
     return 1
 }
+export function borderCheck(
+    object: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy,
+    border: 'inner' | 'outer',
+    field: type.Field
+) {
+    if (border == 'inner') {
+        if (object.vector[0] > field.borderRight - object.size) return 'right'
+        if (object.vector[0] < field.borderLeft + 1) return 'left'
+        if (object.vector[1] < field.borderUp - 2) return 'up'
+        if (object.vector[1] > field.borderDown - (object.size + 6)) return 'down'
+    }
+    if (border == 'outer') {
+        if (object.vector[0] > field.borderRight) return 'right'
+        if (object.vector[0] < field.borderLeft - 1 - object.size) return 'left'
+        if (object.vector[1] < field.borderUp - 1 - object.size) return 'up'
+        if (object.vector[1] > field.borderDown) return 'down'
+    }
+    return false
+}
