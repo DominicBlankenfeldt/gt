@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex justify-content-center">
-        <div class="card" style="width: 75%">
+        <div class="card" style="width: 75%; margin-top: 3rem">
             <div class="card-header">
                 <form class="form-inline" v-if="!player.spaceFleet">
                     <div class="d-flex justify-content-center card-body" style="width: 100%">
@@ -192,7 +192,4 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.card {
-    margin-top: 3rem;
-}
 </style>
