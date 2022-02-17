@@ -13,7 +13,10 @@
               placeholder="Search Fleet"
               aria-label="Search"
             />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+            <button
+              class="btn btn-outline-success shadow-none my-2 my-sm-0"
+              type="submit"
+            >
               Search
             </button>
           </div>
@@ -24,7 +27,7 @@
       </div>
       <div class="card-body">
         <div>
-          <h3>{{ this.fleetName }}</h3>
+          <h3>{{ fleetName }}</h3>
         </div>
 
         <div class="row">
@@ -42,20 +45,20 @@
         </div>
 
         <div class="row">
-          <div class="col-4">fleetgames: {{ this.fleetGames }}</div>
-          <div class="col-4">fleetscore: {{ this.fleetScore }}pts</div>
-          <div class="col-4">avg score: {{ this.avgFleetScore }}pts</div>
+          <div class="col-4">fleetgames: {{ fleetGames }}</div>
+          <div class="col-4">fleetscore: {{ fleetScore }}pts</div>
+          <div class="col-4">avg score: {{ avgFleetScore }}pts</div>
         </div>
         <div style="border: solid black 1px; margin: 1vh">
           fleetinfo:
-          <div>{{ this.fleetinfo }}</div>
+          <div>{{ fleetInfo }}</div>
         </div>
       </div>
       <div class="card-footer row">
         <div class="col-6">
           <button
             v-if="myfleet == null"
-            class="btn btn-warning"
+            class="btn btn-warning shadow-none"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
           >
@@ -63,11 +66,13 @@
           </button>
           <button
             v-else-if="fleet == myfleet && founder == username"
-            class="btn btn-secondary"
+            class="btn btn-secondary shadow-none"
           >
             edit fleet
           </button>
-          <button v-else class="btn btn-secondary">it does nothing</button>
+          <button v-else class="btn btn-secondary shadow-none">
+            it does nothing
+          </button>
         </div>
         <div
           class="modal fade"
@@ -82,7 +87,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">create fleet</h5>
                 <button
                   type="button"
-                  class="btn-close"
+                  class="btn-close shadow-none"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
@@ -108,18 +113,29 @@
                     aria-label="With textarea"
                   ></textarea>
                 </div>
+                <div class="form-check" style="margin-top: 1rem">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      value=""
+                      id="flexCheckDefault"
+                    />
+                    make fleet public
+                  </label>
+                </div>
               </div>
               <div class="modal-footer">
                 <button
                   type="button"
-                  class="btn btn-secondary"
+                  class="btn btn-secondary shadow-none"
                   data-bs-dismiss="modal"
                 >
                   Close
                 </button>
                 <button
                   type="button"
-                  class="btn btn-success"
+                  class="btn btn-success shadow-none"
                   @submit="createFleet()"
                 >
                   create fleet
@@ -130,10 +146,10 @@
         </div>
         <div class="col-6 row">
           <div class="col-6">
-            <button class="btn btn-success">join fleet</button>
+            <button class="btn btn-success shadow-none">join fleet</button>
           </div>
           <div class="col-6">
-            <button class="btn btn-primary">send request</button>
+            <button class="btn btn-primary shadow-none">send request</button>
           </div>
         </div>
       </div>
