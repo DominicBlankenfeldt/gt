@@ -5,6 +5,7 @@ import SkillTree from "../views/SkillTree.vue";
 import Scoreboard from "../views/Scoreboard.vue";
 import Register from "../views/Register.vue";
 import Landing from "../views/Landing.vue";
+import Fleet from "../views/Fleet.vue";
 import { getAuth, User } from "@firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { ref } from "vue";
@@ -39,6 +40,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/skillTree",
     name: "SkillTree",
     component: SkillTree,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/fleet",
+    name: "Fleet",
+    component: Fleet,
     meta: { requiresAuth: true },
   },
   {
