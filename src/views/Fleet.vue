@@ -1,17 +1,15 @@
 <template>
-  <div class="fleet"><FleetSearch /><FleetCard /></div>
+  <div class="fleet"><FleetOptions /></div>
 </template>
 <script lang="ts">
 import { defineComponent } from "vue";
-import FleetCard from "@/components/FleetCard.vue";
-import FleetSearch from "@/components/FleetSearch.vue";
+import FleetOptions from "@/components/FleetOptions.vue";
 export default defineComponent({
   setup() {
     return;
   },
   components: {
-    FleetCard,
-    FleetSearch,
+    FleetOptions,
   },
 });
 </script>

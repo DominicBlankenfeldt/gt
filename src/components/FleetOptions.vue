@@ -1,5 +1,4 @@
 <template>
-  <div>FleetSearch</div>
   <div class="d-flex justify-content-center">
     <div class="card" style="width: 75%">
       <div class="card-header">
@@ -41,10 +40,24 @@
       </div>
       <div class="card-footer row">
         <div class="col-6">
-          <button class="btn btn-success">join</button>
+          <button v-if="myfleet == null" class="btn btn-warning">
+            create fleet
+          </button>
+          <button
+            v-else-if="fleet == myfleet && founder == username"
+            class="btn btn-secondary"
+          >
+            edit fleet
+          </button>
+          <button v-else class="btn btn-secondary">it does nothing</button>
         </div>
-        <div class="col-6">
-          <button class="btn btn-primary">send request</button>
+        <div class="col-6 row">
+          <div class="col-6">
+            <button class="btn btn-success">join fleet</button>
+          </div>
+          <div class="col-6">
+            <button class="btn btn-primary">send request</button>
+          </div>
         </div>
       </div>
     </div>
@@ -55,6 +68,12 @@ import { defineComponent } from "vue";
 export default defineComponent({
   setup() {
     return;
+  },
+  data() {
+    return {
+      fleetname: "",
+      fleetinfo: "",
+    };
   },
 });
 </script>
