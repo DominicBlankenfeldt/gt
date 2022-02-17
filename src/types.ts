@@ -130,6 +130,8 @@ export type Vector = [number, number]
 
 export interface User {
     player: Player
+    spaceFleet?: string
+    fleetFounder?: boolean
     email: string
     role: string
     id: string
@@ -140,4 +142,12 @@ export interface Field {
     borderUp: number
     borderRight: number
     borderDown: number
+}
+export interface SpaceFleet {
+    founder: User
+    members: User[]
+    info: string
+    name: string
+    public: boolean
+    img: string
 }
