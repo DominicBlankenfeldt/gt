@@ -10,10 +10,10 @@ import {
     setDoc,
     getDoc,
     limitToLast,
+    documentId,
 } from 'firebase/firestore'
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
-import { ref } from 'vue'
 import * as type from '@/types'
 
 export async function login(email: string, password: string): Promise<void> {
@@ -35,7 +35,9 @@ export async function register(email: string, password: string): Promise<void> {
         role: 'user',
     })
 }
-
+export async function addSpaceFleet(fleet: type.SpaceFleet) {
+    return (await addAPI('spaceFleets', fleet)).id
+}
 export async function addAPI<T>(docName: string, data: T): Promise<DocumentReference<T>> {
     const docRef = await addDoc(collection(getFirestore(), docName), data)
     return docRef as DocumentReference<T>
@@ -51,9 +53,9 @@ export async function getAPI<T extends { id: string }>(docName: string): Promise
     querySnapshot.forEach(doc => {
         docs.push(doc)
     })
-    return docs.map(exercises => ({
-        ...exercises.data(),
-        id: exercises.id,
+    return docs.map(spaceFleet => ({
+        ...spaceFleet.data(),
+        id: spaceFleet.id,
     })) as T[]
 }
 
@@ -63,9 +65,11 @@ export async function getBestPlayers(sortBy: string) {
     querySnapshot.forEach(doc => {
         docs.push(doc)
     })
-    return docs.map(exercises => ({ ...exercises.data(), id: exercises.id }))
+    return docs.map(bestPlayers => ({ ...bestPlayers.data(), id: bestPlayers.id }))
 }
-
+export async function getPlayerSpaceFleet(id: string) {
+    return (await (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data()) as type.SpaceFleet
+}
 export async function addPlayer(player: type.Player): Promise<void> {
     const id = getAuth().currentUser?.uid
     if (id) {
@@ -73,6 +77,9 @@ export async function addPlayer(player: type.Player): Promise<void> {
             player: player,
         })
     }
+}
+export async function getFleetPlayer(id: string): Promise<type.User> {
+    return (await getDoc(doc(getFirestore(), 'users', id))).data() as type.User
 }
 
 export async function getPlayer(): Promise<type.User | null> {

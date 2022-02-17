@@ -52,6 +52,7 @@ export interface Player {
     defeatedBosses: number
     defeatedBossesHardcore: number
     defeatedBossesTotalchaos: number
+    spaceFleet?: string
 }
 export type PlayMode = 'normal' | 'hardcore' | 'totalchaos'
 export interface WeaponTree {
@@ -130,8 +131,6 @@ export type Vector = [number, number]
 
 export interface User {
     player: Player
-    spaceFleet?: string
-    fleetFounder?: boolean
     email: string
     role: string
     id: string
@@ -144,10 +143,11 @@ export interface Field {
     borderDown: number
 }
 export interface SpaceFleet {
-    founder: User
-    members: User[]
+    founder: string
+    members: string[]
     info: string
     name: string
     public: boolean
     img: string
+    id?: string
 }

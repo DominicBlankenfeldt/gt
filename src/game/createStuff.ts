@@ -110,6 +110,11 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
     })
     return enemies
 }
+export function respawnEnemy(enemies: type.Enemy[], enemy: type.Enemy, generalSize: number, field: type.Field, player: type.Player) {
+    enemies = createEnemy(enemies, generalSize, field, player)
+    return enemies.filter(e => e != enemy)
+}
+
 export function createItems(isStopTime: boolean, generalSize: number, player: type.Player, items: type.Item[], field: type.Field) {
     if (isStopTime) return
     let type = ''

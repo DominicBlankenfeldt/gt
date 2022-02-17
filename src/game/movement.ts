@@ -1,7 +1,7 @@
 import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, percent, getRandomInt } from '@/game/helpers'
 import * as type from '@/types'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
-import { createEnemy } from '@/game/createStuff'
+import { respawnEnemy } from '@/game/createStuff'
 export function plasmaMovement(
     plasmas: type.Plasma[],
     enemyPlasmas: type.Plasma[],
@@ -188,8 +188,4 @@ function circle(enemy: type.Enemy, radiusMultiplier: number) {
     const acc = mulVec(rotVec(enemy.moveVector, 90), enemy.circleRadius * radiusMultiplier)
     if (enemy.circleDir == 'left') return addVec(enemy.moveVector, acc)
     if (enemy.circleDir == 'right') return subVec(enemy.moveVector, acc)
-}
-function respawnEnemy(enemies: type.Enemy[], enemy: type.Enemy, generalSize: number, field: type.Field, player: type.Player) {
-    enemies = createEnemy(enemies, generalSize, field, player)
-    return enemies.filter(e => e != enemy)
 }
