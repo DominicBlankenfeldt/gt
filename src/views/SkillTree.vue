@@ -12,7 +12,7 @@
                 {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
             </div>
 
-            <div class="col-3" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
+            <div class="col-3" title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
                 Passiv Points:
                 {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
             </div>
