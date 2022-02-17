@@ -23,22 +23,33 @@
         you didnt joined a fleet until yet
       </div>
       <div class="card-body">
-        <div><h3>fleetname</h3></div>
+        <div>
+          <h3>{{ this.fleetName }}</h3>
+        </div>
 
         <div class="row">
           <div class="col-4">
             <img src="/gt/img/placeholder_wappen_150.png" alt="placeholder" />
           </div>
-          <div class="col-4">founder:</div>
-          <div class="col-4">members 10/10</div>
+          <div class="col-4">
+            <div>founder:</div>
+            <div>blabla</div>
+          </div>
+          <div class="col-4">
+            <div>members:</div>
+            <div>for each</div>
+          </div>
         </div>
 
         <div class="row">
-          <div class="col-4">fleetscore: 1111pts</div>
-          <div class="col-4">avg score: 1111pts</div>
-          <div class="col-4">fleetgames: 1111</div>
+          <div class="col-4">fleetgames: {{ this.fleetGames }}</div>
+          <div class="col-4">fleetscore: {{ this.fleetScore }}pts</div>
+          <div class="col-4">avg score: {{ this.avgFleetScore }}pts</div>
         </div>
-        <div style="border: solid black 1px; margin: 1vh">fleetinfo:</div>
+        <div style="border: solid black 1px; margin: 1vh">
+          fleetinfo:
+          <div>{{ this.fleetinfo }}</div>
+        </div>
       </div>
       <div class="card-footer row">
         <div class="col-6">
@@ -137,8 +148,14 @@ export default defineComponent({
   },
   data() {
     return {
-      fleetname: "",
-      fleetinfo: "",
+      fleetName: "",
+      fleetInfo: "",
+      founder: "",
+      members: [],
+      fleetScore: 0,
+      avgFleetScore: 0,
+      fleetGames: 0,
+      fleetImg: "",
     };
   },
 });
