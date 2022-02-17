@@ -19,9 +19,11 @@
           </div>
         </form>
       </div>
-      <!-- wird nur angezeigt wenn ein suchergebniss vorhanden ist-->
+      <div v-if="myfleet" class="card-body">
+        you didnt joined a fleet until yet
+      </div>
       <div class="card-body">
-        <div><h3>flottenname</h3></div>
+        <div><h3>fleetname</h3></div>
 
         <div class="row">
           <div class="col-4">
@@ -40,7 +42,12 @@
       </div>
       <div class="card-footer row">
         <div class="col-6">
-          <button v-if="myfleet == null" class="btn btn-warning">
+          <button
+            v-if="myfleet == null"
+            class="btn btn-warning"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal"
+          >
             create fleet
           </button>
           <button
@@ -50,6 +57,65 @@
             edit fleet
           </button>
           <button v-else class="btn btn-secondary">it does nothing</button>
+        </div>
+        <div
+          class="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">create fleet</h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"
+                    >fleetname</span
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="name of fleet"
+                    aria-label="fleetname"
+                    aria-describedby="basic-addon1"
+                    required
+                  />
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text">With textarea</span>
+                  <textarea
+                    class="form-control"
+                    aria-label="With textarea"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  @submit="createFleet()"
+                >
+                  create fleet
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-6 row">
           <div class="col-6">
@@ -77,4 +143,8 @@ export default defineComponent({
   },
 });
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.card {
+  margin-top: 3rem;
+}
+</style>
