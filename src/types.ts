@@ -149,5 +149,5 @@ export interface SpaceFleet {
     name: string
     public: boolean
     img: string
-    id?: string
+    id?: string | undefined
 }

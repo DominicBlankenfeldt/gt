@@ -11,10 +11,12 @@ import {
     getDoc,
     limitToLast,
     documentId,
+    where,
 } from 'firebase/firestore'
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
 import * as type from '@/types'
+import { async } from '@firebase/util'
 
 export async function login(email: string, password: string): Promise<void> {
     const auth = getAuth()
@@ -81,7 +83,14 @@ export async function addPlayer(player: type.Player): Promise<void> {
 export async function getFleetPlayer(id: string): Promise<type.User> {
     return (await getDoc(doc(getFirestore(), 'users', id))).data() as type.User
 }
-
+export async function searchSpaceFleet(name: string) {
+    const docs: QueryDocumentSnapshot<DocumentData>[] = []
+    const querySnapshot = await getDocs(query(collection(getFirestore(), 'spaceFleets'), where('name', '==', name)))
+    querySnapshot.forEach(doc => {
+        docs.push(doc)
+    })
+    return docs.map(spaceFleelt => ({ ...spaceFleelt.data(), id: spaceFleelt.id }))
+}
 export async function getPlayer(): Promise<type.User | null> {
     const id = getAuth().currentUser?.uid
     return id ? ((await getDoc(doc(getFirestore(), 'users', id))).data() as type.User) : null

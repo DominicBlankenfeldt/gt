@@ -9,10 +9,24 @@
                             type="search"
                             placeholder="Search Fleet"
                             aria-label="Search"
+                            v-model="searchInput"
                         />
-                        <button class="btn btn-outline-success shadow-none my-2 my-sm-0 rounded-0 rounded-end" type="submit">Search</button>
+                        <button
+                            class="btn btn-outline-success shadow-none my-2 my-sm-0 rounded-0 rounded-end"
+                            type="button"
+                            @click="searchSpaceFleets()"
+                        >
+                            Search
+                        </button>
                     </div>
                 </form>
+            </div>
+            <div v-for="fleet of searchedFleets" :key="fleet">
+                <div class="row g-0 mt-1">
+                    <div class="col-2">{{ fleet.name }}</div>
+                    <div class="col-9">{{ fleet.info }}</div>
+                    <button class="col-1 btn btn-outline-success" @click="joinSpaceFleet(fleet)">join</button>
+                </div>
             </div>
             <div v-if="!player.spaceFleet" class="card-body">you didnt joined a fleet until yet</div>
             <div v-else>
@@ -46,15 +60,17 @@
                         <div>{{ fleet.info }}</div>
                     </div>
                 </div>
-                <div class="card-footer row">
-                    <div class="col-6">
-                        <button v-if="!player.spaceFleet" class="btn btn-warning shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            create fleet
-                        </button>
-                        <button v-if="user.uid == fleet.founder" class="btn btn-secondary shadow-none">edit</button>
-                    </div>
+            </div>
+            <div class="card-footer row">
+                <div class="col-9"></div>
+                <div class="col-3">
+                    <button v-if="!player.spaceFleet" class="btn btn-warning shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        create fleet
+                    </button>
+                    <button v-if="user?.uid == fleet.founder" class="btn btn-secondary shadow-none">edit</button>
                 </div>
             </div>
+
             <!-- modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -114,8 +130,10 @@ import { checkPlayer } from '@/global'
 export default defineComponent({
     data() {
         return {
+            searchedFleets: [] as type.SpaceFleet[],
             user: currentUser,
             player: {} as type.Player,
+            searchInput: '',
             nameInput: '',
             infoInput: '',
             publicInput: false,
@@ -188,8 +206,28 @@ export default defineComponent({
                 API.logout()
             }
         },
+        async searchSpaceFleets() {
+            try {
+                let result = await API.searchSpaceFleet(this.searchInput)
+                this.searchedFleets = result as type.SpaceFleet[]
+            } catch {
+                API.logout()
+            }
+        },
+        async joinSpaceFleet(fleet: type.SpaceFleet) {
+            if (!this.user) return
+            fleet.members.push(this.user.uid)
+            this.player.spaceFleet = fleet.id
+            try {
+                if (!fleet.id) return
+                await API.addPlayer(this.player)
+                await API.updateAPI('spaceFleets', fleet.id, fleet)
+                this.$router.go(-1)
+            } catch {
+                API.logout()
+            }
+        },
     },
 })
 </script>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
