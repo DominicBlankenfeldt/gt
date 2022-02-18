@@ -40,6 +40,9 @@ export async function register(email: string, password: string): Promise<void> {
 export async function addSpaceFleet(fleet: type.SpaceFleet) {
     return (await addAPI('spaceFleets', fleet)).id
 }
+export async function deleteSpaceFleet(id: string) {
+    await deleteDoc(doc(getFirestore(), 'spaceFleets', id))
+}
 export async function addAPI<T>(docName: string, data: T): Promise<DocumentReference<T>> {
     const docRef = await addDoc(collection(getFirestore(), docName), data)
     return docRef as DocumentReference<T>
