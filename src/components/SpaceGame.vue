@@ -385,7 +385,13 @@ export default defineComponent({
             }
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
-            if (this.gameloopCounter2 % 120 == 0) this.spawnItems() // 2sek
+            if (this.player.passivTree.passivType == 'moreItems') {
+                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) this.spawnItems(true) // 4sek
+                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) this.spawnItems(false) // 4sek
+            } else {
+                if (this.gameloopCounter2 % 120 == 0) this.spawnItems(true) // 2sek
+            }
+
             this.reduceDuartion()
             this.handleEnemyRandom()
             await this.handleBossEnemyDead()
@@ -465,7 +471,7 @@ export default defineComponent({
         },
         chaosItems() {
             for (let i = 0; i < 5; i++) {
-                this.spawnItems()
+                this.spawnItems(true)
             }
         },
         chaosPlayerSpeed() {
@@ -768,7 +774,7 @@ export default defineComponent({
                 this.startButtonText = 'start'
                 this.cancelButtonText = ''
                 let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
-                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies'] as type.PassivType[]
+                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems'] as type.PassivType[]
                 switch (this.bossEnemy.type) {
                     case 'normal':
                         this.player.defeatedBosses++
@@ -936,8 +942,8 @@ export default defineComponent({
             )
         },
         //items
-        spawnItems() {
-            this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field) || this.items
+        spawnItems(badItems: boolean) {
+            this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field, badItems) || this.items
         },
         collectCoin(item: type.Item) {
             this.score +=
