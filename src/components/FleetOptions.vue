@@ -32,7 +32,7 @@
             <div v-else>
                 <div class="card-body">
                     <div>
-                        <h3>{{ fleet.name }}</h3>
+                        <h3>{{ fleet?.name }}</h3>
                     </div>
 
                     <div class="row">
@@ -57,7 +57,7 @@
                     </div>
                     <div style="border: solid black 1px; margin: 1vh">
                         fleetinfo:
-                        <div>{{ fleet.info }}</div>
+                        <div>{{ fleet?.info }}</div>
                     </div>
                 </div>
             </div>
@@ -66,10 +66,13 @@
                     <button v-if="!player.spaceFleet" class="btn btn-warning shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         create fleet
                     </button>
-                    <button v-if="user?.uid == fleet.founder" class="btn btn-secondary shadow-none">edit</button>
+                    <button v-if="user?.uid == fleet?.founder" class="btn btn-secondary shadow-none">edit</button>
                 </div>
                 <div class="col-6"></div>
-                <div class="col-3"><button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()">leave</button></div>
+                <div class="col-3" v-if="player.spaceFleet">
+                    <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.founder">leave</button>
+                    <button class="btn btn-danger shadow-none" @click="deleteSpaceFleet()" v-else>delete</button>
+                </div>
             </div>
 
             <!-- modal -->
@@ -164,6 +167,10 @@ export default defineComponent({
                 }
                 if (this.player.spaceFleet) {
                     this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
+                    if (!this.fleet) {
+                        this.player.spaceFleet = ''
+                        return
+                    }
                     result = await API.getFleetPlayer(this.fleet.founder)
                     this.fleetFounder = result.player
                 }
@@ -203,6 +210,7 @@ export default defineComponent({
             if (result) this.player.spaceFleet = result
             try {
                 await API.addPlayer(this.player)
+                this.$router.go(0)
             } catch {
                 API.logout()
             }
@@ -240,6 +248,11 @@ export default defineComponent({
             } catch {
                 API.logout()
             }
+        },
+        async deleteSpaceFleet() {
+            if (this.player.spaceFleet) await API.deleteSpaceFleet(this.player.spaceFleet)
+            this.player.spaceFleet = ''
+            this.$router.go(0)
         },
     },
 })
