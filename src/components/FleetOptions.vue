@@ -61,14 +61,15 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer row">
-                <div class="col-9"></div>
+            <div class="card-footer d-flex flex-row-reverse">
                 <div class="col-3">
                     <button v-if="!player.spaceFleet" class="btn btn-warning shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         create fleet
                     </button>
                     <button v-if="user?.uid == fleet.founder" class="btn btn-secondary shadow-none">edit</button>
                 </div>
+                <div class="col-6"></div>
+                <div class="col-3"><button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()">leave</button></div>
             </div>
 
             <!-- modal -->
@@ -222,7 +223,20 @@ export default defineComponent({
                 if (!fleet.id) return
                 await API.addPlayer(this.player)
                 await API.updateAPI('spaceFleets', fleet.id, fleet)
-                this.$router.go(-1)
+                this.$router.go(0)
+            } catch {
+                API.logout()
+            }
+        },
+        async leaveSpaceFleet() {
+            if (this.fleet.founder == this.user?.uid) return
+            this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
+            this.player.spaceFleet = ''
+            try {
+                if (!this.fleet.id) return
+                await API.addPlayer(this.player)
+                await API.updateAPI('spaceFleets', this.fleet.id, this.fleet)
+                this.$router.go(0)
             } catch {
                 API.logout()
             }
