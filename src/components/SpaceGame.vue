@@ -386,8 +386,10 @@ export default defineComponent({
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.player.passivTree.passivType == 'moreItems') {
-                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) this.spawnItems(true) // 4sek
-                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) this.spawnItems(false) // 4sek
+                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
+                    this.spawnItems(true) // 4sek
+                    this.spawnItems(false) // 4sek
+                }
             } else {
                 if (this.gameloopCounter2 % 120 == 0) this.spawnItems(true) // 2sek
             }
