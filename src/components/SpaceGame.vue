@@ -243,7 +243,7 @@
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { checkPlayer, production, bossFight } from '@/global'
-import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent } from '@/game/helpers'
+import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent, roundHalf } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -321,7 +321,29 @@ export default defineComponent({
             items: [] as type.Item[],
             pressedKeys: {} as Record<string, boolean>,
             enemies: [] as type.Enemy[],
+            //fleet
+            fleetMembers: [] as type.Player[],
+            fleet: {
+                members: [] as string[],
+                founder: '',
+                img: '',
+                name: '',
+                info: '',
+                public: false,
+            } as type.SpaceFleet,
         }
+    },
+    computed: {
+        fleetlvl() {
+            let lvl = 0
+            for (let member of this.fleetMembers) {
+                lvl += member.defeatedBosses
+                lvl += member.defeatedBossesHardcore
+                lvl += member.defeatedBossesTotalchaos
+            }
+            if (lvl > 50) lvl = 50
+            return lvl
+        },
     },
     async mounted() {
         // start game if not started on enter press
@@ -339,6 +361,7 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
+                await this.loadFleet()
             } catch {
                 API.logout()
             }
@@ -349,6 +372,21 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
+        async loadFleet() {
+            this.fleetMembers = []
+            let result
+            if (this.player.spaceFleet) {
+                this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
+                if (!this.fleet) {
+                    this.player.spaceFleet = ''
+                    return
+                }
+            }
+            for (let member of this.fleet.members) {
+                result = await API.getFleetPlayer(member)
+                this.fleetMembers.push(result.player)
+            }
+        },
         //game
         async gameloop() {
             this.handlePlayerMovement()
@@ -596,18 +634,31 @@ export default defineComponent({
             switch (type) {
                 case 'normal':
                     if (this.bossEnemy.type == 'normal') return 'cancel'
-                    if (this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return 'Boss fight available'
-                    else return `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1)} highscore`
+                    if (this.player.highscore >= this.highscoreMultiplier * (this.player.defeatedBosses + 1) * percent(this.fleetlvl, 'de'))
+                        return 'Boss fight available'
+                    else return `You need ${this.highscoreMultiplier * (this.player.defeatedBosses + 1) * percent(this.fleetlvl, 'de')} highscore`
                 case 'hardcore':
                     if (this.bossEnemy.type == 'hardcore') return 'cancel'
-                    if (this.player.highscoreHardcore >= this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1))
+                    if (
+                        this.player.highscoreHardcore >=
+                        this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1) * percent(this.fleetlvl, 'de')
+                    )
                         return 'Boss fight available'
-                    else return `You need ${this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)} highscore`
+                    else
+                        return `You need ${
+                            this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1) * percent(this.fleetlvl, 'de')
+                        } highscore`
                 case 'totalchaos':
                     if (this.bossEnemy.type == 'totalchaos') return 'cancel'
-                    if (this.player.highscoreTotalchaos >= this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1))
+                    if (
+                        this.player.highscoreTotalchaos >=
+                        this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1) * percent(this.fleetlvl, 'de')
+                    )
                         return 'Boss fight available'
-                    else return `You need ${this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)} highscore`
+                    else
+                        return `You need ${
+                            this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1) * percent(this.fleetlvl, 'de')
+                        } highscore`
             }
         },
         startBossFight(type: type.BossType) {
@@ -621,13 +672,21 @@ export default defineComponent({
             }
             switch (type) {
                 case 'normal':
-                    if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1)) return
+                    if (this.player.highscore < this.highscoreMultiplier * (this.player.defeatedBosses + 1) * percent(this.fleetlvl, 'de')) return
                     break
                 case 'hardcore':
-                    if (this.player.highscoreHardcore < this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1)) return
+                    if (
+                        this.player.highscoreHardcore <
+                        this.highscoreHardcoreMultiplier * (this.player.defeatedBossesHardcore + 1) * percent(this.fleetlvl, 'de')
+                    )
+                        return
                     break
                 case 'totalchaos':
-                    if (this.player.highscoreTotalchaos < this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1)) return
+                    if (
+                        this.player.highscoreTotalchaos <
+                        this.highscoreTotalchaosMultiplier * (this.player.defeatedBossesTotalchaos + 1) * percent(this.fleetlvl, 'de')
+                    )
+                        return
                     break
             }
             this.bossEnemy.type = type
@@ -640,22 +699,22 @@ export default defineComponent({
             switch (this.bossEnemy.type) {
                 case 'normal':
                     this.bossEnemy.maxHP = Math.round(50 * (this.player.defeatedBosses + 1) * percent(this.player.defeatedBosses + 1 * 10, 'in'))
-                    this.startingEnemies = 4 + this.player.defeatedBosses
-                    this.difficulty = 2 + this.player.defeatedBosses
+                    this.startingEnemies = Math.round(4 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
+                    this.difficulty = roundHalf(2 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
                     break
                 case 'hardcore':
                     this.bossEnemy.maxHP = Math.round(
                         25 * (this.player.defeatedBossesHardcore + 1) * percent(this.player.defeatedBossesHardcore + 1 * 10, 'in')
                     )
-                    this.startingEnemies = 75 + this.player.defeatedBossesHardcore
-                    // this.difficulty = 2 + this.player.defeatedBossesHardcore
+                    this.startingEnemies = Math.round(75 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
+                    this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
                     break
                 case 'totalchaos':
                     this.bossEnemy.maxHP = Math.round(
                         50 * (this.player.defeatedBossesTotalchaos + 1) * percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in')
                     )
-                    this.startingEnemies = 4 + this.player.defeatedBossesTotalchaos
-                    this.difficulty = 2 + this.player.defeatedBossesTotalchaos
+                    this.startingEnemies = Math.round(4 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
+                    this.difficulty = roundHalf(2 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
             }
             this.bossEnemy.hP = this.bossEnemy.maxHP
             this.bossEnemy.speed = 5
@@ -757,7 +816,10 @@ export default defineComponent({
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
         },
         handleBossEnemyMovement() {
-            this.bossEnemy.moveVector = mulVec(norVec(this.bossEnemy.moveVector), this.bossEnemy.speed * this.generalSize)
+            this.bossEnemy.moveVector = mulVec(
+                norVec(this.bossEnemy.moveVector),
+                this.bossEnemy.speed * this.generalSize * percent(this.fleetlvl, 'de')
+            )
             this.bossEnemy.vector = addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (borderCheck(this.bossEnemy, 'inner', this.field)) {
                 case 'left':

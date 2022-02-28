@@ -39,3 +39,6 @@ export function borderCheck(
     }
     return false
 }
+export function roundHalf(num: number) {
+    return Math.round(num * 2) / 2
+}

@@ -1,4 +1,7 @@
 <template>
+    <div v-if="error" class="alert alert-danger">
+        {{ error }}
+    </div>
     <div class="d-flex justify-content-center">
         <div class="card" style="width: 75%; margin-top: 3rem">
             <div class="card-header">
@@ -28,7 +31,7 @@
                     <button class="col-1 btn btn-outline-success" @click="joinSpaceFleet(fleet)">join</button>
                 </div>
             </div>
-            <div v-if="!player.spaceFleet" class="card-body">you didnt joined a fleet until yet</div>
+            <div v-if="!player.spaceFleet" class="card-body">you didnt join a fleet yet</div>
             <div v-else>
                 <div class="card-body">
                     <div>
@@ -134,6 +137,7 @@ import { checkPlayer } from '@/global'
 export default defineComponent({
     data() {
         return {
+            error: '',
             searchedFleets: [] as type.SpaceFleet[],
             user: currentUser,
             player: {} as type.Player,
@@ -165,19 +169,7 @@ export default defineComponent({
                     this.player = result.player
                     this.player = checkPlayer(this.player) as type.Player
                 }
-                if (this.player.spaceFleet) {
-                    this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                    if (!this.fleet) {
-                        this.player.spaceFleet = ''
-                        return
-                    }
-                    result = await API.getFleetPlayer(this.fleet.founder)
-                    this.fleetFounder = result.player
-                }
-                for (let member of this.fleet.members) {
-                    result = await API.getFleetPlayer(member)
-                    this.fleetMembers.push(result.player)
-                }
+                this.loadFleet()
             } catch {
                 API.logout()
             }
@@ -197,6 +189,23 @@ export default defineComponent({
         },
     },
     methods: {
+        async loadFleet() {
+            this.fleetMembers = []
+            let result
+            if (this.player.spaceFleet) {
+                this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
+                if (!this.fleet) {
+                    this.player.spaceFleet = ''
+                    return
+                }
+                result = await API.getFleetPlayer(this.fleet.founder)
+                this.fleetFounder = result.player
+            }
+            for (let member of this.fleet.members) {
+                result = await API.getFleetPlayer(member)
+                this.fleetMembers.push(result.player)
+            }
+        },
         async createFleet() {
             if (!this.user) return
             let result = await API.addSpaceFleet({
@@ -210,7 +219,7 @@ export default defineComponent({
             if (result) this.player.spaceFleet = result
             try {
                 await API.addPlayer(this.player)
-                this.$router.go(0)
+                this.loadFleet()
             } catch {
                 API.logout()
             }
@@ -226,14 +235,15 @@ export default defineComponent({
         async joinSpaceFleet(fleet: type.SpaceFleet) {
             if (!this.user) return
             fleet.members.push(this.user.uid)
-            this.player.spaceFleet = fleet.id
+
             try {
                 if (!fleet.id) return
                 await API.addPlayer(this.player)
                 await API.updateAPI('spaceFleets', fleet.id, fleet)
-                this.$router.go(0)
+                ;(this.searchedFleets = [] as type.SpaceFleet[]), this.loadFleet()
+                this.player.spaceFleet = fleet.id
             } catch {
-                API.logout()
+                this.error = 'fleet is full'
             }
         },
         async leaveSpaceFleet() {
@@ -244,7 +254,7 @@ export default defineComponent({
                 if (!this.fleet.id) return
                 await API.addPlayer(this.player)
                 await API.updateAPI('spaceFleets', this.fleet.id, this.fleet)
-                this.$router.go(0)
+                this.loadFleet()
             } catch {
                 API.logout()
             }
@@ -252,7 +262,7 @@ export default defineComponent({
         async deleteSpaceFleet() {
             if (this.player.spaceFleet) await API.deleteSpaceFleet(this.player.spaceFleet)
             this.player.spaceFleet = ''
-            this.$router.go(0)
+            this.loadFleet()
         },
     },
 })
