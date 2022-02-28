@@ -10,13 +10,11 @@ import {
     setDoc,
     getDoc,
     limitToLast,
-    documentId,
     where,
 } from 'firebase/firestore'
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
 import * as type from '@/types'
-import { async } from '@firebase/util'
 
 export async function login(email: string, password: string): Promise<void> {
     const auth = getAuth()
