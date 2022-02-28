@@ -1,6 +1,6 @@
 import * as type from '@/types'
 export function findSkill(player: type.Player, skill: type.SkillName) {
-    return player.skillTree.skills[player.skillTree.skills.findIndex(s => s.name == skill)].lvl
+    return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
 export function findWeaponUpgrade(player: type.Player, weaponUpgrade: type.WeaponUpgradeName) {
     return player.weaponTree.weaponUpgrades[player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)].lvl

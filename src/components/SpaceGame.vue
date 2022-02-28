@@ -173,7 +173,7 @@
                         @click="startBossFight('normal')"
                         v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
                     >
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : 'Skill the shotAbility' }}</a>
+                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                     </button>
                     <div v-else class="d- inline-block sizeBtn"></div>
                     <button
@@ -182,11 +182,11 @@
                         @click="startBossFight('hardcore')"
                         v-if="player.passivTree.passivAvaibleTypes.length < 4 && !cancelButtonText"
                     >
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : 'Skill the shotAbility' }}</a>
+                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                     </button>
                     <div v-else class="d-inline-block sizeBtn"></div>
                     <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : 'Skill the shotAbility' }}</a>
+                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                     </button>
                 </div>
             </div>
@@ -242,7 +242,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
-import { checkPlayer, production, bossFight } from '@/global'
+import { checkPlayer, production, bossFight, skillDetails } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent, roundHalf } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
@@ -257,8 +257,10 @@ export default defineComponent({
         production
         bossFight
         currentUser
+        skillDetails
         return {
             findSkill,
+            skillDetails,
         }
     },
     data() {
@@ -361,7 +363,7 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
-                await this.loadFleet()
+                if (this.player.spaceFleet) await this.loadFleet()
             } catch {
                 API.logout()
             }
@@ -377,15 +379,23 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet) {
+                if (!this.fleet || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
+                    this.fleet = {
+                        members: [] as string[],
+                        founder: '',
+                        img: '',
+                        name: '',
+                        info: '',
+                        public: false,
+                    } as type.SpaceFleet
                     return
                 }
             }
-            for (let member of this.fleet.members) {
-                result = await API.getFleetPlayer(member)
-                this.fleetMembers.push(result.player)
-            }
+            result = (await API.getFleetMembers(this.player.spaceFleet!)) as type.User[]
+            let fleetMembers = []
+            for (let member of result) fleetMembers.push(member)
+            this.fleetMembers = fleetMembers.filter(m => this.fleet.members.includes(m.id)).map(m => m.player)
         },
         //game
         async gameloop() {

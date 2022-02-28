@@ -83,8 +83,17 @@ export async function addPlayer(player: type.Player): Promise<void> {
         })
     }
 }
-export async function getFleetPlayer(id: string): Promise<type.User> {
+export async function getFleetPlayer(id: string) {
     return (await getDoc(doc(getFirestore(), 'users', id))).data() as type.User
+}
+
+export async function getFleetMembers(spaceFleet: string): Promise<type.User[]> {
+    const docs: QueryDocumentSnapshot<DocumentData>[] = []
+    const querySnapshot = await getDocs(query(collection(getFirestore(), 'users'), where('player.spaceFleet', '==', spaceFleet)))
+    querySnapshot.forEach(doc => {
+        docs.push(doc)
+    })
+    return docs.map(members => ({ ...(members.data() as type.User), id: members.id }))
 }
 export async function searchSpaceFleet(name: string) {
     const docs: QueryDocumentSnapshot<DocumentData>[] = []
@@ -92,7 +101,7 @@ export async function searchSpaceFleet(name: string) {
     querySnapshot.forEach(doc => {
         docs.push(doc)
     })
-    return docs.map(spaceFleelt => ({ ...spaceFleelt.data(), id: spaceFleelt.id }))
+    return docs.map(spaceFleet => ({ ...spaceFleet.data(), id: spaceFleet.id }))
 }
 export async function getPlayer(): Promise<type.User | null> {
     const id = getAuth().currentUser?.uid
