@@ -121,10 +121,10 @@
                     <div class="col-6"></div>
                     <div class="col-6">
                         <div v-if="!editProfile">
-                            <button class="btn btn-outline-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
+                            <button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
                         <div v-if="editProfile">
-                            <button class="btn btn-outline-success shadow-none w-25" @click="toggleEdit(true)" :disabled="player.username.length < 3">
+                            <button class="btn btn-success shadow-none w-25" @click="toggleEdit(true)" :disabled="player.username.length < 3">
                                 save profile
                             </button>
                         </div>
