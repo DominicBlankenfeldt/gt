@@ -42,6 +42,21 @@
                     <div class="row">
                         <div class="col-4">
                             <img src="/gt/img/placeholder_wappen_150.png" alt="placeholder" />
+                            <div v-if="!edit">
+                                {{ fleet.public ? 'public' : 'private' }}
+                            </div>
+                            <div v-else>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    <input
+                                        class="form-check-input shadow-none"
+                                        v-model="fleet.public"
+                                        type="checkbox"
+                                        value=""
+                                        id="flexCheckDefault"
+                                    />
+                                    public
+                                </label>
+                            </div>
                         </div>
                         <div class="col-4">
                             <div>founder:</div>
