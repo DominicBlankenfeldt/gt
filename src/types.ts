@@ -44,7 +44,7 @@ export interface Player {
     id: string
     username: string
     img: string
-    registeredAt: number
+    registeredAt: any
     playMode: PlayMode
     playedGames: number
     playedHardcore: number
@@ -114,9 +114,6 @@ export interface Item {
 }
 export type Itemtype = 'coin' | 'blackHole' | 'growPotion' | 'clearField' | 'magnet' | 'slowEnemies' | 'stopTime'
 
-export interface ref<Player> {
-    value: Player
-}
 export interface Plasma {
     size: number
     moveVector: Vector

@@ -1,6 +1,12 @@
 <template>
     <div class="container">
-        <div class="card" style="margin-top: 10vh">
+        <div class="card" style="margin-top: 8vh">
+            <div class="card-header">Movement</div>
+            <div class="card-body">
+                <p>You can move with "wasd" or with the arrow keys</p>
+            </div>
+        </div>
+        <div class="card mt-1">
             <div class="card-header">Abilities</div>
             <div class="card-body">
                 <p>With the key "1" you can speed up your movement if you unlock the ability in your skilltree</p>
@@ -10,7 +16,7 @@
             </div>
         </div>
 
-        <div class="card mt-5">
+        <div class="card mt-1">
             <div class="card-header">Items</div>
             <div class="card-body">
                 <div>
@@ -43,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="card mt-5">
+        <div class="card mt-1">
             <div class="card-header">Enemies</div>
             <div class="card-body">
                 <div class="row justify-content-center">

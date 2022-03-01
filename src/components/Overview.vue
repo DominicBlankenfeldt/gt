@@ -40,7 +40,7 @@
                 <div>
                     registered since:
                     <br />
-                    {{ player.registeredAt }}
+                    {{ player.registeredAt.toLocaleString() }}
                 </div>
             </div>
             <div class="col-8 row">
@@ -87,18 +87,33 @@
                 </div>
                 <div class="col-6 gy-2 aling-content-start">
                     <div>
-                        Space Flotte:
+                        Skill Points:
                         <br />
-                        *TODO*
+                        {{ player.skillTree.skillPoints }}
                     </div>
                     <div>
-                        Highscore Flotte:
+                        weapon number:
                         <br />
-                        (all members highscore/number of players)
+                        {{ player.weaponTree.weaponAvaibleTypes.length }}
+                    </div>
+                    <div>
+                        Weapon Points:
+                        <br />
+                        {{ player.weaponTree.weaponPoints }}
+                    </div>
+                    <div>
+                        passiv items number:
+                        <br />
+                        {{ player.passivTree.passivAvaibleTypes.length - 1 }}
+                    </div>
+
+                    <div>
+                        Passiv Points:
+                        <br />
+                        {{ player.passivTree.passivPoints }}
                     </div>
                 </div>
             </div>
-            <div>Skilltreecontent (TODO)</div>
         </div>
         <div class="card-footer">
             <div class="features">

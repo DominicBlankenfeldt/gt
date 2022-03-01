@@ -32,29 +32,29 @@ export const passivDetails = {
 
 //player
 
-export function checkPlayer(checkedPlayer: type.Player) {
-    checkedPlayer = checkedPlayer || {}
-    checkedPlayer.size = checkedPlayer.size || 20
-    checkedPlayer.id = checkedPlayer.id || ''
-    checkedPlayer.originalSize = checkedPlayer.originalSize || 20
-    checkedPlayer.vector = checkedPlayer.vector || [0, 0]
-    checkedPlayer.moveVector = checkedPlayer.moveVector || [0, 0]
-    checkedPlayer.speed = checkedPlayer.speed || 5
-    checkedPlayer.highscore = checkedPlayer.highscore || 0
-    checkedPlayer.highscoreHardcore = checkedPlayer.highscoreHardcore || 0
-    checkedPlayer.highscoreTotalchaos = checkedPlayer.highscoreTotalchaos || 0
-    checkedPlayer.username = checkedPlayer.username || 'gast'
-    checkedPlayer.img = checkedPlayer.img || ''
-    checkedPlayer.registeredAt = checkedPlayer.registeredAt || 0
-    checkedPlayer.playedGames = checkedPlayer.playedGames || 0
-    checkedPlayer.playedHardcore = checkedPlayer.playedHardcore || 0
-    checkedPlayer.playedTotalchaos = checkedPlayer.playedTotalchaos || 0
-    checkedPlayer.defeatedBosses = checkedPlayer.defeatedBosses || 0
-    checkedPlayer.defeatedBossesTotalchaos = checkedPlayer.defeatedBossesTotalchaos || 0
-    checkedPlayer.defeatedBossesHardcore = checkedPlayer.defeatedBossesHardcore || 0
-    checkedPlayer.playMode = checkedPlayer.playMode || 'normal'
-    checkedPlayer.weaponTree =
-        checkedPlayer.weaponTree ||
+export function checkPlayer(player: type.Player) {
+    player = player || {}
+    player.size = player.size || 20
+    player.id = player.id || ''
+    player.originalSize = player.originalSize || 20
+    player.vector = player.vector || [0, 0]
+    player.moveVector = player.moveVector || [0, 0]
+    player.speed = player.speed || 5
+    player.highscore = player.highscore || 0
+    player.highscoreHardcore = player.highscoreHardcore || 0
+    player.highscoreTotalchaos = player.highscoreTotalchaos || 0
+    player.username = player.username || 'gast'
+    player.img = player.img || ''
+    player.registeredAt = player.registeredAt || new Date()
+    player.playedGames = player.playedGames || 0
+    player.playedHardcore = player.playedHardcore || 0
+    player.playedTotalchaos = player.playedTotalchaos || 0
+    player.defeatedBosses = player.defeatedBosses || 0
+    player.defeatedBossesTotalchaos = player.defeatedBossesTotalchaos || 0
+    player.defeatedBossesHardcore = player.defeatedBossesHardcore || 0
+    player.playMode = player.playMode || 'normal'
+    player.weaponTree =
+        player.weaponTree ||
         ({
             weaponType: 'standard',
             weaponAvaibleTypes: ['standard'],
@@ -62,21 +62,21 @@ export function checkPlayer(checkedPlayer: type.Player) {
             weaponUpgrades: [] as type.WeaponUpgrade[],
         } as type.WeaponTree)
     for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload']) {
-        if (checkWeaponUpgrade(checkedPlayer, weaponUpgrade)) {
-            checkedPlayer.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
+        if (checkWeaponUpgrade(player, weaponUpgrade)) {
+            player.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
         }
     }
-    checkedPlayer.weaponTree.weaponType = checkedPlayer.weaponTree.weaponType || 'standard'
-    checkedPlayer.weaponTree.weaponAvaibleTypes = checkedPlayer.weaponTree.weaponAvaibleTypes || ['standard']
-    checkedPlayer.skillTree =
-        checkedPlayer.skillTree ||
+    player.weaponTree.weaponType = player.weaponTree.weaponType || 'standard'
+    player.weaponTree.weaponAvaibleTypes = player.weaponTree.weaponAvaibleTypes || ['standard']
+    player.skillTree =
+        player.skillTree ||
         ({
             skillPoints: 0,
             skills: [] as type.Skill[],
         } as type.SkillTree)
     for (const skill of ['shotAbility', 'fastAbility', 'slowAbility', 'bombAbility']) {
-        if (checkSkill(checkedPlayer, skill)) {
-            checkedPlayer.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
+        if (checkSkill(player, skill)) {
+            player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
     }
     for (const skill of [
@@ -90,12 +90,12 @@ export function checkPlayer(checkedPlayer: type.Player) {
         'betterGrowPotion',
         'smallerBlackHole',
     ]) {
-        if (checkSkill(checkedPlayer, skill)) {
-            checkedPlayer.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
+        if (checkSkill(player, skill)) {
+            player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
     }
-    checkedPlayer.passivTree =
-        checkedPlayer.passivTree ||
+    player.passivTree =
+        player.passivTree ||
         ({
             passivType: 'none',
             passivAvaibleTypes: ['none'],
@@ -103,21 +103,21 @@ export function checkPlayer(checkedPlayer: type.Player) {
             passivUpgrades: [] as type.PassivUpgrade[],
         } as type.PassivTree)
     for (const passivUpgrade of ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems']) {
-        if (checkPassivUpgrade(checkedPlayer, passivUpgrade)) {
-            checkedPlayer.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
+        if (checkPassivUpgrade(player, passivUpgrade)) {
+            player.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
         }
     }
-    checkedPlayer.passivTree.passivType = checkedPlayer.passivTree.passivType || 'none'
-    checkedPlayer.passivTree.passivAvaibleTypes = checkedPlayer.passivTree.passivAvaibleTypes || ['none']
-    return checkedPlayer
+    player.passivTree.passivType = player.passivTree.passivType || 'none'
+    player.passivTree.passivAvaibleTypes = player.passivTree.passivAvaibleTypes || ['none']
+    return player
 }
 
-function checkWeaponUpgrade(checkedPlayer: type.Player, weaponUpgrade: string) {
-    return checkedPlayer.weaponTree.weaponUpgrades[checkedPlayer.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)] === undefined
+function checkWeaponUpgrade(player: type.Player, weaponUpgrade: string) {
+    return player.weaponTree.weaponUpgrades[player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)] === undefined
 }
-function checkSkill(checkedPlayer: type.Player, skill: string) {
-    return checkedPlayer.skillTree.skills[checkedPlayer.skillTree.skills.findIndex(s => s.name == skill)] === undefined
+function checkSkill(player: type.Player, skill: string) {
+    return player.skillTree.skills[player.skillTree.skills.findIndex(s => s.name == skill)] === undefined
 }
-function checkPassivUpgrade(checkedPlayer: type.Player, passivUpgrade: string) {
-    return checkedPlayer.passivTree.passivUpgrades[checkedPlayer.passivTree.passivUpgrades.findIndex(s => s.name == passivUpgrade)] === undefined
+function checkPassivUpgrade(player: type.Player, passivUpgrade: string) {
+    return player.passivTree.passivUpgrades[player.passivTree.passivUpgrades.findIndex(s => s.name == passivUpgrade)] === undefined
 }

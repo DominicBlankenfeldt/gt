@@ -95,7 +95,7 @@ export async function getFleetMembers(spaceFleet: string): Promise<type.User[]> 
 }
 export async function searchSpaceFleet(name: string) {
     const docs: QueryDocumentSnapshot<DocumentData>[] = []
-    const querySnapshot = await getDocs(query(collection(getFirestore(), 'spaceFleets'), where('name', '==', name)))
+    const querySnapshot = await getDocs(query(collection(getFirestore(), 'spaceFleets'), where('name', '<=', name + '~'), where('name', '>=', name)))
     querySnapshot.forEach(doc => {
         docs.push(doc)
     })

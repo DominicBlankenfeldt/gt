@@ -119,7 +119,7 @@ export default defineComponent({
             try {
                 await API.register(this.email, this.password)
                 this.player.username = this.username
-                this.player.registeredAt = Date.now()
+                this.player.registeredAt = new Date()
                 await API.addPlayer(this.player)
                 this.$router.push('/home')
             } catch (e) {

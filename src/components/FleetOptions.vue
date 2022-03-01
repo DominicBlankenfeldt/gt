@@ -28,7 +28,8 @@
                 <div class="row g-0 mt-1">
                     <div class="col-2">{{ fleet.name }}</div>
                     <div class="col-9">{{ fleet.info }}</div>
-                    <button class="col-1 btn btn-outline-success" @click="joinSpaceFleet(fleet)">join</button>
+                    <button class="col-1 btn btn-outline-success" v-if="fleet.members.length < 5" @click="joinSpaceFleet(fleet)">join</button>
+                    <button class="col-1 btn btn-outline-danger" v-else disabled>full</button>
                 </div>
             </div>
             <div v-if="!player.spaceFleet" class="card-body">you didnt join a fleet yet</div>
