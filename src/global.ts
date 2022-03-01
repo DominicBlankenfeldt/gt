@@ -45,7 +45,7 @@ export function checkPlayer(player: type.Player) {
     player.highscoreTotalchaos = player.highscoreTotalchaos || 0
     player.username = player.username || 'gast'
     player.img = player.img || ''
-    player.registeredAt = player.registeredAt || new Date()
+    player.registeredAt = player.registeredAt || new Date().toJSON()
     player.playedGames = player.playedGames || 0
     player.playedHardcore = player.playedHardcore || 0
     player.playedTotalchaos = player.playedTotalchaos || 0

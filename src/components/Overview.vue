@@ -40,7 +40,7 @@
                 <div>
                     registered since:
                     <br />
-                    {{ player.registeredAt.toLocaleString() }}
+                    {{ new Date(player.registeredAt).toLocaleString() }}
                 </div>
             </div>
             <div class="col-8 row">
@@ -162,6 +162,12 @@ export default defineComponent({
             img: '',
             images: ['001', '002', '003', '004', '005'],
         }
+    },
+    computed: {
+        registered() {
+            let help = JSON.parse(this.player.registeredAt)
+            return help
+        },
     },
     async mounted() {
         this.bossFight = false
