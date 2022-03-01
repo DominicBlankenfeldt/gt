@@ -12,7 +12,7 @@ export const skillDetails = {
     betterGrowPotion: { name: 'alchemist', maxlvl: 20, description: 'while grwon you gain more score' },
     spawnLessEnemy: { name: 'cowards', maxlvl: 20, description: 'it takes longer for additional enemies to spawn' },
     longerStopTime: { name: 'time anomaly', maxlvl: 20, description: 'time stands still longer' },
-    scoreMultiplicator: { name: 'golden times', maxlvl: 20, description: 'you gain more score' },
+    scoreMultiplicator: { name: 'golden times', maxlvl: 20, description: 'you gain more score over time' },
     smallerBlackHole: { name: 'cute black holes', maxlvl: 20, description: 'black holes are smaller' },
     slowEnemy: { name: 'braking fog', maxlvl: 20, description: 'enemies will slow down' },
     longerMagnet: { name: 'permanent magnet', maxlvl: 20, description: 'the magnet lasts longer' },
@@ -24,10 +24,10 @@ export const weaponDetails = {
     fasterReload: { name: 'load automatically', maxlvl: 10, description: 'increases your reload speed' },
 }
 export const passivDetails = {
-    increaseScore: { name: 'increaseScore', maxlvl: 50, description: '' },
-    increaseGun: { name: 'increaseGun', maxlvl: 50, description: '' },
-    nerfEnemies: { name: 'nerfEnemies', maxlvl: 50, description: '' },
-    moreItems: { name: 'moreItems', maxlvl: 50, description: '' },
+    increaseScore: { name: 'increaseScore', maxlvl: 50, description: 'increases overall score gain' },
+    increaseGun: { name: 'increaseGun', maxlvl: 50, description: 'increases all weapon stats' },
+    nerfEnemies: { name: 'nerfEnemies', maxlvl: 50, description: 'less enemies and they are slower' },
+    moreItems: { name: 'moreItems', maxlvl: 50, description: 'more items spawn' },
 }
 
 //player
