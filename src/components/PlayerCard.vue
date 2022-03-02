@@ -1,15 +1,13 @@
 <template>
     <div class="card card-default w-75 mt-5" style="margin-left: 12.5%" v-if="dataLoad">
-        <div class="card-header header row g-0">
-            <!-- <div><h3>Profil-Karte</h3></div> -->
-        </div>
+        <div class="card-header header row g-0"></div>
         <div class="card-body row gx-0">
             <div class="profile-pic col-4">
                 <div v-if="player.img">
-                    <img :src="`/gt/img/avatars/char_${player.img}.png`" alt="" style="height: calc(20vw); width: 20vw" />
+                    <img :src="`/gt/img/avatars/char_${player.img}.png`" alt="" style="height: 20vw; width: 20vw" />
                 </div>
                 <div v-else>
-                    <img src="/gt/img/avatars/avatar_placeholder.png" alt="" style="height: calc(20vw); width: 20vw" />
+                    <img src="/gt/img/avatars/avatar_placeholder.png" alt="" style="height: 20vw; width: 20vw" />
                 </div>
                 <div v-if="editProfile">
                     <!-- Button trigger modal -->
@@ -119,7 +117,7 @@
             <div class="features">
                 <div class="row">
                     <div class="col-6"></div>
-                    <div class="col-6">
+                    <div class="col-6" v-if="editAble">
                         <div v-if="!editProfile">
                             <button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
@@ -141,48 +139,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import * as API from '@/API'
-import { checkPlayer, bossFight } from '@/global'
 import * as type from '@/types'
-import { currentUser } from '@/router'
 export default defineComponent({
-    setup() {
-        bossFight
-        currentUser
+    props: {
+        playerProp: {
+            type: Object as PropType<type.Player>,
+            required: true,
+            size: Number,
+        },
+        editAble: Boolean,
     },
     data() {
         return {
-            dataLoad: false,
-            user: currentUser,
-            bossFight: bossFight,
             player: {} as type.Player,
+            dataLoad: false,
             hardCoreMode: false,
             editProfile: false,
             img: '',
             images: ['001', '002', '003', '004', '005'],
         }
     },
+    mounted() {
+        this.player = this.playerProp
+        this.dataLoad = true
+    },
     computed: {
         registered() {
             let help = JSON.parse(this.player.registeredAt)
             return help
         },
-    },
-    async mounted() {
-        this.bossFight = false
-        if (this.user) {
-            try {
-                let result = await API.getPlayer()
-                if (result) {
-                    this.player = result.player
-                }
-            } catch {
-                API.logout()
-            }
-        }
-        this.player = checkPlayer(this.player) as type.Player
-        this.dataLoad = true
     },
 
     methods: {

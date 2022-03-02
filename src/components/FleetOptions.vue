@@ -61,13 +61,17 @@
                         </div>
                         <div class="col-4">
                             <div>founder:</div>
-                            <div>{{ fleetFounder?.username }}</div>
+                            <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                                {{ fleetFounder?.username }}
+                            </div>
                         </div>
                         <div class="col-4">
                             <div>members:</div>
                             <div v-for="member of fleetMembers" :key="member" class="d-flex justify-content-between">
                                 <div></div>
-                                {{ member.player.username }}
+                                <div @click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                                    {{ member.player.username }}
+                                </div>
                                 <button v-if="edit" class="btn shadow-none" @click="deleteMember(member)">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -169,6 +173,21 @@
                     </div>
                 </div>
             </div>
+            <!-- modal -->
+            <div
+                class="modal fade"
+                id="playerCard"
+                tabindex="-1"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+                @click="choosenPlayerLoad = false"
+            >
+                <div class="modal-dialog modal-xl">
+                    <div v-if="choosenPlayerLoad">
+                        <PlayerCard :playerProp="choosenPlayer" :editAble="false" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -178,7 +197,11 @@ import * as type from '@/types'
 import * as API from '@/API'
 import { currentUser } from '@/router'
 import { checkPlayer } from '@/global'
+import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
+    components: {
+        PlayerCard,
+    },
     data() {
         return {
             error: '',
@@ -186,6 +209,8 @@ export default defineComponent({
             searchedFleets: [] as type.SpaceFleet[],
             user: currentUser,
             player: {} as type.Player,
+            choosenPlayer: {} as type.Player,
+            choosenPlayerLoad: false,
             searchInput: '',
             nameInput: '',
             infoInput: '',
@@ -266,6 +291,10 @@ export default defineComponent({
         },
     },
     methods: {
+        choosePlayer(player: type.Player) {
+            this.choosenPlayer = player
+            this.choosenPlayerLoad = true
+        },
         deleteMember(member: type.Player) {
             this.fleet.members = this.fleet.members.filter(m => m != member.id)
             this.fleetMembers = this.fleetMembers.filter(m => m.id != member.id)
@@ -376,4 +405,8 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.modal-xl {
+    max-width: 85vw !important;
+}
+</style>
