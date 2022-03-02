@@ -58,12 +58,14 @@
                     <select
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.weaponTree.weaponType"
+                        :title="weaponDetails[player.weaponTree.weaponType].description"
                     >
                         <option
                             :selected="weaponAvaibleType == player.weaponTree.weaponType"
                             :value="weaponAvaibleType"
                             v-for="weaponAvaibleType of player.weaponTree.weaponAvaibleTypes"
                             :key="weaponAvaibleType"
+                            :title="weaponDetails[weaponAvaibleType].description"
                         >
                             {{ weaponAvaibleType }}
                         </option>
@@ -91,12 +93,14 @@
                     <select
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.passivTree.passivType"
+                        :title="passivDetails[player.passivTree.passivType]?.description"
                     >
                         <option
                             :selected="passivAvaibleType == player.passivTree.passivType"
                             :value="passivAvaibleType"
                             v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
                             :key="passivAvaibleType"
+                            :title="passivDetails[passivAvaibleType]?.description"
                         >
                             {{ passivAvaibleType }}
                         </option>

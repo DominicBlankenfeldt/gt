@@ -22,6 +22,12 @@ export const weaponDetails = {
     biggerProjectile: { name: 'big plasma', maxlvl: 10, description: 'your plasma gets bigger' },
     fasterProjectile: { name: 'high frequency', maxlvl: 10, description: 'your plasma gets faster' },
     fasterReload: { name: 'load automatically', maxlvl: 10, description: 'increases your reload speed' },
+    standard: { description: 'the standard gun' },
+    shotgun: { description: 'shot 3 plasmas' },
+    MG: { description: 'faster reload' },
+    aimgun: { description: 'plamsa pursues enemies' },
+    splitgun: { description: 'plasma shatters after collision' },
+    safegun: { description: 'throws plasma around the player' },
 }
 export const passivDetails = {
     increaseScore: { name: 'increaseScore', maxlvl: 50, description: 'increases overall score gain' },
