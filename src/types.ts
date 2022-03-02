@@ -61,7 +61,7 @@ export interface WeaponTree {
     weaponAvaibleTypes: weaponType[]
     weaponUpgrades: WeaponUpgrade[]
 }
-export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun'
+export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun' | 'safegun'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
@@ -78,8 +78,8 @@ export interface PassivUpgrade {
     name: PassivUpgradeName
     lvl: number
 }
-export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems'
-export type PassivType = 'none' | 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems'
+export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
+export type PassivType = 'none' | 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
 export interface SkillTree {
     skillPoints: number
     skills: Skill[]

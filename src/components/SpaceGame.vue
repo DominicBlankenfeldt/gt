@@ -243,7 +243,7 @@
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { checkPlayer, production, bossFight, skillDetails } from '@/global'
-import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, getRandomInt, percent, roundHalf } from '@/game/helpers'
+import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -708,20 +708,31 @@ export default defineComponent({
             this.bossEnemy.moveVector = norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             switch (this.bossEnemy.type) {
                 case 'normal':
-                    this.bossEnemy.maxHP = Math.round(50 * (this.player.defeatedBosses + 1) * percent(this.player.defeatedBosses + 1 * 10, 'in'))
+                    this.bossEnemy.maxHP = Math.round(
+                        50 *
+                            (this.player.defeatedBosses + 1) *
+                            percent(this.player.defeatedBosses + 1 * 10, 'in') *
+                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                    )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
                     break
                 case 'hardcore':
                     this.bossEnemy.maxHP = Math.round(
-                        25 * (this.player.defeatedBossesHardcore + 1) * percent(this.player.defeatedBossesHardcore + 1 * 10, 'in')
+                        25 *
+                            (this.player.defeatedBossesHardcore + 1) *
+                            percent(this.player.defeatedBossesHardcore + 1 * 10, 'in') *
+                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
                     )
                     this.startingEnemies = Math.round(75 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
                     break
                 case 'totalchaos':
                     this.bossEnemy.maxHP = Math.round(
-                        50 * (this.player.defeatedBossesTotalchaos + 1) * percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in')
+                        50 *
+                            (this.player.defeatedBossesTotalchaos + 1) *
+                            percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in') *
+                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
@@ -828,7 +839,10 @@ export default defineComponent({
         handleBossEnemyMovement() {
             this.bossEnemy.moveVector = mulVec(
                 norVec(this.bossEnemy.moveVector),
-                this.bossEnemy.speed * this.generalSize * percent(this.fleetlvl, 'de')
+                this.bossEnemy.speed *
+                    this.generalSize *
+                    percent(this.fleetlvl / 20, 'de') *
+                    (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
             )
             this.bossEnemy.vector = addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (borderCheck(this.bossEnemy, 'inner', this.field)) {
@@ -847,8 +861,8 @@ export default defineComponent({
                 this.bossFight = false
                 this.startButtonText = 'start'
                 this.cancelButtonText = ''
-                let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun'] as type.weaponType[]
-                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems'] as type.PassivType[]
+                let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun', 'safegun'] as type.weaponType[]
+                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss'] as type.PassivType[]
                 switch (this.bossEnemy.type) {
                     case 'normal':
                         this.player.defeatedBosses++
@@ -896,7 +910,12 @@ export default defineComponent({
             if (enemy) {
                 for (let plasma of this.plasmas) {
                     if (this.collisionsCheck(enemy, plasma)) {
-                        if (this.player.weaponTree.weaponType == 'aimgun') this.deletePlasma(plasma)
+                        switch (this.player.weaponTree.weaponType) {
+                            case 'aimgun':
+                            case 'safegun':
+                                this.deletePlasma(plasma)
+                                break
+                        }
                         if (plasma.split) {
                             for (let i = 0; i < 5; i++) {
                                 let moveVector = plasma.moveVector

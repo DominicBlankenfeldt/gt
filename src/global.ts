@@ -28,6 +28,7 @@ export const passivDetails = {
     increaseGun: { name: 'increaseGun', maxlvl: 50, description: 'increases all weapon stats' },
     nerfEnemies: { name: 'nerfEnemies', maxlvl: 50, description: 'less enemies and they are slower' },
     moreItems: { name: 'moreItems', maxlvl: 50, description: 'more items spawn' },
+    nerfBoss: { name: 'nerfBoss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
 }
 
 //player
@@ -102,7 +103,7 @@ export function checkPlayer(player: type.Player) {
             passivPoints: 0,
             passivUpgrades: [] as type.PassivUpgrade[],
         } as type.PassivTree)
-    for (const passivUpgrade of ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems']) {
+    for (const passivUpgrade of ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss']) {
         if (checkPassivUpgrade(player, passivUpgrade)) {
             player.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
         }

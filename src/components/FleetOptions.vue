@@ -271,7 +271,13 @@ export default defineComponent({
             this.fleetMembers = this.fleetMembers.filter(m => m.id != member.id)
         },
         async editSave() {
-            if (this.edit) await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
+            if (this.edit) {
+                try {
+                    await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
+                } catch {
+                    API.logout()
+                }
+            }
             this.edit = !this.edit
         },
         async loadFleet() {
@@ -353,7 +359,13 @@ export default defineComponent({
             }
         },
         async deleteSpaceFleet() {
-            if (this.player.spaceFleet) await API.deleteSpaceFleet(this.player.spaceFleet)
+            if (this.player.spaceFleet) {
+                try {
+                    await API.deleteSpaceFleet(this.player.spaceFleet)
+                } catch {
+                    API.logout()
+                }
+            }
             this.player.spaceFleet = ''
             this.loadFleet()
         },
