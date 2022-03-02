@@ -115,7 +115,15 @@ export function respawnEnemy(enemies: type.Enemy[], enemy: type.Enemy, generalSi
     return enemies.filter(e => e != enemy)
 }
 
-export function createItems(isStopTime: boolean, generalSize: number, player: type.Player, items: type.Item[], field: type.Field, badItems: boolean) {
+export function createItems(
+    isStopTime: boolean,
+    generalSize: number,
+    player: type.Player,
+    items: type.Item[],
+    field: type.Field,
+    badItems: boolean,
+    bossFight: boolean
+) {
     if (isStopTime) return
     let type = ''
     const vector = [0, 0] as type.Vector
@@ -123,7 +131,8 @@ export function createItems(isStopTime: boolean, generalSize: number, player: ty
     let imgsrc = ''
     let i = 6
     if (badItems) i = 7
-    switch (getRandomInt(i)) {
+    if (bossFight) i -= 2
+    switch (getRandomInt(i) + (bossFight ? 2 : 0)) {
         case 0:
             type = 'coin'
             size = (getRandomInt(25) + 20) * generalSize
@@ -145,7 +154,7 @@ export function createItems(isStopTime: boolean, generalSize: number, player: ty
             break
         case 4:
             type = 'slowEnemies'
-            imgsrc = '/gt/img/items/snowflake/snowflake.png'
+            imgsrc = '/gt/img/items/snowflake/snowflake.gif'
             size = (getRandomInt(25) + 20) * generalSize
             break
         case 5:

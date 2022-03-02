@@ -40,7 +40,7 @@
                     A magnet lets you attract items and repel enemies or enemies attract you
                 </div>
                 <div>
-                    <img src="/gt/img/items/snowflake/snowflake.png" alt="" />
+                    <img src="/gt/img/items/snowflake/snowflake.gif" alt="" />
                     Slow all enemies
                 </div>
                 <div>

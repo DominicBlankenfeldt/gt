@@ -312,6 +312,7 @@ export default defineComponent({
             // gameSetup
             hardCoreMode: false,
             gameStarted: false,
+            spawnBadItems: true,
             startingEnemies: 4,
             difficulty: 2,
             score: 0,
@@ -434,9 +435,9 @@ export default defineComponent({
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.player.passivTree.passivType == 'moreItems') {
-                if (this.gameloopCounter2 % Math.round(240 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
-                    this.spawnItems(true) // 4sek
-                    this.spawnItems(false) // 4sek
+                if (this.gameloopCounter2 % Math.round(120 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
+                    this.spawnItems(this.spawnBadItems) // 4sek
+                    this.spawnBadItems = !this.spawnBadItems
                 }
             } else {
                 if (this.gameloopCounter2 % 120 == 0) this.spawnItems(true) // 2sek
@@ -473,6 +474,7 @@ export default defineComponent({
             this.isSlowEnemies = false
             this.bombCoolDown = false
             this.shotCoolDown = false
+            this.spawnBadItems = true
             this.growDuration = 0
             this.magnetDuration = 0
             this.stopTimeDuration = 0
@@ -858,9 +860,6 @@ export default defineComponent({
         },
         async handleBossEnemyDead() {
             if (this.bossEnemy.hP <= 0) {
-                this.bossFight = false
-                this.startButtonText = 'start'
-                this.cancelButtonText = ''
                 let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun', 'safegun'] as type.weaponType[]
                 let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss'] as type.PassivType[]
                 switch (this.bossEnemy.type) {
@@ -882,6 +881,9 @@ export default defineComponent({
                 }
                 this.bossEnemy = {} as type.BossEnemy
                 await this.gameOver('You have killed the boss', 'alert alert-success')
+                this.startButtonText = 'start'
+                this.cancelButtonText = ''
+                this.bossFight = false
             }
         },
         //colliosion
@@ -1036,7 +1038,7 @@ export default defineComponent({
         },
         //items
         spawnItems(badItems: boolean) {
-            this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field, badItems) || this.items
+            this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field, badItems, this.bossFight) || this.items
         },
         collectCoin(item: type.Item) {
             this.score +=
