@@ -1044,6 +1044,9 @@ export default defineComponent({
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
         },
         collectGrowPotion(item: type.Item) {
+            if (!this.isGrow) {
+                this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
+            }
             this.isGrow = true
             this.growDuration += (250 * item.size) / this.generalSize
         },
@@ -1069,6 +1072,7 @@ export default defineComponent({
             if (this.isGrow) {
                 if (this.growDuration <= 0) {
                     this.isGrow = false
+                    this.player.size = this.player.originalSize * this.generalSize
                     this.player.vector = addVec(this.player.vector, this.player.size / 2)
                 }
             }
@@ -1090,7 +1094,7 @@ export default defineComponent({
             for (let item of this.items) {
                 if (item.type == 'blackHole') {
                     item.size += 20 * percent(findSkill(this.player, 'smallerBlackHole'), 'de') * this.generalSize
-                    item.vector = subVec(item.vector, [10, 10])
+                    item.vector = subVec(item.vector, (20 * percent(findSkill(this.player, 'smallerBlackHole'), 'de') * this.generalSize) / 2)
                 }
             }
         },
