@@ -297,13 +297,12 @@ export default defineComponent({
                     } as type.SpaceFleet
                     return
                 }
-                result = await API.getFleetPlayer(this.fleet.founder)
-                this.fleetFounder = result.player
             }
             result = (await API.getFleetMembers(this.player.spaceFleet!)) as type.User[]
             let fleetMembers = []
             for (let member of result) fleetMembers.push(member)
             this.fleetMembers = fleetMembers.filter(m => this.fleet.members.includes(m.id))
+            this.fleetFounder = this.fleetMembers.find(m => m.id == this.fleet.founder)!.player
         },
         async createFleet() {
             if (!this.user) return
@@ -333,10 +332,11 @@ export default defineComponent({
         },
         async joinSpaceFleet(fleet: type.SpaceFleet) {
             if (!this.user) return
-            fleet.members.push(this.user.uid)
+            if (!fleet.id) return
             try {
-                if (!fleet.id) return
-                await API.updateAPI('spaceFleets', fleet.id, fleet)
+                fleet = await API.getPlayerSpaceFleet(fleet.id!)
+                fleet.members.push(this.user.uid)
+                await API.updateAPI('spaceFleets', fleet.id!, fleet)
                 this.searchedFleets = [] as type.SpaceFleet[]
                 this.player.spaceFleet = fleet.id
                 await API.addPlayer(this.player)
@@ -347,10 +347,10 @@ export default defineComponent({
         },
         async leaveSpaceFleet() {
             if (this.fleet.founder == this.user?.uid) return
+            if (!this.fleet.id) return
             this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
             this.player.spaceFleet = ''
             try {
-                if (!this.fleet.id) return
                 await API.addPlayer(this.player)
                 await API.updateAPI('spaceFleets', this.fleet.id, this.fleet)
                 this.loadFleet()
@@ -367,7 +367,11 @@ export default defineComponent({
                 }
             }
             this.player.spaceFleet = ''
-            this.loadFleet()
+            try {
+                this.loadFleet()
+            } catch {
+                API.logout()
+            }
         },
     },
 })
