@@ -6,43 +6,43 @@
     </div>
     <div class="row g-0">
         <div class="col-12 row g-0">
-            <div>
+            <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                 <img src="/gt/img/crowns/gold.png" alt="" style="width: 5vw" class="col-12" />
             </div>
-            <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+            <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                 {{ bestPlayers[0]?.player.username }}
             </div>
-            <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+            <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                 {{ Math.round(bestPlayers[0]?.player[highscore]) }}
             </div>
         </div>
         <div class="col-12 row g-0 justify-content-between">
             <div class="col-4">
-                <div>
+                <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     <img src="/gt/img/crowns/silver.png" alt="" style="width: 5vw" class="col-12" />
                 </div>
-                <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     {{ bestPlayers[1]?.player.username }}
                 </div>
-                <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     {{ Math.round(bestPlayers[1]?.player[highscore]) }}
                 </div>
             </div>
 
             <div class="col-4">
-                <div>
+                <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     <img src="/gt/img/crowns/bronze.png" alt="" style="width: 5vw" class="col-12" />
                 </div>
-                <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     {{ bestPlayers[2]?.player.username }}
                 </div>
-                <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     {{ Math.round(bestPlayers[2]?.player[highscore]) }}
                 </div>
             </div>
 
             <div class="col-12 row g-0" v-for="(bestPlayer, index) in bestPlayers" :key="bestPlayer.id">
-                <div v-if="index > 2" @click="choosePlayer(bestPlayer?.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                <div v-if="index > 2" @click="choosePlayer(bestPlayer?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     {{ bestPlayer?.player.username }} :
                     {{ Math.round(bestPlayer?.player[highscore]) }}
                 </div>
@@ -52,7 +52,7 @@
         <div
             style="margin-top: 15vh"
             class="modal fade"
-            id="playerCard"
+            :id="`playerCard${title}`"
             tabindex="-1"
             aria-labelledby="exampleModalLabel"
             aria-hidden="true"
@@ -71,7 +71,7 @@
 import { defineComponent } from 'vue'
 import * as type from '@/types'
 import PlayerCard from '@/components/PlayerCard.vue'
-
+import { checkPlayer } from '@/global'
 export default defineComponent({
     components: {
         PlayerCard,
@@ -89,8 +89,9 @@ export default defineComponent({
     },
     methods: {
         choosePlayer(player: type.Player) {
-            this.choosenPlayer = player
+            this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
+            console.log(this.choosenPlayer)
         },
     },
 })

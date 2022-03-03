@@ -42,7 +42,6 @@ export const passivDetails = {
 export function checkPlayer(player: type.Player) {
     player = player || {}
     player.size = player.size || 20
-    player.id = player.id || ''
     player.originalSize = player.originalSize || 20
     player.vector = player.vector || [0, 0]
     player.moveVector = player.moveVector || [0, 0]

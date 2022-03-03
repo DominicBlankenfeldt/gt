@@ -129,7 +129,7 @@
                     </div>
                 </div>
             </div>
-            <div class="footer">
+            <div class="footer" v-if="editAble">
                 <div class="footer-header">
                     <a href="https://discord.gg/G3UHhTaUNf">Join us on discord</a>
                 </div>

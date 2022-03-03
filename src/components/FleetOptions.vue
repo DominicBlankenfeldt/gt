@@ -293,7 +293,7 @@ export default defineComponent({
     },
     methods: {
         choosePlayer(player: type.Player) {
-            this.choosenPlayer = player
+            this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
         },
         deleteMember(member: type.Player) {
