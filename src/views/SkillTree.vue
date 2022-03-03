@@ -69,7 +69,7 @@
                         >
                             {{ weaponAvaibleType }}
                         </option>
-                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 3" disabled>
+                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 6" disabled>
                             unlock more by fight the boss
                         </option>
                     </select>
@@ -104,7 +104,7 @@
                         >
                             {{ passivAvaibleType }}
                         </option>
-                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 3" disabled>
+                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < 5" disabled>
                             unlock more by fight the boss
                         </option>
                     </select>

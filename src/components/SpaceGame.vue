@@ -243,7 +243,7 @@
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { checkPlayer, production, bossFight, skillDetails } from '@/global'
-import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf } from '@/game/helpers'
+import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -561,8 +561,7 @@ export default defineComponent({
                 switch (getRandomInt(4)) {
                     case 0:
                         if (!enemy.isGrow) {
-                            enemy.size *= 1.5
-                            enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 4)
+                            enemy = grow(enemy, 1.5, this.generalSize) as type.Enemy
                         }
                         enemy.isGrow = true
                         break
@@ -729,7 +728,7 @@ export default defineComponent({
                             percent(this.player.defeatedBossesHardcore + 1 * 10, 'in') *
                             (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
                     )
-                    this.startingEnemies = Math.round(75 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
+                    this.startingEnemies = Math.round(50 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
                     break
                 case 'totalchaos':
@@ -766,7 +765,7 @@ export default defineComponent({
                             this.bossEnemyAbilityBuffEnemies()
                             break
                         case 'hardcore':
-                            this.bossAbilityEnemyRespawn()
+                            this.bossAbilitySpawnItems()
                             break
                     }
                     break
@@ -833,16 +832,13 @@ export default defineComponent({
         },
         bossEnemyAbilityBuffEnemies() {
             for (let enemy of this.enemies) {
-                if (!enemy.isGrow) {
-                    enemy.size *= 1.5
-                    enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 4)
-                }
+                if (!enemy.isGrow) enemy = grow(enemy, 1.5, this.generalSize) as type.Enemy
                 enemy.isGrow = true
                 enemy.isMagnet = true
             }
         },
-        bossAbilityEnemyRespawn() {
-            for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
+        bossAbilitySpawnItems() {
+            for (let i = 0; i < 5; i++) this.spawnItems(false)
         },
         handleBossEnemyMovement() {
             this.bossEnemy.moveVector = mulVec(
@@ -974,8 +970,7 @@ export default defineComponent({
                     if (this.collisionsCheck(enemy, item)) {
                         if (!enemy.isGrow) {
                             this.despawnItem(item)
-                            enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 2)
-                            enemy.size *= 2
+                            enemy = grow(enemy, 2, this.generalSize) as type.Enemy
                         }
                         enemy.isGrow = true
                     }
@@ -1053,9 +1048,7 @@ export default defineComponent({
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
         },
         collectGrowPotion(item: type.Item) {
-            if (!this.isGrow) {
-                this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
-            }
+            if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
             this.isGrow = true
             this.growDuration += (250 * item.size) / this.generalSize
         },
