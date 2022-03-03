@@ -91,7 +91,6 @@ export default defineComponent({
         choosePlayer(player: type.Player) {
             this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
-            console.log(this.choosenPlayer)
         },
     },
 })

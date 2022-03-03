@@ -192,6 +192,7 @@
             </div>
         </div>
         <div v-if="!user && !gameStarted">Log in to use all features.</div>
+        <div v-if="user && !gameStarted">You can press "enter" to start a round</div>
         <div
             :style="{
                 left: 11 + '%',
@@ -1142,8 +1143,8 @@ export default defineComponent({
             this.lastDirection = newPlayer.lastDirection
         },
         handlePlayerAbilities() {
-            if (this.pressedKeys['3'] && findSkill(this.player, 'bombAbility')) this.bombAbility()
-            if (this.pressedKeys['4'] && findSkill(this.player, 'shotAbility')) this.shotAbility()
+            if (this.pressedKeys[this.player.settings.abilitys[3]] && findSkill(this.player, 'bombAbility')) this.bombAbility()
+            if (this.pressedKeys[this.player.settings.abilitys[4]] && findSkill(this.player, 'shotAbility')) this.shotAbility()
         },
         bombAbility() {
             if (this.bombCoolDown) return

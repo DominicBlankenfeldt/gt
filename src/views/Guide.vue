@@ -1,18 +1,39 @@
 <template>
-    <div class="container">
+    <div class="container" v-if="dataLoad">
         <div class="card" style="margin-top: 8vh">
             <div class="card-header">Movement</div>
             <div class="card-body">
-                <p>You can move with "wasd" or with the arrow keys</p>
+                <p>
+                    {{
+                        `You can move with "${
+                            player.settings.moves['up'] +
+                            player.settings.moves['left'] +
+                            player.settings.moves['down'] +
+                            player.settings.moves['right']
+                        }" or with the arrow keys`
+                    }}
+                </p>
             </div>
         </div>
         <div class="card mt-1">
             <div class="card-header">Abilities</div>
             <div class="card-body">
-                <p>With the key "1" you can speed up your movement if you unlock the ability in your skilltree</p>
-                <p>With the key "2" you can slow down your movement if you unlock the ability in your skilltree</p>
-                <p>With the key "3" you can remote ignition the nearest bomb if you unlock the ability in your skilltree</p>
-                <p>With the key "4" you can shoot at enemies (a hit gives you score) if you unlock the ability in your skilltree</p>
+                <p>
+                    {{ `With the key "${player.settings.abilitys[1]}" you can speed up your movement if you unlock the ability in your skilltree` }}
+                </p>
+                <p>
+                    {{ `With the key "${player.settings.abilitys[2]}" you can slow down your movement if you unlock the ability in your skilltree` }}
+                </p>
+                <p>
+                    {{
+                        `With the key "${player.settings.abilitys[3]}" you can remote ignition the nearest bomb if you unlock the ability in your skilltree`
+                    }}
+                </p>
+                <p>
+                    {{
+                        `With the key "${player.settings.abilitys[4]}" you can shoot at enemies (a hit gives you score) if you unlock the ability in your skilltree`
+                    }}
+                </p>
             </div>
         </div>
 
@@ -71,3 +92,34 @@
         </div>
     </div>
 </template>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import * as type from '@/types'
+import { checkPlayer } from '@/global'
+import { currentUser } from '@/router'
+import * as API from '@/API'
+
+export default defineComponent({
+    data() {
+        return {
+            dataLoad: false,
+            user: currentUser,
+            player: {} as type.Player,
+        }
+    },
+    async mounted() {
+        if (this.user) {
+            try {
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
+            } catch {
+                API.logout()
+            }
+        }
+        this.player = checkPlayer(this.player) as type.Player
+        this.dataLoad = true
+    },
+})
+</script>

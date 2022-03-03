@@ -53,7 +53,62 @@ export interface Player {
     defeatedBossesHardcore: number
     defeatedBossesTotalchaos: number
     spaceFleet?: string
+    settings: Settings
 }
+export interface Settings {
+    abilitys: Abilitys
+    moves: Moves
+}
+export interface Moves {
+    up: Key
+    down: Key
+    left: Key
+    right: Key
+}
+export interface Abilitys {
+    1: Key
+    2: Key
+    3: Key
+    4: Key
+}
+export type Key =
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'g'
+    | 'h'
+    | 'i'
+    | 'j'
+    | 'k'
+    | 'l'
+    | 'm'
+    | 'n'
+    | 'o'
+    | 'p'
+    | 'q'
+    | 'r'
+    | 's'
+    | 't'
+    | 'u'
+    | 'v'
+    | 'w'
+    | 'x'
+    | 'y'
+    | 'z'
+    | '0'
+    | '1'
+    | '2'
+    | '3'
+    | '4'
+    | '5'
+    | '6'
+    | '7'
+    | '8'
+    | '9'
+
 export type PlayMode = 'normal' | 'hardcore' | 'totalchaos'
 export interface WeaponTree {
     weaponPoints: number

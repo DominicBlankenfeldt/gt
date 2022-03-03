@@ -41,6 +41,20 @@ export const passivDetails = {
 
 export function checkPlayer(player: type.Player) {
     player = player || {}
+    player.settings = player.settings || {
+        abilitys: {
+            1: '1',
+            2: '2',
+            3: '3',
+            4: '4',
+        },
+        moves: {
+            up: 'w',
+            down: 's',
+            left: 'a',
+            right: 'd',
+        },
+    }
     player.size = player.size || 20
     player.originalSize = player.originalSize || 20
     player.vector = player.vector || [0, 0]

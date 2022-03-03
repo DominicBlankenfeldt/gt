@@ -41,12 +41,12 @@ export function playerMovement(player: type.Player, pressedKeys: any, field: typ
     let multiplicator = 1
     player.moveVector = [0, 0]
 
-    if (pressedKeys['1'] && findSkill(player, 'fastAbility')) multiplicator = 2
-    if (pressedKeys['2'] && findSkill(player, 'slowAbility')) multiplicator = 0.5
-    if (pressedKeys['ArrowLeft'] || pressedKeys['a']) player.moveVector[0] = left(player, field)
-    if (pressedKeys['ArrowRight'] || pressedKeys['d']) player.moveVector[0] = right(player, field)
-    if (pressedKeys['ArrowUp'] || pressedKeys['w']) player.moveVector[1] = up(player, field)
-    if (pressedKeys['ArrowDown'] || pressedKeys['s']) player.moveVector[1] = down(player, field)
+    if (pressedKeys[player.settings.abilitys[1]] && findSkill(player, 'fastAbility')) multiplicator = 2
+    if (pressedKeys[player.settings.abilitys[2]] && findSkill(player, 'slowAbility')) multiplicator = 0.5
+    if (pressedKeys['ArrowLeft'] || pressedKeys[player.settings.moves['left']]) player.moveVector[0] = left(player, field)
+    if (pressedKeys['ArrowRight'] || pressedKeys[player.settings.moves['right']]) player.moveVector[0] = right(player, field)
+    if (pressedKeys['ArrowUp'] || pressedKeys[player.settings.moves['up']]) player.moveVector[1] = up(player, field)
+    if (pressedKeys['ArrowDown'] || pressedKeys[player.settings.moves['down']]) player.moveVector[1] = down(player, field)
 
     player.moveVector = mulVec(norVec(player.moveVector), player.speed * generalSize * multiplicator)
     player.vector = addVec(player.vector, player.moveVector)
