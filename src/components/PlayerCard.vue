@@ -90,7 +90,7 @@
                         {{ player.skillTree.skillPoints }}
                     </div>
                     <div>
-                        weapon number:
+                        Weapon number:
                         <br />
                         {{ player.weaponTree.weaponAvaibleTypes.length }}
                     </div>
@@ -100,7 +100,7 @@
                         {{ player.weaponTree.weaponPoints }}
                     </div>
                     <div>
-                        passiv items number:
+                        Passiv items number:
                         <br />
                         {{ player.passivTree.passivAvaibleTypes.length - 1 }}
                     </div>
@@ -115,14 +115,14 @@
         </div>
         <div class="card-footer">
             <div class="features">
-                <div class="row">
-                    <div class="col-6"></div>
-                    <div class="col-6" v-if="editAble">
+                <div class="row g-0">
+                    <div class="col-8"></div>
+                    <div class="col-4" v-if="editAble">
                         <div v-if="!editProfile">
                             <button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
                         <div v-if="editProfile">
-                            <button class="btn btn-success shadow-none w-25" @click="toggleEdit(true)" :disabled="player.username.length < 3">
+                            <button class="btn btn-success shadow-none w-50" @click="toggleEdit(true)" :disabled="player.username.length < 3">
                                 save profile
                             </button>
                         </div>

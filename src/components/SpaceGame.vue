@@ -560,7 +560,10 @@ export default defineComponent({
             for (let enemy of this.enemies) {
                 switch (getRandomInt(4)) {
                     case 0:
-                        if (!enemy.isGrow) enemy.size *= 1.5
+                        if (!enemy.isGrow) {
+                            enemy.size *= 1.5
+                            enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 4)
+                        }
                         enemy.isGrow = true
                         break
                     case 1:
@@ -830,7 +833,10 @@ export default defineComponent({
         },
         bossEnemyAbilityBuffEnemies() {
             for (let enemy of this.enemies) {
-                if (!enemy.isGrow) enemy.size *= 1.5
+                if (!enemy.isGrow) {
+                    enemy.size *= 1.5
+                    enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 4)
+                }
                 enemy.isGrow = true
                 enemy.isMagnet = true
             }
@@ -968,6 +974,7 @@ export default defineComponent({
                     if (this.collisionsCheck(enemy, item)) {
                         if (!enemy.isGrow) {
                             this.despawnItem(item)
+                            enemy.vector = subVec(enemy.vector, (enemy.size * this.generalSize) / 2)
                             enemy.size *= 2
                         }
                         enemy.isGrow = true

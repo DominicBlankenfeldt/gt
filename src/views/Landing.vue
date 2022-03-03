@@ -8,10 +8,10 @@
             <div class="card-body">
                 <div style="margin: 2%">
                     Landing 111 is a browser game in which you are the captain of your own ship and you against hordes of non-terrestrial competitors
-                    have to enforce. Play alone against everyone or one kicks Space Fleet and conquer the universe together.
+                    have to enforce. Play alone against everyone or join one Space Fleet and conquer the universe together.
                 </div>
-                <div class="row">
-                    <form @submit.prevent="register()" autocomplete="off" class="col-6" style="padding: 24px">
+                <div class="row align-items-end">
+                    <form @submit.prevent="register()" autocomplete="off" class="col-6">
                         <div>No account yet? Register for free!</div>
                         <div class="container">
                             <button class="btn" type="submit">

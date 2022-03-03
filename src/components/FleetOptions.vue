@@ -175,6 +175,7 @@
             </div>
             <!-- modal -->
             <div
+                style="margin-top: 15vh"
                 class="modal fade"
                 id="playerCard"
                 tabindex="-1"
