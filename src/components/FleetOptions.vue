@@ -198,6 +198,7 @@ import * as type from '@/types'
 import * as API from '@/API'
 import { currentUser } from '@/router'
 import { checkPlayer } from '@/global'
+import * as music from '@/music'
 import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
     components: {
@@ -236,6 +237,7 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                     this.player = checkPlayer(this.player) as type.Player
+                    music.changeVolume(this.player.settings.volume)
                 }
                 this.loadFleet()
             } catch {

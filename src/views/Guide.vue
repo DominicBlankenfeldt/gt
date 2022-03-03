@@ -98,6 +98,7 @@ import * as type from '@/types'
 import { checkPlayer } from '@/global'
 import { currentUser } from '@/router'
 import * as API from '@/API'
+import * as music from '@/music'
 
 export default defineComponent({
     data() {

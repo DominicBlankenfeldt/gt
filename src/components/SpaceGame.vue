@@ -248,8 +248,8 @@ import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, round
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
-
 import { currentUser } from '@/router'
+import * as music from '@/music'
 import * as type from '@/types'
 import * as API from '@/API'
 
@@ -371,6 +371,7 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
+        music.changeVolume(this.player.settings.volume)
         this.player.size *= this.generalSize
         this.playerStartPosition()
         this.dataLoad = true

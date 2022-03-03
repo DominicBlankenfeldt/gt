@@ -1,5 +1,5 @@
 <template>
-    <div class="site">
+    <div class="site" @click="startMusic()">
         <navbar />
         <router-view />
     </div>
@@ -8,9 +8,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import navbar from '@/components/Navbar.vue'
+import * as music from '@/music'
 export default defineComponent({
     components: {
         navbar,
+    },
+    methods: {
+        startMusic() {
+            music.start()
+        },
     },
 })
 </script>

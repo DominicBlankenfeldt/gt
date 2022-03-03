@@ -50,7 +50,14 @@
                             {{ player.username }}
                         </u>
                     </h4>
-                    <input v-else type="text" class="col-11" placeholder="username" v-model="player.username" />
+                    <input
+                        v-else
+                        style="height: 5vh; background-color: darkgrey"
+                        type="text"
+                        class="col-11"
+                        placeholder="username"
+                        v-model="player.username"
+                    />
                     <div class="col-1" v-if="editAble">
                         <button class="col-1 btn align-self-end shadow-none" data-bs-toggle="modal" data-bs-target="#settings">
                             <svg
@@ -153,10 +160,23 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="unDoChanges()">
+            <div class="modal-dialog" @click.stop="">
                 <div class="modal-content">
                     <div class="modal-body" style="background-color: grey">
+                        <div class="row mt-1">
+                            <div class="col-9">volume:</div>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="volumeInput"
+                                @change="changeVolume(volumeInput)"
+                            />
+                        </div>
+
                         <div class="row mt-1" v-for="number of 4" :key="number">
                             <div class="col-9">ability{{ number }}:</div>
                             <input
@@ -182,8 +202,8 @@
                             />
                         </div>
                         <div class="row justify-content-end mt-1">
-                            <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4">cancel</button>
-                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click="safeSettings()" data-bs-dismiss="modal">
+                            <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
+                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="safeSettings()" data-bs-dismiss="modal">
                                 safe
                             </button>
                         </div>
@@ -198,6 +218,7 @@
 import { defineComponent, PropType } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
+import * as music from '@/music'
 export default defineComponent({
     props: {
         playerProp: {
@@ -214,15 +235,21 @@ export default defineComponent({
             dataLoad: false,
             hardCoreMode: false,
             editProfile: false,
+            volumeInput: 0,
             img: '',
             images: ['001', '002', '003', '004', '005'],
         }
     },
     mounted() {
         this.player = this.playerProp
+        this.volumeInput = this.player.settings.volume
         this.settingsInput = this.player.settings
         this.dataLoad = true
+        if (this.editAble) {
+            music.changeVolume(this.player.settings.volume)
+        }
     },
+
     computed: {
         registered() {
             let help = JSON.parse(this.player.registeredAt)
@@ -241,10 +268,19 @@ export default defineComponent({
     },
 
     methods: {
+        unDoChanges() {
+            this.volumeInput = this.player.settings.volume
+            this.changeVolume(this.player.settings.volume)
+        },
+        changeVolume(volumeInput: number) {
+            music.changeVolume(volumeInput)
+        },
+
         changeImg(id: string) {
             this.player.img = id
         },
         async safeSettings() {
+            this.player.settings.volume = this.volumeInput
             this.player.settings = this.settingsInput
             try {
                 await API.addPlayer(this.player)

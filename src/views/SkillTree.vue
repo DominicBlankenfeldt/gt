@@ -144,6 +144,7 @@ import { checkPlayer, skillDetails, weaponDetails, passivDetails } from '@/globa
 import { currentUser } from '@/router'
 import * as API from '@/API'
 import * as type from '@/types'
+import * as music from '@/music'
 export default defineComponent({
     setup() {
         currentUser
@@ -182,12 +183,14 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
+        music.changeVolume(this.player.settings.volume)
         this.player.skillTree.skills
             .sort((a, b) => (a.name < b.name ? -1 : 1))
             .sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
         if (this.usedSkillPoints > this.player.skillTree.skillPoints) {
             this.resetSkillTree()
         }
+
         this.dataLoad = true
     },
 
