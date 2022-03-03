@@ -1,4 +1,5 @@
 import * as type from '@/types'
+import { subVec } from '@/game/vectors'
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
@@ -10,6 +11,11 @@ export function findPassivUpgrade(player: type.Player, passivUpgrade: type.Passi
 }
 export function getRandomInt(max: number) {
     return Math.floor(Math.random() * max)
+}
+export function grow(object: type.Player | type.Enemy, growMultiplier: number, generalSize: number) {
+    object.size *= growMultiplier
+    object.vector = subVec(object.vector, (object.size * generalSize) / 4)
+    return object
 }
 export function percent(number: number, change: 'in' | 'de') {
     if (change == 'in') {
