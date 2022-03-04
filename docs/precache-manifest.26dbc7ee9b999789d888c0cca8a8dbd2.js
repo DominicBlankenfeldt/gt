@@ -68,38 +68,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/playership.png"
   },
   {
-    "revision": "5063e2f5ab544ce8b37c177608399f65",
-    "url": "/gt/img/char/playership_down.png"
-  },
-  {
-    "revision": "ce407abd09e1159f0e695cc421492538",
-    "url": "/gt/img/char/playership_downleft.png"
-  },
-  {
-    "revision": "44e0e2b21085aae09a73e6fde673bcfb",
-    "url": "/gt/img/char/playership_downright.png"
-  },
-  {
-    "revision": "6f82652c9ecdc63890c727cbaa8d3f27",
-    "url": "/gt/img/char/playership_left.png"
-  },
-  {
-    "revision": "b17fab42f180656fb4ca7b425992ee28",
-    "url": "/gt/img/char/playership_right.png"
-  },
-  {
-    "revision": "8ba7b11973f5d751dbcaee6da2abcad2",
-    "url": "/gt/img/char/playership_up.png"
-  },
-  {
-    "revision": "4d22534a6fd002b31405a731990d0050",
-    "url": "/gt/img/char/playership_upleft.png"
-  },
-  {
-    "revision": "8c00eda7797ec50f4a55ba5e3a6e4295",
-    "url": "/gt/img/char/playership_upright.png"
-  },
-  {
     "revision": "2f1e686338694976cd617a7839962206",
     "url": "/gt/img/crowns/bronze.png"
   },
@@ -140,8 +108,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/skull/skull.png"
   },
   {
+    "revision": "9a6928b2ae3c08e1280e10e2b3da4c41",
+    "url": "/gt/img/items/snowflake/snowflake.gif"
+  },
+  {
     "revision": "0bd5bfe59977de1802d94e7e7dd6768d",
     "url": "/gt/img/items/snowflake/snowflake.png"
+  },
+  {
+    "revision": "c3857d9e2b40ac42ae5a4b3acf694d89",
+    "url": "/gt/img/placeholder_wappen_150.png"
   },
   {
     "revision": "c422e7995c16421b1ff7c79294790117",
@@ -160,27 +136,43 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "8049884cb517d7671b035d2096f3706a",
+    "revision": "7adc6895d615b7b375d6606aa1808505",
     "url": "/gt/index.html"
   },
   {
-    "revision": "d23fe3fd84da76034e95",
-    "url": "/gt/js/about.3970786c.js"
+    "revision": "720e5a912cd4355a59b4",
+    "url": "/gt/js/about.5760ab12.js"
   },
   {
-    "revision": "fd4449fbed5caf817dee",
-    "url": "/gt/js/app.fba89ca6.js"
+    "revision": "df54015a79ba0ae95f9f",
+    "url": "/gt/js/app.912c8ac1.js"
   },
   {
-    "revision": "50acbc1702b609006ba0",
-    "url": "/gt/js/chunk-vendors.b765e8c3.js"
+    "revision": "d279cd53662c8734fc7c",
+    "url": "/gt/js/chunk-vendors.2624a56c.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
     "url": "/gt/manifest.json"
   },
   {
-    "revision": "735ab4f94fbcd57074377afca324c813",
+    "revision": "77d8f66f8ef2075d3bcb1a03bca66dc5",
+    "url": "/gt/music/ButtonPressed.mp3"
+  },
+  {
+    "revision": "17c7ff942e7df17dfd07861bed486a89",
+    "url": "/gt/music/CollectItemSound.mp3"
+  },
+  {
+    "revision": "8ff23ae2f4905aaf8346e4726d7773e6",
+    "url": "/gt/music/PlasmaSound.mp3"
+  },
+  {
+    "revision": "15ff91dcd62b7711ca7261ee0549f198",
+    "url": "/gt/music/Space.mp3"
+  },
+  {
+    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/gt/robots.txt"
   }
 ]);
