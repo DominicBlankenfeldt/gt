@@ -145,21 +145,22 @@
                         <a>{{ cancelButtonText }}</a>
                     </button>
                     <br />
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'normal'" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('normal')" v-if="!cancelButtonText">
                         <a>
                             normal:
                             <br />
                             {{ player.playMode == 'normal' ? 'ON' : 'OFF' }}
                         </a>
                     </button>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'hardcore'" v-if="!cancelButtonText">
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('hardcore')" v-if="!cancelButtonText">
                         <a>
                             hardcore:
                             <br />
                             {{ player.playMode == 'hardcore' ? 'ON' : 'OFF' }}
                         </a>
                     </button>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="player.playMode = 'totalchaos'" v-if="!cancelButtonText">
+
+                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('totalchaos')" v-if="!cancelButtonText">
                         <a>
                             total chaos:
                             <br />
@@ -371,9 +372,10 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
-        music.changeVolume(this.player.settings.volume)
+        music.changeVolume(this.player.settings.musicVolume)
         this.player.size *= this.generalSize
         this.playerStartPosition()
+        this.buttonSound()
         this.dataLoad = true
     },
     methods: {
@@ -450,6 +452,7 @@ export default defineComponent({
             await this.handleBossEnemyDead()
         },
         start() {
+            music.ButtonSound(this.player.settings.effectVolume)
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
@@ -607,6 +610,7 @@ export default defineComponent({
         },
 
         cancel() {
+            music.ButtonSound(this.player.settings.effectVolume)
             this.bossEnemy = {} as type.BossEnemy
             this.bossFight = false
             this.startButtonText = 'start'
@@ -682,8 +686,10 @@ export default defineComponent({
                 this.cancel()
                 return
             }
+
             if (!findSkill(this.player, 'shotAbility')) {
                 this.$router.push('/skillTree')
+                music.ButtonSound(this.player.settings.effectVolume)
                 return
             }
             switch (type) {
@@ -705,6 +711,7 @@ export default defineComponent({
                         return
                     break
             }
+            music.ButtonSound(this.player.settings.effectVolume)
             this.bossEnemy.type = type
             this.bossFight = true
         },
@@ -998,6 +1005,7 @@ export default defineComponent({
             }
         },
         playerItemColision(item: type.Item) {
+            music.itemSound(this.player.settings.effectVolume)
             this.items = this.items.filter(i => i != item)
             switch (item.type) {
                 case 'coin':
@@ -1163,6 +1171,7 @@ export default defineComponent({
         shotAbility() {
             if (this.shotCoolDown) return
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
+            music.plasmaSound(this.player.settings.effectVolume)
             this.shotCoolDown = true
             let weapon = weapons(this.player, this.generalSize, this.lastDirection)
             this.shotCoolDownDuration = weapon.shotCoolDownDuration
@@ -1206,6 +1215,15 @@ export default defineComponent({
         },
         playerStartPosition() {
             this.player.vector = [this.field.borderRight / 2, this.field.borderDown / 2]
+        },
+        changePlayMode(playMode: type.PlayMode) {
+            if (playMode != this.player.playMode) {
+                music.ButtonSound(this.player.settings.effectVolume)
+                this.player.playMode = playMode
+            }
+        },
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
         },
     },
 })

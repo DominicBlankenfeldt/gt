@@ -79,6 +79,7 @@
 import { Options, Vue } from 'vue-class-component'
 import * as API from '@/API'
 import { currentUser } from '@/router'
+import * as music from '@/music'
 
 @Options({
     components: {},
@@ -87,6 +88,7 @@ import { currentUser } from '@/router'
         if (currentUser) {
             this.$router.push('/home')
         }
+        music.ButtonSound(10)
     },
     methods: {
         async login() {

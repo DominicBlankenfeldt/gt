@@ -120,7 +120,13 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
+        this.buttonSound()
         this.dataLoad = true
+    },
+    methods: {
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
+        },
     },
 })
 </script>

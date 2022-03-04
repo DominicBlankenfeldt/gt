@@ -112,7 +112,13 @@
             </div>
             <div class="card-footer d-flex flex-row-reverse">
                 <div class="col-3">
-                    <button v-if="!player.spaceFleet" class="btn btn-warning shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button
+                        v-if="!player.spaceFleet"
+                        class="btn btn-warning shadow-none"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal"
+                        @click="buttonSound()"
+                    >
                         create fleet
                     </button>
                     <button v-if="user?.uid == fleet?.founder" @click="editSave()" class="btn btn-secondary shadow-none">
@@ -132,7 +138,6 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel">create fleet</h5>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="input-group mb-3">
@@ -165,7 +170,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" @click="buttonSound()">Close</button>
                             <button type="button" class="btn btn-success shadow-none" @click="createFleet()" data-bs-dismiss="modal">
                                 create fleet
                             </button>
@@ -181,11 +186,13 @@
                 tabindex="-1"
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
-                @click="choosenPlayerLoad = false"
+                @click="closeChoosePlayer()"
             >
-                <div class="modal-dialog modal-xl">
-                    <div v-if="choosenPlayerLoad">
-                        <PlayerCard :playerProp="choosenPlayer" :editAble="false" />
+                <div class="modal-dialog modal-xl" @click.stop="">
+                    <div class="modal-content">
+                        <div v-if="choosenPlayerLoad">
+                            <PlayerCard :playerProp="choosenPlayer" :editAble="false" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -237,7 +244,8 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                     this.player = checkPlayer(this.player) as type.Player
-                    music.changeVolume(this.player.settings.volume)
+                    music.changeVolume(this.player.settings.musicVolume)
+                    this.buttonSound()
                 }
                 this.loadFleet()
             } catch {
@@ -294,15 +302,22 @@ export default defineComponent({
         },
     },
     methods: {
+        closeChoosePlayer() {
+            this.choosenPlayerLoad = false
+            this.buttonSound()
+        },
         choosePlayer(player: type.Player) {
+            this.buttonSound()
             this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
         },
         deleteMember(member: type.Player) {
+            this.buttonSound()
             this.fleet.members = this.fleet.members.filter(m => m != member.id)
             this.fleetMembers = this.fleetMembers.filter(m => m.id != member.id)
         },
         async editSave() {
+            this.buttonSound()
             if (this.edit) {
                 try {
                     await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
@@ -338,6 +353,7 @@ export default defineComponent({
         },
         async createFleet() {
             if (!this.user) return
+            this.buttonSound()
             let result = await API.addSpaceFleet({
                 founder: this.user.uid,
                 members: [this.user.uid] as string[],
@@ -355,6 +371,7 @@ export default defineComponent({
             }
         },
         async searchSpaceFleets() {
+            this.buttonSound()
             try {
                 let result = await API.searchSpaceFleet(this.searchInput)
                 this.searchedFleets = result as type.SpaceFleet[]
@@ -365,6 +382,7 @@ export default defineComponent({
         async joinSpaceFleet(fleet: type.SpaceFleet) {
             if (!this.user) return
             if (!fleet.id) return
+            this.buttonSound()
             try {
                 fleet = await API.getPlayerSpaceFleet(fleet.id!)
                 fleet.members.push(this.user.uid)
@@ -380,6 +398,7 @@ export default defineComponent({
         async leaveSpaceFleet() {
             if (this.fleet.founder == this.user?.uid) return
             if (!this.fleet.id) return
+            this.buttonSound()
             this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
             this.player.spaceFleet = ''
             try {
@@ -391,6 +410,7 @@ export default defineComponent({
             }
         },
         async deleteSpaceFleet() {
+            this.buttonSound()
             if (this.player.spaceFleet) {
                 try {
                     await API.deleteSpaceFleet(this.player.spaceFleet)
@@ -405,11 +425,14 @@ export default defineComponent({
                 API.logout()
             }
         },
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
+        },
     },
 })
 </script>
 <style lang="scss" scoped>
 .modal-xl {
-    max-width: 85vw !important;
+    max-width: 65vw !important;
 }
 </style>

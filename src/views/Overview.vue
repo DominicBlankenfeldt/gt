@@ -1,5 +1,5 @@
 <template>
-    <div v-if="dataLoad">
+    <div v-if="dataLoad" class="w-75 mt-5" style="margin-left: 12.5vw">
         <PlayerCard :playerProp="player" :editAble="true" />
     </div>
 </template>
@@ -10,6 +10,7 @@ import * as API from '@/API'
 import { checkPlayer } from '@/global'
 import * as type from '@/types'
 import { currentUser } from '@/router'
+import * as music from '@/music'
 import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
     components: {
@@ -47,6 +48,7 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
+        this.buttonSound()
         this.dataLoad = true
     },
 
@@ -63,6 +65,9 @@ export default defineComponent({
                     API.logout()
                 }
             }
+        },
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
         },
     },
 })

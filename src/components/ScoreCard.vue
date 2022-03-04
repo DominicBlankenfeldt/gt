@@ -56,11 +56,13 @@
             tabindex="-1"
             aria-labelledby="exampleModalLabel"
             aria-hidden="true"
-            @click="choosenPlayerLoad = false"
+            @click="closeChoosePlayer()"
         >
-            <div class="modal-dialog modal-xl">
-                <div v-if="choosenPlayerLoad">
-                    <PlayerCard :playerProp="choosenPlayer" :editAble="false" />
+            <div class="modal-dialog modal-xl" @click.stop="">
+                <div class="modal-content">
+                    <div v-if="choosenPlayerLoad">
+                        <PlayerCard :playerProp="choosenPlayer" :editAble="false" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,15 +70,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import * as type from '@/types'
 import PlayerCard from '@/components/PlayerCard.vue'
 import { checkPlayer } from '@/global'
+import * as music from '@/music'
 export default defineComponent({
     components: {
         PlayerCard,
     },
     props: {
+        player: {
+            type: Object as PropType<type.Player>,
+            required: true,
+        },
         bestPlayers: [],
         title: String,
         highscore: String,
@@ -88,9 +95,17 @@ export default defineComponent({
         }
     },
     methods: {
+        closeChoosePlayer() {
+            this.choosenPlayerLoad = false
+            this.buttonSound()
+        },
         choosePlayer(player: type.Player) {
+            this.buttonSound()
             this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
+        },
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
         },
     },
 })

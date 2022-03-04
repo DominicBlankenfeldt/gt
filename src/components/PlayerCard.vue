@@ -1,5 +1,5 @@
 <template>
-    <div class="card card-default w-75 mt-5" style="margin-left: 12.5%" v-if="dataLoad">
+    <div class="card card-default" v-if="dataLoad">
         <div class="card-header header row g-0"></div>
         <div class="card-body row gx-0">
             <div class="profile-pic col-4">
@@ -11,14 +11,27 @@
                 </div>
                 <div v-if="editProfile">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button
+                        type="button"
+                        @click="buttonSound()"
+                        class="btn btn-primary shadow-none"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal"
+                    >
                         change profile picture
                     </button>
 
                     <!-- Modal -->
-                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div
+                        class="modal fade"
+                        id="exampleModal"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                        @click="buttonSound()"
+                    >
                         <div class="modal-dialog">
-                            <div class="modal-content">
+                            <div class="modal-content" @click.stop="">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="exampleModalLabel">Profilbild</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -29,7 +42,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="buttonSound()">close</button>
                                 </div>
                             </div>
                         </div>
@@ -59,7 +72,7 @@
                         v-model="player.username"
                     />
                     <div class="col-1" v-if="editAble">
-                        <button class="col-1 btn align-self-end shadow-none" data-bs-toggle="modal" data-bs-target="#settings">
+                        <button class="col-1 btn align-self-end shadow-none" @click="buttonSound()" data-bs-toggle="modal" data-bs-target="#settings">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="48"
@@ -165,7 +178,7 @@
                 <div class="modal-content">
                     <div class="modal-body" style="background-color: grey">
                         <div class="row mt-1">
-                            <div class="col-9">volume:</div>
+                            <div class="col-9">music volume:</div>
                             <input
                                 type="number"
                                 min="0"
@@ -176,7 +189,17 @@
                                 @change="changeVolume(volumeInput)"
                             />
                         </div>
-
+                        <div class="row mt-1">
+                            <div class="col-9">effect volume:</div>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="player.settings.effectVolume"
+                            />
+                        </div>
                         <div class="row mt-1" v-for="number of 4" :key="number">
                             <div class="col-9">ability{{ number }}:</div>
                             <input
@@ -242,11 +265,11 @@ export default defineComponent({
     },
     mounted() {
         this.player = this.playerProp
-        this.volumeInput = this.player.settings.volume
+        this.volumeInput = this.player.settings.musicVolume
         this.settingsInput = this.player.settings
         this.dataLoad = true
         if (this.editAble) {
-            music.changeVolume(this.player.settings.volume)
+            music.changeVolume(this.player.settings.musicVolume)
         }
     },
 
@@ -268,19 +291,24 @@ export default defineComponent({
     },
 
     methods: {
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
+        },
         unDoChanges() {
-            this.volumeInput = this.player.settings.volume
-            this.changeVolume(this.player.settings.volume)
+            music.ButtonSound(this.player.settings.effectVolume)
+            this.volumeInput = this.player.settings.musicVolume
+            this.changeVolume(this.player.settings.musicVolume)
         },
         changeVolume(volumeInput: number) {
             music.changeVolume(volumeInput)
         },
 
         changeImg(id: string) {
+            music.ButtonSound(this.player.settings.effectVolume)
             this.player.img = id
         },
         async safeSettings() {
-            this.player.settings.volume = this.volumeInput
+            this.player.settings.musicVolume = this.volumeInput
             this.player.settings = this.settingsInput
             try {
                 await API.addPlayer(this.player)
@@ -289,6 +317,7 @@ export default defineComponent({
             }
         },
         async toggleEdit(save: boolean) {
+            music.ButtonSound(this.player.settings.effectVolume)
             this.editProfile = !this.editProfile
             if (save) {
                 try {

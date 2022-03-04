@@ -58,7 +58,8 @@ export interface Player {
 export interface Settings {
     abilitys: Abilitys
     moves: Moves
-    volume: number
+    musicVolume: number
+    effectVolume: number
 }
 export interface Moves {
     up: Key

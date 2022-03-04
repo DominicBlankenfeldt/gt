@@ -93,6 +93,7 @@ import { defineComponent } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
 import { checkPlayer } from '@/global'
+import * as music from '@/music'
 export default defineComponent({
     data() {
         return {
@@ -107,6 +108,7 @@ export default defineComponent({
     },
     async mounted() {
         this.player = checkPlayer(this.player)
+        music.ButtonSound(10)
     },
     methods: {
         async register() {
@@ -124,6 +126,7 @@ export default defineComponent({
                 this.$router.push('/home')
             } catch (e) {
                 console.log("couldn't register", e)
+                music.ButtonSound(10)
                 this.error = 'Unfortunately, the account could not be registered'
             } finally {
                 this.registering = false
@@ -134,14 +137,12 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 * {
+    color: #fff;
     text-shadow: 2px 2px black;
 }
 .card {
     background-image: url(/gt/img/uiol/spaceshipinside.png);
     background-size: cover;
-}
-.header {
-    background: rgba(39, 39, 39, 0.555);
 }
 
 // button

@@ -2,16 +2,23 @@
     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <ScoreCard :bestPlayers="bestPlayersNormal" title="normal" highscore="highscore" />
+                <ScoreCard :bestPlayers="bestPlayersNormal" :player="player" title="normal" highscore="highscore" />
             </div>
             <div class="carousel-item">
-                <ScoreCard :bestPlayers="bestPlayersHardcore" title="hardcore" highscore="highscoreHardcore" />
+                <ScoreCard :bestPlayers="bestPlayersHardcore" :player="player" title="hardcore" highscore="highscoreHardcore" />
             </div>
             <div class="carousel-item">
-                <ScoreCard :bestPlayers="bestPlayersTotalchaos" title="totalchaos" highscore="highscoreTotalchaos" />
+                <ScoreCard :bestPlayers="bestPlayersTotalchaos" :player="player" title="totalchaos" highscore="highscoreTotalchaos" />
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" style="margin-top: 15vh">
+        <button
+            @click="buttonSound()"
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleControls"
+            data-bs-slide="prev"
+            style="margin-top: 15vh"
+        >
             <span aria-hidden="true">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +35,14 @@
             </span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" style="margin-top: 15vh">
+        <button
+            @click="buttonSound()"
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleControls"
+            data-bs-slide="next"
+            style="margin-top: 15vh"
+        >
             <span aria-hidden="true">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -51,10 +65,15 @@
 import { defineComponent } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
+import { currentUser } from '@/router'
 import ScoreCard from '@/components/ScoreCard.vue'
+import { checkPlayer } from '@/global'
+import * as music from '@/music'
 export default defineComponent({
     data() {
         return {
+            user: currentUser,
+            player: {} as type.Player,
             view: 'hardcore',
             bestPlayersNormal: [] as type.User[],
             bestPlayersHardcore: [] as type.User[],
@@ -74,8 +93,24 @@ export default defineComponent({
         if (result) {
             this.bestPlayersTotalchaos = result.reverse() as type.User[]
         }
+        if (this.user) {
+            try {
+                let result = await API.getPlayer()
+                if (result) {
+                    this.player = result.player
+                }
+            } catch {
+                API.logout()
+            }
+        }
+        this.player = checkPlayer(this.player) as type.Player
+        this.buttonSound()
     },
-    methods: {},
+    methods: {
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
+        },
+    },
     components: {
         ScoreCard,
     },

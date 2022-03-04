@@ -59,6 +59,7 @@
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.weaponTree.weaponType"
                         :title="weaponDetails[player.weaponTree.weaponType].description"
+                        @click="buttonSound()"
                     >
                         <option
                             :selected="weaponAvaibleType == player.weaponTree.weaponType"
@@ -66,6 +67,7 @@
                             v-for="weaponAvaibleType of player.weaponTree.weaponAvaibleTypes"
                             :key="weaponAvaibleType"
                             :title="weaponDetails[weaponAvaibleType].description"
+                            @click="buttonSound()"
                         >
                             {{ weaponAvaibleType }}
                         </option>
@@ -94,8 +96,10 @@
                         class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.passivTree.passivType"
                         :title="passivDetails[player.passivTree.passivType]?.description"
+                        @click="buttonSound()"
                     >
                         <option
+                            @click="buttonSound()"
                             :selected="passivAvaibleType == player.passivTree.passivType"
                             :value="passivAvaibleType"
                             v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
@@ -183,14 +187,14 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
-        music.changeVolume(this.player.settings.volume)
+        music.changeVolume(this.player.settings.musicVolume)
         this.player.skillTree.skills
             .sort((a, b) => (a.name < b.name ? -1 : 1))
             .sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
         if (this.usedSkillPoints > this.player.skillTree.skillPoints) {
             this.resetSkillTree()
         }
-
+        this.buttonSound()
         this.dataLoad = true
     },
 
@@ -246,6 +250,7 @@ export default defineComponent({
             }
         },
         async resetSkillTree() {
+            this.buttonSound()
             this.player.skillTree.skillPoints -= this.usedSkillPoints
             for (let skill of this.player.skillTree.skills) {
                 this.player.skillTree.skillPoints += skill.lvl
@@ -253,6 +258,7 @@ export default defineComponent({
             }
         },
         async resetWeaponTree() {
+            this.buttonSound()
             this.player.weaponTree.weaponPoints -= this.usedWeaponPoints
             for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) {
                 this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
@@ -260,6 +266,7 @@ export default defineComponent({
             }
         },
         async resetPassivTree() {
+            this.buttonSound()
             this.player.passivTree.passivPoints -= this.usedPassivPoints
             for (let passivUpgrade of this.player.passivTree.passivUpgrades) {
                 this.player.passivTree.passivPoints += passivUpgrade.lvl
@@ -269,42 +276,54 @@ export default defineComponent({
 
         onClickSkill(skill: type.Skill) {
             this.clicks++
+            if (skill.lvl == skillDetails[skill.name].maxlvl || this.player.skillTree.skillPoints <= this.usedSkillPoints) return
             if (this.clicks === 1) {
                 this.timer = setTimeout(() => {
                     this.lvlSkill(skill, 1)
+                    this.buttonSound()
                     this.clicks = 0
                 }, 200)
             } else {
                 clearTimeout(this.timer)
                 this.lvlSkill(skill, 10)
+                this.buttonSound()
                 this.clicks = 0
             }
         },
         onClickWeaponUgrade(weaponUpgrade: type.WeaponUpgrade) {
             this.clicks++
+            if (weaponUpgrade.lvl == weaponDetails[weaponUpgrade.name].maxlvl || this.player.weaponTree.weaponPoints <= this.usedWeaponPoints) return
             if (this.clicks === 1) {
                 this.timer = setTimeout(() => {
                     this.lvlWeaponUpgrade(weaponUpgrade, 1)
+                    this.buttonSound()
                     this.clicks = 0
                 }, 200)
             } else {
                 clearTimeout(this.timer)
                 this.lvlWeaponUpgrade(weaponUpgrade, 10)
+                this.buttonSound()
                 this.clicks = 0
             }
         },
         onClickPassivUgrade(passivUpgrade: type.PassivUpgrade) {
             this.clicks++
+            if (passivUpgrade.lvl == passivDetails[passivUpgrade.name].maxlvl || this.player.passivTree.passivPoints <= this.usedPassivPoints) return
             if (this.clicks === 1) {
                 this.timer = setTimeout(() => {
                     this.lvlPassivUpgrade(passivUpgrade, 1)
+                    this.buttonSound()
                     this.clicks = 0
                 }, 200)
             } else {
                 clearTimeout(this.timer)
                 this.lvlPassivUpgrade(passivUpgrade, 10)
+                this.buttonSound()
                 this.clicks = 0
             }
+        },
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
         },
     },
 })
