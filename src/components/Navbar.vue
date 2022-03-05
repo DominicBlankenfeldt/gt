@@ -14,7 +14,6 @@
         <router-link to="/guide" @keydown.enter.prevent>Guide</router-link>
         <a v-if="user">|</a>
         <a v-if="user" @click="logout()" @keydown.enter.prevent>LogOut</a>
-        poigrsdhtfzguhljlökläöä#
     </div>
 </template>
 
