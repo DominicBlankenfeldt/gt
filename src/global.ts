@@ -54,8 +54,8 @@ export function checkPlayer(player: type.Player) {
             left: 'a',
             right: 'd',
         },
-        musicVolume: 10,
-        effectVolume: 10,
+        musicVolume: 50,
+        effectVolume: 50,
     }
     player.size = player.size || 20
     player.originalSize = player.originalSize || 20

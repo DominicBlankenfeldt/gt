@@ -58,6 +58,7 @@ export default defineComponent({
         },
         async toggleEdit(save: boolean) {
             this.editProfile = !this.editProfile
+            this.buttonSound()
             if (save) {
                 try {
                     await API.addPlayer(this.player)
