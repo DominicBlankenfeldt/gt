@@ -308,6 +308,7 @@ export default defineComponent({
             this.player.img = id
         },
         async safeSettings() {
+            this.buttonSound()
             this.player.settings.musicVolume = this.volumeInput
             this.player.settings = this.settingsInput
             try {
