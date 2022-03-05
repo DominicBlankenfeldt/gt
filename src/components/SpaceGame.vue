@@ -138,10 +138,10 @@
                     {{ message }}
                 </div>
                 <div class="container" v-if="!gameStarted">
-                    <button class="btn shadow-none" @click="start()">
+                    <button @keydown.enter.prevent class="btn shadow-none" @click="start()">
                         <a>{{ startButtonText }}</a>
                     </button>
-                    <button v-if="cancelButtonText" class="btn shadow-none" @click="cancel()">
+                    <button @keydown.enter.prevent v-if="cancelButtonText" class="btn shadow-none" @click="cancel()">
                         <a>{{ cancelButtonText }}</a>
                     </button>
                     <br />
@@ -375,6 +375,7 @@ export default defineComponent({
         music.changeVolume(this.player.settings.musicVolume)
         this.player.size *= this.generalSize
         this.playerStartPosition()
+        this.bossFight = false
         this.buttonSound()
         this.dataLoad = true
     },
@@ -452,6 +453,7 @@ export default defineComponent({
             await this.handleBossEnemyDead()
         },
         start() {
+            if (this.gameStarted) return
             this.buttonSound()
             if (this.bossFight) {
                 this.bossEnemyPreparations()
@@ -926,7 +928,7 @@ export default defineComponent({
                 }
             }
             if (enemy) {
-                for (let plasma of this.plasmas) {
+                for (let plasma of [...this.plasmas]) {
                     if (this.collisionsCheck(enemy, plasma)) {
                         switch (this.player.weaponTree.weaponType) {
                             case 'aimgun':
