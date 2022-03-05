@@ -136,7 +136,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "7adc6895d615b7b375d6606aa1808505",
+    "revision": "397896e0151cc82695a0292d8dce65e4",
     "url": "/gt/index.html"
   },
   {
@@ -144,8 +144,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.5760ab12.js"
   },
   {
-    "revision": "df54015a79ba0ae95f9f",
-    "url": "/gt/js/app.912c8ac1.js"
+    "revision": "e478b3161fd3797e47e7",
+    "url": "/gt/js/app.30e65d44.js"
   },
   {
     "revision": "d279cd53662c8734fc7c",
@@ -154,6 +154,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",
     "url": "/gt/manifest.json"
+  },
+  {
+    "revision": "11410e9f6f7bd233818456ec1c696c6d",
+    "url": "/gt/music/BombSound.mp3"
   },
   {
     "revision": "77d8f66f8ef2075d3bcb1a03bca66dc5",
