@@ -27,18 +27,13 @@ if (process.env.NODE_ENV === 'production') {
         },
     })
 }
-navigator.serviceWorker.register(`${process.env.BASE_URL}service-worker.js`).then(reg => {
-    reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing
-        newSW?.addEventListener('statechange', () => {
-            // Check service worker state
-            if (newSW.state === 'installed') {
-                // A new SW is available and installed.
-                // You can update the page directly or better
-                // show a notification to the user to prompt for a page reload
-                // and inform about the new version available
-                reg.update()
-            }
-        })
-    })
+// app-based solution
+let refreshing = false
+
+// detect controller change and refresh the page
+navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+        window.location.reload()
+        refreshing = true
+    }
 })
