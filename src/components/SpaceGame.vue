@@ -1169,6 +1169,7 @@ export default defineComponent({
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))
                 })
+                music.itemSound(this.player.settings.effectVolume, bombs[0])
                 this.items = this.items.filter(i => i != bombs[0])
                 this.collectClearField()
             }
