@@ -452,7 +452,7 @@ export default defineComponent({
             await this.handleBossEnemyDead()
         },
         start() {
-            music.ButtonSound(this.player.settings.effectVolume)
+            this.buttonSound()
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
@@ -477,8 +477,8 @@ export default defineComponent({
             this.isMagnet = false
             this.isStopTime = false
             this.isSlowEnemies = false
-            this.bombCoolDown = false
             this.shotCoolDown = false
+            this.bombCoolDown = false
             this.spawnBadItems = true
             this.growDuration = 0
             this.magnetDuration = 0
@@ -610,7 +610,7 @@ export default defineComponent({
         },
 
         cancel() {
-            music.ButtonSound(this.player.settings.effectVolume)
+            this.buttonSound()
             this.bossEnemy = {} as type.BossEnemy
             this.bossFight = false
             this.startButtonText = 'start'
@@ -619,6 +619,11 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
+            this.isGrow = false
+            this.isMagnet = false
+            this.isStopTime = false
+            this.isSlowEnemies = false
+            this.shotCoolDown = false
             this.message = message
             this.messageType = messageType
             if (this.bossFight) {
@@ -689,7 +694,7 @@ export default defineComponent({
 
             if (!findSkill(this.player, 'shotAbility')) {
                 this.$router.push('/skillTree')
-                music.ButtonSound(this.player.settings.effectVolume)
+                this.buttonSound()
                 return
             }
             switch (type) {
@@ -711,7 +716,7 @@ export default defineComponent({
                         return
                     break
             }
-            music.ButtonSound(this.player.settings.effectVolume)
+            this.buttonSound()
             this.bossEnemy.type = type
             this.bossFight = true
         },
@@ -1005,7 +1010,7 @@ export default defineComponent({
             }
         },
         playerItemColision(item: type.Item) {
-            music.itemSound(this.player.settings.effectVolume)
+            music.itemSound(this.player.settings.effectVolume, item)
             this.items = this.items.filter(i => i != item)
             switch (item.type) {
                 case 'coin':
@@ -1218,7 +1223,7 @@ export default defineComponent({
         },
         changePlayMode(playMode: type.PlayMode) {
             if (playMode != this.player.playMode) {
-                music.ButtonSound(this.player.settings.effectVolume)
+                this.buttonSound()
                 this.player.playMode = playMode
             }
         },

@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
         },
     })
 }
-navigator.serviceWorker.register('/sw.js').then(reg => {
+navigator.serviceWorker.register(`${process.env.BASE_URL}service-worker.js`).then(reg => {
     reg.addEventListener('updatefound', () => {
         const newSW = reg.installing
         newSW?.addEventListener('statechange', () => {
