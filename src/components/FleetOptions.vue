@@ -7,20 +7,19 @@
             <div class="card-header">
                 <form class="form-inline" v-if="!player.spaceFleet">
                     <div class="d-flex justify-content-center card-body" style="width: 100%">
-                        <input
-                            class="form-control shadow-none mr-sm-2 rounded-0 rounded-start"
-                            type="search"
-                            placeholder="Search Fleet"
-                            aria-label="Search"
-                            v-model="searchInput"
-                        />
-                        <button
-                            class="btn btn-outline-success shadow-none my-2 my-sm-0 rounded-0 rounded-end"
-                            type="submit"
-                            @click="searchSpaceFleets()"
-                        >
-                            Search
-                        </button>
+                        <div class="input-contain mb-3">
+                            <input
+                                v-model="searchInput"
+                                :class="{ dirty: searchInput }"
+                                type="text"
+                                class="form-control"
+                                aria-label="fleetname"
+                                aria-describedby="basic-addon1"
+                                required
+                            />
+                            <label class="placeholder-text"><div class="text">search Fleet</div></label>
+                        </div>
+                        <button class="btn btn-outline-success shadow-none mb-3 ms-3" type="submit" @click="searchSpaceFleets()">Search</button>
                     </div>
                 </form>
             </div>
@@ -37,7 +36,18 @@
                 <div class="card-body">
                     <div>
                         <h3 v-if="!edit">{{ fleet?.name }}</h3>
-                        <input v-else type="text" placeholder="name" v-model="fleet.name" />
+                        <div v-else class="input-contain mb-3">
+                            <input
+                                v-model="fleet.name"
+                                :class="{ dirty: fleet.name }"
+                                type="text"
+                                class="form-control"
+                                aria-label="fleetname"
+                                aria-describedby="basic-addon1"
+                                required
+                            />
+                            <label class="placeholder-text"><div class="text">fleetname</div></label>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -101,12 +111,22 @@
                         <div class="col-3">avg score: {{ Math.round(avgFleetScore) }}</div>
                         <div class="col-3">fleetlvl: {{ fleetlvl }}</div>
                     </div>
-                    <div style="border: solid black 1px; margin: 1vh">
-                        fleetinfo:
-                        <div>
-                            <div v-if="!edit">{{ fleet?.info }}</div>
-                            <input v-else type="text" placeholder="info" v-model="fleet.info" />
-                        </div>
+
+                    <div v-if="!edit" style="border: solid black 1px" class="mt-4">
+                        <div>fleetinfo:</div>
+                        <div>{{ fleet?.info }}</div>
+                    </div>
+                    <div v-else class="input-contain mt-4">
+                        <input
+                            v-model="fleet.info"
+                            :class="{ dirty: fleet.info }"
+                            type="text"
+                            class="form-control"
+                            aria-label="fleetname"
+                            aria-describedby="basic-addon1"
+                            required
+                        />
+                        <label class="placeholder-text"><div class="text">fleet info</div></label>
                     </div>
                 </div>
             </div>
@@ -140,22 +160,31 @@
                             <h5 class="modal-title" id="exampleModalLabel">create fleet</h5>
                         </div>
                         <div class="modal-body">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1">fleetname</span>
+                            <div class="input-contain mb-3">
                                 <input
                                     v-model="nameInput"
+                                    :class="{ dirty: nameInput }"
                                     type="text"
                                     class="form-control"
-                                    placeholder="name of fleet"
                                     aria-label="fleetname"
                                     aria-describedby="basic-addon1"
                                     required
                                 />
+                                <label class="placeholder-text"><div class="text">fleetname</div></label>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-text">Info text</span>
-                                <textarea class="form-control" aria-label="With textarea" v-model="infoInput"></textarea>
+
+                            <div class="textarea-contain">
+                                <textarea
+                                    class="form-control"
+                                    aria-label="With textarea"
+                                    v-model="infoInput"
+                                    :class="{ dirty: infoInput }"
+                                ></textarea>
+                                <label class="placeholder-text">
+                                    <div class="text">Info text</div>
+                                </label>
                             </div>
+
                             <div class="form-check" style="margin-top: 1rem">
                                 <label class="form-check-label" for="flexCheckDefault">
                                     <input

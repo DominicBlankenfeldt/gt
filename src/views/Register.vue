@@ -1,76 +1,75 @@
 <template>
     <div class="container d-flex align-items-stretch justify-content-center flex-column" style="height: calc(100vh - 200px)">
         <div class="card card-default w-75" style="margin-left: 12.5%">
-            <div></div>
-            <div class="card-header header">Join a starship crew.</div>
+            <div class="card-header header"><h1>Join a starship crew.</h1></div>
             <div class="card-body">
                 <form @submit.prevent="register()" autocomplete="off">
                     <div class="m-4 alert alert-danger text-center" v-if="error">
                         {{ error }}
                     </div>
-                    <div class="p-4 row">
-                        <label class="col-4" for="username">username:</label>
-                        <div class="col-8">
-                            <input
-                                minlength="3"
-                                class="form-control"
-                                id="username"
-                                type="text"
-                                placeholder="username"
-                                v-model="username"
-                                autocomplete="off"
-                                style="text-shadow: none"
-                                required
-                            />
-                        </div>
+                    <div class="input-contain mt-3">
+                        <input
+                            minlength="3"
+                            class="form-control"
+                            id="username"
+                            type="text"
+                            v-model="username"
+                            :class="{ dirty: username }"
+                            autocomplete="off"
+                            style="text-shadow: none"
+                            required
+                        />
+                        <label class="placeholder-text" for="username">
+                            <div class="text">username</div>
+                        </label>
                     </div>
-                    <div class="p-4 row">
-                        <label class="col-4" for="email">Email:</label>
-                        <div class="col-8">
-                            <input
-                                minlength="3"
-                                class="form-control"
-                                id="email"
-                                type="text"
-                                placeholder="email"
-                                v-model="email"
-                                autocomplete="off"
-                                style="text-shadow: none"
-                                required
-                            />
-                        </div>
+                    <div class="input-contain mt-3">
+                        <input
+                            minlength="3"
+                            class="form-control"
+                            id="email"
+                            type="text"
+                            v-model="email"
+                            :class="{ dirty: email }"
+                            autocomplete="off"
+                            style="text-shadow: none"
+                            required
+                        />
+                        <label class="placeholder-text" for="email">
+                            <div class="text">email</div>
+                        </label>
                     </div>
-                    <div class="p-4 row">
-                        <label class="col-4" for="Password">password:</label>
-                        <div class="col-8">
-                            <input
-                                minlength="6"
-                                class="form-control"
-                                id="password"
-                                type="password"
-                                placeholder="passwort"
-                                v-model="password"
-                                autocomplete="off"
-                                style="text-shadow: none"
-                                required
-                            />
-                        </div>
+                    <div class="input-contain mt-3">
+                        <input
+                            minlength="6"
+                            class="form-control"
+                            id="password"
+                            type="password"
+                            v-model="password"
+                            :class="{ dirty: password }"
+                            autocomplete="off"
+                            style="text-shadow: none"
+                            required
+                        />
+                        <label class="placeholder-text" for="password">
+                            <div class="text">password</div>
+                        </label>
                     </div>
-                    <div class="p-4 row">
-                        <label class="col-4" for="Password">Confirm Password:</label>
-                        <div class="col-8">
-                            <input
-                                minlength="6"
-                                class="form-control"
-                                id="password"
-                                type="password"
-                                placeholder="passwort"
-                                v-model="confirmed"
-                                autocomplete="off"
-                                style="text-shadow: none"
-                                required
-                            />
-                        </div>
+                    <div class="input-contain mt-3">
+                        <input
+                            minlength="6"
+                            class="form-control"
+                            id="passwordConfirm"
+                            type="password"
+                            v-model="confirmed"
+                            :class="{ dirty: confirmed }"
+                            autocomplete="off"
+                            style="text-shadow: none"
+                            required
+                        />
+                        <label class="placeholder-text" for="passwordConfirm">
+                            <div class="text">confirm</div>
+                        </label>
                     </div>
                     <div class="container" v-if="!registering">
                         <button class="btn" type="submit">
@@ -137,12 +136,18 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 * {
-    color: #fff;
-    text-shadow: 2px 2px black;
+    color: white;
+    text-shadow: 1px 1px black;
 }
 .card {
     background-image: url(/gt/img/uiol/spaceshipinside.png);
     background-size: cover;
+}
+.header {
+    background: rgba(39, 39, 39, 0.5);
+}
+.card-body {
+    background: rgba(39, 39, 39, 0.5);
 }
 
 // button
@@ -168,7 +173,7 @@ export default defineComponent({
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 30px;
-    color: #fff;
+    color: gray;
     z-index: 1;
     font-size: 400;
     font-weight: 300;

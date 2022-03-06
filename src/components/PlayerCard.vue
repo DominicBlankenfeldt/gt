@@ -56,21 +56,29 @@
             </div>
 
             <div class="col-8 row">
-                <div class="row">
+                <div class="row g-0">
                     <h4 class="col-11" v-if="!editProfile">
                         Username:
                         <u>
                             {{ player.username }}
                         </u>
                     </h4>
-                    <input
-                        v-else
-                        style="height: 5vh; background-color: darkgrey"
-                        type="text"
-                        class="col-11"
-                        placeholder="username"
-                        v-model="player.username"
-                    />
+                    <div v-else class="input-contain col-11 mt-3" style="height: 5vh">
+                        <input
+                            minlength="3"
+                            class="form-control"
+                            id="username"
+                            type="text"
+                            v-model="player.username"
+                            :class="{ dirty: player.username }"
+                            autocomplete="off"
+                            style="text-shadow: none"
+                            required
+                        />
+                        <label class="placeholder-text" for="username">
+                            <div class="text">username</div>
+                        </label>
+                    </div>
                     <div class="col-1" v-if="editAble">
                         <button class="col-1 btn align-self-end shadow-none" @click="buttonSound()" data-bs-toggle="modal" data-bs-target="#settings">
                             <svg

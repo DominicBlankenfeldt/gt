@@ -21,47 +21,46 @@
                     </form>
                     <form @submit.prevent="login()" autocomplete="off" class="col-6">
                         <div class="m-4 alert alert-danger text-center" v-if="error">Username or password is not correct</div>
-                        <div class="p-4 row">
-                            <label class="col-4" for="email">Email:</label>
-                            <div class="col-8">
+                        <div class="container">
+                            <div class="input-contain">
                                 <input
                                     minlength="3"
                                     class="form-control"
                                     id="email"
                                     type="text"
-                                    placeholder="email"
                                     v-model="email"
+                                    :class="{ dirty: email }"
                                     autocomplete="off"
                                     style="text-shadow: none"
                                 />
+                                <label class="placeholder-text" for="email">
+                                    <div class="text">email</div>
+                                </label>
                             </div>
-                        </div>
-                        <div class="p-4 row">
-                            <label class="col-4" for="Password">Password:</label>
-                            <div class="col-8">
+
+                            <div class="input-contain mt-3">
                                 <input
                                     minlength="3"
                                     class="form-control"
                                     id="password"
                                     type="password"
-                                    placeholder="passwort"
                                     v-model="password"
+                                    :class="{ dirty: password }"
                                     autocomplete="off"
                                     style="text-shadow: none"
                                 />
+                                <label class="placeholder-text" for="password"><div class="text">password</div></label>
                             </div>
-                        </div>
-                        <div class="justify-content-around">
-                            <div class="container" v-if="!loggingIn">
-                                <button class="btn" type="submit" v-if="!loggingIn">
+                            <div v-if="!loggingIn">
+                                <button class="btn" type="submit" v-if="!loggingIn" style="margin-left: 0px">
                                     <a v-if="!loggingIn">enter your ship.</a>
                                 </button>
                             </div>
-                            <div class="loader" v-if="loggingIn">
-                                <div class="inner one"></div>
-                                <div class="inner two"></div>
-                                <div class="inner three"></div>
-                            </div>
+                        </div>
+                        <div class="loader" v-if="loggingIn">
+                            <div class="inner one"></div>
+                            <div class="inner two"></div>
+                            <div class="inner three"></div>
                         </div>
                     </form>
                 </div>
@@ -76,14 +75,22 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
+import { defineComponent } from 'vue'
 import * as API from '@/API'
 import { currentUser } from '@/router'
 import * as music from '@/music'
 
-@Options({
-    components: {},
-
+export default defineComponent({
+    data() {
+        return {
+            confirmed: '',
+            password: '',
+            email: '',
+            username: '',
+            error: false,
+            loggingIn: false,
+        }
+    },
     mounted() {
         if (currentUser) {
             this.$router.push('/home')
@@ -99,10 +106,6 @@ import * as music from '@/music'
                 this.email = ''
                 this.password = ''
                 this.$router.push('/home')
-                let result = await API.getPlayer()
-                if (result) {
-                    this.player = result.player
-                }
             } catch (e) {
                 this.error = true
                 console.error({ "couldn't login": e })
@@ -116,29 +119,25 @@ import * as music from '@/music'
         },
     },
 })
-export default class Home extends Vue {}
 </script>
 
 <style lang="scss" scoped>
 * {
-    text-shadow: 2px 2px rgb(0, 0, 0);
-}
-h1 {
-    color: rgb(255, 255, 255);
+    color: white;
+    text-shadow: 1px 1px black;
 }
 
 // card
 
 .card {
-    color: rgb(255, 255, 255);
     background-image: url(/gt/img/uiol/spaceshipinside.png);
     background-size: cover;
 }
 .header {
-    background: rgba(39, 39, 39, 0.555);
+    background: rgba(39, 39, 39, 0.5);
 }
 .card-body {
-    background: rgba(39, 39, 39, 0.301);
+    background: rgba(39, 39, 39, 0.5);
 }
 // Buttons
 .container .btn {
