@@ -24,7 +24,8 @@
                     <button
                         v-if="index > 3"
                         class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="onClickSkill(skill)"
+                        @click="lvlSkill(skill)"
+                        @dblclick="lvlSkillx8(skill)"
                         :title="skillDetails[skill.name].description"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -40,7 +41,8 @@
                     <button
                         v-if="index < 4"
                         class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="onClickSkill(skill)"
+                        @click="lvlSkill(skill)"
+                        @dblclick="lvlSkillx8(skill)"
                         :title="skillDetails[skill.name].description"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -79,7 +81,8 @@
                 <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
                     <button
                         class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="onClickWeaponUgrade(weaponUpgrade)"
+                        @click="lvlWeaponUpgrade(weaponUpgrade)"
+                        @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :title="weaponDetails[weaponUpgrade.name].description"
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
@@ -116,7 +119,8 @@
                 <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
                     <button
                         class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="onClickPassivUgrade(passivUpgrade)"
+                        @click="lvlPassivUpgrade(passivUpgrade)"
+                        @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :title="passivDetails[passivUpgrade.name].description"
                         v-if="passivUpgrade.name == player.passivTree.passivType"
                     >
@@ -162,10 +166,8 @@ export default defineComponent({
         return {
             player: {} as type.Player,
             timer: 0,
-            clicks: 0,
             user: currentUser,
             dataLoad: false,
-            counter: 0,
         }
     },
     async unmounted() {
@@ -222,31 +224,49 @@ export default defineComponent({
         },
     },
     methods: {
-        async lvlSkill(skill: type.Skill, counter: number) {
-            while (counter) {
+        async lvlSkill(skill: type.Skill) {
+            if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
+                if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
+                    skill.lvl++
+                    this.buttonSound()
+                }
+        },
+        async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
+            if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
+                if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
+                    weaponUpgrade.lvl++
+                    this.buttonSound()
+                }
+        },
+        async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
+            if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
+                if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
+                    passivUpgrade.lvl++
+                    this.buttonSound()
+                }
+        },
+        async lvlSkillx8(skill: type.Skill) {
+            for (let i = 0; i < 8; i++) {
                 if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
                         skill.lvl++
                     }
-                counter--
             }
         },
-        async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade, counter: number) {
-            while (counter) {
+        async lvlWeaponUpgradex8(weaponUpgrade: type.WeaponUpgrade) {
+            for (let i = 0; i < 8; i++) {
                 if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
                     if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
                         weaponUpgrade.lvl++
                     }
-                counter--
             }
         },
-        async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade, counter: number) {
-            while (counter) {
+        async lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
+            for (let i = 0; i < 8; i++) {
                 if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
                     if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                         passivUpgrade.lvl++
                     }
-                counter--
             }
         },
         async resetSkillTree() {
@@ -274,54 +294,6 @@ export default defineComponent({
             }
         },
 
-        onClickSkill(skill: type.Skill) {
-            this.clicks++
-            if (skill.lvl == skillDetails[skill.name].maxlvl || this.player.skillTree.skillPoints <= this.usedSkillPoints) return
-            if (this.clicks === 1) {
-                this.timer = setTimeout(() => {
-                    this.lvlSkill(skill, 1)
-                    this.buttonSound()
-                    this.clicks = 0
-                }, 200)
-            } else {
-                clearTimeout(this.timer)
-                this.lvlSkill(skill, 10)
-                this.buttonSound()
-                this.clicks = 0
-            }
-        },
-        onClickWeaponUgrade(weaponUpgrade: type.WeaponUpgrade) {
-            this.clicks++
-            if (weaponUpgrade.lvl == weaponDetails[weaponUpgrade.name].maxlvl || this.player.weaponTree.weaponPoints <= this.usedWeaponPoints) return
-            if (this.clicks === 1) {
-                this.timer = setTimeout(() => {
-                    this.lvlWeaponUpgrade(weaponUpgrade, 1)
-                    this.buttonSound()
-                    this.clicks = 0
-                }, 200)
-            } else {
-                clearTimeout(this.timer)
-                this.lvlWeaponUpgrade(weaponUpgrade, 10)
-                this.buttonSound()
-                this.clicks = 0
-            }
-        },
-        onClickPassivUgrade(passivUpgrade: type.PassivUpgrade) {
-            this.clicks++
-            if (passivUpgrade.lvl == passivDetails[passivUpgrade.name].maxlvl || this.player.passivTree.passivPoints <= this.usedPassivPoints) return
-            if (this.clicks === 1) {
-                this.timer = setTimeout(() => {
-                    this.lvlPassivUpgrade(passivUpgrade, 1)
-                    this.buttonSound()
-                    this.clicks = 0
-                }, 200)
-            } else {
-                clearTimeout(this.timer)
-                this.lvlPassivUpgrade(passivUpgrade, 10)
-                this.buttonSound()
-                this.clicks = 0
-            }
-        },
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)
         },
