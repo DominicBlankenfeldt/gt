@@ -111,7 +111,7 @@
                         >
                             {{ passivAvaibleType }}
                         </option>
-                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < 5" disabled>
+                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < 6" disabled>
                             unlock more by fight the boss
                         </option>
                     </select>

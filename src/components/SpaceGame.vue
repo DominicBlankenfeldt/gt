@@ -172,7 +172,7 @@
                         class="btn shadow-none"
                         @keydown.enter.prevent
                         @click="startBossFight('normal')"
-                        v-if="player.weaponTree.weaponAvaibleTypes.length < 5 && !cancelButtonText"
+                        v-if="player.weaponTree.weaponAvaibleTypes.length < 6 && !cancelButtonText"
                     >
                         <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                     </button>
@@ -181,7 +181,7 @@
                         class="btn shadow-none"
                         @keydown.enter.prevent
                         @click="startBossFight('hardcore')"
-                        v-if="player.passivTree.passivAvaibleTypes.length < 4 && !cancelButtonText"
+                        v-if="player.passivTree.passivAvaibleTypes.length < 5 && !cancelButtonText"
                     >
                         <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                     </button>
