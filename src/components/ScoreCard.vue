@@ -1,8 +1,8 @@
 <template>
     <div class="d-flex" style="margin-top: 15vh"></div>
-    <div style="font-size: 6vw"><u>ranking</u></div>
-    <div style="font-size: 4vw">
-        <u>{{ title }}</u>
+    <div><u style="font-size: 6vw">ranking</u></div>
+    <div>
+        <u style="font-size: 4vw">{{ title }}</u>
     </div>
     <div class="row g-0">
         <div class="col-12 row g-0">
