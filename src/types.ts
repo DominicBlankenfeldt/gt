@@ -41,7 +41,6 @@ export interface Player {
     highscore: number
     highscoreHardcore: number
     highscoreTotalchaos: number
-    id: string
     username: string
     img: string
     registeredAt: any

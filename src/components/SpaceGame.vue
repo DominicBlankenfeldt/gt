@@ -122,7 +122,6 @@
                     />
                 </div>
                 <div
-                    :class="item.type"
                     v-for="item of items"
                     :key="item"
                     :style="{
