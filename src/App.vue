@@ -27,6 +27,7 @@ export default defineComponent({
     font-family: 'Press Start 2P', cursive;
     font-weight: 1000;
     text-align: center;
+    font-size: calc(0.4 * (1.5vh + 1.1vw));
 }
 .site {
     background-image: url(/gt/img/space.jpg);
