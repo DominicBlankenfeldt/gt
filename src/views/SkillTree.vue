@@ -204,7 +204,7 @@ export default defineComponent({
         usedSkillPoints() {
             let allSkilllvl = 0
             for (let skill of this.player.skillTree.skills) {
-                allSkilllvl += skill.lvl
+                allSkilllvl += skill.lvl * skillDetails[skill.name].tier
             }
             return allSkilllvl
         },
@@ -226,7 +226,7 @@ export default defineComponent({
     methods: {
         async lvlSkill(skill: type.Skill) {
             if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
-                if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
+                if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                     skill.lvl++
                     this.buttonSound()
                 }
@@ -248,7 +248,7 @@ export default defineComponent({
         async lvlSkillx8(skill: type.Skill) {
             for (let i = 0; i < 8; i++) {
                 if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
-                    if (this.player.skillTree.skillPoints - this.usedSkillPoints > 0) {
+                    if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                         skill.lvl++
                     }
             }
@@ -273,7 +273,7 @@ export default defineComponent({
             this.buttonSound()
             this.player.skillTree.skillPoints -= this.usedSkillPoints
             for (let skill of this.player.skillTree.skills) {
-                this.player.skillTree.skillPoints += skill.lvl
+                this.player.skillTree.skillPoints += skill.lvl * skillDetails[skill.name].tier
                 skill.lvl = 0
             }
         },

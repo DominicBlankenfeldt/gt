@@ -3,19 +3,19 @@ import * as type from '@/types'
 export const production = ref(process.env.NODE_ENV === 'production' ? true : false)
 export const bossFight = ref(false)
 export const skillDetails = {
-    fastAbility: { name: 'rocket propulsion', maxlvl: 1, description: 'you can speed up your movement' },
-    slowAbility: { name: 'sapr flame', maxlvl: 1, description: ' you can slow down your movement' },
-    bombAbility: { name: 'remote detonator', maxlvl: 1, description: 'you can remote ignition the nearest bomb' },
-    shotAbility: { name: 'plasma thrower', maxlvl: 1, description: ' you can shoot at enemies' },
-    betterCoin: { name: 'golden coin', maxlvl: 20, description: 'the coin give more score' },
-    longerSlowEnemies: { name: 'galactic freeze', maxlvl: 20, description: 'the enemy slow effect holds longer' },
-    betterGrowPotion: { name: 'alchemist', maxlvl: 20, description: 'while grwon you gain more score' },
-    spawnLessEnemy: { name: 'cowards', maxlvl: 20, description: 'it takes longer for additional enemies to spawn' },
-    longerStopTime: { name: 'time anomaly', maxlvl: 20, description: 'time stands still longer' },
-    scoreMultiplicator: { name: 'golden times', maxlvl: 20, description: 'you gain more score over time' },
-    smallerBlackHole: { name: 'cute black holes', maxlvl: 20, description: 'black holes are smaller' },
-    slowEnemy: { name: 'braking fog', maxlvl: 20, description: 'enemies will slow down' },
-    longerMagnet: { name: 'permanent magnet', maxlvl: 20, description: 'the magnet lasts longer' },
+    fastAbility: { name: 'rocket propulsion', maxlvl: 1, tier: 1, description: 'you can speed up your movement' },
+    slowAbility: { name: 'sapr flame', maxlvl: 1, tier: 1, description: ' you can slow down your movement' },
+    bombAbility: { name: 'remote detonator', maxlvl: 1, tier: 1, description: 'you can remote ignition the nearest bomb' },
+    shotAbility: { name: 'plasma thrower', maxlvl: 1, tier: 1, description: ' you can shoot at enemies' },
+    betterCoin: { name: 'golden coin', maxlvl: 20, tier: 1, description: 'the coin give more score' },
+    longerSlowEnemies: { name: 'galactic freeze', maxlvl: 20, tier: 1, description: 'the enemy slow effect holds longer' },
+    betterGrowPotion: { name: 'alchemist', maxlvl: 20, tier: 1, description: 'while grwon you gain more score' },
+    spawnLessEnemy: { name: 'cowards', maxlvl: 20, tier: 1, description: 'it takes longer for additional enemies to spawn' },
+    longerStopTime: { name: 'time anomaly', maxlvl: 20, tier: 1, description: 'time stands still longer' },
+    scoreMultiplicator: { name: 'golden times', maxlvl: 20, tier: 1, description: 'you gain more score over time' },
+    smallerBlackHole: { name: 'cute black holes', maxlvl: 20, tier: 1, description: 'black holes are smaller' },
+    slowEnemy: { name: 'braking fog', maxlvl: 20, tier: 1, description: 'enemies will slow down' },
+    longerMagnet: { name: 'permanent magnet', maxlvl: 20, tier: 1, description: 'the magnet lasts longer' },
 }
 export const weaponDetails = {
     moreDamage: { name: 'power weapon', maxlvl: 10, description: 'your plasma makes more damage' },
@@ -43,10 +43,10 @@ export function checkPlayer(player: type.Player) {
     player = player || {}
     player.settings = player.settings || {
         abilitys: {
-            1: '1',
-            2: '2',
-            3: '3',
-            4: '4',
+            1: { key: '1', name: 'fastAbility' },
+            2: { key: '2', name: 'slowAbility' },
+            3: { key: '3', name: 'bombAbility' },
+            4: { key: '4', name: 'shotAbility' },
         },
         moves: {
             up: 'w',

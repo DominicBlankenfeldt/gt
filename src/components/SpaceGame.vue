@@ -1,15 +1,15 @@
 <template>
     <div v-if="dataLoad" style="color: red">
         <div class="row g-0" style="height: 5vh; position: relative">
-            <div v-if="!bossEnemy.type" class="col-3 align-self-center">
+            <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 Score: {{ Math.round(score) }}
             </div>
             <div v-else class="col-3"></div>
-            <div class="col-2 align-self-center">Enemies:{{ enemies.length }}</div>
-            <div class="col-2 align-self-center">difficulty:{{ difficulty }}</div>
-            <div class="col-2 align-self-center">gps:{{ Math.round(gps) }}</div>
-            <div v-if="!bossEnemy.type" class="col-3 align-self-center">
+            <div class="col-2">Enemies:{{ enemies.length }}</div>
+            <div class="col-2">difficulty:{{ difficulty }}</div>
+            <div class="col-2">gps:{{ Math.round(gps) }}</div>
+            <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 Highscore:
                 <span id="scoreSpan" v-if="player.playMode == 'normal'">{{ Math.round(player.highscore) }}</span>
@@ -21,222 +21,216 @@
             <div v-if="bossEnemy.size">Boss HP:{{ Math.ceil(bossEnemy.hP) }}</div>
             <div v-else>{{ player.playMode }}</div>
         </div>
-        <div class="d-flex justify-content-center">
-            <div class="game" :class="{ noneCursor: gameStarted }">
-                <div
-                    :style="{
-                        left: player.vector[0] + 'px',
-                        top: player.vector[1] + 'px',
-                        width: player.size + 'px',
-                        height: player.size + 'px',
-                        transform: `rotate(${lastDirection}deg)`,
-                    }"
-                    style="position: absolute"
-                >
-                    <img
-                        :src="`/gt/img/char/playership.png`"
-                        alt=""
+        <div>
+            <div class="d-flex justify-content-between">
+                <div class="col-1">
+                    <div>durations</div>
+                    <div class="mt-4">
+                        Magnet:
+                        <br />
+                        {{ Math.round(magnetDuration) }}
+                    </div>
+                    <div class="mt-4">
+                        Grow:
+                        <br />
+                        {{ Math.round(growDuration) }}
+                    </div>
+                    <div class="mt-4">
+                        Slow enemies:
+                        <br />
+                        {{ Math.round(slowEnemiesDuration) }}
+                    </div>
+                    <div class="mt-4">
+                        Stop time:
+                        <br />
+                        {{ Math.round(stopTimeDuration) }}
+                    </div>
+                </div>
+                <div class="game" :class="{ noneCursor: gameStarted }">
+                    <div
                         :style="{
+                            left: player.vector[0] + 'px',
+                            top: player.vector[1] + 'px',
                             width: player.size + 'px',
                             height: player.size + 'px',
+                            transform: `rotate(${lastDirection}deg)`,
                         }"
-                    />
-                </div>
-                <div
-                    v-if="bossEnemy.size"
-                    :style="{
-                        left: bossEnemy.vector[0] + 'px',
-                        top: bossEnemy.vector[1] + 'px',
-                        width: bossEnemy.size + 'px',
-                        height: bossEnemy.size + 'px',
-                    }"
-                    style="position: absolute"
-                >
-                    <img
-                        :src="bossEnemy.imgsrc"
-                        alt="bossEnemy"
+                        style="position: absolute"
+                    >
+                        <img
+                            :src="`/gt/img/char/playership.png`"
+                            alt=""
+                            :style="{
+                                width: player.size + 'px',
+                                height: player.size + 'px',
+                            }"
+                        />
+                    </div>
+                    <div
+                        v-if="bossEnemy.size"
                         :style="{
+                            left: bossEnemy.vector[0] + 'px',
+                            top: bossEnemy.vector[1] + 'px',
                             width: bossEnemy.size + 'px',
                             height: bossEnemy.size + 'px',
                         }"
-                    />
-                </div>
-                <div
-                    v-for="plasma of plasmas"
-                    :key="plasma"
-                    :style="{
-                        left: plasma.vector[0] + 'px',
-                        top: plasma.vector[1] + 'px',
-                        width: plasma.size + 'px',
-                        height: plasma.size + 'px',
-                    }"
-                    style="position: absolute"
-                >
-                    <img
-                        :src="plasma.imgsrc"
-                        alt="plasma"
+                        style="position: absolute"
+                    >
+                        <img
+                            :src="bossEnemy.imgsrc"
+                            alt="bossEnemy"
+                            :style="{
+                                width: bossEnemy.size + 'px',
+                                height: bossEnemy.size + 'px',
+                            }"
+                        />
+                    </div>
+                    <div
+                        v-for="plasma of plasmas"
+                        :key="plasma"
                         :style="{
+                            left: plasma.vector[0] + 'px',
+                            top: plasma.vector[1] + 'px',
                             width: plasma.size + 'px',
                             height: plasma.size + 'px',
                         }"
-                    />
-                </div>
-                <div
-                    v-for="plasma of enemyPlasmas"
-                    :key="plasma"
-                    :style="{
-                        left: plasma.vector[0] + 'px',
-                        top: plasma.vector[1] + 'px',
-                        width: plasma.size + 'px',
-                        height: plasma.size + 'px',
-                    }"
-                    style="position: absolute"
-                >
-                    <img
-                        :src="plasma.imgsrc"
-                        alt="plasma"
+                        style="position: absolute"
+                    >
+                        <img
+                            :src="plasma.imgsrc"
+                            alt="plasma"
+                            :style="{
+                                width: plasma.size + 'px',
+                                height: plasma.size + 'px',
+                            }"
+                        />
+                    </div>
+                    <div
+                        v-for="plasma of enemyPlasmas"
+                        :key="plasma"
                         :style="{
+                            left: plasma.vector[0] + 'px',
+                            top: plasma.vector[1] + 'px',
                             width: plasma.size + 'px',
                             height: plasma.size + 'px',
                         }"
-                    />
-                </div>
-                <div
-                    v-for="enemy of enemies"
-                    :key="enemy.id"
-                    :style="{
-                        left: enemy.vector[0] + 'px',
-                        top: enemy.vector[1] + 'px',
-                        width: enemy.size + 'px',
-                        height: enemy.size + 'px',
-                    }"
-                    style="position: absolute"
-                >
-                    <img
-                        :src="enemy.imgsrc"
-                        alt="enemy"
+                        style="position: absolute"
+                    >
+                        <img
+                            :src="plasma.imgsrc"
+                            alt="plasma"
+                            :style="{
+                                width: plasma.size + 'px',
+                                height: plasma.size + 'px',
+                            }"
+                        />
+                    </div>
+                    <div
+                        v-for="enemy of enemies"
+                        :key="enemy.id"
                         :style="{
+                            left: enemy.vector[0] + 'px',
+                            top: enemy.vector[1] + 'px',
                             width: enemy.size + 'px',
                             height: enemy.size + 'px',
                         }"
-                    />
-                </div>
-                <div
-                    v-for="item of items"
-                    :key="item"
-                    :style="{
-                        left: item.vector[0] + 'px',
-                        top: item.vector[1] + 'px',
-                        backgroundColor: item.imgsrc,
-                    }"
-                    style="position: absolute"
-                >
-                    <img :src="item.imgsrc" alt="" :style="{ width: item.size + 'px', height: item.size + 'px' }" />
-                </div>
-                <div v-if="message" :class="messageType">
-                    {{ message }}
-                </div>
-                <div class="container" v-if="!gameStarted">
-                    <button @keydown.enter.prevent class="btn shadow-none" @click="start()">
-                        <a>{{ startButtonText }}</a>
-                    </button>
-                    <button @keydown.enter.prevent v-if="cancelButtonText" class="btn shadow-none" @click="cancel()">
-                        <a>{{ cancelButtonText }}</a>
-                    </button>
-                    <br />
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('normal')" v-if="!cancelButtonText">
-                        <a>
-                            normal:
-                            <br />
-                            {{ player.playMode == 'normal' ? 'ON' : 'OFF' }}
-                        </a>
-                    </button>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('hardcore')" v-if="!cancelButtonText">
-                        <a>
-                            hardcore:
-                            <br />
-                            {{ player.playMode == 'hardcore' ? 'ON' : 'OFF' }}
-                        </a>
-                    </button>
+                        style="position: absolute"
+                    >
+                        <img
+                            :src="enemy.imgsrc"
+                            alt="enemy"
+                            :style="{
+                                width: enemy.size + 'px',
+                                height: enemy.size + 'px',
+                            }"
+                        />
+                    </div>
+                    <div
+                        v-for="item of items"
+                        :key="item"
+                        :style="{
+                            left: item.vector[0] + 'px',
+                            top: item.vector[1] + 'px',
+                            backgroundColor: item.imgsrc,
+                        }"
+                        style="position: absolute"
+                    >
+                        <img :src="item.imgsrc" alt="" :style="{ width: item.size + 'px', height: item.size + 'px' }" />
+                    </div>
+                    <div v-if="message" :class="messageType">
+                        {{ message }}
+                    </div>
+                    <div class="container" v-if="!gameStarted">
+                        <button @keydown.enter.prevent class="btn shadow-none" @click="start()">
+                            <a>{{ startButtonText }}</a>
+                        </button>
+                        <button @keydown.enter.prevent v-if="cancelButtonText" class="btn shadow-none" @click="cancel()">
+                            <a>{{ cancelButtonText }}</a>
+                        </button>
+                        <br />
+                        <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('normal')" v-if="!cancelButtonText">
+                            <a>
+                                normal:
+                                <br />
+                                {{ player.playMode == 'normal' ? 'ON' : 'OFF' }}
+                            </a>
+                        </button>
+                        <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('hardcore')" v-if="!cancelButtonText">
+                            <a>
+                                hardcore:
+                                <br />
+                                {{ player.playMode == 'hardcore' ? 'ON' : 'OFF' }}
+                            </a>
+                        </button>
 
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('totalchaos')" v-if="!cancelButtonText">
-                        <a>
-                            total chaos:
-                            <br />
-                            {{ player.playMode == 'totalchaos' ? ' ON' : ' OFF' }}
-                        </a>
-                    </button>
-                    <br />
-                    <button
-                        class="btn shadow-none"
-                        @keydown.enter.prevent
-                        @click="startBossFight('normal')"
-                        v-if="player.weaponTree.weaponAvaibleTypes.length < 6 && !cancelButtonText"
-                    >
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
-                    </button>
-                    <div v-else class="d- inline-block sizeBtn"></div>
-                    <button
-                        class="btn shadow-none"
-                        @keydown.enter.prevent
-                        @click="startBossFight('hardcore')"
-                        v-if="player.passivTree.passivAvaibleTypes.length < 5 && !cancelButtonText"
-                    >
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
-                    </button>
-                    <div v-else class="d-inline-block sizeBtn"></div>
-                    <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
-                        <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
-                    </button>
+                        <button class="btn shadow-none" @keydown.enter.prevent @click="changePlayMode('totalchaos')" v-if="!cancelButtonText">
+                            <a>
+                                total chaos:
+                                <br />
+                                {{ player.playMode == 'totalchaos' ? ' ON' : ' OFF' }}
+                            </a>
+                        </button>
+                        <br />
+                        <button
+                            class="btn shadow-none"
+                            @keydown.enter.prevent
+                            @click="startBossFight('normal')"
+                            v-if="player.weaponTree.weaponAvaibleTypes.length < 6 && !cancelButtonText"
+                        >
+                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                        </button>
+                        <div v-else class="d- inline-block sizeBtn"></div>
+                        <button
+                            class="btn shadow-none"
+                            @keydown.enter.prevent
+                            @click="startBossFight('hardcore')"
+                            v-if="player.passivTree.passivAvaibleTypes.length < 5 && !cancelButtonText"
+                        >
+                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                        </button>
+                        <div v-else class="d-inline-block sizeBtn"></div>
+                        <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
+                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <div>cooldowns</div>
+                    <div class="mt-4">
+                        shot:
+                        <br />
+                        {{ Math.round(shotCoolDownDuration) }}
+                    </div>
+                    <div class="mt-4">
+                        bomb:
+                        <br />
+                        {{ Math.round(bombCoolDownDuration) }}
+                    </div>
                 </div>
             </div>
         </div>
         <div v-if="!user && !gameStarted">Log in to use all features.</div>
         <div v-if="user && !gameStarted">You can press "enter" to start a round</div>
-        <div
-            :style="{
-                left: 11 + '%',
-                top: 95 + '%',
-            }"
-            style="position: absolute; z-index: 3"
-            class="row col-10"
-        >
-            <div class="col-2">
-                <div v-if="isMagnet" style="z-index: 3">
-                    Magnet:
-                    <br />
-                    {{ Math.round(magnetDuration) }}
-                </div>
-            </div>
-            <div class="col-2">
-                <div v-if="isGrow" style="z-index: 3">
-                    Grow:
-                    <br />
-                    {{ Math.round(growDuration) }}
-                </div>
-            </div>
-            <div class="col-2">
-                <div v-if="isSlowEnemies" style="z-index: 3">
-                    Slow enemies:
-                    <br />
-                    {{ Math.round(slowEnemiesDuration) }}
-                </div>
-            </div>
-            <div class="col-2">
-                <div v-if="isStopTime" style="z-index: 3">
-                    Stop time:
-                    <br />
-                    {{ Math.round(stopTimeDuration) }}
-                </div>
-            </div>
-            <div class="col-2">
-                <div v-if="shotCoolDown" style="z-index: 3">
-                    Shot:
-                    <br />
-                    {{ Math.round(shotCoolDownDuration) }}
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -1158,14 +1152,32 @@ export default defineComponent({
             this.lastDirection = newPlayer.lastDirection
         },
         handlePlayerAbilities() {
-            if (this.pressedKeys[this.player.settings.abilitys[3]] && findSkill(this.player, 'bombAbility')) this.bombAbility()
-            if (this.pressedKeys[this.player.settings.abilitys[4]] && findSkill(this.player, 'shotAbility')) this.shotAbility()
+            this.player.speed = 5
+            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
+                    switch (this.player.settings.abilitys[i].name) {
+                        case 'fastAbility':
+                            this.player.speed = 5 * 2
+                            break
+                        case 'slowAbility':
+                            this.player.speed = 5 * 0.5
+                            break
+                        case 'bombAbility':
+                            this.bombAbility()
+                            break
+                        case 'shotAbility':
+                            this.shotAbility()
+                            break
+                    }
+                }
+            }
         },
         bombAbility() {
             if (this.bombCoolDown) return
+            let bombs = [...this.items].filter(i => i.type == 'clearField')
+            if (!bombs.length) return
             this.bombCoolDown = true
             this.bombCoolDownDuration = 1000
-            let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))

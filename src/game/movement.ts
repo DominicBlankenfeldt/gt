@@ -38,17 +38,14 @@ function deletePlasma(plasmas: type.Plasma[], plasma: type.Plasma) {
     return plasmas.filter(p => p != plasma)
 }
 export function playerMovement(player: type.Player, pressedKeys: any, field: type.Field, lastDirection: number, generalSize: number) {
-    let multiplicator = 1
     player.moveVector = [0, 0]
 
-    if (pressedKeys[player.settings.abilitys[1]] && findSkill(player, 'fastAbility')) multiplicator = 2
-    if (pressedKeys[player.settings.abilitys[2]] && findSkill(player, 'slowAbility')) multiplicator = 0.5
     if (pressedKeys['ArrowLeft'] || pressedKeys[player.settings.moves['left']]) player.moveVector[0] = left(player, field)
     if (pressedKeys['ArrowRight'] || pressedKeys[player.settings.moves['right']]) player.moveVector[0] = right(player, field)
     if (pressedKeys['ArrowUp'] || pressedKeys[player.settings.moves['up']]) player.moveVector[1] = up(player, field)
     if (pressedKeys['ArrowDown'] || pressedKeys[player.settings.moves['down']]) player.moveVector[1] = down(player, field)
 
-    player.moveVector = mulVec(norVec(player.moveVector), player.speed * generalSize * multiplicator)
+    player.moveVector = mulVec(norVec(player.moveVector), player.speed * generalSize)
     player.vector = addVec(player.vector, player.moveVector)
     if (player.moveVector[0] > 0) lastDirection = 90
     if (player.moveVector[0] < 0) lastDirection = 270

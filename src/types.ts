@@ -29,6 +29,7 @@ export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
 export interface Player {
+    id: string
     vector: Vector
     speed: number
     moveVector: Vector
@@ -67,11 +68,16 @@ export interface Moves {
     right: Key
 }
 export interface Abilitys {
-    1: Key
-    2: Key
-    3: Key
-    4: Key
+    1: Ability
+    2: Ability
+    3: Ability
+    4: Ability
 }
+export interface Ability {
+    key: Key
+    name: AbilityName
+}
+export type AbilityName = 'fastAbility' | 'slowAbility' | 'bombAbility' | 'shotAbility'
 export type Key =
     | 'a'
     | 'b'

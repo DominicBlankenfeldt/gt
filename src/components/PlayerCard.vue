@@ -59,7 +59,7 @@
                 <div class="row g-0">
                     <h4 class="col-11" v-if="!editProfile">
                         Username:
-                        <u>
+                        <u style="font-size: 1.5rem">
                             {{ player.username }}
                         </u>
                     </h4>
@@ -213,7 +213,7 @@
                             <input
                                 class="col-3"
                                 style="background-color: darkgrey"
-                                v-model="settingsInput.abilitys[number]"
+                                v-model="settingsInput.abilitys[number].key"
                                 type="text"
                                 pattern="[a-z0-9]"
                                 maxlength="1"
@@ -290,7 +290,7 @@ export default defineComponent({
             let double = true
             if (
                 [...new Set(Object.values(this.player.settings.moves))]
-                    .concat([...new Set(Object.values(this.player.settings.abilitys))])
+                    .concat([...new Set(Object.values(this.player.settings.abilitys))].map(a => a.key))
                     .filter(s => s).length < 8
             )
                 double = false
