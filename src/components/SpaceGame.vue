@@ -217,9 +217,11 @@
                 <div class="col-1">
                     <div>cooldowns</div>
                     <div class="mt-4" v-for="ability of this.player.settings.abilitys" :key="ability">
-                        {{ skillDetails[ability.name].name }}:
-                        <br />
-                        {{ Math.round(coolDowns[ability.name]) }}
+                        <div v-if="ability.name">
+                            {{ skillDetails[ability.name].name }}:
+                            <br />
+                            {{ Math.round(coolDowns[ability.name]) }}
+                        </div>
                     </div>
                 </div>
             </div>
