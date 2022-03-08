@@ -208,8 +208,24 @@
                                 v-model="player.settings.effectVolume"
                             />
                         </div>
-                        <div class="row mt-1" v-for="number of 4" :key="number">
-                            <div class="col-9">ability{{ number }}:</div>
+                        <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
+                            <select
+                                class="col-9"
+                                @click="buttonSound()"
+                                v-model="player.settings.abilitys[number].name"
+                                style="background-color: grey"
+                            >
+                                <option
+                                    :selected="ability.name == player.settings.abilitys[number].name"
+                                    :value="ability.name"
+                                    v-for="ability of availableAbilitys"
+                                    :key="ability"
+                                    @click="buttonSound()"
+                                >
+                                    {{ ability.name }}
+                                </option>
+                                <option style="color: black" disabled>unlock more by use the skilltree</option>
+                            </select>
                             <input
                                 class="col-3"
                                 style="background-color: darkgrey"
@@ -250,6 +266,7 @@ import { defineComponent, PropType } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
 import * as music from '@/music'
+import { skillDetails } from '@/global'
 export default defineComponent({
     props: {
         playerProp: {
@@ -291,10 +308,29 @@ export default defineComponent({
             if (
                 [...new Set(Object.values(this.player.settings.moves))]
                     .concat([...new Set(Object.values(this.player.settings.abilitys))].map(a => a.key))
-                    .filter(s => s).length < 8
+                    .filter(s => s).length <
+                4 + this.usedAbilitys.length
             )
                 double = false
             return double
+        },
+        availableAbilitys() {
+            let abilitys = []
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].maxlvl == 1 && skill.lvl == 1) {
+                    abilitys.push(skill)
+                }
+            }
+            return abilitys
+        },
+        usedAbilitys() {
+            let abilitys = []
+            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                if (this.player.settings.abilitys[i].name) {
+                    abilitys.push(this.player.settings.abilitys[i].name)
+                }
+            }
+            return abilitys
         },
     },
 

@@ -229,6 +229,14 @@ export default defineComponent({
                 if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                     skill.lvl++
                     this.buttonSound()
+                    if (skillDetails[skill.name].maxlvl == 1) {
+                        for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                            if (!this.player.settings.abilitys[i].name) {
+                                this.player.settings.abilitys[i].name = skill.name as type.AbilityName
+                                return
+                            }
+                        }
+                    }
                 }
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
@@ -275,6 +283,9 @@ export default defineComponent({
             for (let skill of this.player.skillTree.skills) {
                 this.player.skillTree.skillPoints += skill.lvl * skillDetails[skill.name].tier
                 skill.lvl = 0
+            }
+            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                this.player.settings.abilitys[i].name = '' as type.AbilityName
             }
         },
         async resetWeaponTree() {

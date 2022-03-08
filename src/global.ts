@@ -43,10 +43,10 @@ export function checkPlayer(player: type.Player) {
     player = player || {}
     player.settings = player.settings || {
         abilitys: {
-            1: { key: '1', name: 'fastAbility' },
-            2: { key: '2', name: 'slowAbility' },
-            3: { key: '3', name: 'bombAbility' },
-            4: { key: '4', name: 'shotAbility' },
+            1: { key: '1', name: '' },
+            2: { key: '2', name: '' },
+            3: { key: '3', name: '' },
+            4: { key: '4', name: '' },
         },
         moves: {
             up: 'w',

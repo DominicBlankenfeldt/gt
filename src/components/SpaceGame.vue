@@ -216,15 +216,10 @@
                 </div>
                 <div class="col-1">
                     <div>cooldowns</div>
-                    <div class="mt-4">
-                        shot:
+                    <div class="mt-4" v-for="ability of this.player.settings.abilitys" :key="ability">
+                        {{ skillDetails[ability.name].name }}:
                         <br />
-                        {{ Math.round(shotCoolDownDuration) }}
-                    </div>
-                    <div class="mt-4">
-                        bomb:
-                        <br />
-                        {{ Math.round(bombCoolDownDuration) }}
+                        {{ Math.round(coolDowns[ability.name]) }}
                     </div>
                 </div>
             </div>
@@ -291,13 +286,15 @@ export default defineComponent({
             magnetDuration: 0,
             slowEnemiesDuration: 0,
             stopTimeDuration: 0,
-            bombCoolDown: false,
-            bombCoolDownDuration: 0,
-            shotCoolDown: false,
-            shotCoolDownDuration: 0,
             bossFight: bossFight,
             lastDirection: 0,
             plasmas: [] as type.Plasma[],
+            coolDowns: {
+                bombAbility: 0,
+                shotAbility: 0,
+                slowAbility: 0,
+                fastAbility: 0,
+            },
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
@@ -468,19 +465,7 @@ export default defineComponent({
                 this.difficulty = 2
             }
             this.player.speed = 5
-            this.isGrow = false
-            this.isMagnet = false
-            this.isStopTime = false
-            this.isSlowEnemies = false
-            this.shotCoolDown = false
-            this.bombCoolDown = false
-            this.spawnBadItems = true
-            this.growDuration = 0
-            this.magnetDuration = 0
-            this.stopTimeDuration = 0
-            this.slowEnemiesDuration = 0
-            this.bombCoolDownDuration = 0
-            this.shotCoolDownDuration = 0
+            this.reset()
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
@@ -502,6 +487,23 @@ export default defineComponent({
             for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player)
             clearTimeout(this.countgpsID)
             this.countgps()
+        },
+        reset() {
+            this.isGrow = false
+            this.isMagnet = false
+            this.isStopTime = false
+            this.isSlowEnemies = false
+            this.spawnBadItems = true
+            this.growDuration = 0
+            this.magnetDuration = 0
+            this.stopTimeDuration = 0
+            this.slowEnemiesDuration = 0
+            this.coolDowns = {
+                bombAbility: 0,
+                shotAbility: 0,
+                fastAbility: 0,
+                slowAbility: 0,
+            }
         },
         //total chaos mode
         handleTotalchaos() {
@@ -614,11 +616,7 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
-            this.isGrow = false
-            this.isMagnet = false
-            this.isStopTime = false
-            this.isSlowEnemies = false
-            this.shotCoolDown = false
+            this.reset()
             this.message = message
             this.messageType = messageType
             if (this.bossFight) {
@@ -1077,8 +1075,7 @@ export default defineComponent({
         reduceDuartion() {
             this.isStopTime ? (this.stopTimeDuration -= 1000 / 60) : (this.stopTimeDuration = 0)
             if (this.stopTimeDuration <= 0) this.isStopTime = false
-            this.shotCoolDown ? (this.shotCoolDownDuration -= 1000 / 60) : (this.shotCoolDownDuration = 0)
-            if (this.shotCoolDownDuration <= 0) this.shotCoolDown = false
+            this.coolDowns['shotAbility'] > 0 ? (this.coolDowns['shotAbility'] -= 1000 / 60) : (this.coolDowns['shotAbility'] = 0)
             if (this.isStopTime) return
             this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0)
             if (this.isGrow) {
@@ -1092,8 +1089,7 @@ export default defineComponent({
             if (this.magnetDuration <= 0) this.isMagnet = false
             this.isSlowEnemies ? (this.slowEnemiesDuration -= 1000 / 60) : (this.slowEnemiesDuration = 0)
             if (this.slowEnemiesDuration <= 0) this.isSlowEnemies = false
-            this.bombCoolDown ? (this.bombCoolDownDuration -= 1000 / 60) : (this.bombCoolDownDuration = 0)
-            if (this.bombCoolDownDuration <= 0) this.bombCoolDown = false
+            this.coolDowns['bombAbility'] > 0 ? (this.coolDowns['bombAbility'] -= 1000 / 60) : (this.coolDowns['bombAbility'] = 0)
         },
         collectClearField() {
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
@@ -1157,10 +1153,10 @@ export default defineComponent({
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
-                            this.player.speed = 5 * 2
+                            this.player.speed *= 2
                             break
                         case 'slowAbility':
-                            this.player.speed = 5 * 0.5
+                            this.player.speed *= 0.5
                             break
                         case 'bombAbility':
                             this.bombAbility()
@@ -1173,11 +1169,10 @@ export default defineComponent({
             }
         },
         bombAbility() {
-            if (this.bombCoolDown) return
+            if (this.coolDowns['bombAbility'] > 0) return
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
-            this.bombCoolDown = true
-            this.bombCoolDownDuration = 1000
+            this.coolDowns['bombAbility'] = 1000
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))
@@ -1188,12 +1183,11 @@ export default defineComponent({
             }
         },
         shotAbility() {
-            if (this.shotCoolDown) return
+            if (this.coolDowns['shotAbility'] > 0) return
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
             music.plasmaSound(this.player.settings.effectVolume)
-            this.shotCoolDown = true
             let weapon = weapons(this.player, this.generalSize, this.lastDirection)
-            this.shotCoolDownDuration = weapon.shotCoolDownDuration
+            this.coolDowns['shotAbility'] = weapon.shotCoolDownDuration
             for (let p of weapon.plasmas) this.plasmas.push(p)
         },
         handlePlasmaMovement() {
