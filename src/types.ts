@@ -155,6 +155,10 @@ export type SkillName =
     | 'slowAbility'
     | 'bombAbility'
     | 'shotAbility'
+    | 'magnetAbility'
+    | 'slowEnemyAbility'
+    | 'stopTimeAbility'
+    | 'growAbility'
     | 'slowEnemy'
     | 'spawnLessEnemy'
     | 'scoreMultiplicator'
@@ -164,6 +168,11 @@ export type SkillName =
     | 'smallerBlackHole'
     | 'longerSlowEnemies'
     | 'longerStopTime'
+    | 'scorePerEffect'
+    | 'strongerSlowEnemies'
+    | 'strongerMagnet'
+    | 'friendlierDarkhole'
+    | 'smallerEnemies'
 
 export type Outlook = 'up' | 'down' | 'right' | 'left' | 'upleft' | 'upright' | 'downleft' | 'downright'
 

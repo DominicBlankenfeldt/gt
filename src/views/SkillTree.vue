@@ -19,38 +19,72 @@
         </div>
 
         <div class="row g-0">
-            <div class="d-flex flex-column col-3">
-                <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
-                    <button
-                        v-if="index > 3"
-                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="lvlSkill(skill)"
-                        @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
-                    >
-                        {{ skillDetails[skill.name].name }}
-                        <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
-                        }}
-                    </button>
+            <div class="row col-6">
+                <div class="d-flex flex-column col-3">
+                    <div v-for="skill of tier1Skills" :key="skill.name">
+                        <button
+                            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                            @click="lvlSkill(skill)"
+                            @dblclick="lvlSkillx8(skill)"
+                            :title="skillDetails[skill.name].description"
+                        >
+                            {{ skillDetails[skill.name].name }}
+                            <br />
+                            lvl: {{ skill.lvl }}/{{
+                                skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            }}
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="d-flex flex-column col-3">
-                <div v-for="(skill, index) of player.skillTree.skills" :key="skill.name">
-                    <button
-                        v-if="index < 4"
-                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
-                        @click="lvlSkill(skill)"
-                        @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
-                    >
-                        {{ skillDetails[skill.name].name }}
-                        <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
-                        }}
-                    </button>
+                <div class="d-flex flex-column col-3">
+                    <div v-for="skill of tier1Abilitys" :key="skill.name">
+                        <button
+                            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                            @click="lvlSkill(skill)"
+                            @dblclick="lvlSkillx8(skill)"
+                            :title="skillDetails[skill.name].description"
+                        >
+                            {{ skillDetails[skill.name].name }}
+                            <br />
+                            lvl: {{ skill.lvl }}/{{
+                                skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            }}
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex flex-column col-3">
+                    <div v-for="skill of tier2Skills" :key="skill.name">
+                        <button
+                            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                            @click="lvlSkill(skill)"
+                            @dblclick="lvlSkillx8(skill)"
+                            :title="skillDetails[skill.name].description"
+                            :disabled="usedSkillPoints < 100"
+                        >
+                            {{ skillDetails[skill.name].name }}
+                            <br />
+                            lvl: {{ skill.lvl }}/{{
+                                skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            }}
+                        </button>
+                    </div>
+                </div>
+                <div class="d-flex flex-column col-3">
+                    <div v-for="skill of tier2Abilitys" :key="skill.name">
+                        <button
+                            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                            @click="lvlSkill(skill)"
+                            @dblclick="lvlSkillx8(skill)"
+                            :title="skillDetails[skill.name].description"
+                            :disabled="usedSkillPoints < 100"
+                        >
+                            {{ skillDetails[skill.name].name }}
+                            <br />
+                            lvl: {{ skill.lvl }}/{{
+                                skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            }}
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="d-flex flex-column col-3">
@@ -190,9 +224,6 @@ export default defineComponent({
         }
         this.player = checkPlayer(this.player) as type.Player
         music.changeVolume(this.player.settings.musicVolume)
-        this.player.skillTree.skills
-            .sort((a, b) => (a.name < b.name ? -1 : 1))
-            .sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
         if (this.usedSkillPoints > this.player.skillTree.skillPoints) {
             this.resetSkillTree()
         }
@@ -201,25 +232,59 @@ export default defineComponent({
     },
 
     computed: {
+        tier1Skills() {
+            let tier1 = [] as type.Skill[]
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].tier == 1 && skillDetails[skill.name].maxlvl != 1) {
+                    tier1.push(skill)
+                }
+            }
+            tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
+            return tier1
+        },
+        tier1Abilitys() {
+            let tier1 = [] as type.Skill[]
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].tier == 1 && skillDetails[skill.name].maxlvl == 1) {
+                    tier1.push(skill)
+                }
+            }
+            tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
+            return tier1
+        },
+        tier2Skills() {
+            let tier2 = [] as type.Skill[]
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].tier == 2 && skillDetails[skill.name].maxlvl != 1) {
+                    tier2.push(skill)
+                }
+            }
+            tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
+            return tier2
+        },
+        tier2Abilitys() {
+            let tier2 = [] as type.Skill[]
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].tier == 2 && skillDetails[skill.name].maxlvl == 1) {
+                    tier2.push(skill)
+                }
+            }
+            tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1))
+            return tier2
+        },
         usedSkillPoints() {
             let allSkilllvl = 0
-            for (let skill of this.player.skillTree.skills) {
-                allSkilllvl += skill.lvl * skillDetails[skill.name].tier
-            }
+            for (let skill of this.player.skillTree.skills) allSkilllvl += skill.lvl * skillDetails[skill.name].tier
             return allSkilllvl
         },
         usedWeaponPoints() {
             let allWeaponlvl = 0
-            for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) {
-                allWeaponlvl += weaponUpgrade.lvl
-            }
+            for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) allWeaponlvl += weaponUpgrade.lvl
             return allWeaponlvl
         },
         usedPassivPoints() {
             let allPassivlvl = 0
-            for (let passivUpgrade of this.player.passivTree.passivUpgrades) {
-                allPassivlvl += passivUpgrade.lvl
-            }
+            for (let passivUpgrade of this.player.passivTree.passivUpgrades) allPassivlvl += passivUpgrade.lvl
             return allPassivlvl
         },
     },

@@ -7,6 +7,10 @@ export const skillDetails = {
     slowAbility: { name: 'sapr flame', maxlvl: 1, tier: 1, description: ' you can slow down your movement' },
     bombAbility: { name: 'remote detonator', maxlvl: 1, tier: 1, description: 'you can remote ignition the nearest bomb' },
     shotAbility: { name: 'plasma thrower', maxlvl: 1, tier: 1, description: ' you can shoot at enemies' },
+    magnetAbility: { name: 'magnetAbility', maxlvl: 1, tier: 2, description: '' },
+    slowEnemyAbility: { name: 'slowEnemy Ability', maxlvl: 1, tier: 2, description: '' },
+    stopTimeAbility: { name: 'stopTime Ability', maxlvl: 1, tier: 2, description: '' },
+    growAbility: { name: 'growAbility', maxlvl: 1, tier: 2, description: '' },
     betterCoin: { name: 'golden coin', maxlvl: 20, tier: 1, description: 'the coin give more score' },
     longerSlowEnemies: { name: 'galactic freeze', maxlvl: 20, tier: 1, description: 'the enemy slow effect holds longer' },
     betterGrowPotion: { name: 'alchemist', maxlvl: 20, tier: 1, description: 'while grwon you gain more score' },
@@ -16,6 +20,11 @@ export const skillDetails = {
     smallerBlackHole: { name: 'cute black holes', maxlvl: 20, tier: 1, description: 'black holes are smaller' },
     slowEnemy: { name: 'braking fog', maxlvl: 20, tier: 1, description: 'enemies will slow down' },
     longerMagnet: { name: 'permanent magnet', maxlvl: 20, tier: 1, description: 'the magnet lasts longer' },
+    scorePerEffect: { name: 'scorePerEffect', maxlvl: 20, tier: 2, description: '' },
+    strongerSlowEnemies: { name: 'stronger SlowEnemies', maxlvl: 20, tier: 2, description: '' },
+    strongerMagnet: { name: 'strongerMagnet', maxlvl: 20, tier: 2, description: '' },
+    friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: '' },
+    smallerEnemies: { name: 'smallerEnemies', maxlvl: 20, tier: 2, description: '' },
 }
 export const weaponDetails = {
     moreDamage: { name: 'power weapon', maxlvl: 10, description: 'your plasma makes more damage' },
@@ -96,7 +105,16 @@ export function checkPlayer(player: type.Player) {
             skillPoints: 0,
             skills: [] as type.Skill[],
         } as type.SkillTree)
-    for (const skill of ['shotAbility', 'fastAbility', 'slowAbility', 'bombAbility']) {
+    for (const skill of [
+        'shotAbility',
+        'fastAbility',
+        'slowAbility',
+        'bombAbility',
+        'magnetAbility',
+        'slowEnemyAbility',
+        'stopTimeAbility',
+        'growAbility',
+    ]) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
@@ -111,6 +129,11 @@ export function checkPlayer(player: type.Player) {
         'longerMagnet',
         'betterGrowPotion',
         'smallerBlackHole',
+        'scorePerEffect',
+        'strongerSlowEnemies',
+        'strongerMagnet',
+        'friendlierDarkhole',
+        'smallerEnemies',
     ]) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
