@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import * as type from '@/types'
 export const production = ref(process.env.NODE_ENV === 'production' ? true : false)
-export const bossFight = ref(false)
 export const skillDetails = {
     fastAbility: { name: 'rocket propulsion', maxlvl: 1, tier: 1, description: 'you can speed up your movement' },
     slowAbility: { name: 'sapr flame', maxlvl: 1, tier: 1, description: ' you can slow down your movement' },

@@ -251,7 +251,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
-import { checkPlayer, production, bossFight, skillDetails, weaponAmount, passivAmount } from '@/global'
+import { checkPlayer, production, skillDetails, weaponAmount, passivAmount } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
@@ -265,7 +265,6 @@ import * as API from '@/API'
 export default defineComponent({
     setup() {
         production
-        bossFight
         currentUser
         skillDetails
         roundHalf
@@ -313,7 +312,7 @@ export default defineComponent({
             magnetDuration: 0,
             slowEnemiesDuration: 0,
             stopTimeDuration: 0,
-            bossFight: bossFight,
+            bossFight: false,
             lastDirection: 0,
             plasmas: [] as type.Plasma[],
             coolDowns: {
@@ -998,12 +997,13 @@ export default defineComponent({
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
                         this.score += scoreIncrease
-                        if (!bossFight)
+                        if (!this.bossFight) {
                             this.specialScores.push({
                                 vector: enemy.vector,
                                 score: scoreIncrease,
                                 duration: 1000,
                             })
+                        }
                     }
                 }
             }
