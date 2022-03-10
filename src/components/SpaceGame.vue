@@ -998,11 +998,12 @@ export default defineComponent({
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
                         this.score += scoreIncrease
-                        this.specialScores.push({
-                            vector: enemy.vector,
-                            score: scoreIncrease,
-                            duration: 1000,
-                        })
+                        if (!bossFight)
+                            this.specialScores.push({
+                                vector: enemy.vector,
+                                score: scoreIncrease,
+                                duration: 1000,
+                            })
                     }
                 }
             }
