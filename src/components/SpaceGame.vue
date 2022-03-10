@@ -2,12 +2,12 @@
     <div v-if="dataLoad" style="color: red">
         <div class="row g-0" style="height: 5vh; position: relative">
             <div v-if="!bossEnemy.type" class="col-2 text-end">
-                Score: {{ Math.round(score) }}
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
+                Score: {{ Math.round(score) }}
             </div>
             <div v-else class="col-3"></div>
             <div v-if="!bossEnemy.type" class="col-1">
-                + {{ scorePerSecond.toFixed(1) }}
+                + {{ (scorePerSecond * 60).toFixed(0) }}/s
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             </div>
             <div class="col-2">Enemies:{{ enemies.length }}</div>
