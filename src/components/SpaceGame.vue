@@ -22,8 +22,8 @@
             </div>
             <div v-else class="col-3"></div>
             <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
-            <div v-if="bossEnemy.size">Boss HP:{{ Math.ceil(bossEnemy.hP) }}</div>
             <div v-else>{{ player.playMode }}</div>
+            <div v-if="bossFight && bossEnemy.size">Boss HP:{{ Math.ceil(bossEnemy.hP) }}</div>
         </div>
         <div>
             <div class="d-flex justify-content-between">
@@ -1141,6 +1141,7 @@ export default defineComponent({
                 this.stopTimeDuration = 0
             }
             this.coolDowns['shotAbility'] > 0 ? (this.coolDowns['shotAbility'] -= 1000 / 60) : (this.coolDowns['shotAbility'] = 0)
+            if (this.coolDowns['shotAbility'] < 0) this.coolDowns['shotAbility'] = 0
             if (this.isStopTime) return
             this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0)
 
