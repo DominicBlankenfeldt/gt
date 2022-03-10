@@ -25,13 +25,13 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
     }
     switch (getRandomInt(3)) {
         case 0:
-            size = 20 * generalSize
+            size = 20 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
             break
         case 1:
-            size = 25 * generalSize
+            size = 25 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
             break
         case 2:
-            size = 30 * generalSize
+            size = 30 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
             break
     }
     switch (getRandomInt(4)) {

@@ -1,11 +1,15 @@
 <template>
     <div v-if="dataLoad" style="color: red">
         <div class="row g-0" style="height: 5vh; position: relative">
-            <div v-if="!bossEnemy.type" class="col-3">
-                <img src="../../public/img/items/coin/coin.gif" alt="coin" />
+            <div v-if="!bossEnemy.type" class="col-2 text-end">
                 Score: {{ Math.round(score) }}
+                <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             </div>
             <div v-else class="col-3"></div>
+            <div v-if="!bossEnemy.type" class="col-1">
+                + {{ scorePerSecond.toFixed(1) }}
+                <img src="../../public/img/items/coin/coin.gif" alt="coin" />
+            </div>
             <div class="col-2">Enemies:{{ enemies.length }}</div>
             <div class="col-2">difficulty:{{ difficulty }}</div>
             <div class="col-2">gps:{{ Math.round(gps) }}</div>
@@ -28,22 +32,22 @@
                     <div class="mt-4">
                         Magnet:
                         <br />
-                        {{ Math.round(magnetDuration) }}
+                        {{ (magnetDuration / 1000).toFixed(1) }}
                     </div>
                     <div class="mt-4">
                         Grow:
                         <br />
-                        {{ Math.round(growDuration) }}
+                        {{ (growDuration / 1000).toFixed(1) }}
                     </div>
                     <div class="mt-4">
                         Slow enemies:
                         <br />
-                        {{ Math.round(slowEnemiesDuration) }}
+                        {{ (slowEnemiesDuration / 1000).toFixed(1) }}
                     </div>
                     <div class="mt-4">
                         Stop time:
                         <br />
-                        {{ Math.round(stopTimeDuration) }}
+                        {{ (stopTimeDuration / 1000).toFixed(1) }}
                     </div>
                 </div>
                 <div class="game" :class="{ noneCursor: gameStarted }">
@@ -87,7 +91,7 @@
                     </div>
                     <div
                         v-for="plasma of plasmas"
-                        :key="plasma"
+                        :key="JSON.stringify(plasma)"
                         :style="{
                             left: plasma.vector[0] + 'px',
                             top: plasma.vector[1] + 'px',
@@ -107,7 +111,7 @@
                     </div>
                     <div
                         v-for="plasma of enemyPlasmas"
-                        :key="plasma"
+                        :key="JSON.stringify(plasma)"
                         :style="{
                             left: plasma.vector[0] + 'px',
                             top: plasma.vector[1] + 'px',
@@ -147,7 +151,7 @@
                     </div>
                     <div
                         v-for="item of items"
-                        :key="item"
+                        :key="JSON.stringify(item)"
                         :style="{
                             left: item.vector[0] + 'px',
                             top: item.vector[1] + 'px',
@@ -156,6 +160,16 @@
                         style="position: absolute"
                     >
                         <img :src="item.imgsrc" alt="" :style="{ width: item.size + 'px', height: item.size + 'px' }" />
+                    </div>
+                    <div
+                        :style="{
+                            left: coinDisplay.vector[0] + 'px',
+                            top: coinDisplay.vector[1] + 'px',
+                        }"
+                        style="position: absolute; color: green"
+                        v-if="coinDisplay.view"
+                    >
+                        +{{ Math.round(coinDisplay.score) }}
                     </div>
                     <div v-if="message" :class="messageType">
                         {{ message }}
@@ -216,11 +230,11 @@
                 </div>
                 <div class="col-1">
                     <div>cooldowns</div>
-                    <div class="mt-4" v-for="ability of this.player.settings.abilitys" :key="ability">
+                    <div class="mt-4" v-for="ability of player.settings.abilitys" :key="JSON.stringify(ability)">
                         <div v-if="ability.name">
                             {{ skillDetails[ability.name].name }}:
                             <br />
-                            {{ Math.round(coolDowns[ability.name]) }}
+                            {{ (coolDowns[ability.name] / 1000).toFixed(1) }}
                         </div>
                     </div>
                 </div>
@@ -250,9 +264,11 @@ export default defineComponent({
         bossFight
         currentUser
         skillDetails
+        roundHalf
         return {
             findSkill,
             skillDetails,
+            roundHalf,
         }
     },
     data() {
@@ -273,6 +289,12 @@ export default defineComponent({
                 borderDown: 0,
             } as type.Field,
             production: production.value,
+            coinDisplay: {
+                score: 0,
+                vector: [0, 0],
+                view: false,
+                duration: 0,
+            },
             // debug
             enemiesSpawn: true,
             enemiesMove: true,
@@ -296,6 +318,10 @@ export default defineComponent({
                 shotAbility: 0,
                 slowAbility: 0,
                 fastAbility: 0,
+                magnetAbility: 0,
+                slowEnemyAbility: 0,
+                stopTimeAbility: 0,
+                growAbility: 0,
             },
             // boss
             bossEnemy: {} as type.BossEnemy,
@@ -310,6 +336,8 @@ export default defineComponent({
             startingEnemies: 4,
             difficulty: 2,
             score: 0,
+            scorePerSecond: 0,
+            lastScore: 0,
             gameloopCounter: 0,
             gameloopCounter2: 0,
             gameloopLastCounter: 0,
@@ -505,6 +533,10 @@ export default defineComponent({
                 shotAbility: 0,
                 fastAbility: 0,
                 slowAbility: 0,
+                magnetAbility: 0,
+                slowEnemyAbility: 0,
+                stopTimeAbility: 0,
+                growAbility: 0,
             }
         },
         //total chaos mode
@@ -583,6 +615,7 @@ export default defineComponent({
         },
         //general
         increaseScore() {
+            this.lastScore = this.score
             if (this.isGrow) {
                 this.player.size = this.player.originalSize * 2 * this.generalSize
                 this.score +=
@@ -598,6 +631,13 @@ export default defineComponent({
                     percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
                     (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             }
+            let effectAmount = 0
+            if (this.isGrow) effectAmount++
+            if (this.isMagnet) effectAmount++
+            if (this.isSlowEnemies) effectAmount++
+            if (this.isStopTime) effectAmount++
+            this.score += findSkill(this.player, 'scorePerEffect') * effectAmount * 0.25
+            this.scorePerSecond = this.score - this.lastScore
         },
         countgps() {
             this.countgpsID = setTimeout(() => {
@@ -957,7 +997,7 @@ export default defineComponent({
             }
         },
         blackHoleColision(item: type.Item) {
-            this.gravity(item, this.player, 3, 1)
+            this.gravity(item, this.player, 3, 1 - findSkill(this.player, 'friendlierDarkhole') / 100)
             if (this.collisionsCheck(item, this.player)) this.touchBlackHole()
             for (let enemy of this.enemies) {
                 this.gravity(item, enemy, 3, 1)
@@ -966,7 +1006,7 @@ export default defineComponent({
             for (let item2 of this.items) {
                 if (item != item2) {
                     if (item2.type != 'blackHole') {
-                        this.gravity(item, item2, 3, 1)
+                        this.gravity(item, item2, 3, 1 - findSkill(this.player, 'friendlierDarkhole') / 100)
                         if (this.collisionsCheck(item, item2)) this.despawnItem(item2)
                     }
                 }
@@ -999,7 +1039,7 @@ export default defineComponent({
         async enemyColision() {
             for (let enemy of this.enemies) {
                 this.plasmaColision(false, enemy)
-                if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3)
+                if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3 - findSkill(this.player, 'strongerMagnet') / 100)
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.player)) await this.gameOver('you got killed by an enemy', 'alert alert-danger')
             }
@@ -1033,7 +1073,7 @@ export default defineComponent({
             this.plasmaColision()
             for (let item of this.items) {
                 if (item.type == 'blackHole') this.blackHoleColision(item)
-                else if (this.isMagnet) this.gravity(this.player, item, 2, 1)
+                else if (this.isMagnet) this.gravity(this.player, item, 2, 1 + findSkill(this.player, 'strongerMagnet') / 100)
                 this.enemyItemColision(item)
                 if (this.collisionsCheck(item, this.player)) this.playerItemColision(item)
             }
@@ -1053,9 +1093,14 @@ export default defineComponent({
             this.items = createItems(this.isStopTime, this.generalSize, this.player, this.items, this.field, badItems, this.bossFight) || this.items
         },
         collectCoin(item: type.Item) {
-            this.score +=
+            let scoreIncrease =
                 ((this.difficulty * 15 * item.size * percent(findSkill(this.player, 'betterCoin'), 'in')) / this.generalSize) *
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
+            this.score += scoreIncrease
+            this.coinDisplay.vector = item.vector
+            this.coinDisplay.score = scoreIncrease
+            this.coinDisplay.view = true
+            this.coinDisplay.duration = 1000
         },
         collectGrowPotion(item: type.Item) {
             if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
@@ -1075,6 +1120,8 @@ export default defineComponent({
             this.slowEnemiesDuration += (250 * item.size * percent(findSkill(this.player, 'longerSlowEnemies'), 'in')) / this.generalSize
         },
         reduceDuartion() {
+            this.coinDisplay.duration -= 1000 / 60
+            if (this.coinDisplay.duration < 0) this.coinDisplay.view = false
             this.isStopTime ? (this.stopTimeDuration -= 1000 / 60) : (this.stopTimeDuration = 0)
             if (this.stopTimeDuration <= 0) this.isStopTime = false
             this.coolDowns['shotAbility'] > 0 ? (this.coolDowns['shotAbility'] -= 1000 / 60) : (this.coolDowns['shotAbility'] = 0)
@@ -1091,7 +1138,8 @@ export default defineComponent({
             if (this.magnetDuration <= 0) this.isMagnet = false
             this.isSlowEnemies ? (this.slowEnemiesDuration -= 1000 / 60) : (this.slowEnemiesDuration = 0)
             if (this.slowEnemiesDuration <= 0) this.isSlowEnemies = false
-            this.coolDowns['bombAbility'] > 0 ? (this.coolDowns['bombAbility'] -= 1000 / 60) : (this.coolDowns['bombAbility'] = 0)
+            for (let ability of ['bombAbility', 'magnetAbility', 'slowEnemyAbility', 'stopTimeAbility', 'growAbility'] as type.AbilityName[])
+                this.coolDowns[ability] > 0 ? (this.coolDowns[ability] -= 1000 / 60) : (this.coolDowns[ability] = 0)
         },
         collectClearField() {
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
@@ -1166,9 +1214,45 @@ export default defineComponent({
                         case 'shotAbility':
                             this.shotAbility()
                             break
+                        case 'magnetAbility':
+                            this.magnetAbility()
+                            break
+                        case 'growAbility':
+                            this.growAbility()
+                            break
+                        case 'slowEnemyAbility':
+                            this.slowEnemyAbility()
+                            break
+                        case 'stopTimeAbility':
+                            this.stopTimeAbility()
+                            break
                     }
                 }
             }
+        },
+        magnetAbility() {
+            if (this.coolDowns['magnetAbility'] > 0) return
+            this.coolDowns['magnetAbility'] = 10000
+            this.isMagnet = true
+            this.magnetDuration += 1000
+        },
+        growAbility() {
+            if (this.coolDowns['growAbility'] > 0) return
+            this.coolDowns['growAbility'] = 10000
+            this.isGrow = true
+            this.growDuration += 1000
+        },
+        slowEnemyAbility() {
+            if (this.coolDowns['slowEnemyAbility'] > 0) return
+            this.coolDowns['slowEnemyAbility'] = 10000
+            this.isSlowEnemies = true
+            this.slowEnemiesDuration += 1000
+        },
+        stopTimeAbility() {
+            if (this.coolDowns['stopTimeAbility'] > 0) return
+            this.coolDowns['stopTimeAbility'] = 10000
+            this.isStopTime = true
+            this.stopTimeDuration += 250
         },
         bombAbility() {
             if (this.coolDowns['bombAbility'] > 0) return
@@ -1193,7 +1277,15 @@ export default defineComponent({
             for (let p of weapon.plasmas) this.plasmas.push(p)
         },
         handlePlasmaMovement() {
-            const newPlasmas = plasmaMovement(this.plasmas, this.enemyPlasmas, this.enemies, this.player, this.generalSize, this.field)
+            const newPlasmas = plasmaMovement(
+                this.plasmas,
+                this.enemyPlasmas,
+                this.enemies,
+                this.player,
+                this.generalSize,
+                this.field,
+                this.bossEnemy
+            )
             this.plasmas = newPlasmas.plasmas
             this.enemyPlasmas = newPlasmas.enemyPlasmas
         },

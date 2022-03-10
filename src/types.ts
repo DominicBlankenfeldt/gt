@@ -77,7 +77,15 @@ export interface Ability {
     key: Key
     name: AbilityName
 }
-export type AbilityName = 'fastAbility' | 'slowAbility' | 'bombAbility' | 'shotAbility'
+export type AbilityName =
+    | 'fastAbility'
+    | 'slowAbility'
+    | 'bombAbility'
+    | 'shotAbility'
+    | 'magnetAbility'
+    | 'slowEnemyAbility'
+    | 'stopTimeAbility'
+    | 'growAbility'
 export type Key =
     | 'a'
     | 'b'
@@ -153,8 +161,8 @@ export interface Skill {
 export type SkillName =
     | 'fastAbility'
     | 'slowAbility'
-    | 'bombAbility'
     | 'shotAbility'
+    | 'bombAbility'
     | 'magnetAbility'
     | 'slowEnemyAbility'
     | 'stopTimeAbility'
