@@ -162,14 +162,15 @@
                         <img :src="item.imgsrc" alt="" :style="{ width: item.size + 'px', height: item.size + 'px' }" />
                     </div>
                     <div
+                        v-for="specialScore of specialScores"
+                        :key="specialScore"
                         :style="{
-                            left: coinDisplay.vector[0] + 'px',
-                            top: coinDisplay.vector[1] + 'px',
+                            left: specialScore.vector[0] + 'px',
+                            top: specialScore.vector[1] + 'px',
                         }"
                         style="position: absolute; color: green"
-                        v-if="coinDisplay.view"
                     >
-                        +{{ Math.round(coinDisplay.score) }}
+                        +{{ Math.round(specialScore.score) }}
                     </div>
                     <div v-if="message" :class="messageType">
                         {{ message }}
@@ -209,7 +210,7 @@
                             class="btn shadow-none"
                             @keydown.enter.prevent
                             @click="startBossFight('normal')"
-                            v-if="player.weaponTree.weaponAvaibleTypes.length < 6 && !cancelButtonText"
+                            v-if="player.weaponTree.weaponAvaibleTypes.length < weaponAmount && !cancelButtonText"
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
@@ -218,7 +219,7 @@
                             class="btn shadow-none"
                             @keydown.enter.prevent
                             @click="startBossFight('hardcore')"
-                            v-if="player.passivTree.passivAvaibleTypes.length < 5 && !cancelButtonText"
+                            v-if="player.passivTree.passivAvaibleTypes.length < passivAmount && !cancelButtonText"
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
@@ -240,19 +241,22 @@
                 </div>
             </div>
         </div>
-        <div v-if="!user && !gameStarted">Log in to use all features.</div>
-        <div v-if="user && !gameStarted">You can press "enter" to start a round</div>
+        <div class="mt-3">
+            <div v-if="!user && !gameStarted">Log in to use all features.</div>
+            <div v-if="user && !gameStarted">{{ tip }}</div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
-import { checkPlayer, production, bossFight, skillDetails } from '@/global'
+import { checkPlayer, production, bossFight, skillDetails, weaponAmount, passivAmount } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
+import { tips } from '@/game/tip'
 import { currentUser } from '@/router'
 import * as music from '@/music'
 import * as type from '@/types'
@@ -269,6 +273,8 @@ export default defineComponent({
             findSkill,
             skillDetails,
             roundHalf,
+            weaponAmount,
+            passivAmount,
         }
     },
     data() {
@@ -289,12 +295,9 @@ export default defineComponent({
                 borderDown: 0,
             } as type.Field,
             production: production.value,
-            coinDisplay: {
-                score: 0,
-                vector: [0, 0],
-                view: false,
-                duration: 0,
-            },
+            specialScores: [] as type.SpecialScore[],
+            tip: '',
+            tipsNumber: 6,
             // debug
             enemiesSpawn: true,
             enemiesMove: true,
@@ -397,6 +400,7 @@ export default defineComponent({
         this.playerStartPosition()
         this.bossFight = false
         this.buttonSound()
+        this.tip = tips(getRandomInt(this.tipsNumber))
         this.dataLoad = true
     },
     methods: {
@@ -658,6 +662,7 @@ export default defineComponent({
         },
         async gameOver(message: string, messageType: string) {
             this.gameStarted = false
+            this.tip = tips(getRandomInt(this.tipsNumber))
             this.reset()
             this.message = message
             this.messageType = messageType
@@ -986,12 +991,18 @@ export default defineComponent({
                             if (plasma.damage <= 0) this.deletePlasma(plasma)
                         }
                         this.respawnEnemy(enemy)
-                        this.score +=
+                        let scoreIncrease =
                             50 *
                             this.difficulty *
                             (this.player.passivTree.passivType == 'increaseScore'
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
+                        this.score += scoreIncrease
+                        this.specialScores.push({
+                            vector: enemy.vector,
+                            score: scoreIncrease,
+                            duration: 1000,
+                        })
                     }
                 }
             }
@@ -1097,10 +1108,11 @@ export default defineComponent({
                 ((this.difficulty * 15 * item.size * percent(findSkill(this.player, 'betterCoin'), 'in')) / this.generalSize) *
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
             this.score += scoreIncrease
-            this.coinDisplay.vector = item.vector
-            this.coinDisplay.score = scoreIncrease
-            this.coinDisplay.view = true
-            this.coinDisplay.duration = 1000
+            this.specialScores.push({
+                vector: item.vector,
+                score: scoreIncrease,
+                duration: 1000,
+            })
         },
         collectGrowPotion(item: type.Item) {
             if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
@@ -1120,26 +1132,39 @@ export default defineComponent({
             this.slowEnemiesDuration += (250 * item.size * percent(findSkill(this.player, 'longerSlowEnemies'), 'in')) / this.generalSize
         },
         reduceDuartion() {
-            this.coinDisplay.duration -= 1000 / 60
-            if (this.coinDisplay.duration < 0) this.coinDisplay.view = false
+            for (let specialScore of this.specialScores) specialScore.duration -= 1000 / 60
+            this.specialScores = this.specialScores.filter(s => s.duration > 0)
             this.isStopTime ? (this.stopTimeDuration -= 1000 / 60) : (this.stopTimeDuration = 0)
-            if (this.stopTimeDuration <= 0) this.isStopTime = false
+            if (this.stopTimeDuration <= 0) {
+                this.isStopTime = false
+                this.stopTimeDuration = 0
+            }
             this.coolDowns['shotAbility'] > 0 ? (this.coolDowns['shotAbility'] -= 1000 / 60) : (this.coolDowns['shotAbility'] = 0)
             if (this.isStopTime) return
             this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0)
+
             if (this.isGrow) {
                 if (this.growDuration <= 0) {
+                    this.growDuration = 0
                     this.isGrow = false
                     this.player.size = this.player.originalSize * this.generalSize
                     this.player.vector = addVec(this.player.vector, this.player.size / 2)
                 }
             }
             this.isMagnet ? (this.magnetDuration -= 1000 / 60) : (this.magnetDuration = 0)
-            if (this.magnetDuration <= 0) this.isMagnet = false
+            if (this.magnetDuration <= 0) {
+                this.isMagnet = false
+                this.magnetDuration = 0
+            }
             this.isSlowEnemies ? (this.slowEnemiesDuration -= 1000 / 60) : (this.slowEnemiesDuration = 0)
-            if (this.slowEnemiesDuration <= 0) this.isSlowEnemies = false
-            for (let ability of ['bombAbility', 'magnetAbility', 'slowEnemyAbility', 'stopTimeAbility', 'growAbility'] as type.AbilityName[])
+            if (this.slowEnemiesDuration <= 0) {
+                this.isSlowEnemies = false
+                this.slowEnemiesDuration = 0
+            }
+            for (let ability of ['bombAbility', 'magnetAbility', 'slowEnemyAbility', 'stopTimeAbility', 'growAbility'] as type.AbilityName[]) {
                 this.coolDowns[ability] > 0 ? (this.coolDowns[ability] -= 1000 / 60) : (this.coolDowns[ability] = 0)
+                if (this.coolDowns[ability] < 0) this.coolDowns[ability] = 0
+            }
         },
         collectClearField() {
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
@@ -1200,6 +1225,7 @@ export default defineComponent({
         handlePlayerAbilities() {
             this.player.speed = 5
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                if (!this.player.settings.abilitys[i].name) break
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
@@ -1238,6 +1264,7 @@ export default defineComponent({
         },
         growAbility() {
             if (this.coolDowns['growAbility'] > 0) return
+            if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
             this.coolDowns['growAbility'] = 10000
             this.isGrow = true
             this.growDuration += 1000

@@ -106,7 +106,7 @@
                         >
                             {{ weaponAvaibleType }}
                         </option>
-                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < 6" disabled>
+                        <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < weaponAmount" disabled>
                             unlock more by fight the boss
                         </option>
                     </select>
@@ -144,7 +144,7 @@
                         >
                             {{ passivAvaibleType }}
                         </option>
-                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < 6" disabled>
+                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < passivAmount" disabled>
                             unlock more by fight the boss
                         </option>
                     </select>
@@ -181,7 +181,7 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { checkPlayer, skillDetails, weaponDetails, passivDetails } from '@/global'
+import { checkPlayer, skillDetails, weaponDetails, passivDetails, weaponAmount, passivAmount } from '@/global'
 import { currentUser } from '@/router'
 import * as API from '@/API'
 import * as type from '@/types'
@@ -193,6 +193,8 @@ export default defineComponent({
             skillDetails,
             weaponDetails,
             passivDetails,
+            weaponAmount,
+            passivAmount,
         }
     },
     data() {

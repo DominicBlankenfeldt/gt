@@ -15,7 +15,7 @@
                 </p>
             </div>
         </div>
-        <div class="card mt-1">
+        <!-- <div class="card mt-1">
             <div class="card-header">Abilities</div>
             <div class="card-body">
                 <p>
@@ -35,7 +35,7 @@
                     }}
                 </p>
             </div>
-        </div>
+        </div> -->
 
         <div class="card mt-1">
             <div class="card-header">Items</div>

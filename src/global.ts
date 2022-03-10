@@ -7,10 +7,10 @@ export const skillDetails = {
     slowAbility: { name: 'sapr flame', maxlvl: 1, tier: 1, description: ' you can slow down your movement' },
     bombAbility: { name: 'remote detonator', maxlvl: 1, tier: 1, description: 'you can remote ignition the nearest bomb' },
     shotAbility: { name: 'plasma thrower', maxlvl: 1, tier: 1, description: ' you can shoot at enemies' },
-    magnetAbility: { name: 'magnetAbility', maxlvl: 1, tier: 2, description: '' },
-    slowEnemyAbility: { name: 'slowEnemy Ability', maxlvl: 1, tier: 2, description: '' },
-    stopTimeAbility: { name: 'stopTime Ability', maxlvl: 1, tier: 2, description: '' },
-    growAbility: { name: 'growAbility', maxlvl: 1, tier: 2, description: '' },
+    magnetAbility: { name: 'electro magnet', maxlvl: 1, tier: 2, description: 'gives you the magnet effect' },
+    slowEnemyAbility: { name: 'snow machine', maxlvl: 1, tier: 2, description: 'gives you the slow enemies effect' },
+    stopTimeAbility: { name: 'time machine', maxlvl: 1, tier: 2, description: 'gives you the time stop effect' },
+    growAbility: { name: 'growth ray', maxlvl: 1, tier: 2, description: 'gives you the grow effect' },
     betterCoin: { name: 'golden coin', maxlvl: 20, tier: 1, description: 'the coin give more score' },
     longerSlowEnemies: { name: 'galactic freeze', maxlvl: 20, tier: 1, description: 'the enemy slow effect holds longer' },
     betterGrowPotion: { name: 'alchemist', maxlvl: 20, tier: 1, description: 'while grwon you gain more score' },
@@ -20,12 +20,13 @@ export const skillDetails = {
     smallerBlackHole: { name: 'cute black holes', maxlvl: 20, tier: 1, description: 'black holes are smaller' },
     slowEnemy: { name: 'braking fog', maxlvl: 20, tier: 1, description: 'enemies will slow down' },
     longerMagnet: { name: 'permanent magnet', maxlvl: 20, tier: 1, description: 'the magnet lasts longer' },
-    scorePerEffect: { name: 'scorePerEffect', maxlvl: 20, tier: 2, description: '' },
-    strongerSlowEnemies: { name: 'stronger SlowEnemies', maxlvl: 20, tier: 2, description: '' },
-    strongerMagnet: { name: 'strongerMagnet', maxlvl: 20, tier: 2, description: '' },
-    friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: '' },
-    smallerEnemies: { name: 'smallerEnemies', maxlvl: 20, tier: 2, description: '' },
+    scorePerEffect: { name: 'scorePerEffect', maxlvl: 20, tier: 2, description: 'gives you score per active effect' },
+    strongerSlowEnemies: { name: 'super snowflake', maxlvl: 20, tier: 2, description: 'enhances the slow enemies effect' },
+    strongerMagnet: { name: 'super Magnet', maxlvl: 20, tier: 2, description: 'enhances the slow magnet effect' },
+    friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: 'weakens the attraction of the black holes' },
+    smallerEnemies: { name: 'cute enemies', maxlvl: 20, tier: 2, description: 'makes enemies smaller' },
 }
+export const weaponAmount = 6
 export const weaponDetails = {
     moreDamage: { name: 'power weapon', maxlvl: 10, description: 'your plasma makes more damage' },
     biggerProjectile: { name: 'big plasma', maxlvl: 10, description: 'your plasma gets bigger' },
@@ -38,6 +39,7 @@ export const weaponDetails = {
     splitgun: { description: 'plasma shatters after collision' },
     safegun: { description: 'throws plasma around the player' },
 }
+export const passivAmount = 5
 export const passivDetails = {
     increaseScore: { name: 'increaseScore', maxlvl: 50, description: 'increases overall score gain' },
     increaseGun: { name: 'increaseGun', maxlvl: 50, description: 'increases all weapon stats' },
