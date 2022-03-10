@@ -22,8 +22,8 @@
             </div>
             <div v-else class="col-3"></div>
             <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
-            <div v-else>{{ player.playMode }}</div>
             <div v-if="bossFight && bossEnemy.size">Boss HP:{{ Math.ceil(bossEnemy.hP) }}</div>
+            <div v-if="!bossFight && !bossEnemy.size">{{ player.playMode }}</div>
         </div>
         <div>
             <div class="d-flex justify-content-between">
