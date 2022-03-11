@@ -224,8 +224,8 @@ export interface SpaceFleet {
     name: string
     public: boolean
     img: string
-    id?: string | undefined
 }
+
 export interface SpecialScore {
     score: number
     vector: Vector

@@ -71,7 +71,7 @@ export async function getBestPlayers(sortBy: string) {
     return docs.map(bestPlayers => ({ ...bestPlayers.data(), id: bestPlayers.id }))
 }
 export async function getPlayerSpaceFleet(id: string) {
-    return (await (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data()) as type.SpaceFleet
+    return (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data() as type.SpaceFleet
 }
 export async function addPlayer(player: type.Player): Promise<void> {
     const id = getAuth().currentUser?.uid
