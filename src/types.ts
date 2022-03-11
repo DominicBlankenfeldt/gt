@@ -224,6 +224,7 @@ export interface SpaceFleet {
     name: string
     public: boolean
     img: string
+    id?: string
 }
 
 export interface SpecialScore {
