@@ -5,7 +5,7 @@
         <u style="font-size: 4vw">{{ title }}</u>
     </div>
     <div class="row g-0">
-        <div class="col-12 row g-0">
+        <div class="col-12 row g-0 pointer">
             <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                 <img src="/gt/img/crowns/gold.png" alt="" style="width: 5vw" class="col-12" />
             </div>
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="col-12 row g-0 justify-content-between">
-            <div class="col-4">
+            <div class="col-4 pointer">
                 <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     <img src="/gt/img/crowns/silver.png" alt="" style="width: 5vw" class="col-12" />
                 </div>
@@ -29,7 +29,7 @@
                 </div>
             </div>
 
-            <div class="col-4">
+            <div class="col-4 pointer">
                 <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
                     <img src="/gt/img/crowns/bronze.png" alt="" style="width: 5vw" class="col-12" />
                 </div>
@@ -41,8 +41,14 @@
                 </div>
             </div>
 
-            <div class="col-12 row g-0" v-for="(bestPlayer, index) in bestPlayers" :key="bestPlayer.id">
-                <div v-if="index > 2" @click="choosePlayer(bestPlayer?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
+            <div class="col-12 row g-0 pointer" v-for="(bestPlayer, index) in bestPlayers" :key="bestPlayer.id">
+                <div
+                    v-if="index > 2"
+                    @click="choosePlayer(bestPlayer?.player)"
+                    data-bs-toggle="modal"
+                    :data-bs-target="`#playerCard${title}`"
+                    class="mt-2"
+                >
                     {{ bestPlayer?.player.username }} :
                     {{ Math.round(bestPlayer?.player[highscore]) }}
                 </div>
@@ -119,4 +125,3 @@ export default defineComponent({
     max-width: 85vw !important;
 }
 </style>
-

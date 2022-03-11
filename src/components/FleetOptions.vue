@@ -71,15 +71,15 @@
                         </div>
                         <div class="col-4">
                             <div>founder:</div>
-                            <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                            <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer">
                                 {{ fleetFounder?.username }}
                             </div>
                         </div>
                         <div class="col-4">
                             <div>members:</div>
-                            <div v-for="member of fleetMembers" :key="member" class="d-flex justify-content-between">
+                            <div v-for="member of fleetMembers" :key="JSON.stringify(member)" class="d-flex justify-content-between">
                                 <div></div>
-                                <div @click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard">
+                                <div @click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer">
                                     {{ member.player.username }}
                                 </div>
                                 <button v-if="edit" class="btn shadow-none" @click="deleteMember(member)">
@@ -340,7 +340,7 @@ export default defineComponent({
             this.choosenPlayer = checkPlayer(player) as type.Player
             this.choosenPlayerLoad = true
         },
-        deleteMember(member: type.Player) {
+        deleteMember(member: type.User) {
             this.buttonSound()
             this.fleet.members = this.fleet.members.filter(m => m != member.id)
             this.fleetMembers = this.fleetMembers.filter(m => m.id != member.id)

@@ -163,7 +163,7 @@
                     </div>
                     <div
                         v-for="specialScore of specialScores"
-                        :key="specialScore"
+                        :key="JSON.stringify(specialScore)"
                         :style="{
                             left: specialScore.vector[0] + 'px',
                             top: specialScore.vector[1] + 'px',
@@ -267,11 +267,9 @@ export default defineComponent({
         production
         currentUser
         skillDetails
-        roundHalf
         return {
             findSkill,
             skillDetails,
-            roundHalf,
             weaponAmount,
             passivAmount,
         }
@@ -325,6 +323,7 @@ export default defineComponent({
                 stopTimeAbility: 0,
                 growAbility: 0,
             },
+
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
@@ -1227,8 +1226,7 @@ export default defineComponent({
         handlePlayerAbilities() {
             this.player.speed = 5
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                if (!this.player.settings.abilitys[i].name) break
-                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
+                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i]?.name)) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
                             this.player.speed *= 2
@@ -1262,26 +1260,26 @@ export default defineComponent({
             if (this.coolDowns['magnetAbility'] > 0) return
             this.coolDowns['magnetAbility'] = 10000
             this.isMagnet = true
-            this.magnetDuration += 1000
+            this.magnetDuration += 3000
         },
         growAbility() {
             if (this.coolDowns['growAbility'] > 0) return
             if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
             this.coolDowns['growAbility'] = 10000
             this.isGrow = true
-            this.growDuration += 1000
+            this.growDuration += 3000
         },
         slowEnemyAbility() {
             if (this.coolDowns['slowEnemyAbility'] > 0) return
             this.coolDowns['slowEnemyAbility'] = 10000
             this.isSlowEnemies = true
-            this.slowEnemiesDuration += 1000
+            this.slowEnemiesDuration += 3000
         },
         stopTimeAbility() {
             if (this.coolDowns['stopTimeAbility'] > 0) return
             this.coolDowns['stopTimeAbility'] = 10000
             this.isStopTime = true
-            this.stopTimeDuration += 250
+            this.stopTimeDuration += 750
         },
         bombAbility() {
             if (this.coolDowns['bombAbility'] > 0) return

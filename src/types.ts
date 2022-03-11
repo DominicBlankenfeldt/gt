@@ -29,7 +29,6 @@ export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
 export interface Player {
-    id: string
     vector: Vector
     speed: number
     moveVector: Vector
