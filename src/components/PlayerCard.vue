@@ -222,7 +222,7 @@
                                     :key="ability"
                                     @click="buttonSound()"
                                 >
-                                    {{ ability.name }}
+                                    {{ skillDetails[ability.name].name }}
                                 </option>
                                 <option style="color: black" disabled>unlock more by use the skilltree</option>
                             </select>
@@ -268,6 +268,11 @@ import * as type from '@/types'
 import * as music from '@/music'
 import { skillDetails } from '@/global'
 export default defineComponent({
+    setup() {
+        return {
+            skillDetails,
+        }
+    },
     props: {
         playerProp: {
             type: Object as PropType<type.Player>,

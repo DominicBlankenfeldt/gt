@@ -57,7 +57,7 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
             break
         case 'aimgun':
             shotCoolDownDuration =
-                2000 *
+                2500 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
                 (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             plasmas.push({

@@ -29,22 +29,22 @@
             <div class="d-flex justify-content-between">
                 <div class="col-1">
                     <div>durations</div>
-                    <div class="mt-4">
+                    <div class="mt-4" :style="{ color: magnetDuration > 0 ? 'green' : 'red' }">
                         Magnet:
                         <br />
                         {{ (magnetDuration / 1000).toFixed(1) }}
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4" :style="{ color: growDuration > 0 ? 'green' : 'red' }">
                         Grow:
                         <br />
                         {{ (growDuration / 1000).toFixed(1) }}
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4" :style="{ color: slowEnemiesDuration > 0 ? 'green' : 'red' }">
                         Slow enemies:
                         <br />
                         {{ (slowEnemiesDuration / 1000).toFixed(1) }}
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-4" :style="{ color: stopTimeDuration > 0 ? 'green' : 'red' }">
                         Stop time:
                         <br />
                         {{ (stopTimeDuration / 1000).toFixed(1) }}
@@ -231,7 +231,12 @@
                 </div>
                 <div class="col-1">
                     <div>cooldowns</div>
-                    <div class="mt-4" v-for="ability of player.settings.abilitys" :key="JSON.stringify(ability)">
+                    <div
+                        class="mt-4"
+                        v-for="ability of player.settings.abilitys"
+                        :key="JSON.stringify(ability)"
+                        :style="{ color: coolDowns[ability.name] > 0 ? 'red' : 'green' }"
+                    >
                         <div v-if="ability.name">
                             {{ skillDetails[ability.name].name }}:
                             <br />
@@ -567,10 +572,10 @@ export default defineComponent({
         chaosPlayerSpeed() {
             switch (getRandomInt(2)) {
                 case 0:
-                    this.multiplicator *= 0.5
+                    this.player.speed *= 0.5
                     break
                 case 1:
-                    this.multiplicator *= 2
+                    this.player.speed *= 2
                     break
             }
         },
@@ -638,7 +643,7 @@ export default defineComponent({
             if (this.isMagnet) effectAmount++
             if (this.isSlowEnemies) effectAmount++
             if (this.isStopTime) effectAmount++
-            this.score += findSkill(this.player, 'scorePerEffect') * effectAmount * 0.25
+            this.score += findSkill(this.player, 'scorePerEffect') * effectAmount * 0.2
             this.scorePerSecond = this.score - this.lastScore
         },
         countgps() {
@@ -1139,8 +1144,19 @@ export default defineComponent({
                 this.isStopTime = false
                 this.stopTimeDuration = 0
             }
-            this.coolDowns['shotAbility'] > 0 ? (this.coolDowns['shotAbility'] -= 1000 / 60) : (this.coolDowns['shotAbility'] = 0)
-            if (this.coolDowns['shotAbility'] < 0) this.coolDowns['shotAbility'] = 0
+
+            for (let ability of [
+                'bombAbility',
+                'magnetAbility',
+                'slowEnemyAbility',
+                'stopTimeAbility',
+                'growAbility',
+                'shotAbility',
+            ] as type.AbilityName[]) {
+                this.coolDowns[ability] > 0 ? (this.coolDowns[ability] -= 1000 / 60) : (this.coolDowns[ability] = 0)
+                if (this.coolDowns[ability] < 0) this.coolDowns[ability] = 0
+            }
+
             if (this.isStopTime) return
             this.isGrow ? (this.growDuration -= 1000 / 60) : (this.growDuration = 0)
 
@@ -1161,10 +1177,6 @@ export default defineComponent({
             if (this.slowEnemiesDuration <= 0) {
                 this.isSlowEnemies = false
                 this.slowEnemiesDuration = 0
-            }
-            for (let ability of ['bombAbility', 'magnetAbility', 'slowEnemyAbility', 'stopTimeAbility', 'growAbility'] as type.AbilityName[]) {
-                this.coolDowns[ability] > 0 ? (this.coolDowns[ability] -= 1000 / 60) : (this.coolDowns[ability] = 0)
-                if (this.coolDowns[ability] < 0) this.coolDowns[ability] = 0
             }
         },
         collectClearField() {
@@ -1259,26 +1271,26 @@ export default defineComponent({
             if (this.coolDowns['magnetAbility'] > 0) return
             this.coolDowns['magnetAbility'] = 10000
             this.isMagnet = true
-            this.magnetDuration += 3000
+            this.magnetDuration += 2500
         },
         growAbility() {
             if (this.coolDowns['growAbility'] > 0) return
             if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
             this.coolDowns['growAbility'] = 10000
             this.isGrow = true
-            this.growDuration += 3000
+            this.growDuration += 2500
         },
         slowEnemyAbility() {
             if (this.coolDowns['slowEnemyAbility'] > 0) return
             this.coolDowns['slowEnemyAbility'] = 10000
             this.isSlowEnemies = true
-            this.slowEnemiesDuration += 3000
+            this.slowEnemiesDuration += 2500
         },
         stopTimeAbility() {
             if (this.coolDowns['stopTimeAbility'] > 0) return
             this.coolDowns['stopTimeAbility'] = 10000
             this.isStopTime = true
-            this.stopTimeDuration += 750
+            this.stopTimeDuration += 700
         },
         bombAbility() {
             if (this.coolDowns['bombAbility'] > 0) return

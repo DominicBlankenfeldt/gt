@@ -23,7 +23,7 @@
                     </div>
                 </form>
             </div>
-            <div v-for="fleet of searchedFleets.filter(f => f.public)" :key="fleet">
+            <div v-for="fleet of searchedFleets.filter(f => f.public)" :key="fleet.id">
                 <div class="row g-0 mt-1">
                     <div class="col-2">{{ fleet.name }}</div>
                     <div class="col-9">{{ fleet.info }}</div>
@@ -349,8 +349,8 @@ export default defineComponent({
             this.buttonSound()
             if (this.edit) {
                 try {
-                    await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
-                } catch {
+                    await API.updateAPI('spaceFleets', this.player.spaceFleet!, this.fleet)
+                } catch (e) {
                     API.logout()
                 }
             }
