@@ -249,6 +249,13 @@
         <div class="mt-3">
             <div v-if="!user && !gameStarted">Log in to use all features.</div>
             <div v-if="user && !gameStarted">{{ tip }}</div>
+            <div v-if="gameStarted" class="d-flex justify-content-center">
+                <div v-for="hp of player.hP" :key="hp">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -257,7 +264,7 @@
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { checkPlayer, production, skillDetails, weaponAmount, passivAmount } from '@/global'
-import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
+import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow, findWeaponUpgrade } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -482,6 +489,7 @@ export default defineComponent({
         start() {
             if (this.gameStarted) return
             this.buttonSound()
+            this.player.hP = 1 + findWeaponUpgrade(this.player, 'moreHP')
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
@@ -958,7 +966,11 @@ export default defineComponent({
         async plasmaColision(item?: type.Item | false, enemy?: type.Enemy | false) {
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
-                    await this.gameOver('you got killed by plasma', 'alert alert-danger')
+                    this.player.hP--
+                    this.deletePlasma(plasma)
+                    if (this.player.hP <= 0) {
+                        await this.gameOver('you got killed by plasma', 'alert alert-danger')
+                    }
                     return
                 }
             }
@@ -1057,7 +1069,13 @@ export default defineComponent({
                 this.plasmaColision(false, enemy)
                 if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3 - findSkill(this.player, 'strongerMagnet') / 100)
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
-                if (this.collisionsCheck(enemy, this.player)) await this.gameOver('you got killed by an enemy', 'alert alert-danger')
+                if (this.collisionsCheck(enemy, this.player)) {
+                    this.player.hP--
+                    this.respawnEnemy(enemy)
+                    if (this.player.hP <= 0) {
+                        await this.gameOver('you got killed by an enemy', 'alert alert-danger')
+                    }
+                }
             }
         },
         playerItemColision(item: type.Item) {
@@ -1237,7 +1255,8 @@ export default defineComponent({
         },
         handlePlayerAbilities() {
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i]?.name)) {
+                if (!this.player.settings.abilitys[i].name) break
+                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
                             this.multiplicator *= 2

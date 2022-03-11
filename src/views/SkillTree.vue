@@ -117,6 +117,7 @@
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :title="weaponDetails[weaponUpgrade.name].description"
+                        :disabled="weaponDetails[weaponUpgrade.name].tier == 10 && usedWeaponPoints < 30"
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
@@ -280,7 +281,8 @@ export default defineComponent({
         },
         usedWeaponPoints() {
             let allWeaponlvl = 0
-            for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) allWeaponlvl += weaponUpgrade.lvl
+            for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades)
+                allWeaponlvl += weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier
             return allWeaponlvl
         },
         usedPassivPoints() {
@@ -307,7 +309,7 @@ export default defineComponent({
         },
         async lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
             if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-                if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
+                if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
                     weaponUpgrade.lvl++
                     this.buttonSound()
                 }
@@ -358,7 +360,7 @@ export default defineComponent({
             this.buttonSound()
             this.player.weaponTree.weaponPoints -= this.usedWeaponPoints
             for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) {
-                this.player.weaponTree.weaponPoints += weaponUpgrade.lvl
+                this.player.weaponTree.weaponPoints += weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier
                 weaponUpgrade.lvl = 0
             }
         },

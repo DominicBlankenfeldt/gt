@@ -27,10 +27,11 @@ export const skillDetails = {
 }
 export const weaponAmount = 6
 export const weaponDetails = {
-    moreDamage: { name: 'power weapon', maxlvl: 10, description: 'your plasma makes more damage' },
-    biggerProjectile: { name: 'big plasma', maxlvl: 10, description: 'your plasma gets bigger' },
-    fasterProjectile: { name: 'high frequency', maxlvl: 10, description: 'your plasma gets faster' },
-    fasterReload: { name: 'load automatically', maxlvl: 10, description: 'increases your reload speed' },
+    moreDamage: { name: 'power weapon', maxlvl: 10, tier: 1, description: 'your plasma makes more damage' },
+    biggerProjectile: { name: 'big plasma', maxlvl: 10, tier: 1, description: 'your plasma gets bigger' },
+    fasterProjectile: { name: 'high frequency', maxlvl: 10, tier: 1, description: 'your plasma gets faster' },
+    fasterReload: { name: 'load automatically', maxlvl: 10, tier: 1, description: 'increases your reload speed' },
+    moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
     standard: { description: 'the standard gun' },
     shotgun: { description: 'shot 3 plasmas' },
     MG: { description: 'faster reload' },
@@ -67,6 +68,7 @@ export function checkPlayer(player: type.Player) {
         musicVolume: 50,
         effectVolume: 50,
     }
+    player.hP = player.hP || 1
     player.size = player.size || 20
     player.originalSize = player.originalSize || 20
     player.vector = player.vector || [0, 0]
@@ -93,7 +95,7 @@ export function checkPlayer(player: type.Player) {
             weaponPoints: 0,
             weaponUpgrades: [] as type.WeaponUpgrade[],
         } as type.WeaponTree)
-    for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload']) {
+    for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload', 'moreHP']) {
         if (checkWeaponUpgrade(player, weaponUpgrade)) {
             player.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
         }

@@ -29,6 +29,7 @@ export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
 export interface Player {
+    hP: number
     vector: Vector
     speed: number
     moveVector: Vector
@@ -135,7 +136,7 @@ export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
 }
-export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload'
+export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP'
 
 export interface PassivTree {
     passivType: PassivType

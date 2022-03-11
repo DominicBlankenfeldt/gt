@@ -53,7 +53,7 @@ export function playerMovement(
     if (pressedKeys['ArrowRight'] || pressedKeys[player.settings.moves['right']]) player.moveVector[0] = right(player, field)
     if (pressedKeys['ArrowUp'] || pressedKeys[player.settings.moves['up']]) player.moveVector[1] = up(player, field)
     if (pressedKeys['ArrowDown'] || pressedKeys[player.settings.moves['down']]) player.moveVector[1] = down(player, field)
-    console.log({ player: multiplicator })
+
     player.moveVector = mulVec(norVec(player.moveVector), player.speed * generalSize * multiplicator)
     player.vector = addVec(player.vector, player.moveVector)
     if (player.moveVector[0] > 0) lastDirection = 90
