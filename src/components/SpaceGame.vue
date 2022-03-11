@@ -323,7 +323,7 @@ export default defineComponent({
                 stopTimeAbility: 0,
                 growAbility: 0,
             },
-
+            multiplicator: 1,
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
@@ -427,10 +427,8 @@ export default defineComponent({
         },
         //game
         async gameloop() {
-            this.handlePlayerMovement()
+            this.multiplicator = 1
             this.handlePlayerAbilities()
-            this.handlePlasmaMovement()
-            this.handleEnemyMovement()
             this.increaseScore()
             this.colisionHandling()
             this.despawnItems()
@@ -469,7 +467,9 @@ export default defineComponent({
             } else {
                 if (this.gameloopCounter2 % 120 == 0) this.spawnItems(true) // 2sek
             }
-
+            this.handlePlayerMovement()
+            this.handlePlasmaMovement()
+            this.handleEnemyMovement()
             this.reduceDuartion()
             this.handleEnemyRandom()
             await this.handleBossEnemyDead()
@@ -567,10 +567,10 @@ export default defineComponent({
         chaosPlayerSpeed() {
             switch (getRandomInt(2)) {
                 case 0:
-                    this.player.speed = 2.5
+                    this.multiplicator *= 0.5
                     break
                 case 1:
-                    this.player.speed = 10
+                    this.multiplicator *= 2
                     break
             }
         },
@@ -1219,20 +1219,19 @@ export default defineComponent({
 
         //playermovement
         handlePlayerMovement() {
-            const newPlayer = playerMovement(this.player, this.pressedKeys, this.field, this.lastDirection, this.generalSize)
+            const newPlayer = playerMovement(this.player, this.pressedKeys, this.field, this.lastDirection, this.generalSize, this.multiplicator)
             this.player = newPlayer.player
             this.lastDirection = newPlayer.lastDirection
         },
         handlePlayerAbilities() {
-            this.player.speed = 5
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i]?.name)) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
-                            this.player.speed *= 2
+                            this.multiplicator *= 2
                             break
                         case 'slowAbility':
-                            this.player.speed *= 0.5
+                            this.multiplicator *= 0.5
                             break
                         case 'bombAbility':
                             this.bombAbility()
