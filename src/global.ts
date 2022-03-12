@@ -25,21 +25,20 @@ export const skillDetails = {
     friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: 'weakens the attraction of the black holes' },
     smallerEnemies: { name: 'cute enemies', maxlvl: 20, tier: 2, description: 'makes enemies smaller' },
 }
-export const weaponAmount = 6
 export const weaponDetails = {
     moreDamage: { name: 'power weapon', maxlvl: 10, tier: 1, description: 'your plasma makes more damage' },
     biggerProjectile: { name: 'big plasma', maxlvl: 10, tier: 1, description: 'your plasma gets bigger' },
     fasterProjectile: { name: 'high frequency', maxlvl: 10, tier: 1, description: 'your plasma gets faster' },
     fasterReload: { name: 'load automatically', maxlvl: 10, tier: 1, description: 'increases your reload speed' },
     moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
-    standard: { description: 'the standard gun' },
-    shotgun: { description: 'shot 3 plasmas' },
-    MG: { description: 'faster reload' },
-    aimgun: { description: 'plamsa pursues enemies' },
-    splitgun: { description: 'plasma shatters after collision' },
-    safegun: { description: 'throws plasma around the player' },
+    standard: { description: 'the standard gun', maxlvl: 0 },
+    shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
+    MG: { description: 'faster reload', maxlvl: 0 },
+    aimgun: { description: 'plamsa pursues enemies', maxlvl: 0 },
+    splitgun: { description: 'plasma shatters after collision', maxlvl: 0 },
+    safegun: { description: 'throws plasma around the player', maxlvl: 0 },
 }
-export const passivAmount = 5
+export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).length
 export const passivDetails = {
     increaseScore: { name: 'increaseScore', maxlvl: 50, description: 'increases overall score gain' },
     increaseGun: { name: 'increaseGun', maxlvl: 50, description: 'increases all weapon stats' },
@@ -47,6 +46,7 @@ export const passivDetails = {
     moreItems: { name: 'moreItems', maxlvl: 50, description: 'more items spawn' },
     nerfBoss: { name: 'nerfBoss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
 }
+export const passivAmount = Object.values(passivDetails).length
 
 //player
 

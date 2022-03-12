@@ -1,7 +1,7 @@
 export function tips(tip: number) {
     switch (tip) {
         case 0:
-            return ' You can press "enter" to start a round'
+            return 'You can press "enter" to start a round'
         case 1:
             return "Don't forget the skilltree"
         case 2:
@@ -12,6 +12,8 @@ export function tips(tip: number) {
             return 'Read the guide'
         case 5:
             return 'Press the gear wheel in the player-card for settings'
+        case 6:
+            return 'Use google chrome for the best experience'
         default:
             return 'You are nice'
     }

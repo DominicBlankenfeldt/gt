@@ -175,6 +175,9 @@
                     <div v-if="message" :class="messageType">
                         {{ message }}
                     </div>
+                    <div v-if="unlockMessage" :class="messageType">
+                        {{ unlockMessage }}
+                    </div>
                     <div class="container" v-if="!gameStarted">
                         <button @keydown.enter.prevent class="btn shadow-none" @click="start()">
                             <a>{{ startButtonText }}</a>
@@ -214,7 +217,8 @@
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
-                        <div v-else class="d- inline-block sizeBtn"></div>
+                        <button v-else class="btn shadow-none"><a>you have unlock all weapons</a></button>
+
                         <button
                             class="btn shadow-none"
                             @keydown.enter.prevent
@@ -223,7 +227,7 @@
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
-                        <div v-else class="d-inline-block sizeBtn"></div>
+                        <button v-else class="btn shadow-none"><a>you have unlock all passivs</a></button>
                         <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
@@ -292,6 +296,7 @@ export default defineComponent({
             dataLoad: false,
             user: currentUser,
             message: '',
+            unlockMessage: '',
             messageType: '',
             startButtonText: 'start',
             cancelButtonText: '',
@@ -306,7 +311,7 @@ export default defineComponent({
             production: production.value,
             specialScores: [] as type.SpecialScore[],
             tip: '',
-            tipsNumber: 6,
+            tipsNumber: 7,
             // debug
             enemiesSpawn: true,
             enemiesMove: true,
@@ -361,14 +366,7 @@ export default defineComponent({
             enemies: [] as type.Enemy[],
             //fleet
             fleetMembers: [] as type.Player[],
-            fleet: {
-                members: [] as string[],
-                founder: '',
-                img: '',
-                name: '',
-                info: '',
-                public: false,
-            } as type.SpaceFleet,
+            fleet: {} as type.SpaceFleet,
         }
     },
     computed: {
@@ -520,6 +518,7 @@ export default defineComponent({
             this.plasmas = [] as type.Plasma[]
             this.enemyPlasmas = [] as type.Plasma[]
             this.message = ''
+            this.unlockMessage = ''
             this.startButtonText = 'start'
             this.cancelButtonText = ''
             this.gameStarted = true
@@ -654,7 +653,7 @@ export default defineComponent({
             this.score += findSkill(this.player, 'scorePerEffect') * effectAmount * 0.2
             this.scorePerSecond = this.score - this.lastScore
         },
-        countgps() {
+        async countgps() {
             this.countgpsID = setTimeout(() => {
                 this.gps = (this.gameloopCounter - this.gameloopLastCounter) * 2
                 if (this.gps > 60) this.gps = 60
@@ -929,21 +928,31 @@ export default defineComponent({
             if (this.bossEnemy.hP <= 0) {
                 let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun', 'safegun'] as type.weaponType[]
                 let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss'] as type.PassivType[]
+                let unlock
                 switch (this.bossEnemy.type) {
                     case 'normal':
                         this.player.defeatedBosses++
                         newWeaponAvaibleType = newWeaponAvaibleType.filter(n => this.player.weaponTree.weaponAvaibleTypes.every(w => n != w))
-                        if (newWeaponAvaibleType.length > 0)
-                            this.player.weaponTree.weaponAvaibleTypes.push(newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)])
+                        if (newWeaponAvaibleType.length > 0) {
+                            unlock = newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)]
+                            this.player.weaponTree.weaponAvaibleTypes.push(unlock)
+                            this.unlockMessage = `you have unlocked the ${unlock}`
+                        }
+
                         break
                     case 'hardcore':
                         this.player.defeatedBossesHardcore++
                         newPassivAvaibleType = newPassivAvaibleType.filter(n => this.player.passivTree.passivAvaibleTypes.every(p => n != p))
-                        if (newPassivAvaibleType.length > 0)
-                            this.player.passivTree.passivAvaibleTypes.push(newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)])
+                        if (newPassivAvaibleType.length > 0) {
+                            unlock = newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)]
+                            this.player.passivTree.passivAvaibleTypes.push(unlock)
+                            this.unlockMessage = `you have unlocked ${unlock}`
+                        }
+
                         break
                     case 'totalchaos':
                         this.player.defeatedBossesTotalchaos++
+                        this.unlockMessage = `the maximum level of your skills is increased`
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
