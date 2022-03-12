@@ -967,10 +967,11 @@ export default defineComponent({
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
                     this.player.hP--
-                    this.deletePlasma(plasma)
                     if (this.player.hP <= 0) {
                         await this.gameOver('you got killed by plasma', 'alert alert-danger')
+                        return
                     }
+                    this.deletePlasma(plasma)
                     return
                 }
             }
@@ -1071,10 +1072,11 @@ export default defineComponent({
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.player)) {
                     this.player.hP--
-                    this.respawnEnemy(enemy)
                     if (this.player.hP <= 0) {
                         await this.gameOver('you got killed by an enemy', 'alert alert-danger')
+                        return
                     }
+                    this.respawnEnemy(enemy)
                 }
             }
         },

@@ -127,7 +127,7 @@ export function enemyMovement(
                     difficulty *
                         percent(findSkill(player, 'slowEnemy'), 'de') *
                         generalSize *
-                        (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 100 : 1) *
+                        (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 200 : 1) *
                         (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                         enemy.speed
                 )
@@ -146,7 +146,7 @@ function moveChasebotEnemy(enemy: type.Enemy, player: type.Player, generalSize: 
             dirVec(player.vector, enemy.vector),
             2 *
                 generalSize *
-                (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 100 : 1) *
+                (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 200 : 1) *
                 (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                 enemy.speed
         )
@@ -173,7 +173,7 @@ function moveSpiralEnemy(enemy: type.Enemy, difficulty: number, player: type.Pla
                     generalSize *
                     (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                     0.4 *
-                    (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 100 : 1) *
+                    (isSlowEnemies ? 0.75 - findSkill(player, 'strongerSlowEnemies') / 200 : 1) *
                     enemy.speed
             )
         )
