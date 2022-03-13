@@ -46,7 +46,7 @@ export const passivDetails = {
     moreItems: { name: 'moreItems', maxlvl: 50, description: 'more items spawn' },
     nerfBoss: { name: 'nerfBoss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
 }
-export const passivAmount = Object.values(passivDetails).length
+export const passivAmount = Object.values(passivDetails).length + 1
 
 //player
 
