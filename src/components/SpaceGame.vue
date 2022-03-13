@@ -217,7 +217,9 @@
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
-                        <button v-else class="btn shadow-none"><a>you have unlock all weapons</a></button>
+                        <button v-if="player.weaponTree.weaponAvaibleTypes.length >= weaponAmount && !cancelButtonText" class="btn shadow-none">
+                            <a>you have unlock all weapons</a>
+                        </button>
 
                         <button
                             class="btn shadow-none"
@@ -227,7 +229,9 @@
                         >
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
-                        <button v-else class="btn shadow-none"><a>you have unlock all passivs</a></button>
+                        <button v-if="player.passivTree.passivAvaibleTypes.length >= passivAmount && !cancelButtonText" class="btn shadow-none">
+                            <a>you have unlock all passivs</a>
+                        </button>
                         <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
@@ -266,7 +270,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
+import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec, addVecNum, subVecNum } from '@/game/vectors'
 import { checkPlayer, production, skillDetails, weaponAmount, passivAmount } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow, findWeaponUpgrade } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
@@ -340,6 +344,7 @@ export default defineComponent({
                 stopTimeAbility: 0,
                 growAbility: 0,
             },
+            skillObject: {} as type.SkillObject,
             multiplicator: 1,
             // boss
             bossEnemy: {} as type.BossEnemy,
@@ -409,6 +414,7 @@ export default defineComponent({
         this.bossFight = false
         this.buttonSound()
         this.tip = tips(getRandomInt(this.tipsNumber))
+        this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.dataLoad = true
     },
     methods: {
@@ -455,14 +461,14 @@ export default defineComponent({
                     this.gameloopCounter %
                         (900 *
                             Math.round(
-                                percent(findSkill(this.player, 'spawnLessEnemy'), 'in') *
+                                percent(this.skillObject['spawnLessEnemy'], 'in') *
                                     (this.player.passivTree.passivType == 'nerfEnemies'
                                         ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in')
                                         : 1)
                             )) ==
                     0
                 )
-                    createEnemy(this.enemies, this.generalSize, this.field, this.player)
+                    createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
             }
             if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
                 if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
@@ -528,7 +534,7 @@ export default defineComponent({
             window.onkeydown = (e: any) => {
                 this.pressedKeys[e.key] = true
             }
-            for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player)
+            for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
             clearTimeout(this.countgpsID)
             this.countgps()
         },
@@ -634,15 +640,15 @@ export default defineComponent({
                 this.player.size = this.player.originalSize * 2 * this.generalSize
                 this.score +=
                     this.difficulty *
-                    percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
+                    percent(this.skillObject['scoreMultiplicator'], 'in') *
                     1.2 *
-                    percent(findSkill(this.player, 'betterGrowPotion'), 'in') *
+                    percent(this.skillObject['betterGrowPotion'], 'in') *
                     (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score +=
                     this.difficulty *
-                    percent(findSkill(this.player, 'scoreMultiplicator'), 'in') *
+                    percent(this.skillObject['scoreMultiplicator'], 'in') *
                     (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             }
             let effectAmount = 0
@@ -650,7 +656,7 @@ export default defineComponent({
             if (this.isMagnet) effectAmount++
             if (this.isSlowEnemies) effectAmount++
             if (this.isStopTime) effectAmount++
-            this.score += findSkill(this.player, 'scorePerEffect') * effectAmount * 0.2
+            this.score += this.skillObject['scorePerEffect'] * effectAmount * 0.2
             this.scorePerSecond = this.score - this.lastScore
         },
         async countgps() {
@@ -742,7 +748,7 @@ export default defineComponent({
                 return
             }
 
-            if (!findSkill(this.player, 'shotAbility')) {
+            if (!this.skillObject['shotAbility']) {
                 this.$router.push('/skillTree')
                 this.buttonSound()
                 return
@@ -973,22 +979,12 @@ export default defineComponent({
             }
         },
         async plasmaColision(item?: type.Item | false, enemy?: type.Enemy | false) {
-            for (let plasma of this.enemyPlasmas) {
-                if (this.collisionsCheck(this.player, plasma)) {
-                    this.player.hP--
-                    if (this.player.hP <= 0) {
-                        await this.gameOver('you got killed by plasma', 'alert alert-danger')
-                        return
-                    }
-                    this.deletePlasma(plasma)
-                    return
-                }
-            }
             if (item) {
                 for (let plasma of this.plasmas) {
                     this.gravity(item, plasma, 4, 0.5)
                     if (this.collisionsCheck(item, plasma)) this.deletePlasma(plasma)
                 }
+                return
             }
             if (enemy) {
                 for (let plasma of [...this.plasmas]) {
@@ -1032,21 +1028,31 @@ export default defineComponent({
                         }
                     }
                 }
+                return
+            }
+            for (let plasma of this.enemyPlasmas) {
+                if (this.collisionsCheck(this.player, plasma)) {
+                    this.player.hP--
+                    if (this.player.hP <= 0) {
+                        await this.gameOver('you got killed by plasma', 'alert alert-danger')
+                        return
+                    }
+                    this.deletePlasma(plasma)
+                    return
+                }
             }
         },
         blackHoleColision(item: type.Item) {
-            this.gravity(item, this.player, 3, 1 - findSkill(this.player, 'friendlierDarkhole') / 100)
+            this.gravity(item, this.player, 3, 1 - this.skillObject['friendlierDarkhole'] / 100)
             if (this.collisionsCheck(item, this.player)) this.touchBlackHole()
             for (let enemy of this.enemies) {
                 this.gravity(item, enemy, 3, 1)
                 if (this.collisionsCheck(item, enemy)) this.respawnEnemy(enemy)
             }
             for (let item2 of this.items) {
-                if (item != item2) {
-                    if (item2.type != 'blackHole') {
-                        this.gravity(item, item2, 3, 1 - findSkill(this.player, 'friendlierDarkhole') / 100)
-                        if (this.collisionsCheck(item, item2)) this.despawnItem(item2)
-                    }
+                if (item2.type != 'blackHole') {
+                    this.gravity(item, item2, 3, 1 - this.skillObject['friendlierDarkhole'] / 100)
+                    if (this.collisionsCheck(item, item2)) this.despawnItem(item2)
                 }
             }
             this.plasmaColision(item, false)
@@ -1077,7 +1083,7 @@ export default defineComponent({
         async enemyColision() {
             for (let enemy of this.enemies) {
                 this.plasmaColision(false, enemy)
-                if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3 - findSkill(this.player, 'strongerMagnet') / 100)
+                if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3 - this.skillObject['strongerMagnet'] / 100)
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.player)) {
                     this.player.hP--
@@ -1118,7 +1124,7 @@ export default defineComponent({
             this.plasmaColision()
             for (let item of this.items) {
                 if (item.type == 'blackHole') this.blackHoleColision(item)
-                else if (this.isMagnet) this.gravity(this.player, item, 2, 1 + findSkill(this.player, 'strongerMagnet') / 100)
+                else if (this.isMagnet) this.gravity(this.player, item, 2, 1 + this.skillObject['strongerMagnet'] / 100)
                 this.enemyItemColision(item)
                 if (this.collisionsCheck(item, this.player)) this.playerItemColision(item)
             }
@@ -1129,7 +1135,7 @@ export default defineComponent({
             object2: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy
         ) {
             return (
-                lenVec(subVec(addVec(object1.vector, object1.size / 2), addVec(object2.vector, object2.size / 2))) <
+                lenVec(subVecNum(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) <
                 object1.size / 2 + object2.size / 2
             )
         },
@@ -1139,7 +1145,7 @@ export default defineComponent({
         },
         collectCoin(item: type.Item) {
             let scoreIncrease =
-                ((this.difficulty * 15 * item.size * percent(findSkill(this.player, 'betterCoin'), 'in')) / this.generalSize) *
+                ((this.difficulty * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
             this.score += scoreIncrease
             this.specialScores.push({
@@ -1155,15 +1161,15 @@ export default defineComponent({
         },
         collectMagnet(item: type.Item) {
             this.isMagnet = true
-            this.magnetDuration += (250 * item.size * percent(findSkill(this.player, 'longerMagnet'), 'in')) / this.generalSize
+            this.magnetDuration += (250 * item.size * percent(this.skillObject['longerMagnet'], 'in')) / this.generalSize
         },
         collectStopTime(item: type.Item) {
             this.isStopTime = true
-            this.stopTimeDuration += (75 * item.size * percent(findSkill(this.player, 'longerStopTime'), 'in')) / this.generalSize
+            this.stopTimeDuration += (75 * item.size * percent(this.skillObject['longerStopTime'], 'in')) / this.generalSize
         },
         collectSlowEnemies(item: type.Item) {
             this.isSlowEnemies = true
-            this.slowEnemiesDuration += (250 * item.size * percent(findSkill(this.player, 'longerSlowEnemies'), 'in')) / this.generalSize
+            this.slowEnemiesDuration += (250 * item.size * percent(this.skillObject['longerSlowEnemies'], 'in')) / this.generalSize
         },
         reduceDuartion() {
             for (let specialScore of this.specialScores) specialScore.duration -= 1000 / 60
@@ -1218,8 +1224,8 @@ export default defineComponent({
             if (this.isStopTime) return
             for (let item of this.items) {
                 if (item.type == 'blackHole') {
-                    item.size += 20 * percent(findSkill(this.player, 'smallerBlackHole'), 'de') * this.generalSize
-                    item.vector = subVec(item.vector, (20 * percent(findSkill(this.player, 'smallerBlackHole'), 'de') * this.generalSize) / 2)
+                    item.size += 20 * percent(this.skillObject['smallerBlackHole'], 'de') * this.generalSize
+                    item.vector = subVec(item.vector, (20 * percent(this.skillObject['smallerBlackHole'], 'de') * this.generalSize) / 2)
                 }
             }
         },
@@ -1238,12 +1244,20 @@ export default defineComponent({
         handleEnemyMovement() {
             if (!this.enemiesMove) return
             if (this.isStopTime) return
-            this.enemies = enemyMovement(this.enemies, this.difficulty, this.player, this.generalSize, this.isSlowEnemies, this.field)
+            this.enemies = enemyMovement(
+                this.enemies,
+                this.difficulty,
+                this.player,
+                this.generalSize,
+                this.isSlowEnemies,
+                this.field,
+                this.skillObject
+            )
         },
 
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
-            createEnemy(this.enemies, this.generalSize, this.field, this.player)
+            createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
         },
         handleEnemyGetBigger() {
             if (this.isStopTime) return
@@ -1267,7 +1281,7 @@ export default defineComponent({
         handlePlayerAbilities() {
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (!this.player.settings.abilitys[i].name) break
-                if (this.pressedKeys[this.player.settings.abilitys[i].key] && findSkill(this.player, this.player.settings.abilitys[i].name)) {
+                if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
                             this.multiplicator *= 2
@@ -1369,7 +1383,7 @@ export default defineComponent({
         ) {
             if (this.isStopTime) return
             if (
-                lenVec(subVec(addVec(object1.vector, object1.size / 2), addVec(object2.vector, object2.size / 2))) * this.generalSize <
+                lenVec(subVec(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) * this.generalSize <
                 (object1.size + object2.size) * range
             ) {
                 object2.vector = addVec(

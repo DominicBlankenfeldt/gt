@@ -1,7 +1,7 @@
-import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, percent, getRandomInt } from '@/game/helpers'
+import { findSkill, percent, getRandomInt } from '@/game/helpers'
 import * as type from '@/types'
-import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
-export function createEnemy(enemies: type.Enemy[], generalSize: number, field: type.Field, player: type.Player) {
+import { dirVec, lenVec, norVec, subVec } from '@/game/vectors'
+export function createEnemy(enemies: type.Enemy[], generalSize: number, field: type.Field, player: type.Player, skillObject: type.SkillObject) {
     let size = 0
     const vector = [0, 0] as type.Vector
     let type = ''
@@ -25,13 +25,13 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
     }
     switch (getRandomInt(3)) {
         case 0:
-            size = 20 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
+            size = 20 * generalSize * percent(skillObject['smallerEnemies'], 'de')
             break
         case 1:
-            size = 25 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
+            size = 25 * generalSize * percent(skillObject['smallerEnemies'], 'de')
             break
         case 2:
-            size = 30 * generalSize * percent(findSkill(player, 'smallerEnemies'), 'de')
+            size = 30 * generalSize * percent(skillObject['smallerEnemies'], 'de')
             break
     }
     switch (getRandomInt(4)) {
@@ -110,8 +110,15 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
     })
     return enemies
 }
-export function respawnEnemy(enemies: type.Enemy[], enemy: type.Enemy, generalSize: number, field: type.Field, player: type.Player) {
-    enemies = createEnemy(enemies, generalSize, field, player)
+export function respawnEnemy(
+    enemies: type.Enemy[],
+    enemy: type.Enemy,
+    generalSize: number,
+    field: type.Field,
+    player: type.Player,
+    skillObject: type.SkillObject
+) {
+    enemies = createEnemy(enemies, generalSize, field, player, skillObject)
     return enemies.filter(e => e != enemy)
 }
 

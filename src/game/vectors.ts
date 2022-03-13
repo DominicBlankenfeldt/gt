@@ -7,12 +7,18 @@ export function addVec(vec1: type.Vector, vec2: type.Vector | number) {
         return [vec1[0] + vec2[0], vec1[1] + vec2[1]] as type.Vector
     }
 }
+export function addVecNum(vec: type.Vector, number: number) {
+    return [vec[0] + number, vec[1] + number] as type.Vector
+}
 export function subVec(vec1: type.Vector, vec2: type.Vector | number) {
     if (typeof vec2 == 'number') {
         return [vec1[0] - vec2, vec1[1] - vec2] as type.Vector
     } else {
         return [vec1[0] - vec2[0], vec1[1] - vec2[1]] as type.Vector
     }
+}
+export function subVecNum(vec1: type.Vector, vec2: type.Vector) {
+    return [vec1[0] - vec2[0], vec1[1] - vec2[1]] as type.Vector
 }
 export function dirVec(vec1: type.Vector, vec2: type.Vector) {
     let deltaArray = subVec(vec1, vec2) as type.Vector

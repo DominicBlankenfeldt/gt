@@ -158,6 +158,9 @@ export interface Skill {
     name: SkillName
     lvl: number
 }
+export type SkillObject = {
+    [key in SkillName]: number
+}
 export type SkillName =
     | 'fastAbility'
     | 'slowAbility'
