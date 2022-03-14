@@ -1,6 +1,6 @@
 import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, percent, getRandomInt } from '@/game/helpers'
 import * as type from '@/types'
-import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
+import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { respawnEnemy } from '@/game/createStuff'
 export function plasmaMovement(
     plasmas: type.Plasma[],
@@ -16,7 +16,7 @@ export function plasmaMovement(
             const enemies = [...Enemies] as any[]
             if (boss.hP) enemies.push(boss)
             enemies.sort((a, b) => {
-                return lenVec(subVec(a.vector, plasma.vector)) - lenVec(subVec(b.vector, plasma.vector))
+                return lenVecSqrt(subVec(a.vector, plasma.vector)) - lenVecSqrt(subVec(b.vector, plasma.vector))
             })
             plasma.moveVector = addVec(plasma.moveVector, dirVec(enemies[0].vector, plasma.vector))
         }

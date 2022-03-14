@@ -95,7 +95,7 @@ export default defineComponent({
         if (currentUser) {
             this.$router.push('/home')
         }
-        music.ButtonSound(10)
+        music.ButtonSound(50)
     },
     methods: {
         async login() {

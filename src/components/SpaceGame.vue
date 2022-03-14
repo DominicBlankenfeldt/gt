@@ -218,7 +218,7 @@
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
                         <button v-if="player.weaponTree.weaponAvaibleTypes.length >= weaponAmount && !cancelButtonText" class="btn shadow-none">
-                            <a>you have unlock all weapons</a>
+                            <a>you have unlocked all weapons</a>
                         </button>
 
                         <button
@@ -230,7 +230,7 @@
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
                         </button>
                         <button v-if="player.passivTree.passivAvaibleTypes.length >= passivAmount && !cancelButtonText" class="btn shadow-none">
-                            <a>you have unlock all passivs</a>
+                            <a>you have unlocked all passivs</a>
                         </button>
                         <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
                             <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
@@ -270,7 +270,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { addVec, dirVec, lenVec, mulVec, norVec, rotVec, subVec, addVecNum, subVecNum } from '@/game/vectors'
+import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec, addVecNum, subVecVec } from '@/game/vectors'
 import { checkPlayer, production, skillDetails, weaponAmount, passivAmount } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow, findWeaponUpgrade } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
@@ -1135,8 +1135,8 @@ export default defineComponent({
             object2: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy
         ) {
             return (
-                lenVec(subVecNum(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) <
-                object1.size / 2 + object2.size / 2
+                lenVecSqrt(subVecVec(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) <
+                (object1.size / 2 + object2.size / 2) ** 2
             )
         },
         //items
@@ -1383,13 +1383,10 @@ export default defineComponent({
         ) {
             if (this.isStopTime) return
             if (
-                lenVec(subVec(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) * this.generalSize <
-                (object1.size + object2.size) * range
+                lenVecSqrt(subVecVec(addVecNum(object1.vector, object1.size / 2), addVecNum(object2.vector, object2.size / 2))) * this.generalSize <
+                ((object1.size + object2.size) * range) ** 2
             ) {
-                object2.vector = addVec(
-                    object2.vector,
-                    mulVec(dirVec(object1.vector, object2.vector), speed * (100 / lenVec(subVec(object1.vector, object2.vector))) * this.generalSize)
-                )
+                object2.vector = addVec(object2.vector, mulVec(dirVec(object1.vector, object2.vector), speed * this.generalSize))
             }
         },
         // displaysize

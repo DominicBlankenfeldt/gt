@@ -17,7 +17,7 @@ export function subVec(vec1: type.Vector, vec2: type.Vector | number) {
         return [vec1[0] - vec2[0], vec1[1] - vec2[1]] as type.Vector
     }
 }
-export function subVecNum(vec1: type.Vector, vec2: type.Vector) {
+export function subVecVec(vec1: type.Vector, vec2: type.Vector) {
     return [vec1[0] - vec2[0], vec1[1] - vec2[1]] as type.Vector
 }
 export function dirVec(vec1: type.Vector, vec2: type.Vector) {
@@ -48,6 +48,9 @@ export function norVec(vec: type.Vector) {
 }
 export function lenVec(vec: type.Vector) {
     return Math.sqrt(vec[0] ** 2 + vec[1] ** 2)
+}
+export function lenVecSqrt(vec: type.Vector) {
+    return vec[0] ** 2 + vec[1] ** 2
 }
 export function rotVec(vec: type.Vector, angle: number) {
     const helpVec = [...vec]

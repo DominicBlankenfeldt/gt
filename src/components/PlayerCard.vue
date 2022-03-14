@@ -193,7 +193,7 @@
                                 max="100"
                                 class="col-3"
                                 style="background-color: darkgrey"
-                                v-model="volumeInput"
+                                v-model="settingsInput.musicVolume"
                                 @change="changeVolume(volumeInput)"
                             />
                         </div>
@@ -209,12 +209,7 @@
                             />
                         </div>
                         <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
-                            <select
-                                class="col-9"
-                                @click="buttonSound()"
-                                v-model="player.settings.abilitys[number].name"
-                                style="background-color: grey"
-                            >
+                            <select class="col-9" @click="buttonSound()" v-model="settingsInput.abilitys[number].name" style="background-color: grey">
                                 <option
                                     :selected="ability.name == player.settings.abilitys[number].name"
                                     :value="ability.name"
@@ -296,7 +291,7 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.volumeInput = this.player.settings.musicVolume
-        this.settingsInput = this.player.settings
+        this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         this.dataLoad = true
         if (this.editAble) {
             music.changeVolume(this.player.settings.musicVolume)
@@ -311,9 +306,9 @@ export default defineComponent({
         checkSettings() {
             let double = true
             if (
-                [...new Set(Object.values(this.player.settings.moves))]
-                    .concat([...new Set(Object.values(this.player.settings.abilitys))].map(a => a.key))
-                    .filter(s => s).length <
+                [...new Set(Object.values(this.player.settings.moves).concat(Object.values(this.player.settings.abilitys).map(a => a.key)))].filter(
+                    s => s
+                ).length <
                 4 + this.usedAbilitys.length
             )
                 double = false
@@ -345,7 +340,7 @@ export default defineComponent({
         },
         unDoChanges() {
             music.ButtonSound(this.player.settings.effectVolume)
-            this.volumeInput = this.player.settings.musicVolume
+            this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
             this.changeVolume(this.player.settings.musicVolume)
         },
         changeVolume(volumeInput: number) {
@@ -358,8 +353,7 @@ export default defineComponent({
         },
         async safeSettings() {
             this.buttonSound()
-            this.player.settings.musicVolume = this.volumeInput
-            this.player.settings = this.settingsInput
+            this.player.settings = JSON.parse(JSON.stringify(this.settingsInput))
             try {
                 await API.addPlayer(this.player)
             } catch {
