@@ -24,6 +24,7 @@ export const skillDetails = {
     strongerMagnet: { name: 'super Magnet', maxlvl: 20, tier: 2, description: 'enhances the slow magnet effect' },
     friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: 'weakens the attraction of the black holes' },
     smallerEnemies: { name: 'cute enemies', maxlvl: 20, tier: 2, description: 'makes enemies smaller' },
+    shieldGenerator: { name: 'shield generator', maxlvl: 5, tier: 3, description: 'regularly gives you a shield' },
 }
 export const weaponDetails = {
     moreDamage: { name: 'power weapon', maxlvl: 10, tier: 1, description: 'your plasma makes more damage' },
@@ -137,6 +138,7 @@ export function checkPlayer(player: type.Player) {
         'strongerMagnet',
         'friendlierDarkhole',
         'smallerEnemies',
+        'shieldGenerator',
     ]) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })

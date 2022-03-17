@@ -149,7 +149,7 @@ export interface PassivUpgrade {
     lvl: number
 }
 export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
-export type PassivType = 'none' | 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
+export type PassivType = 'none' | PassivUpgradeName
 export interface SkillTree {
     skillPoints: number
     skills: Skill[]
@@ -184,6 +184,7 @@ export type SkillName =
     | 'strongerMagnet'
     | 'friendlierDarkhole'
     | 'smallerEnemies'
+    | 'shieldGenerator'
 
 export type Outlook = 'up' | 'down' | 'right' | 'left' | 'upleft' | 'upright' | 'downleft' | 'downright'
 
