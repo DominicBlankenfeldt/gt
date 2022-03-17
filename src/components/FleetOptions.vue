@@ -71,7 +71,7 @@
                         </div>
                         <div class="col-4">
                             <div>founder:</div>
-                            <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer">
+                            <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer member">
                                 {{ fleetFounder?.username }}
                             </div>
                         </div>

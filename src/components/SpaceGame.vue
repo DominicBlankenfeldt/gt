@@ -215,7 +215,7 @@
                             @click="startBossFight('normal')"
                             v-if="player.weaponTree.weaponAvaibleTypes.length < weaponAmount && !cancelButtonText"
                         >
-                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('normal') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                            <a>{{ bossAvailable('normal') }}</a>
                         </button>
                         <button v-if="player.weaponTree.weaponAvaibleTypes.length >= weaponAmount && !cancelButtonText" class="btn shadow-none">
                             <a>you have unlocked all weapons</a>
@@ -227,13 +227,13 @@
                             @click="startBossFight('hardcore')"
                             v-if="player.passivTree.passivAvaibleTypes.length < passivAmount && !cancelButtonText"
                         >
-                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('hardcore') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                            <a>{{ bossAvailable('hardcore') }}</a>
                         </button>
                         <button v-if="player.passivTree.passivAvaibleTypes.length >= passivAmount && !cancelButtonText" class="btn shadow-none">
                             <a>you have unlocked all passivs</a>
                         </button>
                         <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
-                            <a>{{ findSkill(player, 'shotAbility') ? bossAvailable('totalchaos') : `skill ${skillDetails['shotAbility'].name}` }}</a>
+                            <a>{{ bossAvailable('totalchaos') }}</a>
                         </button>
                     </div>
                 </div>
@@ -712,6 +712,8 @@ export default defineComponent({
         },
         // boss
         bossAvailable(type: type.BossType) {
+            if (!findSkill(this.player, 'shotAbility')) return `skill ${skillDetails['shotAbility'].name}`
+            if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) return `select ${skillDetails['shotAbility'].name}`
             switch (type) {
                 case 'normal':
                     if (this.bossEnemy.type == 'normal') return 'cancel'
