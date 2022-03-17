@@ -254,8 +254,8 @@
                         </div>
                         <div class="row justify-content-end mt-1">
                             <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
-                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="safeSettings()" data-bs-dismiss="modal">
-                                safe
+                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="saveSettings()" data-bs-dismiss="modal">
+                                save
                             </button>
                         </div>
                     </div>
@@ -360,7 +360,7 @@ export default defineComponent({
             music.ButtonSound(this.player.settings.effectVolume)
             this.player.img = id
         },
-        async safeSettings() {
+        async saveSettings() {
             this.buttonSound()
             this.player.settings = JSON.parse(JSON.stringify(this.settingsInput))
             try {
