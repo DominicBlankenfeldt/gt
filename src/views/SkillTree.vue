@@ -4,21 +4,24 @@
             <div style="width: 12.5%"></div>
             <div class="col-3" title="you get 1 skillpoint per 1000 highscore in normal mode">
                 Skill Points:
+                <br />
                 {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
             </div>
-            <div style="width: 11.5%"></div>
-            <div class="col-3" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
+            <div style="width: 28%"></div>
+            <div class="col-2" title="you get 1 weaponpoint per 500 highscore in hardcore mode">
                 Weapon Points:
+                <br />
                 {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
             </div>
-            <div class="col-3" title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
+            <div class="col-2" title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
                 Passiv Points:
+                <br />
                 {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
             </div>
         </div>
 
         <div class="row g-0">
-            <div class="row col-6">
+            <div class="row col-8">
                 <div class="d-flex flex-column col-3">
                     <div v-for="skill of tier1Skills" :key="skill.name">
                         <button
@@ -86,12 +89,12 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-column col-3">
+            <div class="d-flex flex-column col-2">
                 <div>
-                    <div class="mt-2 w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">weapontype:</div>
+                    <div class="mt-2 w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">weapontype:</div>
                     <br />
                     <select
-                        class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                        class="w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.weaponTree.weaponType"
                         :title="weaponDetails[player.weaponTree.weaponType].description"
                         @click="buttonSound()"
@@ -113,7 +116,7 @@
                 </div>
                 <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
                     <button
-                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        class="mt-2 w-75 btn btn-primary align-self-center shadow-none"
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :title="weaponDetails[weaponUpgrade.name].description"
@@ -125,12 +128,12 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-3">
+            <div class="d-flex flex-column col-2">
                 <div>
-                    <div class="mt-2 w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
+                    <div class="mt-2 w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
                     <br />
                     <select
-                        class="w-50 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                        class="w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                         v-model="player.passivTree.passivType"
                         :title="passivDetails[player.passivTree.passivType]?.description"
                         @click="buttonSound()"
@@ -152,7 +155,7 @@
                 </div>
                 <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
                     <button
-                        class="mt-2 w-50 btn btn-primary align-self-center shadow-none"
+                        class="mt-2 w-75 btn btn-primary align-self-center shadow-none"
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :title="passivDetails[passivUpgrade.name].description"
