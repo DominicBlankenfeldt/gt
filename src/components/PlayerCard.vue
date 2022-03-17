@@ -211,13 +211,22 @@
                         <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
                             <select class="col-9" @click="buttonSound()" v-model="settingsInput.abilitys[number].name" style="background-color: grey">
                                 <option
-                                    :selected="ability.name == player.settings.abilitys[number].name"
-                                    :value="ability.name"
-                                    v-for="ability of availableAbilitys"
+                                    :value="
+                                        Object.keys(skillDetails).filter(
+                                            sD => skillDetails[sD].name == skillDetails[usedAbilitys[number - 1]].name
+                                        )[0]
+                                    "
+                                >
+                                    {{ skillDetails[usedAbilitys[number - 1]].name }}
+                                </option>
+                                <!-- :selected="ability.name == player.settings.abilitys[number].name" -->
+                                <option
+                                    :value="ability"
+                                    v-for="ability of availableAbilitys.filter(a => !usedAbilitys.includes(a))"
                                     :key="ability"
                                     @click="buttonSound()"
                                 >
-                                    {{ skillDetails[ability.name].name }}
+                                    {{ skillDetails[ability].name }}
                                 </option>
                                 <option style="color: black" disabled>unlock more by use the skilltree</option>
                             </select>
@@ -318,13 +327,13 @@ export default defineComponent({
             let abilitys = []
             for (let skill of this.player.skillTree.skills) {
                 if (skillDetails[skill.name].maxlvl == 1 && skill.lvl == 1) {
-                    abilitys.push(skill)
+                    abilitys.push(skill.name)
                 }
             }
-            return abilitys
+            return abilitys as type.AbilityName[]
         },
         usedAbilitys() {
-            let abilitys = []
+            let abilitys = [] as type.AbilityName[]
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (this.player.settings.abilitys[i].name) {
                     abilitys.push(this.player.settings.abilitys[i].name)

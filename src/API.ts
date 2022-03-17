@@ -15,7 +15,30 @@ import {
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
 import * as type from '@/types'
+//general
+export async function addAPI<T>(docName: string, data: T): Promise<DocumentReference<T>> {
+    //plz remove
+    const docRef = await addDoc(collection(getFirestore(), docName), data)
+    return docRef as DocumentReference<T>
+}
 
+export async function updateAPI<T>(docName: string, id: string, data: UpdateData<T>): Promise<void> {
+    await updateDoc(doc(getFirestore(), docName, id) as DocumentReference<T>, data)
+}
+
+// export async function getAPI<T extends { id: string }>(docName: string): Promise<T[]> {
+//     const docs: QueryDocumentSnapshot<DocumentData>[] = []
+//     const querySnapshot = await getDocs(collection(getFirestore(), docName))
+//     querySnapshot.forEach(doc => {
+//         docs.push(doc)
+//     })
+//     return docs.map(spaceFleet => ({
+//         ...spaceFleet.data(),
+//         id: spaceFleet.id,
+//     })) as T[]
+// }
+
+//account
 export async function login(email: string, password: string): Promise<void> {
     const auth = getAuth()
     await signInWithEmailAndPassword(auth, email, password)
@@ -35,33 +58,8 @@ export async function register(email: string, password: string): Promise<void> {
         role: 'user',
     })
 }
-export async function addSpaceFleet(fleet: type.SpaceFleet) {
-    return (await addAPI('spaceFleets', fleet)).id
-}
-export async function deleteSpaceFleet(id: string) {
-    await deleteDoc(doc(getFirestore(), 'spaceFleets', id))
-}
-export async function addAPI<T>(docName: string, data: T): Promise<DocumentReference<T>> {
-    const docRef = await addDoc(collection(getFirestore(), docName), data)
-    return docRef as DocumentReference<T>
-}
 
-export async function updateAPI<T>(docName: string, id: string, data: UpdateData<T>): Promise<void> {
-    await updateDoc(doc(getFirestore(), docName, id) as DocumentReference<T>, data)
-}
-
-export async function getAPI<T extends { id: string }>(docName: string): Promise<T[]> {
-    const docs: QueryDocumentSnapshot<DocumentData>[] = []
-    const querySnapshot = await getDocs(collection(getFirestore(), docName))
-    querySnapshot.forEach(doc => {
-        docs.push(doc)
-    })
-    return docs.map(spaceFleet => ({
-        ...spaceFleet.data(),
-        id: spaceFleet.id,
-    })) as T[]
-}
-
+//player
 export async function getBestPlayers(sortBy: string) {
     const docs: QueryDocumentSnapshot<DocumentData>[] = []
     const querySnapshot = await getDocs(query(collection(getFirestore(), 'users'), orderBy(sortBy), limitToLast(5)))
@@ -70,10 +68,8 @@ export async function getBestPlayers(sortBy: string) {
     })
     return docs.map(bestPlayers => ({ ...bestPlayers.data(), id: bestPlayers.id }))
 }
-export async function getPlayerSpaceFleet(id: string) {
-    return (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data() as type.SpaceFleet
-}
 export async function addPlayer(player: type.Player): Promise<void> {
+    //plz rename to "updatePlayer"
     const id = getAuth().currentUser?.uid
     if (id) {
         await updateDoc(doc(getFirestore(), 'users', id), {
@@ -81,6 +77,23 @@ export async function addPlayer(player: type.Player): Promise<void> {
         })
     }
 }
+export async function getPlayer(): Promise<type.User | null> {
+    const id = getAuth().currentUser?.uid
+    return id ? ((await getDoc(doc(getFirestore(), 'users', id))).data() as type.User) : null
+}
+
+//spaceFleet
+export async function addSpaceFleet(fleet: type.SpaceFleet) {
+    return (await addAPI('spaceFleets', fleet)).id
+}
+export async function deleteSpaceFleet(id: string) {
+    await deleteDoc(doc(getFirestore(), 'spaceFleets', id))
+}
+
+export async function getPlayerSpaceFleet(id: string) {
+    return (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data() as type.SpaceFleet
+}
+
 export async function getFleetPlayer(id: string) {
     return (await getDoc(doc(getFirestore(), 'users', id))).data() as type.User
 }
@@ -100,8 +113,4 @@ export async function searchSpaceFleet(name: string) {
         docs.push(doc)
     })
     return docs.map(spaceFleet => ({ ...spaceFleet.data(), id: spaceFleet.id }))
-}
-export async function getPlayer(): Promise<type.User | null> {
-    const id = getAuth().currentUser?.uid
-    return id ? ((await getDoc(doc(getFirestore(), 'users', id))).data() as type.User) : null
 }

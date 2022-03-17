@@ -75,14 +75,18 @@
                                 {{ fleetFounder?.username }}
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div>members:</div>
-                            <div v-for="member of fleetMembers" :key="JSON.stringify(member)" class="d-flex justify-content-between">
-                                <div></div>
-                                <div @click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer">
+                        <div class="col-4 d-flex flex-column align-items-center">
+                            <div class="mb-2">members:</div>
+                            <div v-for="member of fleetMembers" :key="JSON.stringify(member)" class="d-flex flex-row align-items-center">
+                                <div
+                                    @click="choosePlayer(member.player)"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#playerCard"
+                                    class="pointer p-1 member"
+                                >
                                     {{ member.player.username }}
                                 </div>
-                                <button v-if="edit" class="btn shadow-none" @click="deleteMember(member)">
+                                <button v-if="edit" class="btn shadow-none p-0" @click="deleteMember(member)">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="16"
@@ -106,7 +110,10 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-3">fleetgames: {{ fleetGames }}</div>
+                        <div class="col-3">
+                            <i class="bi bi-info-circle"></i>
+                            fleetgames: {{ fleetGames }}
+                        </div>
                         <div class="col-3">fleetscore: {{ Math.round(fleetScore) }}</div>
                         <div class="col-3">avg score: {{ Math.round(avgFleetScore) }}</div>
                         <div class="col-3">fleetlvl: {{ fleetlvl }}</div>
@@ -323,9 +330,7 @@ export default defineComponent({
             }
             let games = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
-                games += member.playedGames
-                games += member.playedHardcore
-                games += member.playedTotalchaos
+                games += 3
             }
             return score / games || 0
         },
