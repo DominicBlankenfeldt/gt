@@ -420,7 +420,6 @@ export default defineComponent({
             this.buttonSound()
             try {
                 fleet = await API.getPlayerSpaceFleet(fleet.id!)
-                console.log(fleet)
                 fleet.members.push(this.user.uid)
                 await API.updateAPI('spaceFleets', fleet.id!, fleet)
                 this.searchedFleets = [] as type.SpaceFleet[]
@@ -435,11 +434,13 @@ export default defineComponent({
             if (this.fleet.founder == this.user?.uid) return
             if (!this.fleet.id) return
             this.buttonSound()
-            this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
-            this.player.spaceFleet = ''
+
             try {
+                this.fleet = await API.getPlayerSpaceFleet(this.fleet.id!)
+                this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
+                this.player.spaceFleet = ''
                 await API.addPlayer(this.player)
-                await API.updateAPI('spaceFleets', this.fleet.id, this.fleet)
+                await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
                 this.loadFleet()
             } catch {
                 API.logout()
