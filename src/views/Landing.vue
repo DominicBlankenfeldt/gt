@@ -107,6 +107,7 @@ export default defineComponent({
                 this.password = ''
                 this.$router.push('/home')
             } catch (e) {
+                await API.logout
                 this.error = true
                 console.error({ "couldn't login": e })
             } finally {

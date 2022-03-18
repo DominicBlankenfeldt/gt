@@ -91,7 +91,8 @@ export async function deleteSpaceFleet(id: string) {
 }
 
 export async function getPlayerSpaceFleet(id: string) {
-    return (await getDoc(doc(getFirestore(), 'spaceFleets', id))).data() as type.SpaceFleet
+    const querySnapshot = await getDoc(doc(getFirestore(), 'spaceFleets', id))
+    return { ...querySnapshot.data(), id: querySnapshot.id } as type.SpaceFleet
 }
 
 export async function getFleetPlayer(id: string) {

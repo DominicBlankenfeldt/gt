@@ -414,11 +414,13 @@ export default defineComponent({
             }
         },
         async joinSpaceFleet(fleet: type.SpaceFleet) {
+            this.error = ''
             if (!this.user) return
             if (!fleet.id) return
             this.buttonSound()
             try {
                 fleet = await API.getPlayerSpaceFleet(fleet.id!)
+                console.log(fleet)
                 fleet.members.push(this.user.uid)
                 await API.updateAPI('spaceFleets', fleet.id!, fleet)
                 this.searchedFleets = [] as type.SpaceFleet[]
