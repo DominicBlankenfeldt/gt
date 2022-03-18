@@ -434,7 +434,6 @@ export default defineComponent({
             if (this.fleet.founder == this.user?.uid) return
             if (!this.fleet.id) return
             this.buttonSound()
-
             try {
                 this.fleet = await API.getPlayerSpaceFleet(this.fleet.id!)
                 this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)

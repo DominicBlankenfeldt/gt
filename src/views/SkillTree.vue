@@ -95,13 +95,11 @@
                             @click="lvlSkill(skill)"
                             @dblclick="lvlSkillx8(skill)"
                             :title="skillDetails[skill.name].description"
-                            :disabled="usedSkillPoints < 100"
+                            :disabled="usedSkillPoints < 200"
                         >
                             {{ skillDetails[skill.name].name }}
                             <br />
-                            lvl: {{ skill.lvl }}/{{
-                                skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
-                            }}
+                            lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
                         </button>
                     </div>
                 </div>
@@ -186,15 +184,15 @@
             </div>
         </div>
         <div class="row g-0 mt-2">
-            <div style="width: 12.5%"></div>
+            <div style="width: 15%"></div>
             <div class="col-3">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetSkillTree()">reset Skilltree</button>
             </div>
-            <div style="width: 12.5%"></div>
-            <div class="col-3">
+            <div style="width: 25%"></div>
+            <div class="col-2">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetWeaponTree()">reset weapontree</button>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetPassivTree()">reset passivtree</button>
             </div>
         </div>
@@ -323,7 +321,11 @@ export default defineComponent({
     },
     methods: {
         async lvlSkill(skill: type.Skill) {
-            if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
+            if (
+                skill.lvl <
+                skillDetails[skill.name].maxlvl +
+                    (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBossesTotalchaos : 0)
+            )
                 if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                     skill.lvl++
                     this.buttonSound()
@@ -353,7 +355,11 @@ export default defineComponent({
         },
         async lvlSkillx8(skill: type.Skill) {
             for (let i = 0; i < 8; i++) {
-                if (skill.lvl < skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? this.player.defeatedBossesTotalchaos : 0))
+                if (
+                    skill.lvl <
+                    skillDetails[skill.name].maxlvl +
+                        (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBossesTotalchaos : 0)
+                )
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                         skill.lvl++
                     }

@@ -7,12 +7,17 @@
             </div>
             <div v-else class="col-3"></div>
             <div v-if="!bossEnemy.type" class="col-1">
-                + {{ (scorePerSecond * 60).toFixed(0) }}/s
+                + {{ (scorePerTick * 60).toFixed(0) }}/s
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             </div>
-            <div class="col-2">Enemies:{{ enemies.length }}</div>
-            <div class="col-2">difficulty:{{ difficulty }}</div>
-            <div class="col-2">gps:{{ Math.round(gps) }}</div>
+            <div class="col-2">
+                Enemies:{{ enemies.length }}{{ !bossFight ? `+(${((spawnEnemyTimer - (gameloopCounter % spawnEnemyTimer)) / 60).toFixed(1)}s)` : '' }}
+            </div>
+            <div class="col-3">
+                difficulty:{{ difficulty }}{{ !bossFight ? `+(${((difficultyTimer - (gameloopCounter % difficultyTimer)) / 60).toFixed(1)}s)` : '' }}
+            </div>
+
+            <div class="col-1">gps:{{ Math.round(gps) }}</div>
             <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 Highscore:
@@ -263,6 +268,20 @@
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
                     </svg>
                 </div>
+                <div v-for="hp of shield" :key="hp" style="color: grey">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="2vw"
+                        height="2vw"
+                        fill="currentColor"
+                        class="bi bi-shield-fill"
+                        viewBox="0 0 16 16"
+                    >
+                        <path
+                            d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"
+                        />
+                    </svg>
+                </div>
             </div>
         </div>
     </div>
@@ -287,11 +306,14 @@ export default defineComponent({
         production
         currentUser
         skillDetails
+
         return {
             findSkill,
             skillDetails,
             weaponAmount,
             passivAmount,
+            percent,
+            findPassivUpgrade,
         }
     },
     data() {
@@ -346,6 +368,7 @@ export default defineComponent({
             },
             skillObject: {} as type.SkillObject,
             multiplicator: 1,
+            shield: 0,
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
@@ -359,7 +382,8 @@ export default defineComponent({
             startingEnemies: 4,
             difficulty: 2,
             score: 0,
-            scorePerSecond: 0,
+            scorePerTick: 0,
+            difficultyTimer: 1200,
             lastScore: 0,
             gameloopCounter: 0,
             gameloopCounter2: 0,
@@ -384,6 +408,15 @@ export default defineComponent({
             }
             if (lvl > 50) lvl = 50
             return lvl
+        },
+        spawnEnemyTimer() {
+            let timer = Math.round(
+                900 *
+                    percent(this.skillObject['spawnLessEnemy'], 'in') *
+                    (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
+            )
+
+            return timer
         },
     },
     async mounted() {
@@ -456,18 +489,8 @@ export default defineComponent({
                     this.bossEnemyAbilitys()
                 }
             } else {
-                if (this.gameloopCounter % 1200 == 0) this.difficulty += 0.5 // 20sek
-                if (
-                    this.gameloopCounter %
-                        (900 *
-                            Math.round(
-                                percent(this.skillObject['spawnLessEnemy'], 'in') *
-                                    (this.player.passivTree.passivType == 'nerfEnemies'
-                                        ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in')
-                                        : 1)
-                            )) ==
-                    0
-                )
+                if (this.gameloopCounter % this.difficultyTimer == 0) this.difficulty += 0.5 // 20sek
+                if (this.gameloopCounter % this.spawnEnemyTimer == 0)
                     createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
             }
             if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
@@ -477,7 +500,7 @@ export default defineComponent({
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.player.passivTree.passivType == 'moreItems') {
                 if (this.gameloopCounter2 % Math.round(120 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
-                    this.spawnItems(this.spawnBadItems) // 4sek
+                    this.spawnItems(this.spawnBadItems) // 2sek
                     this.spawnBadItems = !this.spawnBadItems
                 }
             } else {
@@ -535,6 +558,7 @@ export default defineComponent({
                 this.pressedKeys[e.key] = true
             }
             for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
+            if (this.skillObject['shieldGenerator']) this.shield++
             clearTimeout(this.countgpsID)
             this.countgps()
         },
@@ -657,7 +681,7 @@ export default defineComponent({
             if (this.isSlowEnemies) effectAmount++
             if (this.isStopTime) effectAmount++
             this.score += this.skillObject['scorePerEffect'] * effectAmount * 0.2
-            this.scorePerSecond = this.score - this.lastScore
+            this.scorePerTick = this.score - this.lastScore
         },
         async countgps() {
             this.countgpsID = setTimeout(() => {
@@ -1034,10 +1058,15 @@ export default defineComponent({
             }
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.player, plasma)) {
-                    this.player.hP--
-                    if (this.player.hP <= 0) {
-                        await this.gameOver('you got killed by plasma', 'alert alert-danger')
-                        return
+                    if (this.shield) {
+                        this.shield--
+                        setTimeout(() => this.shield++, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
+                    } else {
+                        this.player.hP--
+                        if (this.player.hP <= 0) {
+                            await this.gameOver('you got killed by plasma', 'alert alert-danger')
+                            return
+                        }
                     }
                     this.deletePlasma(plasma)
                     return
@@ -1088,10 +1117,15 @@ export default defineComponent({
                 if (this.isMagnet) this.gravity(this.player, enemy, 2, -0.3 - this.skillObject['strongerMagnet'] / 100)
                 if (enemy.isMagnet) this.gravity(enemy, this.player, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.player)) {
-                    this.player.hP--
-                    if (this.player.hP <= 0) {
-                        await this.gameOver('you got killed by an enemy', 'alert alert-danger')
-                        return
+                    if (this.shield) {
+                        this.shield--
+                        setTimeout(() => this.shield++, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
+                    } else {
+                        this.player.hP--
+                        if (this.player.hP <= 0) {
+                            await this.gameOver('you got killed by an enemy', 'alert alert-danger')
+                            return
+                        }
                     }
                     this.respawnEnemy(enemy)
                 }
@@ -1148,7 +1182,7 @@ export default defineComponent({
         collectCoin(item: type.Item) {
             let scoreIncrease =
                 ((this.difficulty * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
-                (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 2 : 1)
+                (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5 : 1)
             this.score += scoreIncrease
             this.specialScores.push({
                 vector: item.vector,
@@ -1275,6 +1309,9 @@ export default defineComponent({
         },
 
         //playermovement
+        handleShield() {
+            if (!this.shield) this.shield++
+        },
         handlePlayerMovement() {
             const newPlayer = playerMovement(this.player, this.pressedKeys, this.field, this.lastDirection, this.generalSize, this.multiplicator)
             this.player = newPlayer.player
