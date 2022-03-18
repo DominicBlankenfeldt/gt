@@ -54,6 +54,7 @@ export interface Player {
     defeatedBossesTotalchaos: number
     spaceFleet?: string
     settings: Settings
+    playedTime: number
 }
 export interface Settings {
     abilitys: Abilitys

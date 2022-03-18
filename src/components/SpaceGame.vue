@@ -415,7 +415,6 @@ export default defineComponent({
                     percent(this.skillObject['spawnLessEnemy'], 'in') *
                     (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
             )
-
             return timer
         },
     },
@@ -476,6 +475,7 @@ export default defineComponent({
         },
         //game
         async gameloop() {
+            this.player.playedTime++
             this.multiplicator = 1
             this.handlePlayerAbilities()
             this.increaseScore()
@@ -602,9 +602,7 @@ export default defineComponent({
             }
         },
         chaosItems() {
-            for (let i = 0; i < 5; i++) {
-                this.spawnItems(true)
-            }
+            for (let i = 0; i < 5; i++) this.spawnItems(true)
         },
         chaosPlayerSpeed() {
             switch (getRandomInt(2)) {
@@ -683,7 +681,7 @@ export default defineComponent({
             this.score += this.skillObject['scorePerEffect'] * effectAmount * 0.2
             this.scorePerTick = this.score - this.lastScore
         },
-        async countgps() {
+        countgps() {
             this.countgpsID = setTimeout(() => {
                 this.gps = (this.gameloopCounter - this.gameloopLastCounter) * 2
                 if (this.gps > 60) this.gps = 60
@@ -691,7 +689,6 @@ export default defineComponent({
                 this.countgps()
             }, 500)
         },
-
         cancel() {
             this.buttonSound()
             this.bossEnemy = {} as type.BossEnemy
@@ -773,7 +770,6 @@ export default defineComponent({
                 this.cancel()
                 return
             }
-
             if (!this.skillObject['shotAbility']) {
                 this.$router.push('/skillTree')
                 this.buttonSound()

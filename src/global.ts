@@ -88,6 +88,7 @@ export function checkPlayer(player: type.Player) {
     player.defeatedBossesTotalchaos = player.defeatedBossesTotalchaos || 0
     player.defeatedBossesHardcore = player.defeatedBossesHardcore || 0
     player.playMode = player.playMode || 'normal'
+    player.playedTime = player.playedTime || 0
     player.weaponTree =
         player.weaponTree ||
         ({

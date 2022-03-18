@@ -52,6 +52,10 @@
                     registered since:
                     <br />
                     {{ new Date(player.registeredAt).toLocaleString() }}
+                    <br />
+                    played time:
+                    <br />
+                    {{ playTime }}
                 </div>
             </div>
 
@@ -340,6 +344,23 @@ export default defineComponent({
                 }
             }
             return abilitys
+        },
+        playTime() {
+            let time = this.player.playedTime
+            let unit = ' ticks'
+            if (time / 60 > 1) {
+                time /= 60 //sec
+                unit = ' sec'
+            }
+            if (time / 60 > 1) {
+                time /= 60 //min
+                unit = ' min'
+            }
+            if (time / 60 > 1) {
+                time /= 60 //hour
+                unit = ' hours'
+            }
+            return time.toFixed(1) + unit
         },
     },
 
