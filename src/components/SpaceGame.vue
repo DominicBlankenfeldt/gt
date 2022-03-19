@@ -1,20 +1,17 @@
 <template>
     <div v-if="dataLoad" style="color: red">
         <div class="row g-0" style="height: 5vh; position: relative">
-            <div v-if="!bossEnemy.type" class="col-2 text-end">
+            <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
-                Score: {{ Math.round(score) }}
-            </div>
-            <div v-else class="col-3"></div>
-            <div v-if="!bossEnemy.type" class="col-1">
-                + {{ (scorePerTick * 60).toFixed(0) }}/s
+                Score: {{ Math.round(score) }}+{{ (scorePerTick * 60).toFixed(0) }}/s
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             </div>
+            <div v-else class="col-4"></div>
             <div class="col-2">
-                Enemies:{{ enemies.length }}{{ !bossFight ? `+(${((spawnEnemyTimer - (gameloopCounter % spawnEnemyTimer)) / 60).toFixed(1)}s)` : '' }}
+                Enemies:{{ enemies.length }}{{ !bossFight ? `(${((spawnEnemyTimer - (gameloopCounter % spawnEnemyTimer)) / 60).toFixed(1)}s)` : '' }}
             </div>
             <div class="col-3">
-                difficulty:{{ difficulty }}{{ !bossFight ? `+(${((difficultyTimer - (gameloopCounter % difficultyTimer)) / 60).toFixed(1)}s)` : '' }}
+                difficulty:{{ difficulty }}{{ !bossFight ? `(${((difficultyTimer - (gameloopCounter % difficultyTimer)) / 60).toFixed(1)}s)` : '' }}
             </div>
 
             <div class="col-1">gps:{{ Math.round(gps) }}</div>
@@ -24,6 +21,7 @@
                 <span id="scoreSpan" v-if="player.playMode == 'normal'">{{ Math.round(player.highscore) }}</span>
                 <span id="scoreSpan" v-if="player.playMode == 'hardcore'">{{ Math.round(player.highscoreHardcore) }}</span>
                 <span id="scoreSpan" v-if="player.playMode == 'totalchaos'">{{ Math.round(player.highscoreTotalchaos) }}</span>
+                <img src="../../public/img/items/coin/coin.gif" alt="coin" />
             </div>
             <div v-else class="col-3"></div>
             <div v-if="bossFight && !bossEnemy.size">Boss Fight</div>
@@ -558,7 +556,7 @@ export default defineComponent({
                 this.pressedKeys[e.key] = true
             }
             for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
-            if (this.skillObject['shieldGenerator']) this.shield++
+            if (this.skillObject['shieldGenerator']) this.shield = 1
             clearTimeout(this.countgpsID)
             this.countgps()
         },
