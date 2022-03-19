@@ -27,18 +27,22 @@ if (process.env.NODE_ENV === 'production') {
         },
     })
 }
-navigator.serviceWorker.register(`${process.env.BASE_URL}service-worker.js`).then(reg => {
-    reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing
-        newSW?.addEventListener('statechange', () => {
-            // Check service worker state
-            if (newSW.state === 'installed') {
-                // A new SW is available and installed.
-                // You can update the page directly or better
-                // show a notification to the user to prompt for a page reload
-                // and inform about the new version available
-                reg.update()
-            }
-        })
-    })
+
+const cacheName = 'v2'
+
+self.addEventListener('activate', event => {
+    // Remove old caches
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    event.waitUntil(
+        (async () => {
+            const keys = await caches.keys()
+            return keys.map(async cache => {
+                if (cache !== cacheName) {
+                    console.log('Service Worker: Removing old cache: ' + cache)
+                    return await caches.delete(cache)
+                }
+            })
+        })()
+    )
 })
