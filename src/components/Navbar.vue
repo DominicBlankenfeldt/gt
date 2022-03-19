@@ -3,7 +3,7 @@
         <router-link v-if="!user" to="/" @keydown.enter.prevent>Login</router-link>
         <router-link v-if="user" to="/home" @keydown.enter.prevent>Player-Card</router-link>
         <a>|</a>
-        <router-link v-if="user" to="/skillTree" @keydown.enter.prevent>Skill Tree</router-link>
+        <router-link v-if="user" to="/skillTree" @keydown.enter.prevent>Upgrades</router-link>
         <a v-if="user">|</a>
         <router-link v-if="user" to="/fleet" @keydown.enter.prevent>Space Fleet</router-link>
         <a v-if="user">|</a>

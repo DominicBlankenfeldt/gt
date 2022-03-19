@@ -198,7 +198,7 @@
                                 class="col-3"
                                 style="background-color: darkgrey"
                                 v-model="settingsInput.musicVolume"
-                                @change="changeVolume(volumeInput)"
+                                @change="changeVolume(settingsInput.musicVolume)"
                             />
                         </div>
                         <div class="row mt-1">
@@ -209,7 +209,7 @@
                                 max="100"
                                 class="col-3"
                                 style="background-color: darkgrey"
-                                v-model="player.settings.effectVolume"
+                                v-model="settingsInput.effectVolume"
                             />
                         </div>
                         <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
@@ -296,14 +296,12 @@ export default defineComponent({
             dataLoad: false,
             hardCoreMode: false,
             editProfile: false,
-            volumeInput: 0,
             img: '',
             images: ['001', '002', '003', '004', '005'],
         }
     },
     mounted() {
         this.player = this.playerProp
-        this.volumeInput = this.player.settings.musicVolume
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         this.dataLoad = true
         if (this.editAble) {
