@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 8vh" v-if="dataLoad">
-        <div class="btn-group rounded w-100 mt-2 shadow-none" role="group" aria-label="Basic radio toggle button group">
+        <div class="btn-group rounded w-50 mt-2" role="group" aria-label="Basic radio toggle button group">
             <input
                 type="radio"
                 class="btn-check"
@@ -30,7 +30,7 @@
                 @change="choosenTree = 'passiv'"
                 :checked="choosenTree == 'passiv'"
             />
-            <label class="btn btn-outline-primary w-25" for="btnPassiv">passivs</label>
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnPassiv">passivs</label>
         </div>
         <SkillCard v-if="choosenTree == 'skillTree'" :playerProp="player" />
         <WeaponCard v-if="choosenTree == 'weapon'" :playerProp="player" />

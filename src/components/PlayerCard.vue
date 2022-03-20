@@ -223,7 +223,6 @@
                                 >
                                     {{ skillDetails[usedAbilitys[number - 1]].name }}
                                 </option>
-                                <!-- :selected="ability.name == player.settings.abilitys[number].name" -->
                                 <option
                                     :value="ability"
                                     v-for="ability of availableAbilitys.filter(a => !usedAbilitys.includes(a))"
@@ -337,8 +336,8 @@ export default defineComponent({
         usedAbilitys() {
             let abilitys = [] as type.AbilityName[]
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                if (this.player.settings.abilitys[i].name) {
-                    abilitys.push(this.player.settings.abilitys[i].name)
+                if (this.settingsInput.abilitys[i].name) {
+                    abilitys.push(this.settingsInput.abilitys[i].name)
                 }
             }
             return abilitys

@@ -1,13 +1,13 @@
 <template>
-    <div v-if="dataLoad">
+    <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div title="you get 1 skillpoint per 1000 highscore in normal mode">
             Skill Points:
             <br />
             {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
         </div>
-        <div class="row g-0">
+        <div class="row g-0 mt-2">
             <div class="col-1"></div>
-            <div class="d-flex flex-column col-2">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of tier1Skills" :key="skill.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
@@ -23,7 +23,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-2">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of tier1Abilitys" :key="skill.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
@@ -39,7 +39,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-2">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of tier2Skills" :key="skill.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
@@ -56,7 +56,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-2">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of tier2Abilitys" :key="skill.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
@@ -73,7 +73,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-2">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of tier3Skills" :key="skill.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
@@ -88,7 +88,7 @@
                     </button>
                 </div>
             </div>
-            <div>
+            <div class="mt-2">
                 <button class="btn btn-danger align-self-center shadow-none" @click="resetSkillTree()">reset Skilltree</button>
             </div>
         </div>

@@ -1,15 +1,15 @@
 <template>
-    <div v-if="dataLoad">
+    <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
             Passiv Points:
             <br />
             {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
         </div>
         <div>
-            <div class="mt-2 w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
+            <div class="mt-2 w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
             <br />
             <select
-                class="w-75 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                 v-model="player.passivTree.passivType"
                 :title="passivDetails[player.passivTree.passivType]?.description"
                 @click="buttonSound()"
@@ -31,7 +31,7 @@
         </div>
         <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
             <button
-                class="mt-2 w-75 btn btn-primary align-self-center shadow-none"
+                class="mt-2 w-25 btn btn-primary align-self-center shadow-none"
                 @click="lvlPassivUpgrade(passivUpgrade)"
                 @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                 :title="passivDetails[passivUpgrade.name].description"
@@ -42,7 +42,7 @@
                 lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl }}
             </button>
         </div>
-        <div>
+        <div class="mt-2">
             <button class="btn btn-danger align-self-center shadow-none" @click="resetPassivTree()">reset passivtree</button>
         </div>
     </div>
