@@ -48,7 +48,7 @@ export const passivDetails = {
     nerfBoss: { name: 'nerfBoss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
 }
 export const passivAmount = Object.values(passivDetails).length + 1
-
+export const maxEnergyCell = 100
 //player
 
 export function checkPlayer(player: type.Player) {
@@ -89,6 +89,11 @@ export function checkPlayer(player: type.Player) {
     player.defeatedBossesHardcore = player.defeatedBossesHardcore || 0
     player.playMode = player.playMode || 'normal'
     player.playedTime = player.playedTime || 0
+    player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: false } }
+    for (const shopElement of ['currency', 'energyCell']) {
+        player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || 0
+    }
+    player.shop.reBuy = player.shop.reBuy || { energyCell: true }
     player.weaponTree =
         player.weaponTree ||
         ({

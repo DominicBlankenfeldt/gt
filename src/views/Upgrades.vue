@@ -31,10 +31,21 @@
                 :checked="choosenTree == 'passiv'"
             />
             <label class="btn btn-outline-primary w-25 shadow-none" for="btnPassiv">passivs</label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnShop"
+                autocomplete="off"
+                @change="choosenTree = 'shop'"
+                :checked="choosenTree == 'shop'"
+            />
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnShop">shop</label>
         </div>
         <SkillCard v-if="choosenTree == 'skillTree'" :playerProp="player" />
         <WeaponCard v-if="choosenTree == 'weapon'" :playerProp="player" />
         <PassivCard v-if="choosenTree == 'passiv'" :playerProp="player" />
+        <ShopCard v-if="choosenTree == 'shop'" :playerProp="player" />
     </div>
 </template>
 <script lang="ts">
@@ -44,6 +55,7 @@ import { currentUser } from '@/router'
 import SkillCard from '@/components/SkillCard.vue'
 import WeaponCard from '@/components/WeaponCard.vue'
 import PassivCard from '@/components/PassivCard.vue'
+import ShopCard from '@/components/ShopCard.vue'
 import * as API from '@/API'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -55,6 +67,7 @@ export default defineComponent({
         SkillCard,
         WeaponCard,
         PassivCard,
+        ShopCard,
     },
     data() {
         return {
@@ -85,7 +98,6 @@ export default defineComponent({
         }
         this.player = checkPlayer(this.player) as type.Player
         music.changeVolume(this.player.settings.musicVolume)
-        this.buttonSound()
         this.dataLoad = true
     },
 

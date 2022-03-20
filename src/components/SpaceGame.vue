@@ -13,7 +13,6 @@
             <div class="col-3">
                 difficulty:{{ difficulty }}{{ !bossFight ? `(${((difficultyTimer - (gameloopCounter % difficultyTimer)) / 60).toFixed(1)}s)` : '' }}
             </div>
-
             <div class="col-1">gps:{{ Math.round(gps) }}</div>
             <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
@@ -241,7 +240,7 @@
                     </div>
                 </div>
                 <div class="col-1">
-                    <div>cooldowns</div>
+                    <div>cooldowns ({{ player.shop.energyCell }})</div>
                     <div
                         class="mt-4"
                         v-for="ability of player.settings.abilitys"
@@ -288,7 +287,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec, addVecNum, subVecVec } from '@/game/vectors'
-import { checkPlayer, production, skillDetails, weaponAmount, passivAmount } from '@/global'
+import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell } from '@/global'
 import { borderCheck, findPassivUpgrade, findSkill, getRandomInt, percent, roundHalf, grow, findWeaponUpgrade } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
@@ -696,6 +695,12 @@ export default defineComponent({
             this.message = ''
         },
         async gameOver(message: string, messageType: string) {
+            if (this.player.shop.reBuy.energyCell) {
+                while (this.player.shop.currency > 0 && this.player.shop.energyCell < maxEnergyCell) {
+                    this.player.shop.currency--
+                    this.player.shop.energyCell++
+                }
+            }
             this.gameStarted = false
             this.tip = tips(getRandomInt(this.tipsNumber))
             this.reset()
@@ -1284,9 +1289,10 @@ export default defineComponent({
                 this.skillObject
             )
         },
-
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
+            this.player.shop.currency++
+            if (this.player.shop.currency > 10000) this.player.shop.currency = 10000
             createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
         },
         handleEnemyGetBigger() {
@@ -1315,13 +1321,13 @@ export default defineComponent({
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (!this.player.settings.abilitys[i].name) break
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
+                    if (this.player.settings.abilitys[i].name == 'fastAbility') this.multiplicator *= 2
+                    if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
+                    if (this.player.shop.energyCell < skillDetails[this.player.settings.abilitys[i].name].tier) return
+                    if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) break
+                    if (this.player.settings.abilitys[i].name != 'fastAbility' && this.player.settings.abilitys[i].name != 'slowAbility')
+                        this.player.shop.energyCell -= skillDetails[this.player.settings.abilitys[i].name].tier
                     switch (this.player.settings.abilitys[i].name) {
-                        case 'fastAbility':
-                            this.multiplicator *= 2
-                            break
-                        case 'slowAbility':
-                            this.multiplicator *= 0.5
-                            break
                         case 'bombAbility':
                             this.bombAbility()
                             break
@@ -1345,32 +1351,27 @@ export default defineComponent({
             }
         },
         magnetAbility() {
-            if (this.coolDowns['magnetAbility'] > 0) return
             this.coolDowns['magnetAbility'] = 10000
             this.isMagnet = true
             this.magnetDuration += 2500
         },
         growAbility() {
-            if (this.coolDowns['growAbility'] > 0) return
             if (!this.isGrow) this.player.vector = subVec(this.player.vector, (this.player.size * this.generalSize) / 2)
             this.coolDowns['growAbility'] = 10000
             this.isGrow = true
             this.growDuration += 2500
         },
         slowEnemyAbility() {
-            if (this.coolDowns['slowEnemyAbility'] > 0) return
             this.coolDowns['slowEnemyAbility'] = 10000
             this.isSlowEnemies = true
             this.slowEnemiesDuration += 2500
         },
         stopTimeAbility() {
-            if (this.coolDowns['stopTimeAbility'] > 0) return
             this.coolDowns['stopTimeAbility'] = 10000
             this.isStopTime = true
             this.stopTimeDuration += 700
         },
         bombAbility() {
-            if (this.coolDowns['bombAbility'] > 0) return
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
             this.coolDowns['bombAbility'] = 1000
@@ -1384,7 +1385,6 @@ export default defineComponent({
             }
         },
         shotAbility() {
-            if (this.coolDowns['shotAbility'] > 0) return
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
             music.plasmaSound(this.player.settings.effectVolume)
             let weapon = weapons(this.player, this.generalSize, this.lastDirection)

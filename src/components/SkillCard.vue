@@ -183,6 +183,7 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
+        this.buttonSound()
     },
     methods: {
         lvlSkill(skill: type.Skill) {

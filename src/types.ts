@@ -38,6 +38,7 @@ export interface Player {
     skillTree: SkillTree
     weaponTree: WeaponTree
     passivTree: PassivTree
+    shop: Shop
     outlook: Outlook
     highscore: number
     highscoreHardcore: number
@@ -56,6 +57,14 @@ export interface Player {
     settings: Settings
     playedTime: number
 }
+export interface Shop {
+    currency: number
+    energyCell: number
+    reBuy: {
+        energyCell: boolean
+    }
+}
+export type ShopElement = 'currency' | 'energyCell'
 export interface Settings {
     abilitys: Abilitys
     moves: Moves

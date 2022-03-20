@@ -87,6 +87,7 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
+        this.buttonSound()
     },
     methods: {
         lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
