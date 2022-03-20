@@ -8,6 +8,7 @@
         <div class="mt-2">
             <button
                 class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
+                title="is needed to use abilities"
                 @click="buyEnergyCell()"
                 @dblclick="buyEnergyCellx8()"
             >
@@ -16,7 +17,11 @@
                 {{ player.shop.energyCell }}/{{ maxEnergyCell }}
             </button>
             <div>
-                <label class="form-check-label w-25 bg-primary rounded-bottom" for="flexCheckDefault">
+                <label
+                    class="form-check-label w-25 bg-primary rounded-bottom"
+                    title="buy as many energy cells as possible after one round"
+                    for="flexCheckDefault"
+                >
                     <input
                         class="form-check-input shadow-none"
                         v-model="player.shop.reBuy.energyCell"
