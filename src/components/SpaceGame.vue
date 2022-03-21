@@ -176,8 +176,7 @@
                     </div>
                     <div v-if="message" :class="messageType">
                         {{ message }}
-                    </div>
-                    <div v-if="unlockMessage" :class="messageType">
+                        <br />
                         {{ unlockMessage }}
                     </div>
                     <div class="container" v-if="!gameStarted">
@@ -1319,12 +1318,12 @@ export default defineComponent({
         },
         handlePlayerAbilities() {
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                if (!this.player.settings.abilitys[i].name) break
+                if (!this.player.settings.abilitys[i].name) continue
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
                     if (this.player.settings.abilitys[i].name == 'fastAbility') this.multiplicator *= 2
                     if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
-                    if (this.player.shop.energyCell < skillDetails[this.player.settings.abilitys[i].name].tier) return
-                    if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) break
+                    if (this.player.shop.energyCell < skillDetails[this.player.settings.abilitys[i].name].tier) continue
+                    if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
                     if (this.player.settings.abilitys[i].name != 'fastAbility' && this.player.settings.abilitys[i].name != 'slowAbility')
                         this.player.shop.energyCell -= skillDetails[this.player.settings.abilitys[i].name].tier
                     switch (this.player.settings.abilitys[i].name) {
