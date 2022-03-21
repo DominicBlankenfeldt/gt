@@ -1,6 +1,8 @@
 <template>
     <div class="card card-default" v-if="dataLoad">
-        <div class="card-header header row g-0"></div>
+        <div class="card-header header row g-0">
+            <div v-if="player.username.length < 3 || player.username == 'gast'" class="alert alert-danger">invalid username</div>
+        </div>
         <div class="card-body row gx-0">
             <div class="profile-pic col-4">
                 <div v-if="player.img">
@@ -77,6 +79,7 @@
                             :class="{ dirty: player.username }"
                             autocomplete="off"
                             style="text-shadow: none"
+                            @change="checkUserName()"
                             required
                         />
                         <label class="placeholder-text" for="username">
@@ -171,7 +174,11 @@
                             <button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
                         </div>
                         <div v-if="editProfile">
-                            <button class="btn btn-success shadow-none w-50" @click="toggleEdit(true)" :disabled="player.username.length < 3">
+                            <button
+                                class="btn btn-success shadow-none w-50"
+                                @click="toggleEdit(true)"
+                                :disabled="player.username.length < 3 || player.username == 'gast'"
+                            >
                                 save profile
                             </button>
                         </div>
@@ -297,6 +304,7 @@ export default defineComponent({
             editProfile: false,
             img: '',
             images: ['001', '002', '003', '004', '005'],
+            message: '',
         }
     },
     mounted() {
@@ -362,6 +370,15 @@ export default defineComponent({
     },
 
     methods: {
+        checkUserName() {
+            if (this.player.username == 'gast') {
+                this.message = 'invalid username'
+                return false
+            } else {
+                this.message = ''
+                return true
+            }
+        },
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)
         },

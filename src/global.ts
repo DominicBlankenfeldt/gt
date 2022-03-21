@@ -89,7 +89,7 @@ export function checkPlayer(player: type.Player) {
     player.defeatedBossesHardcore = player.defeatedBossesHardcore || 0
     player.playMode = player.playMode || 'normal'
     player.playedTime = player.playedTime || 0
-    player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: false } }
+    player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: true } }
     for (const shopElement of ['currency', 'energyCell']) {
         player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || 0
     }
