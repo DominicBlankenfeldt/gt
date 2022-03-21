@@ -1,7 +1,10 @@
 <template>
     <div class="container d-flex align-items-stretch justify-content-center flex-column" style="height: calc(100vh - 200px)">
         <div class="card card-default w-75" style="margin-left: 12.5%">
-            <div class="card-header header"><h1>Join a starship crew.</h1></div>
+            <div class="card-header header">
+                <div v-if="username.length < 3 || username == 'gast'" class="alert alert-danger">invalid username</div>
+                <h1>Join a starship crew.</h1>
+            </div>
             <div class="card-body">
                 <form @submit.prevent="register()" autocomplete="off">
                     <div class="m-4 alert alert-danger text-center" v-if="error">
@@ -72,7 +75,7 @@
                         </label>
                     </div>
                     <div class="container" v-if="!registering">
-                        <button class="btn" type="submit">
+                        <button class="btn" type="submit" :disabled="username.length < 3 || username == 'gast'">
                             <a v-if="!registering">register</a>
                         </button>
                     </div>
