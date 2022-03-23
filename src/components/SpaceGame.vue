@@ -377,9 +377,11 @@ export default defineComponent({
             spawnBadItems: true,
             startingEnemies: 4,
             difficulty: 2,
+            scoreMultiplier: 2,
             score: 0,
             scorePerTick: 0,
             difficultyTimer: 1200,
+            scoreTimer: 1200,
             lastScore: 0,
             gameloopCounter: 0,
             gameloopCounter2: 0,
@@ -485,7 +487,8 @@ export default defineComponent({
                     this.bossEnemyAbilitys()
                 }
             } else {
-                if (this.gameloopCounter % this.difficultyTimer == 0) this.difficulty += 0.5 // 20sek
+                if (this.gameloopCounter % this.difficultyTimer == 0) this.difficulty += 0.5
+                if (this.gameloopCounter % this.scoreTimer == 0) this.scoreMultiplier += 0.5
                 if (this.gameloopCounter % this.spawnEnemyTimer == 0)
                     createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
             }
@@ -532,6 +535,7 @@ export default defineComponent({
                 }
                 this.difficulty = 2
             }
+            this.scoreMultiplier = 2
             this.player.speed = 5
             this.reset()
             this.gameloopLastCounter = 0
@@ -657,7 +661,7 @@ export default defineComponent({
             if (this.isGrow) {
                 this.player.size = this.player.originalSize * 2 * this.generalSize
                 this.score +=
-                    this.difficulty *
+                    this.scoreMultiplier *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     1.2 *
                     percent(this.skillObject['betterGrowPotion'], 'in') *
@@ -665,7 +669,7 @@ export default defineComponent({
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score +=
-                    this.difficulty *
+                    this.scoreMultiplier *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
             }
@@ -1038,7 +1042,7 @@ export default defineComponent({
                         this.respawnEnemy(enemy)
                         let scoreIncrease =
                             50 *
-                            this.difficulty *
+                            this.scoreMultiplier *
                             (this.player.passivTree.passivType == 'increaseScore'
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
@@ -1179,7 +1183,7 @@ export default defineComponent({
         },
         collectCoin(item: type.Item) {
             let scoreIncrease =
-                ((this.difficulty * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
+                ((this.scoreMultiplier * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
                 (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5 : 1)
             this.score += scoreIncrease
             this.specialScores.push({

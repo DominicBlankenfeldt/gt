@@ -60,6 +60,9 @@ export interface Player {
 export interface Shop {
     currency: number
     energyCell: number
+    lessStartEnemies: number
+    higherDifficultyTimer: number
+    lowerScoreTimer: number
     reBuy: {
         energyCell: boolean
     }
