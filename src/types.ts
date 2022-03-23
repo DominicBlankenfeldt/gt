@@ -65,6 +65,9 @@ export interface Shop {
     lowerScoreTimer: number
     reBuy: {
         energyCell: boolean
+        lessStartEnemies: boolean
+        higherDifficultyTimer: boolean
+        lowerScoreTimer: boolean
     }
 }
 export type ShopElement = 'currency' | 'energyCell'

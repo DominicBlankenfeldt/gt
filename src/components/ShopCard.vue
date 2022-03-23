@@ -32,6 +32,13 @@
                     auto rebuy
                 </label>
             </div>
+            <div v-for="shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
+                <button class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top" :title="shopDetails[shopItem].description">
+                    {{ shopDetails[shopItem].name }}
+                    <br />
+                    {{ player.shop[shopItem] }}/{{ shopDetails[shopItem].max }}
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -39,13 +46,14 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, passivAmount, maxEnergyCell } from '@/global'
+import { passivDetails, passivAmount, maxEnergyCell, maxLowerScoreTimer, maxHigherDifficultyTimer, maxLessStartEnemies, shopDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
 export default defineComponent({
     setup() {
         currentUser
         return {
+            shopDetails,
             passivDetails,
             passivAmount,
             maxEnergyCell,

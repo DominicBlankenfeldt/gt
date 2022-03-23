@@ -49,6 +49,16 @@ export const passivDetails = {
 }
 export const passivAmount = Object.values(passivDetails).length + 1
 export const maxEnergyCell = 100
+export const maxLessStartEnemies = 10
+export const maxHigherDifficultyTimer = 10
+export const maxLowerScoreTimer = 10
+export const shopDetails = {
+    energyCell: { name: 'energyCell', max: maxEnergyCell, description: '0' },
+    lessStartEnemies: { name: 'lessStartEnemies', max: maxLessStartEnemies, description: '1' },
+    higherDifficultyTimer: { name: 'higherDifficultyTimer', max: maxHigherDifficultyTimer, description: '2' },
+    lowerScoreTimer: { name: 'lowerScoreTimer', max: maxLowerScoreTimer, description: '3' },
+}
+
 //player
 
 export function checkPlayer(player: type.Player) {
@@ -90,7 +100,7 @@ export function checkPlayer(player: type.Player) {
     player.playMode = player.playMode || 'normal'
     player.playedTime = player.playedTime || 0
     player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: true } }
-    for (const shopElement of ['currency', 'energyCell']) {
+    for (const shopElement of ['currency', 'energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']) {
         player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || 0
     }
     player.shop.reBuy = player.shop.reBuy || { energyCell: true }
