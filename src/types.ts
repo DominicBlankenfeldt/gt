@@ -59,16 +59,15 @@ export interface Player {
 }
 export interface Shop {
     currency: number
-    energyCell: number
-    lessStartEnemies: number
-    higherDifficultyTimer: number
-    lowerScoreTimer: number
-    reBuy: {
-        energyCell: boolean
-        lessStartEnemies: boolean
-        higherDifficultyTimer: boolean
-        lowerScoreTimer: boolean
-    }
+    energyCell: ShopItem
+    lessStartEnemies: ShopItem
+    higherDifficultyTimer: ShopItem
+    lowerScoreTimer: ShopItem
+}
+export interface ShopItem {
+    amount: number
+    reBuy: boolean
+    use: boolean
 }
 export type ShopElement = 'currency' | 'energyCell'
 export interface Settings {
