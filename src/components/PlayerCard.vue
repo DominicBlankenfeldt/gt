@@ -86,22 +86,6 @@
                             <div class="text">username</div>
                         </label>
                     </div>
-                    <div class="col-1" v-if="editAble">
-                        <button class="col-1 btn align-self-end shadow-none" @click="buttonSound()" data-bs-toggle="modal" data-bs-target="#settings">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="48"
-                                height="48"
-                                fill="currentColor"
-                                class="bi bi-gear-fill"
-                                viewBox="0 0 16 16"
-                            >
-                                <path
-                                    d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"
-                                />
-                            </svg>
-                        </button>
-                    </div>
                 </div>
                 <div class="col-6 gy-2">
                     <div>
@@ -191,87 +175,6 @@
                 </div>
             </div>
         </div>
-        <!-- Modal -->
-        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="unDoChanges()">
-            <div class="modal-dialog" @click.stop="">
-                <div class="modal-content">
-                    <div class="modal-body" style="background-color: grey">
-                        <div class="row mt-1">
-                            <div class="col-9">music volume:</div>
-                            <input
-                                type="number"
-                                min="0"
-                                max="100"
-                                class="col-3"
-                                style="background-color: darkgrey"
-                                v-model="settingsInput.musicVolume"
-                                @change="changeVolume(settingsInput.musicVolume)"
-                            />
-                        </div>
-                        <div class="row mt-1">
-                            <div class="col-9">effect volume:</div>
-                            <input
-                                type="number"
-                                min="0"
-                                max="100"
-                                class="col-3"
-                                style="background-color: darkgrey"
-                                v-model="settingsInput.effectVolume"
-                            />
-                        </div>
-                        <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
-                            <select class="col-9" @click="buttonSound()" v-model="settingsInput.abilitys[number].name" style="background-color: grey">
-                                <option
-                                    :value="
-                                        Object.keys(skillDetails).filter(
-                                            sD => skillDetails[sD].name == skillDetails[usedAbilitys[number - 1]].name
-                                        )[0]
-                                    "
-                                >
-                                    {{ skillDetails[usedAbilitys[number - 1]].name }}
-                                </option>
-                                <option
-                                    :value="ability"
-                                    v-for="ability of availableAbilitys.filter(a => !usedAbilitys.includes(a))"
-                                    :key="ability"
-                                    @click="buttonSound()"
-                                >
-                                    {{ skillDetails[ability].name }}
-                                </option>
-                                <option style="color: black" disabled>unlock more by use the skilltree</option>
-                            </select>
-                            <input
-                                class="col-3"
-                                style="background-color: darkgrey"
-                                v-model="settingsInput.abilitys[number].key"
-                                type="text"
-                                pattern="[a-z0-9]"
-                                maxlength="1"
-                                oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                            />
-                        </div>
-                        <div class="row mt-1" v-for="direction in ['up', 'left', 'down', 'right']" :key="direction">
-                            <div class="col-9">move {{ direction }}:</div>
-                            <input
-                                class="col-3"
-                                style="background-color: darkgrey"
-                                v-model="settingsInput.moves[direction]"
-                                type="text"
-                                pattern="[a-z0-9]"
-                                maxlength="1"
-                                oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                            />
-                        </div>
-                        <div class="row justify-content-end mt-1">
-                            <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
-                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="saveSettings()" data-bs-dismiss="modal">
-                                save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -298,7 +201,6 @@ export default defineComponent({
     data() {
         return {
             player: {} as type.Player,
-            settingsInput: {} as type.Settings,
             dataLoad: false,
             hardCoreMode: false,
             editProfile: false,
@@ -309,7 +211,6 @@ export default defineComponent({
     },
     mounted() {
         this.player = this.playerProp
-        this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         this.dataLoad = true
         if (this.editAble) {
             music.changeVolume(this.player.settings.musicVolume)
@@ -321,35 +222,7 @@ export default defineComponent({
             let help = JSON.parse(this.player.registeredAt)
             return help
         },
-        checkSettings() {
-            let double = true
-            if (
-                [...new Set(Object.values(this.player.settings.moves).concat(Object.values(this.player.settings.abilitys).map(a => a.key)))].filter(
-                    s => s
-                ).length <
-                4 + this.usedAbilitys.length
-            )
-                double = false
-            return double
-        },
-        availableAbilitys() {
-            let abilitys = []
-            for (let skill of this.player.skillTree.skills) {
-                if (skillDetails[skill.name].maxlvl == 1 && skill.lvl == 1) {
-                    abilitys.push(skill.name)
-                }
-            }
-            return abilitys as type.AbilityName[]
-        },
-        usedAbilitys() {
-            let abilitys = [] as type.AbilityName[]
-            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                if (this.settingsInput.abilitys[i].name) {
-                    abilitys.push(this.settingsInput.abilitys[i].name)
-                }
-            }
-            return abilitys
-        },
+
         playTime() {
             let time = this.player.playedTime
             let unit = ' ticks'
@@ -382,27 +255,10 @@ export default defineComponent({
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)
         },
-        unDoChanges() {
-            music.ButtonSound(this.player.settings.effectVolume)
-            this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
-            this.changeVolume(this.player.settings.musicVolume)
-        },
-        changeVolume(volumeInput: number) {
-            music.changeVolume(volumeInput)
-        },
 
         changeImg(id: string) {
             music.ButtonSound(this.player.settings.effectVolume)
             this.player.img = id
-        },
-        async saveSettings() {
-            this.buttonSound()
-            this.player.settings = JSON.parse(JSON.stringify(this.settingsInput))
-            try {
-                await API.addPlayer(this.player)
-            } catch {
-                API.logout()
-            }
         },
         async toggleEdit(save: boolean) {
             music.ButtonSound(this.player.settings.effectVolume)

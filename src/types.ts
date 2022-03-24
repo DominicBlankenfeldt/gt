@@ -69,7 +69,7 @@ export interface ShopItem {
     reBuy: boolean
     use: boolean
 }
-export type ShopElement = 'currency' | 'energyCell'
+export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyTimer' | 'lowerScoreTimer'
 export interface Settings {
     abilitys: Abilitys
     moves: Moves

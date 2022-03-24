@@ -7,45 +7,61 @@
                 name="btnradio"
                 id="btnSkillTree"
                 autocomplete="off"
-                @change="choosenTree = 'skillTree'"
                 :checked="choosenTree == 'skillTree'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="0"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnSkillTree">skill tree</label>
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnSkillTree" @click="choosenTree = 'skillTree'">skill tree</label>
             <input
                 type="radio"
                 class="btn-check"
                 name="btnradio"
                 id="btnWeapon"
                 autocomplete="off"
-                @change="choosenTree = 'weapon'"
                 :checked="choosenTree == 'weapon'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="1"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnWeapon">weapons</label>
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnWeapon" @click="choosenTree = 'weapon'">weapons</label>
             <input
                 type="radio"
                 class="btn-check"
                 name="btnradio"
                 id="btnPassiv"
                 autocomplete="off"
-                @change="choosenTree = 'passiv'"
                 :checked="choosenTree == 'passiv'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="2"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnPassiv">passivs</label>
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnPassiv" @click="choosenTree = 'passiv'">passivs</label>
             <input
                 type="radio"
                 class="btn-check"
                 name="btnradio"
                 id="btnShop"
                 autocomplete="off"
-                @change="choosenTree = 'shop'"
                 :checked="choosenTree == 'shop'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="3"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnShop">shop</label>
+            <label class="btn btn-outline-primary w-25 shadow-none" for="btnShop" @click="choosenTree = 'shop'">shop</label>
         </div>
-        <SkillCard v-if="choosenTree == 'skillTree'" :playerProp="player" />
-        <WeaponCard v-if="choosenTree == 'weapon'" :playerProp="player" />
-        <PassivCard v-if="choosenTree == 'passiv'" :playerProp="player" />
-        <ShopCard v-if="choosenTree == 'shop'" :playerProp="player" />
+        <div id="carouselUpgrades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <SkillCard :playerProp="player" />
+                </div>
+                <div class="carousel-item">
+                    <WeaponCard :playerProp="player" />
+                </div>
+                <div class="carousel-item">
+                    <PassivCard :playerProp="player" />
+                </div>
+                <div class="carousel-item">
+                    <ShopCard :playerProp="player" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script lang="ts">

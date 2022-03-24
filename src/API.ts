@@ -15,6 +15,7 @@ import {
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
 import * as type from '@/types'
+import router from './router'
 //general
 export async function addAPI<T>(docName: string, data: T): Promise<DocumentReference<T>> {
     //plz remove
@@ -48,6 +49,7 @@ export async function logout(): Promise<void> {
     const auth = getAuth()
     await signOut(auth)
     currentUser.value = null
+    router.push('/')
 }
 
 export async function register(email: string, password: string): Promise<void> {

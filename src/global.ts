@@ -100,10 +100,10 @@ export function checkPlayer(player: type.Player) {
     player.playMode = player.playMode || 'normal'
     player.playedTime = player.playedTime || 0
     player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: true } }
-    for (const shopElement of ['currency', 'energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']) {
-        player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || 0
+    player.shop.currency = player.shop.currency || 0
+    for (const shopElement of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']) {
+        player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || { amount: 0, reBuy: false, use: false }
     }
-    player.shop.reBuy = player.shop.reBuy || { energyCell: true }
     player.weaponTree =
         player.weaponTree ||
         ({

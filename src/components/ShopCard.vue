@@ -24,7 +24,7 @@
                 >
                     <input
                         class="form-check-input shadow-none"
-                        v-model="player.shop.reBuy.energyCell"
+                        v-model="player.shop.energyCell.reBuy"
                         type="checkbox"
                         value=""
                         id="flexCheckDefault"
@@ -36,7 +36,7 @@
                 <button class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top" :title="shopDetails[shopItem].description">
                     {{ shopDetails[shopItem].name }}
                     <br />
-                    {{ player.shop[shopItem] }}/{{ shopDetails[shopItem].max }}
+                    {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
                 </button>
             </div>
         </div>
@@ -80,16 +80,16 @@ export default defineComponent({
     },
     methods: {
         buyEnergyCell() {
-            if (this.player.shop.currency <= 0 || this.player.shop.energyCell >= this.maxEnergyCell) return
+            if (this.player.shop.currency <= 0 || this.player.shop.energyCell.amount >= this.maxEnergyCell) return
             this.buttonSound()
             this.player.shop.currency--
-            this.player.shop.energyCell++
+            this.player.shop.energyCell.amount++
         },
         buyEnergyCellx8() {
             for (let i = 0; i < 8; i++) {
-                if (this.player.shop.currency <= 0 || this.player.shop.energyCell >= this.maxEnergyCell) return
+                if (this.player.shop.currency <= 0 || this.player.shop.energyCell.amount >= this.maxEnergyCell) return
                 this.player.shop.currency--
-                this.player.shop.energyCell++
+                this.player.shop.energyCell.amount++
             }
         },
         buttonSound() {

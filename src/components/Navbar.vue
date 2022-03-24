@@ -29,7 +29,6 @@ export default defineComponent({
     methods: {
         logout() {
             API.logout()
-            this.$router.go(0)
         },
     },
 })

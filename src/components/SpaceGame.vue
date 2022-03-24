@@ -1,5 +1,14 @@
 <template>
     <div v-if="dataLoad" style="color: red">
+        <div class="col-1">
+            <button class="col-1 btn align-self-end shadow-none" @click="buttonSound()" data-bs-toggle="modal" data-bs-target="#settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"
+                    />
+                </svg>
+            </button>
+        </div>
         <div class="row g-0" style="height: 5vh; position: relative">
             <div v-if="!bossEnemy.type" class="col-3">
                 <img src="../../public/img/items/coin/coin.gif" alt="coin" />
@@ -239,7 +248,7 @@
                     </div>
                 </div>
                 <div class="col-1">
-                    <div>cooldowns ({{ player.shop.energyCell }})</div>
+                    <div>cooldowns ({{ player.shop.energyCell.amount }})</div>
                     <div
                         class="mt-4"
                         v-for="ability of player.settings.abilitys"
@@ -277,6 +286,87 @@
                             d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"
                         />
                     </svg>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="unDoChanges()">
+            <div class="modal-dialog" @click.stop="">
+                <div class="modal-content">
+                    <div class="modal-body" style="background-color: grey">
+                        <div class="row mt-1">
+                            <div class="col-9">music volume:</div>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="settingsInput.musicVolume"
+                                @change="changeVolume(settingsInput.musicVolume)"
+                            />
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-9">effect volume:</div>
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="settingsInput.effectVolume"
+                            />
+                        </div>
+                        <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
+                            <select class="col-9" @click="buttonSound()" v-model="settingsInput.abilitys[number].name" style="background-color: grey">
+                                <option
+                                    :value="
+                                        Object.keys(skillDetails).filter(
+                                            sD => skillDetails[sD].name == skillDetails[usedAbilitys[number - 1]].name
+                                        )[0]
+                                    "
+                                >
+                                    {{ skillDetails[usedAbilitys[number - 1]].name }}
+                                </option>
+                                <option
+                                    :value="ability"
+                                    v-for="ability of availableAbilitys.filter(a => !usedAbilitys.includes(a))"
+                                    :key="ability"
+                                    @click="buttonSound()"
+                                >
+                                    {{ skillDetails[ability].name }}
+                                </option>
+                                <option style="color: black" disabled>unlock more by use the skilltree</option>
+                            </select>
+                            <input
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="settingsInput.abilitys[number].key"
+                                type="text"
+                                pattern="[a-z0-9]"
+                                maxlength="1"
+                                oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                            />
+                        </div>
+                        <div class="row mt-1" v-for="direction in ['up', 'left', 'down', 'right']" :key="direction">
+                            <div class="col-9">move {{ direction }}:</div>
+                            <input
+                                class="col-3"
+                                style="background-color: darkgrey"
+                                v-model="settingsInput.moves[direction]"
+                                type="text"
+                                pattern="[a-z0-9]"
+                                maxlength="1"
+                                oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                            />
+                        </div>
+                        <div class="row justify-content-end mt-1">
+                            <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
+                            <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="saveSettings()" data-bs-dismiss="modal">
+                                save
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -372,6 +462,7 @@ export default defineComponent({
             highscoreTotalchaosMultiplier: 25000,
             highscoreHardcoreMultiplier: 2500,
             // gameSetup
+            settingsInput: {} as type.Settings,
             hardCoreMode: false,
             gameStarted: false,
             spawnBadItems: true,
@@ -415,6 +506,35 @@ export default defineComponent({
             )
             return timer
         },
+        usedAbilitys() {
+            let abilitys = [] as type.AbilityName[]
+            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                if (this.settingsInput.abilitys[i].name) {
+                    abilitys.push(this.settingsInput.abilitys[i].name)
+                }
+            }
+            return abilitys
+        },
+        availableAbilitys() {
+            let abilitys = []
+            for (let skill of this.player.skillTree.skills) {
+                if (skillDetails[skill.name].maxlvl == 1 && skill.lvl == 1) {
+                    abilitys.push(skill.name)
+                }
+            }
+            return abilitys as type.AbilityName[]
+        },
+        checkSettings() {
+            let double = true
+            if (
+                [...new Set(Object.values(this.player.settings.moves).concat(Object.values(this.player.settings.abilitys).map(a => a.key)))].filter(
+                    s => s
+                ).length <
+                4 + this.usedAbilitys.length
+            )
+                double = false
+            return double
+        },
     },
     async mounted() {
         // start game if not started on enter press
@@ -438,6 +558,7 @@ export default defineComponent({
             }
         }
         this.player = checkPlayer(this.player) as type.Player
+        this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
         this.player.size *= this.generalSize
         this.playerStartPosition()
@@ -448,6 +569,23 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
+        unDoChanges() {
+            music.ButtonSound(this.player.settings.effectVolume)
+            this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
+            this.changeVolume(this.player.settings.musicVolume)
+        },
+        changeVolume(volumeInput: number) {
+            music.changeVolume(volumeInput)
+        },
+        async saveSettings() {
+            this.buttonSound()
+            this.player.settings = JSON.parse(JSON.stringify(this.settingsInput))
+            try {
+                await API.addPlayer(this.player)
+            } catch {
+                API.logout()
+            }
+        },
         async loadFleet() {
             this.fleetMembers = []
             let result
@@ -698,10 +836,10 @@ export default defineComponent({
             this.message = ''
         },
         async gameOver(message: string, messageType: string) {
-            if (this.player.shop.reBuy.energyCell) {
-                while (this.player.shop.currency > 0 && this.player.shop.energyCell < maxEnergyCell) {
+            if (this.player.shop.energyCell.reBuy) {
+                while (this.player.shop.currency > 0 && this.player.shop.energyCell.amount < maxEnergyCell) {
                     this.player.shop.currency--
-                    this.player.shop.energyCell++
+                    this.player.shop.energyCell.amount++
                 }
             }
             this.gameStarted = false
@@ -1326,10 +1464,10 @@ export default defineComponent({
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
                     if (this.player.settings.abilitys[i].name == 'fastAbility') this.multiplicator *= 2
                     if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
-                    if (this.player.shop.energyCell < skillDetails[this.player.settings.abilitys[i].name].tier) continue
+                    if (this.player.shop.energyCell.amount < skillDetails[this.player.settings.abilitys[i].name].tier) continue
                     if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
                     if (this.player.settings.abilitys[i].name != 'fastAbility' && this.player.settings.abilitys[i].name != 'slowAbility')
-                        this.player.shop.energyCell -= skillDetails[this.player.settings.abilitys[i].name].tier
+                        this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                     switch (this.player.settings.abilitys[i].name) {
                         case 'bombAbility':
                             this.bombAbility()
