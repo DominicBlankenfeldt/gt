@@ -5,39 +5,28 @@
             <br />
             {{ player.shop.currency }}
         </div>
-        <div class="mt-2">
+        <div v-for="shopItem of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
             <button
+                @click="buyShopItem(shopItem)"
                 class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
-                title="is needed to use abilities"
-                @click="buyEnergyCell()"
-                @dblclick="buyEnergyCellx8()"
+                :title="shopDetails[shopItem].description"
             >
-                energy cell
+                {{ shopDetails[shopItem].name }}
                 <br />
-                {{ player.shop.energyCell }}/{{ maxEnergyCell }}
+                {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
             </button>
             <div>
                 <label
-                    class="form-check-label w-25 bg-primary rounded-bottom"
-                    title="buy as many energy cells as possible after one round"
-                    for="flexCheckDefault"
+                    class="form-check-label w-25 rounded-bottom unselectable py-1 pointer"
+                    @click="
+                        {
+                            ;(player.shop[shopItem].reBuy = !player.shop[shopItem].reBuy), buttonSound()
+                        }
+                    "
+                    :style="{ backgroundColor: player.shop[shopItem].reBuy ? 'green' : 'red' }"
                 >
-                    <input
-                        class="form-check-input shadow-none"
-                        v-model="player.shop.energyCell.reBuy"
-                        type="checkbox"
-                        value=""
-                        id="flexCheckDefault"
-                    />
                     auto rebuy
                 </label>
-            </div>
-            <div v-for="shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
-                <button class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top" :title="shopDetails[shopItem].description">
-                    {{ shopDetails[shopItem].name }}
-                    <br />
-                    {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
-                </button>
             </div>
         </div>
     </div>
@@ -46,7 +35,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, passivAmount, maxEnergyCell, maxLowerScoreTimer, maxHigherDifficultyTimer, maxLessStartEnemies, shopDetails } from '@/global'
+import { passivDetails, passivAmount, shopDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
 export default defineComponent({
@@ -56,7 +45,6 @@ export default defineComponent({
             shopDetails,
             passivDetails,
             passivAmount,
-            maxEnergyCell,
         }
     },
     data() {
@@ -76,20 +64,24 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        this.buttonSound()
     },
     methods: {
-        buyEnergyCell() {
-            if (this.player.shop.currency <= 0 || this.player.shop.energyCell.amount >= this.maxEnergyCell) return
+        buyShopItem(shopElement: type.ShopElement) {
+            if (this.player.shop.currency <= shopDetails[shopElement].cost || this.player.shop[shopElement].amount >= shopDetails[shopElement].max)
+                return
             this.buttonSound()
-            this.player.shop.currency--
-            this.player.shop.energyCell.amount++
+            this.player.shop.currency -= shopDetails[shopElement].cost
+            this.player.shop[shopElement].amount++
         },
-        buyEnergyCellx8() {
+        buyShopItemx8(shopElement: type.ShopElement) {
             for (let i = 0; i < 8; i++) {
-                if (this.player.shop.currency <= 0 || this.player.shop.energyCell.amount >= this.maxEnergyCell) return
-                this.player.shop.currency--
-                this.player.shop.energyCell.amount++
+                if (
+                    this.player.shop.currency <= shopDetails[shopElement].cost ||
+                    this.player.shop[shopElement].amount >= shopDetails[shopElement].max
+                )
+                    return
+                this.player.shop.currency -= shopDetails[shopElement].cost
+                this.player.shop[shopElement].amount++
             }
         },
         buttonSound() {

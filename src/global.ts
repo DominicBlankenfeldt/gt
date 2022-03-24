@@ -53,10 +53,15 @@ export const maxLessStartEnemies = 10
 export const maxHigherDifficultyTimer = 10
 export const maxLowerScoreTimer = 10
 export const shopDetails = {
-    energyCell: { name: 'energyCell', max: maxEnergyCell, description: '0' },
-    lessStartEnemies: { name: 'lessStartEnemies', max: maxLessStartEnemies, description: '1' },
-    higherDifficultyTimer: { name: 'higherDifficultyTimer', max: maxHigherDifficultyTimer, description: '2' },
-    lowerScoreTimer: { name: 'lowerScoreTimer', max: maxLowerScoreTimer, description: '3' },
+    energyCell: { name: 'energyCell', max: maxEnergyCell, description: 'is needed to use abilities', cost: 1 },
+    lessStartEnemies: { name: 'lessStartEnemies', max: maxLessStartEnemies, description: 'fewer enemies appear at the beginning', cost: 10 },
+    higherDifficultyTimer: {
+        name: 'higherDifficultyTimer',
+        max: maxHigherDifficultyTimer,
+        description: 'it takes longer to increase the difficulty',
+        cost: 10,
+    },
+    lowerScoreTimer: { name: 'lowerScoreTimer', max: maxLowerScoreTimer, description: 'the score growth is increased faster', cost: 10 },
 }
 
 //player
@@ -102,7 +107,7 @@ export function checkPlayer(player: type.Player) {
     player.shop = player.shop || { currency: 0, energyCell: 0, reBuy: { energyCell: true } }
     player.shop.currency = player.shop.currency || 0
     for (const shopElement of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']) {
-        player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || { amount: 0, reBuy: false, use: false }
+        player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || { amount: 0, reBuy: false, use: false, lvl: 1 }
     }
     player.weaponTree =
         player.weaponTree ||

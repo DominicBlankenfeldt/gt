@@ -183,7 +183,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        this.buttonSound()
     },
     methods: {
         lvlSkill(skill: type.Skill) {
@@ -235,5 +234,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

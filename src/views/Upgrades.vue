@@ -11,7 +11,17 @@
                 data-bs-target="#carouselUpgrades"
                 data-bs-slide-to="0"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnSkillTree" @click="choosenTree = 'skillTree'">skill tree</label>
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnSkillTree"
+                @click="
+                    {
+                        ;(choosenTree = 'skillTree'), buttonSound()
+                    }
+                "
+            >
+                skill tree
+            </label>
             <input
                 type="radio"
                 class="btn-check"
@@ -22,7 +32,17 @@
                 data-bs-target="#carouselUpgrades"
                 data-bs-slide-to="1"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnWeapon" @click="choosenTree = 'weapon'">weapons</label>
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnWeapon"
+                @click="
+                    {
+                        ;(choosenTree = 'weapon'), buttonSound()
+                    }
+                "
+            >
+                weapons
+            </label>
             <input
                 type="radio"
                 class="btn-check"
@@ -33,7 +53,17 @@
                 data-bs-target="#carouselUpgrades"
                 data-bs-slide-to="2"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnPassiv" @click="choosenTree = 'passiv'">passivs</label>
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnPassiv"
+                @click="
+                    {
+                        ;(choosenTree = 'passiv'), buttonSound()
+                    }
+                "
+            >
+                passivs
+            </label>
             <input
                 type="radio"
                 class="btn-check"
@@ -44,7 +74,17 @@
                 data-bs-target="#carouselUpgrades"
                 data-bs-slide-to="3"
             />
-            <label class="btn btn-outline-primary w-25 shadow-none" for="btnShop" @click="choosenTree = 'shop'">shop</label>
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnShop"
+                @click="
+                    {
+                        ;(choosenTree = 'shop'), buttonSound()
+                    }
+                "
+            >
+                shop
+            </label>
         </div>
         <div id="carouselUpgrades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
             <div class="carousel-inner">
@@ -114,6 +154,7 @@ export default defineComponent({
         }
         this.player = checkPlayer(this.player) as type.Player
         music.changeVolume(this.player.settings.musicVolume)
+        this.buttonSound()
         this.dataLoad = true
     },
 

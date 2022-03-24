@@ -2,7 +2,7 @@
     <div class="container d-flex align-items-stretch justify-content-center flex-column" style="height: calc(100vh - 200px)">
         <div class="card card-default w-75" style="margin-left: 12.5%">
             <div class="card-header header">
-                <div v-if="username.length < 3 || username == 'gast'" class="alert alert-danger">invalid username</div>
+                <div v-if="username == 'gast'" class="alert alert-danger">invalid username</div>
                 <h1>Join a starship crew.</h1>
             </div>
             <div class="card-body">

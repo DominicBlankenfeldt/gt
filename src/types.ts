@@ -68,6 +68,7 @@ export interface ShopItem {
     amount: number
     reBuy: boolean
     use: boolean
+    lvl: number
 }
 export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyTimer' | 'lowerScoreTimer'
 export interface Settings {

@@ -85,7 +85,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        this.buttonSound()
     },
     methods: {
         async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
@@ -118,5 +117,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

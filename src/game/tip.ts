@@ -11,7 +11,7 @@ export function tips(tip: number) {
         case 4:
             return 'Read the guide'
         case 5:
-            return 'Press the gear wheel in the player-card for settings'
+            return 'Press the gear wheel for settings'
         case 6:
             return 'Use google chrome for the best experience'
         default:

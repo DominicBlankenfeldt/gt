@@ -87,7 +87,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        this.buttonSound()
     },
     methods: {
         lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
@@ -120,5 +119,4 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

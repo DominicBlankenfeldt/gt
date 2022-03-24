@@ -1,7 +1,10 @@
-.pointer{
+.unselectable {
+    user-select: none;
+}
+.pointer {
     cursor: pointer;
 }
-.member:hover{
+.member:hover {
     text-decoration: underline;
 }
 //material inputs
