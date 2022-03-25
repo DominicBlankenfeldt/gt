@@ -259,7 +259,9 @@
                         class="mt-4"
                         v-for="ability of player.settings.abilitys"
                         :key="JSON.stringify(ability)"
-                        :style="{ color: coolDowns[ability.name] > 0 ? 'red' : 'green' }"
+                        :style="{
+                            color: coolDowns[ability.name] == 0 && player.shop.energyCell.amount > skillDetails[ability.name].tier ? 'green' : 'red',
+                        }"
                     >
                         <div v-if="ability.name">
                             {{ skillDetails[ability.name].name }}:
