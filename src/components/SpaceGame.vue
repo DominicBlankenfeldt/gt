@@ -1509,11 +1509,15 @@ export default defineComponent({
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (!this.player.settings.abilitys[i].name) continue
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
-                    if (this.player.settings.abilitys[i].name == 'fastAbility') this.multiplicator *= 2
-                    if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
                     if (this.player.shop.energyCell.amount < skillDetails[this.player.settings.abilitys[i].name].tier) continue
                     if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
                     switch (this.player.settings.abilitys[i].name) {
+                        case 'fastAbility':
+                            this.multiplicator *= 2
+                            break
+                        case 'slowAbility':
+                            this.multiplicator *= 0.5
+                            break
                         case 'bombAbility':
                             this.bombAbility()
                             break
