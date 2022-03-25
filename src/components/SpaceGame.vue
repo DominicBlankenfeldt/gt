@@ -1513,25 +1513,28 @@ export default defineComponent({
                     if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
                     if (this.player.shop.energyCell.amount < skillDetails[this.player.settings.abilitys[i].name].tier) continue
                     if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
-                    if (this.player.settings.abilitys[i].name != 'fastAbility' && this.player.settings.abilitys[i].name != 'slowAbility')
-                        this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                     switch (this.player.settings.abilitys[i].name) {
                         case 'bombAbility':
                             this.bombAbility()
                             break
                         case 'shotAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.shotAbility()
                             break
                         case 'magnetAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.magnetAbility()
                             break
                         case 'growAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.growAbility()
                             break
                         case 'slowEnemyAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.slowEnemyAbility()
                             break
                         case 'stopTimeAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.stopTimeAbility()
                             break
                     }
@@ -1563,6 +1566,7 @@ export default defineComponent({
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
             this.coolDowns['bombAbility'] = 1000
+            this.player.shop.energyCell.amount -= skillDetails['bombAbility'].tier
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))
