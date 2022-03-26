@@ -10,6 +10,9 @@
             <div class="carousel-item">
                 <ScoreCard :bestPlayers="bestPlayersTotalchaos" :player="player" title="totalchaos" highscore="highscoreTotalchaos" />
             </div>
+            <!-- <div class="carousel-item">
+                <ScoreCard :bestPlayers="bestPlayersPlayTime" :player="player" title="played-time" highscore="playedTime" />
+            </div> -->
         </div>
         <button
             @click="buttonSound()"
@@ -78,6 +81,7 @@ export default defineComponent({
             bestPlayersNormal: [] as type.User[],
             bestPlayersHardcore: [] as type.User[],
             bestPlayersTotalchaos: [] as type.User[],
+            // bestPlayersPlayTime: [] as type.User[],
         }
     },
     async mounted() {
@@ -93,6 +97,10 @@ export default defineComponent({
         if (result) {
             this.bestPlayersTotalchaos = result.reverse() as type.User[]
         }
+        // result = await API.getBestPlayers('player.playedTime')
+        // if (result) {
+        //     this.bestPlayersPlayTime = result.reverse() as type.User[]
+        // }
         if (this.user) {
             try {
                 let result = await API.getPlayer()

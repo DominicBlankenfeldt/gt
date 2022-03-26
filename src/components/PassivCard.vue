@@ -1,9 +1,11 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
-        <div title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
-            Passiv Points:
-            <br />
-            {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
+        <div>
+            <div data-title="you get 1 passivpoint per 2000 highscore in totalchaos mode" class="w-25 d-inline">
+                Passiv Points:
+                <br />
+                {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
+            </div>
         </div>
         <div>
             <div class="mt-2 w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
@@ -11,7 +13,7 @@
             <select
                 class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
                 v-model="player.passivTree.passivType"
-                :title="passivDetails[player.passivTree.passivType]?.description"
+                :data-title="passivDetails[player.passivTree.passivType]?.description"
                 @click="buttonSound()"
             >
                 <option
@@ -20,7 +22,7 @@
                     :value="passivAvaibleType"
                     v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
                     :key="passivAvaibleType"
-                    :title="passivDetails[passivAvaibleType]?.description"
+                    :data-title="passivDetails[passivAvaibleType]?.description"
                 >
                     {{ passivAvaibleType }}
                 </option>
@@ -34,7 +36,7 @@
                 class="mt-2 w-25 btn btn-primary align-self-center shadow-none"
                 @click="lvlPassivUpgrade(passivUpgrade)"
                 @dblclick="lvlPassivUpgradex8(passivUpgrade)"
-                :title="passivDetails[passivUpgrade.name].description"
+                :data-title="passivDetails[passivUpgrade.name].description"
                 v-if="passivUpgrade.name == player.passivTree.passivType"
             >
                 {{ passivDetails[passivUpgrade.name].name }}

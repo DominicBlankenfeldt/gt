@@ -53,15 +53,22 @@ export const maxLessStartEnemies = 10
 export const maxHigherDifficultyTimer = 10
 export const maxLowerScoreTimer = 10
 export const shopDetails = {
-    energyCell: { name: 'energyCell', max: maxEnergyCell, description: 'is needed to use abilities', cost: 1 },
-    lessStartEnemies: { name: 'lessStartEnemies', max: maxLessStartEnemies, description: 'fewer enemies appear at the beginning', cost: 10 },
+    energyCell: { name: 'energyCell', max: maxEnergyCell, maxlvl: 3, description: 'is needed to use abilities', cost: 1 },
+    lessStartEnemies: {
+        name: 'lessStartEnemies',
+        max: maxLessStartEnemies,
+        maxlvl: 3,
+        description: 'fewer enemies appear at the beginning',
+        cost: 10,
+    },
     higherDifficultyTimer: {
         name: 'higherDifficultyTimer',
         max: maxHigherDifficultyTimer,
+        maxlvl: 3,
         description: 'it takes longer to increase the difficulty',
         cost: 10,
     },
-    lowerScoreTimer: { name: 'lowerScoreTimer', max: maxLowerScoreTimer, description: 'the score growth is increased faster', cost: 10 },
+    lowerScoreTimer: { name: 'lowerScoreTimer', max: maxLowerScoreTimer, maxlvl: 3, description: 'the score growth is increased faster', cost: 10 },
 }
 
 //player

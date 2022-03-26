@@ -298,7 +298,15 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="unDoChanges()">
+        <div
+            class="modal fade"
+            id="settings"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+            @click="unDoChanges()"
+            style="margin-top: 11vh"
+        >
             <div class="modal-dialog" @click.stop="">
                 <div class="modal-content">
                     <div class="modal-body" style="background-color: grey">
@@ -379,7 +387,7 @@
                                 "
                                 :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
                             >
-                                use {{ shopItem }}
+                                use {{ shopDetails[shopItem].name }}
                             </label>
                         </div>
                         <div class="row justify-content-end mt-1">
@@ -422,6 +430,7 @@ export default defineComponent({
             passivAmount,
             percent,
             findPassivUpgrade,
+            shopDetails,
         }
     },
     data() {
@@ -701,13 +710,13 @@ export default defineComponent({
                     this.player.shop[shopItem].amount--
                     switch (shopItem) {
                         case 'lessStartEnemies':
-                            this.startingEnemies -= 2
+                            this.startingEnemies -= 2 * this.player.shop.lessStartEnemies.lvl
                             break
                         case 'higherDifficultyTimer':
-                            this.difficultyTimer = 1320
+                            this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl
                             break
                         case 'lowerScoreTimer':
-                            this.scoreTimer = 1080
+                            this.scoreTimer = 1200 - 120 * this.player.shop.lowerScoreTimer.lvl
                             break
                     }
                 }

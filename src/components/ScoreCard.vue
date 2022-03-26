@@ -90,7 +90,10 @@ export default defineComponent({
             type: Object as PropType<type.Player>,
             required: true,
         },
-        bestPlayers: [],
+        bestPlayers: {
+            type: [] as PropType<type.User[]>,
+            required: true,
+        },
         title: String,
         highscore: String,
     },
