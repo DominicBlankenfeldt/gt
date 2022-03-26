@@ -24,7 +24,7 @@ export function plasmaMovement(
             norVec(plasma.moveVector),
             (7 + findWeaponUpgrade(player, 'fasterProjectile')) *
                 generalSize *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1)
         )
         plasma.vector = addVec(plasma.vector, plasma.moveVector)
         if (borderCheck(plasma, 'outer', field)) plasmas = deletePlasma(plasmas, plasma)
@@ -129,7 +129,7 @@ export function enemyMovement(
                         percent(skillObject['slowEnemy'], 'de') *
                         generalSize *
                         (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
-                        (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
+                        (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                         enemy.speed
                 )
             )
@@ -148,7 +148,7 @@ function moveChasebotEnemy(enemy: type.Enemy, player: type.Player, generalSize: 
             2 *
                 generalSize *
                 (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
-                (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
+                (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                 enemy.speed
         )
     )
@@ -179,7 +179,7 @@ function moveSpiralEnemy(
                 difficulty *
                     percent(skillObject['slowEnemy'], 'de') *
                     generalSize *
-                    (player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
+                    (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                     0.4 *
                     (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
                     enemy.speed

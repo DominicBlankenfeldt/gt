@@ -63,6 +63,7 @@ export interface Shop {
     lessStartEnemies: ShopItem
     higherDifficultyTimer: ShopItem
     lowerScoreTimer: ShopItem
+    passivSlots: ShopItem
 }
 export interface ShopItem {
     amount: number
@@ -70,7 +71,7 @@ export interface ShopItem {
     use: boolean
     lvl: number
 }
-export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyTimer' | 'lowerScoreTimer'
+export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyTimer' | 'lowerScoreTimer' | 'passivSlots'
 export interface Settings {
     abilitys: Abilitys
     moves: Moves
@@ -155,7 +156,7 @@ export interface WeaponUpgrade {
 export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP'
 
 export interface PassivTree {
-    passivType: PassivType
+    passivType: PassivType[]
     passivPoints: number
     passivAvaibleTypes: PassivType[]
     passivUpgrades: PassivUpgrade[]

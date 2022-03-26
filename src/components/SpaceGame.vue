@@ -533,7 +533,7 @@ export default defineComponent({
             let timer = Math.round(
                 900 *
                     percent(this.skillObject['spawnLessEnemy'], 'in') *
-                    (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
             )
             return timer
         },
@@ -666,7 +666,7 @@ export default defineComponent({
             }
             if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
-            if (this.player.passivTree.passivType == 'moreItems') {
+            if (this.player.passivTree.passivType.includes('moreItems')) {
                 if (this.gameloopCounter2 % Math.round(120 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
                     this.spawnItems(this.spawnBadItems) // 2sek
                     this.spawnBadItems = !this.spawnBadItems
@@ -851,13 +851,17 @@ export default defineComponent({
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     1.2 *
                     percent(this.skillObject['betterGrowPotion'], 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('increaseScore')
+                        ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
+                        : 1)
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score +=
                     this.scoreMultiplier *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('increaseScore')
+                        ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
+                        : 1)
             }
             let effectAmount = 0
             if (this.isGrow) effectAmount++
@@ -1008,7 +1012,9 @@ export default defineComponent({
                         50 *
                             (this.player.defeatedBosses + 1) *
                             percent(this.player.defeatedBosses + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
@@ -1018,7 +1024,9 @@ export default defineComponent({
                         25 *
                             (this.player.defeatedBossesHardcore + 1) *
                             percent(this.player.defeatedBossesHardcore + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(50 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
@@ -1028,7 +1036,9 @@ export default defineComponent({
                         50 *
                             (this.player.defeatedBossesTotalchaos + 1) *
                             percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
@@ -1138,7 +1148,7 @@ export default defineComponent({
                 this.bossEnemy.speed *
                     this.generalSize *
                     percent(this.fleetlvl / 20, 'de') *
-                    (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                    (this.player.passivTree.passivType.includes('nerfBoss') ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
             )
             this.bossEnemy.vector = addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (borderCheck(this.bossEnemy, 'inner', this.field)) {
@@ -1237,7 +1247,7 @@ export default defineComponent({
                         let scoreIncrease =
                             50 *
                             this.scoreMultiplier *
-                            (this.player.passivTree.passivType == 'increaseScore'
+                            (this.player.passivTree.passivType.includes('increaseScore')
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
                                 : 1)
                         this.score += scoreIncrease
@@ -1378,7 +1388,9 @@ export default defineComponent({
         collectCoin(item: type.Item) {
             let scoreIncrease =
                 ((this.scoreMultiplier * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
-                (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5 : 1)
+                (this.player.passivTree.passivType.includes('increaseScore')
+                    ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5
+                    : 1)
             this.score += scoreIncrease
             this.specialScores.push({
                 vector: item.vector,
