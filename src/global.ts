@@ -60,7 +60,7 @@ export const shopDetails = {
         maxlvl: 3,
         description: 'fewer enemies appear at the beginning',
         cost: 10,
-        upgradeCost: 2000,
+        upgradeCost: 1000,
     },
     higherDifficultyTimer: {
         name: 'higherDifficultyTimer',
@@ -68,7 +68,7 @@ export const shopDetails = {
         maxlvl: 3,
         description: 'it takes longer to increase the difficulty',
         cost: 10,
-        upgradeCost: 2000,
+        upgradeCost: 1000,
     },
     lowerScoreTimer: {
         name: 'lowerScoreTimer',
@@ -76,7 +76,7 @@ export const shopDetails = {
         maxlvl: 3,
         description: 'the score growth is increased faster',
         cost: 10,
-        upgradeCost: 2000,
+        upgradeCost: 1000,
     },
     passivSlots: { name: 'passivSlots', maxlvl: 3, max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
 }
