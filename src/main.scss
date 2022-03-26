@@ -132,7 +132,7 @@
     visibility: visible;
 }
 [data-title]:after {
-    content: attr(data-title);
+    content: '' attr(data-title) '\A 'attr(line2) '';
     background-color: grey;
     color: black;
     font-size: 100%;
@@ -140,7 +140,7 @@
     padding: 1px 5px 2px 5px;
     bottom: -1.6em;
     left: 0%;
-    white-space: nowrap;
+    white-space: pre;
     box-shadow: 1px 1px 3px #222222;
     opacity: 0;
     border: 1px solid #111111;

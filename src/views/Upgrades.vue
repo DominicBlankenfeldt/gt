@@ -89,16 +89,16 @@
         <div id="carouselUpgrades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <SkillCard :playerProp="player" />
+                    <SkillCard :playerProp="player" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
-                    <WeaponCard :playerProp="player" />
+                    <WeaponCard :playerProp="player" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
-                    <PassivCard :playerProp="player" />
+                    <PassivCard :playerProp="player" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
-                    <ShopCard :playerProp="player" />
+                    <ShopCard :playerProp="player" style="min-height: 70vh" />
                 </div>
             </div>
         </div>

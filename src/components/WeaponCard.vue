@@ -13,7 +13,7 @@
             <select
                 class="w-25 btn btn-primary shadow-none rounded-0 rounded-bottom"
                 v-model="player.weaponTree.weaponType"
-                :data-title="weaponDetails[player.weaponTree.weaponType].description"
+                :title="weaponDetails[player.weaponTree.weaponType].description"
                 @click="buttonSound()"
             >
                 <option
@@ -21,7 +21,7 @@
                     :value="weaponAvaibleType"
                     v-for="weaponAvaibleType of player.weaponTree.weaponAvaibleTypes"
                     :key="weaponAvaibleType"
-                    :data-title="weaponDetails[weaponAvaibleType].description"
+                    :title="weaponDetails[weaponAvaibleType].description"
                     @click="buttonSound()"
                 >
                     {{ weaponAvaibleType }}
@@ -37,6 +37,7 @@
                 @click="lvlWeaponUpgrade(weaponUpgrade)"
                 @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                 :data-title="weaponDetails[weaponUpgrade.name].description"
+                :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
                 :disabled="weaponDetails[weaponUpgrade.name].tier == 10 && usedWeaponPoints < 30"
             >
                 {{ weaponDetails[weaponUpgrade.name].name }}

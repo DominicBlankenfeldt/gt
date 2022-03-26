@@ -16,6 +16,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -32,6 +33,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -48,6 +50,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -65,6 +68,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -82,6 +86,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 200"
                     >
                         {{ skillDetails[skill.name].name }}

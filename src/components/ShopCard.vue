@@ -12,6 +12,7 @@
                         @click="buyShopItem(shopItem)"
                         class="w-100 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
                         :data-title="shopDetails[shopItem].description"
+                        :line2="`costs: ${shopDetails[shopItem].cost}`"
                     >
                         {{ shopDetails[shopItem].name }}
                         <br />
@@ -38,7 +39,7 @@
                         @click="upgradeShopItem(shopItem)"
                         class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                         style="padding-top: 1.375rem; padding-bottom: 1.375rem"
-                        :data-title="shopDetails[shopItem].description"
+                        :data-title="`costs: ${player.shop[shopItem].lvl * 2000}`"
                     >
                         upgrade {{ shopDetails[shopItem].name }}
                         <br />
@@ -90,7 +91,7 @@ export default defineComponent({
                 this.player.shop[shopElement].lvl >= shopDetails[shopElement].maxlvl
             )
                 return
-            this.player.shop.currency -= this.player.shop[shopElement].lvl * 200
+            this.player.shop.currency -= this.player.shop[shopElement].lvl * 2000
             this.player.shop[shopElement].lvl++
         },
         buyShopItem(shopElement: type.ShopElement) {

@@ -8,12 +8,12 @@
             </div>
         </div>
         <div>
-            <div class="mt-2 w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
+            <div class="mt-2 w-25 btn btn-primary shadow-none rounded-0 rounded-top">passiv:</div>
             <br />
             <select
-                class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                class="w-25 btn btn-primary shadow-none rounded-0 rounded-bottom"
                 v-model="player.passivTree.passivType"
-                :data-title="passivDetails[player.passivTree.passivType]?.description"
+                :title="passivDetails[player.passivTree.passivType]?.description"
                 @click="buttonSound()"
             >
                 <option
@@ -22,7 +22,7 @@
                     :value="passivAvaibleType"
                     v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
                     :key="passivAvaibleType"
-                    :data-title="passivDetails[passivAvaibleType]?.description"
+                    :title="passivDetails[passivAvaibleType]?.description"
                 >
                     {{ passivAvaibleType }}
                 </option>
@@ -37,6 +37,7 @@
                 @click="lvlPassivUpgrade(passivUpgrade)"
                 @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                 :data-title="passivDetails[passivUpgrade.name].description"
+                line2="costs: 1"
                 v-if="passivUpgrade.name == player.passivTree.passivType"
             >
                 {{ passivDetails[passivUpgrade.name].name }}
