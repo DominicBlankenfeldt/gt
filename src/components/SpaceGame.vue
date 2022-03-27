@@ -665,7 +665,6 @@ export default defineComponent({
             if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
                 if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
             }
-            if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
             if (this.player.passivTree.passivType.includes('moreItems')) {
                 if (this.gameloopCounter2 % Math.round(120 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
@@ -1513,10 +1512,7 @@ export default defineComponent({
             if (this.player.shop.currency > 10000) this.player.shop.currency = 10000
             createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
         },
-        handleEnemyGetBigger() {
-            if (this.isStopTime) return
-            for (let enemy of this.enemies) if (enemy.type == 'getbigger') enemy.size += 0.5
-        },
+
         handleEnemyRandom() {
             if (this.isStopTime) return
             for (let enemy of this.enemies) {

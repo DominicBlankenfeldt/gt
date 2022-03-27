@@ -55,7 +55,7 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
     moveArray = norVec(moveArray)
     if (!vector[0]) vector[0] = getRandomInt(field.borderRight - field.borderLeft) + field.borderLeft
     if (!vector[1]) vector[1] = getRandomInt(field.borderDown - field.borderUp) + field.borderUp
-    switch (getRandomInt(7)) {
+    switch (getRandomInt(6)) {
         case 0:
             type = 'curve'
             break
@@ -67,17 +67,13 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
             timer = 450
             break
         case 3:
-            type = 'getbigger'
-            timer = 1000
-            break
-        case 4:
             type = 'circle'
             break
-        case 5:
+        case 4:
             type = 'random'
             timer = 900
             break
-        case 6:
+        case 5:
             type = 'spiral'
             timer = 100
             break
@@ -90,7 +86,6 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
             circleDir = 'right'
             break
     }
-
     if (type == 'aimbot') moveArray = dirVec(player.vector, vector)
     enemies.push({
         speed: 1,
