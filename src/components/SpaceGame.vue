@@ -185,6 +185,7 @@
                         class="btn shadow-none"
                         style="position: absolute; left: 90%; top: 4% color:grey"
                         @click="buttonSound()"
+                        id="settingsBtn"
                         data-bs-toggle="modal"
                         data-bs-target="#settings"
                     >
@@ -684,7 +685,6 @@ export default defineComponent({
         start() {
             if (this.gameStarted) return
             this.buttonSound()
-
             this.player.hP = 1 + findWeaponUpgrade(this.player, 'moreHP')
             if (this.bossFight) {
                 this.bossEnemyPreparations()
@@ -704,23 +704,24 @@ export default defineComponent({
                         break
                 }
                 this.difficulty = 2
-            }
-            for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
-                if (this.player.shop[shopItem].use && this.player.shop[shopItem].amount > 0) {
-                    this.player.shop[shopItem].amount--
-                    switch (shopItem) {
-                        case 'lessStartEnemies':
-                            this.startingEnemies -= 2 * this.player.shop.lessStartEnemies.lvl
-                            break
-                        case 'higherDifficultyTimer':
-                            this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl
-                            break
-                        case 'lowerScoreTimer':
-                            this.scoreTimer = 1200 - 120 * this.player.shop.lowerScoreTimer.lvl
-                            break
+                for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
+                    if (this.player.shop[shopItem].use && this.player.shop[shopItem].amount > 0) {
+                        this.player.shop[shopItem].amount--
+                        switch (shopItem) {
+                            case 'lessStartEnemies':
+                                this.startingEnemies -= 2 * this.player.shop.lessStartEnemies.lvl
+                                break
+                            case 'higherDifficultyTimer':
+                                this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl
+                                break
+                            case 'lowerScoreTimer':
+                                this.scoreTimer = 1200 - 120 * this.player.shop.lowerScoreTimer.lvl
+                                break
+                        }
                     }
                 }
             }
+
             this.scoreMultiplier = 2
             this.player.speed = 5
             this.reset()
@@ -888,11 +889,20 @@ export default defineComponent({
             this.message = ''
         },
         async gameOver(message: string, messageType: string) {
-            for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
-                if (this.player.shop[shopItem].use && this.player.shop[shopItem].reBuy) {
-                    if (this.player.shop.currency >= shopDetails[shopItem].cost && this.player.shop[shopItem].amount < shopDetails[shopItem].max) {
-                        this.player.shop.currency -= shopDetails[shopItem].cost
-                        this.player.shop[shopItem].amount++
+            if (this.bossFight) {
+                this.score = 0
+                this.startButtonText = 'try again'
+                this.cancelButtonText = 'cancel'
+            } else {
+                for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
+                    if (this.player.shop[shopItem].use && this.player.shop[shopItem].reBuy) {
+                        if (
+                            this.player.shop.currency >= shopDetails[shopItem].cost &&
+                            this.player.shop[shopItem].amount < shopDetails[shopItem].max
+                        ) {
+                            this.player.shop.currency -= shopDetails[shopItem].cost
+                            this.player.shop[shopItem].amount++
+                        }
                     }
                 }
             }
@@ -907,11 +917,7 @@ export default defineComponent({
             this.reset()
             this.message = message
             this.messageType = messageType
-            if (this.bossFight) {
-                this.score = 0
-                this.startButtonText = 'try again'
-                this.cancelButtonText = 'cancel'
-            }
+
             switch (this.player.playMode) {
                 case 'normal':
                     if (this.score > this.player.highscore) this.player.highscore = this.score
@@ -976,7 +982,10 @@ export default defineComponent({
             }
             if (!this.skillObject['shotAbility']) {
                 this.$router.push('/skillTree')
-                this.buttonSound()
+                return
+            }
+            if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) {
+                document.getElementById('settingsBtn')?.click()
                 return
             }
             switch (type) {
