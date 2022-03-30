@@ -27,10 +27,11 @@ export const skillDetails = {
     shieldGenerator: { name: 'shield generator', maxlvl: 5, tier: 3, description: 'regularly gives you a shield' },
 }
 export const weaponDetails = {
-    moreDamage: { name: 'power weapon', maxlvl: 10, tier: 1, description: 'your plasma makes more damage' },
-    biggerProjectile: { name: 'big plasma', maxlvl: 10, tier: 1, description: 'your plasma gets bigger' },
-    fasterProjectile: { name: 'high frequency', maxlvl: 10, tier: 1, description: 'your plasma gets faster' },
-    fasterReload: { name: 'load automatically', maxlvl: 10, tier: 1, description: 'increases your reload speed' },
+    moreDamage: { name: 'power weapon', maxlvl: 20, tier: 1, description: 'your plasma makes more damage' },
+    biggerProjectile: { name: 'big plasma', maxlvl: 20, tier: 1, description: 'your plasma gets bigger' },
+    fasterProjectile: { name: 'high frequency', maxlvl: 20, tier: 1, description: 'your plasma gets faster' },
+    fasterReload: { name: 'load automatically', maxlvl: 20, tier: 1, description: 'increases your reload speed' },
+    scorePerHit: { name: 'scorePerHit', maxlvl: 15, tier: 2, description: 'increases the score received from shot enemies' },
     moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
     standard: { description: 'the standard gun', maxlvl: 0 },
     shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
@@ -134,7 +135,7 @@ export function checkPlayer(player: type.Player) {
             weaponPoints: 0,
             weaponUpgrades: [] as type.WeaponUpgrade[],
         } as type.WeaponTree)
-    for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload', 'moreHP']) {
+    for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload', 'moreHP', 'scorePerHit']) {
         if (checkWeaponUpgrade(player, weaponUpgrade)) {
             player.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
         }

@@ -1257,7 +1257,8 @@ export default defineComponent({
                             this.scoreMultiplier *
                             (this.player.passivTree.passivType.includes('increaseScore')
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
-                                : 1)
+                                : 1) *
+                            percent(findWeaponUpgrade(this.player, 'scorePerHit'), 'in')
                         this.score += scoreIncrease
                         if (!this.bossFight) {
                             this.specialScores.push({

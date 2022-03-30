@@ -153,7 +153,7 @@ export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
 }
-export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP'
+export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP' | 'scorePerHit'
 
 export interface PassivTree {
     passivType: PassivType[]
