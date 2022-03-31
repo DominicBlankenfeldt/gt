@@ -943,12 +943,7 @@ export default defineComponent({
                 this.highscoreMultiplier[this.bossEnemy.type] * (this.player.defeatedBosses[this.bossEnemy.type] + 1) * percent(this.fleetlvl, 'de')
             )
                 return 'Boss fight available'
-            else
-                return `You need ${
-                    this.highscoreMultiplier[this.bossEnemy.type] *
-                    (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                    percent(this.fleetlvl, 'de')
-                } highscore`
+            else return `You need ${this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de')} highscore`
         },
         startBossFight(type: type.BossType) {
             if (this.bossEnemy.type == type) {
