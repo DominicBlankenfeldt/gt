@@ -938,10 +938,7 @@ export default defineComponent({
                     if (this.bossEnemy.type == 'totalchaos') return 'cancel'
                     break
             }
-            if (
-                this.player.highscore[this.bossEnemy.type] >=
-                this.highscoreMultiplier[this.bossEnemy.type] * (this.player.defeatedBosses[this.bossEnemy.type] + 1) * percent(this.fleetlvl, 'de')
-            )
+            if (this.player.highscore[type] >= this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de'))
                 return 'Boss fight available'
             else return `You need ${this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de')} highscore`
         },
