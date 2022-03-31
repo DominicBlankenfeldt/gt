@@ -29,28 +29,35 @@ export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
 export interface Player {
-    hP: number
     skillTree: SkillTree
     weaponTree: WeaponTree
     passivTree: PassivTree
     shop: Shop
-    outlook: Outlook
-    highscore: number
-    highscoreHardcore: number
-    highscoreTotalchaos: number
+    highscore: Highscore
     username: string
     img: string
     registeredAt: any
     playMode: PlayMode
-    playedGames: number
-    playedHardcore: number
-    playedTotalchaos: number
-    defeatedBosses: number
-    defeatedBossesHardcore: number
-    defeatedBossesTotalchaos: number
+    playedGames: PlayedGames
+    defeatedBosses: DefeatedBosses
     spaceFleet?: string
     settings: Settings
     playedTime: number
+}
+export interface Highscore {
+    normal: number
+    hardcore: number
+    totalchaos: number
+}
+export interface DefeatedBosses {
+    normal: number
+    hardcore: number
+    totalchaos: number
+}
+export interface PlayedGames {
+    normal: number
+    hardcore: number
+    totalchaos: number
 }
 export interface PlayerInfo {
     vector: Vector
@@ -155,6 +162,9 @@ export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
 }
+export type WeaponObject = {
+    [key in WeaponUpgradeName]: number
+}
 export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP' | 'scorePerHit'
 
 export interface PassivTree {
@@ -166,6 +176,9 @@ export interface PassivTree {
 export interface PassivUpgrade {
     name: PassivUpgradeName
     lvl: number
+}
+export type PassivObject = {
+    [key in PassivUpgradeName]: number
 }
 export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
 export type PassivType = 'none' | PassivUpgradeName

@@ -91,32 +91,32 @@
                     <div>
                         Highscore normal:
                         <br />
-                        {{ Math.round(player.highscore) }}
+                        {{ Math.round(player.highscore['normal']) }}
                     </div>
                     <div>
                         Played normal:
                         <br />
-                        {{ player.playedGames }}
+                        {{ player.playedGames['normal'] }}
                     </div>
                     <div>
                         Highscore hardcore:
                         <br />
-                        {{ Math.round(player.highscoreHardcore) }}
+                        {{ Math.round(player.highscore['hardcore']) }}
                     </div>
                     <div>
                         Played hardcore:
                         <br />
-                        {{ player.playedHardcore }}
+                        {{ player.playedGames['hardcore'] }}
                     </div>
                     <div>
                         Highscore totalchaos:
                         <br />
-                        {{ Math.round(player.highscoreTotalchaos) }}
+                        {{ Math.round(player.highscore['totalchaos']) }}
                     </div>
                     <div>
                         Played totalchaos:
                         <br />
-                        {{ player.playedTotalchaos }}
+                        {{ player.playedGames['totalchaos'] }}
                     </div>
                 </div>
                 <div class="col-6 gy-2 aling-content-start">

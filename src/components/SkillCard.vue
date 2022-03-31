@@ -196,7 +196,7 @@ export default defineComponent({
             if (
                 skill.lvl <
                 skillDetails[skill.name].maxlvl +
-                    (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBossesTotalchaos : 0)
+                    (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBosses['totalchaos'] : 0)
             )
                 if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                     skill.lvl++
@@ -216,7 +216,7 @@ export default defineComponent({
                 if (
                     skill.lvl <
                     skillDetails[skill.name].maxlvl +
-                        (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBossesTotalchaos : 0)
+                        (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBosses['totalchaos'] : 0)
                 )
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                         skill.lvl++

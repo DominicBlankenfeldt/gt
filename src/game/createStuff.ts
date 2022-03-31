@@ -1,7 +1,13 @@
 import { findSkill, percent, getRandomInt } from '@/game/helpers'
 import * as type from '@/types'
 import { dirVec, lenVec, norVec, subVec } from '@/game/vectors'
-export function createEnemy(enemies: type.Enemy[], generalSize: number, field: type.Field, player: type.Player, skillObject: type.SkillObject) {
+export function createEnemy(
+    enemies: type.Enemy[],
+    generalSize: number,
+    field: type.Field,
+    skillObject: type.SkillObject,
+    playerInfo: type.PlayerInfo
+) {
     let size = 0
     const vector = [0, 0] as type.Vector
     let type = ''
@@ -86,7 +92,7 @@ export function createEnemy(enemies: type.Enemy[], generalSize: number, field: t
             circleDir = 'right'
             break
     }
-    if (type == 'aimbot') moveArray = dirVec(player.vector, vector)
+    if (type == 'aimbot') moveArray = dirVec(playerInfo.vector, vector)
     enemies.push({
         speed: 1,
         vector: vector,
@@ -110,10 +116,10 @@ export function respawnEnemy(
     enemy: type.Enemy,
     generalSize: number,
     field: type.Field,
-    player: type.Player,
-    skillObject: type.SkillObject
+    skillObject: type.SkillObject,
+    playerInfo: type.PlayerInfo
 ) {
-    enemies = createEnemy(enemies, generalSize, field, player, skillObject)
+    enemies = createEnemy(enemies, generalSize, field, skillObject, playerInfo)
     return enemies.filter(e => e != enemy)
 }
 
@@ -124,7 +130,8 @@ export function createItems(
     items: type.Item[],
     field: type.Field,
     badItems: boolean,
-    bossFight: boolean
+    bossFight: boolean,
+    playerInfo: type.PlayerInfo
 ) {
     if (isStopTime) return
     let type = ''
@@ -173,7 +180,7 @@ export function createItems(
     do {
         vector[0] = getRandomInt(field.borderRight - field.borderLeft - size) + field.borderLeft
         vector[1] = getRandomInt(field.borderDown - field.borderUp - size) + field.borderUp
-    } while (lenVec(subVec(vector, player.vector)) < 200 * generalSize)
+    } while (lenVec(subVec(vector, playerInfo.vector)) < 200 * generalSize)
     items.push({
         type: type as type.Itemtype,
         imgsrc: imgsrc,

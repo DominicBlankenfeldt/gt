@@ -121,10 +121,9 @@ export default defineComponent({
             }
             this.registering = true
             try {
-                await API.register(this.email, this.password)
                 this.player.username = this.username
                 this.player.registeredAt = new Date().toJSON()
-                await API.addPlayer(this.player)
+                await API.register(this.email, this.password, this.player)
                 this.$router.push('/home')
             } catch (e) {
                 console.log("couldn't register", e)

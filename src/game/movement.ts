@@ -1,6 +1,6 @@
-import { borderCheck, findPassivUpgrade, findSkill, findWeaponUpgrade, percent, getRandomInt } from '@/game/helpers'
+import { borderCheck, findPassivUpgrade, findWeaponUpgrade, percent, getRandomInt } from '@/game/helpers'
 import * as type from '@/types'
-import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
+import { addVec, dirVec, lenVecSqrt, mulVec, norVec, rotVec, subVec } from '@/game/vectors'
 import { respawnEnemy } from '@/game/createStuff'
 export function plasmaMovement(
     plasmas: type.Plasma[],
@@ -136,9 +136,9 @@ export function enemyMovement(
                 )
             )
         }
-        if (borderCheck(enemy, 'outer', field)) enemies = respawnEnemy(enemies, enemy, generalSize, field, player, skillObject)
+        if (borderCheck(enemy, 'outer', field)) enemies = respawnEnemy(enemies, enemy, generalSize, field, skillObject, playerInfo)
         if (enemy.type == 'chasebot' || enemy.type == 'random')
-            enemy.timer ? enemy.timer-- : (enemies = respawnEnemy(enemies, enemy, generalSize, field, player, skillObject))
+            enemy.timer ? enemy.timer-- : (enemies = respawnEnemy(enemies, enemy, generalSize, field, skillObject, playerInfo))
     }
     return enemies
 }

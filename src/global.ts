@@ -102,24 +102,24 @@ export function checkPlayer(player: type.Player) {
         musicVolume: 50,
         effectVolume: 50,
     }
-    player.hP = player.hP || 1
-    player.size = player.size || 20
-    player.originalSize = player.originalSize || 20
-    player.vector = player.vector || [0, 0]
-    player.moveVector = player.moveVector || [0, 0]
-    player.speed = player.speed || 5
-    player.highscore = player.highscore || 0
-    player.highscoreHardcore = player.highscoreHardcore || 0
-    player.highscoreTotalchaos = player.highscoreTotalchaos || 0
+    player.highscore = player.highscore || {
+        normal: 0,
+        hardcore: 0,
+        totalchaos: 0,
+    }
     player.username = player.username || 'gast'
     player.img = player.img || ''
     player.registeredAt = player.registeredAt || new Date().toJSON()
-    player.playedGames = player.playedGames || 0
-    player.playedHardcore = player.playedHardcore || 0
-    player.playedTotalchaos = player.playedTotalchaos || 0
-    player.defeatedBosses = player.defeatedBosses || 0
-    player.defeatedBossesTotalchaos = player.defeatedBossesTotalchaos || 0
-    player.defeatedBossesHardcore = player.defeatedBossesHardcore || 0
+    player.playedGames = player.playedGames || {
+        normal: 0,
+        hardcore: 0,
+        totalchaos: 0,
+    }
+    player.defeatedBosses = player.defeatedBosses || {
+        normal: 0,
+        hardcore: 0,
+        totalchaos: 0,
+    }
     player.playMode = player.playMode || 'normal'
     player.playedTime = player.playedTime || 0
     player.shop = player.shop || {}

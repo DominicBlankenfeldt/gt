@@ -295,18 +295,14 @@ export default defineComponent({
         fleetGames() {
             let games = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
-                games += member.playedGames
-                games += member.playedHardcore
-                games += member.playedTotalchaos
+                for (let mode of ['normal', 'hardcore', 'totalchaos'] as type.PlayMode[]) games += member.playedGames[mode]
             }
             return games
         },
         fleetScore() {
             let score = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
-                score += member.highscore
-                score += member.highscoreHardcore
-                score += member.highscoreTotalchaos
+                for (let mode of ['normal', 'hardcore', 'totalchaos'] as type.PlayMode[]) score += member.highscore[mode]
             }
             return score
         },
@@ -314,9 +310,7 @@ export default defineComponent({
         fleetlvl() {
             let lvl = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
-                lvl += member.defeatedBosses
-                lvl += member.defeatedBossesHardcore
-                lvl += member.defeatedBossesTotalchaos
+                for (let mode of ['normal', 'hardcore', 'totalchaos'] as type.PlayMode[]) lvl += member.defeatedBosses[mode]
             }
 
             return lvl
@@ -324,9 +318,7 @@ export default defineComponent({
         avgFleetScore() {
             let score = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
-                score += member.highscore
-                score += member.highscoreHardcore
-                score += member.highscoreTotalchaos
+                for (let mode of ['normal', 'hardcore', 'totalchaos'] as type.PlayMode[]) score += member.highscore[mode]
             }
             let games = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
