@@ -12,7 +12,7 @@ export function findPassivUpgrade(player: type.Player, passivUpgrade: type.Passi
 export function getRandomInt(max: number) {
     return Math.floor(Math.random() * max)
 }
-export function grow(object: type.Player | type.Enemy, growMultiplier: number, generalSize: number) {
+export function grow(object: type.PlayerInfo | type.Enemy, growMultiplier: number, generalSize: number) {
     object.size *= growMultiplier
     object.vector = subVec(object.vector, (object.size * generalSize) / 4)
     return object
@@ -27,7 +27,7 @@ export function percent(number: number, change: 'in' | 'de') {
     return 1
 }
 export function borderCheck(
-    object: type.Enemy | type.Item | type.Player | type.Plasma | type.BossEnemy,
+    object: type.Enemy | type.Item | type.PlayerInfo | type.Plasma | type.BossEnemy,
     border: 'inner' | 'outer',
     field: type.Field
 ) {

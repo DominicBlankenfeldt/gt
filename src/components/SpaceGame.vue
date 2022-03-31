@@ -453,6 +453,13 @@ export default defineComponent({
             itemSpawn: true,
             //player
             player: {} as type.Player,
+            playerInfo: {
+                vector: [0, 0] as type.Vector,
+                moveVector: [0, 0] as type.Vector,
+                speed: 5,
+                size: 20,
+                originalSize: 20,
+            },
             isGrow: false,
             isMagnet: false,
             isStopTime: false,

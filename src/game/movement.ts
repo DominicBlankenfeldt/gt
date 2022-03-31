@@ -45,60 +45,61 @@ export function playerMovement(
     field: type.Field,
     lastDirection: number,
     generalSize: number,
-    multiplicator: number
+    multiplicator: number,
+    playerInfo: type.PlayerInfo
 ) {
-    player.moveVector = [0, 0]
+    playerInfo.moveVector = [0, 0]
 
-    if (pressedKeys['ArrowLeft'] || pressedKeys[player.settings.moves['left']]) player.moveVector[0] = left(player, field)
-    if (pressedKeys['ArrowRight'] || pressedKeys[player.settings.moves['right']]) player.moveVector[0] = right(player, field)
-    if (pressedKeys['ArrowUp'] || pressedKeys[player.settings.moves['up']]) player.moveVector[1] = up(player, field)
-    if (pressedKeys['ArrowDown'] || pressedKeys[player.settings.moves['down']]) player.moveVector[1] = down(player, field)
+    if (pressedKeys['ArrowLeft'] || pressedKeys[player.settings.moves['left']]) playerInfo.moveVector[0] = left(playerInfo, field)
+    if (pressedKeys['ArrowRight'] || pressedKeys[player.settings.moves['right']]) playerInfo.moveVector[0] = right(playerInfo, field)
+    if (pressedKeys['ArrowUp'] || pressedKeys[player.settings.moves['up']]) playerInfo.moveVector[1] = up(playerInfo, field)
+    if (pressedKeys['ArrowDown'] || pressedKeys[player.settings.moves['down']]) playerInfo.moveVector[1] = down(playerInfo, field)
 
-    player.moveVector = mulVec(norVec(player.moveVector), player.speed * generalSize * multiplicator)
-    player.vector = addVec(player.vector, player.moveVector)
-    if (player.moveVector[0] > 0) lastDirection = 90
-    if (player.moveVector[0] < 0) lastDirection = 270
-    if (player.moveVector[1] > 0) lastDirection = 180
-    if (player.moveVector[1] < 0) lastDirection = 0
-    if (player.moveVector[0] > 0 && player.moveVector[1] > 0) lastDirection = 135
-    if (player.moveVector[0] < 0 && player.moveVector[1] > 0) lastDirection = 225
-    if (player.moveVector[0] > 0 && player.moveVector[1] < 0) lastDirection = 45
-    if (player.moveVector[0] < 0 && player.moveVector[1] < 0) lastDirection = 315
+    playerInfo.moveVector = mulVec(norVec(playerInfo.moveVector), playerInfo.speed * generalSize * multiplicator)
+    playerInfo.vector = addVec(playerInfo.vector, playerInfo.moveVector)
+    if (playerInfo.moveVector[0] > 0) lastDirection = 90
+    if (playerInfo.moveVector[0] < 0) lastDirection = 270
+    if (playerInfo.moveVector[1] > 0) lastDirection = 180
+    if (playerInfo.moveVector[1] < 0) lastDirection = 0
+    if (playerInfo.moveVector[0] > 0 && playerInfo.moveVector[1] > 0) lastDirection = 135
+    if (playerInfo.moveVector[0] < 0 && playerInfo.moveVector[1] > 0) lastDirection = 225
+    if (playerInfo.moveVector[0] > 0 && playerInfo.moveVector[1] < 0) lastDirection = 45
+    if (playerInfo.moveVector[0] < 0 && playerInfo.moveVector[1] < 0) lastDirection = 315
 
-    switch (borderCheck(player, 'inner', field)) {
+    switch (borderCheck(playerInfo, 'inner', field)) {
         case 'right':
-            player.vector[0] = field.borderRight - player.size
+            playerInfo.vector[0] = field.borderRight - playerInfo.size
             break
         case 'left':
-            player.vector[0] = field.borderLeft + 1
+            playerInfo.vector[0] = field.borderLeft + 1
             break
         case 'up':
-            player.vector[1] = field.borderUp - 2
+            playerInfo.vector[1] = field.borderUp - 2
             break
         case 'down':
-            player.vector[1] = field.borderDown - (player.size + 6)
+            playerInfo.vector[1] = field.borderDown - (playerInfo.size + 6)
             break
     }
     return { player: player, lastDirection: lastDirection }
 }
-function left(player: type.Player, field: type.Field) {
-    if (!borderCheck(player, 'inner', field)) return -1
+function left(playerInfo: type.PlayerInfo, field: type.Field) {
+    if (!borderCheck(playerInfo, 'inner', field)) return -1
     return 0
 }
-function right(player: type.Player, field: type.Field) {
-    if (!borderCheck(player, 'inner', field)) {
-        if (player.moveVector[0] == 0) return 1
+function right(playerInfo: type.PlayerInfo, field: type.Field) {
+    if (!borderCheck(playerInfo, 'inner', field)) {
+        if (playerInfo.moveVector[0] == 0) return 1
         else return 0
     }
     return 0
 }
-function up(player: type.Player, field: type.Field) {
-    if (!borderCheck(player, 'inner', field)) return -1
+function up(playerInfo: type.PlayerInfo, field: type.Field) {
+    if (!borderCheck(playerInfo, 'inner', field)) return -1
     return 0
 }
-function down(player: type.Player, field: type.Field) {
-    if (!borderCheck(player, 'inner', field)) {
-        if (player.moveVector[1] == 0) return 1
+function down(playerInfo: type.PlayerInfo, field: type.Field) {
+    if (!borderCheck(playerInfo, 'inner', field)) {
+        if (playerInfo.moveVector[1] == 0) return 1
         else return 0
     }
     return 0
@@ -111,14 +112,15 @@ export function enemyMovement(
     generalSize: number,
     isSlowEnemies: boolean,
     field: type.Field,
-    skillObject: type.SkillObject
+    skillObject: type.SkillObject,
+    playerInfo: type.PlayerInfo
 ) {
     for (const enemy of enemies) {
         if (enemy.type == 'spiral') enemy.vector = moveSpiralEnemy(enemy, difficulty, player, generalSize, isSlowEnemies, skillObject) || enemy.vector
         if (enemy.type == 'circle') enemy.moveVector = moveCircleEnemy(enemy, difficulty)
         if (enemy.type == 'curve') enemy.moveVector = moveCurveEnemy(enemy)
         if (enemy.type == 'chasebot') {
-            enemy.vector = moveChasebotEnemy(enemy, player, generalSize, isSlowEnemies, skillObject)
+            enemy.vector = moveChasebotEnemy(enemy, player, generalSize, isSlowEnemies, skillObject, playerInfo)
         } else {
             enemy.moveVector = norVec(enemy.moveVector)
             enemy.vector = addVec(
@@ -140,11 +142,18 @@ export function enemyMovement(
     }
     return enemies
 }
-function moveChasebotEnemy(enemy: type.Enemy, player: type.Player, generalSize: number, isSlowEnemies: boolean, skillObject: type.SkillObject) {
+function moveChasebotEnemy(
+    enemy: type.Enemy,
+    player: type.Player,
+    generalSize: number,
+    isSlowEnemies: boolean,
+    skillObject: type.SkillObject,
+    playerInfo: type.PlayerInfo
+) {
     return addVec(
         enemy.vector,
         mulVec(
-            dirVec(player.vector, enemy.vector),
+            dirVec(playerInfo.vector, enemy.vector),
             2 *
                 generalSize *
                 (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *

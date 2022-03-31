@@ -30,11 +30,6 @@ export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle'
 
 export interface Player {
     hP: number
-    vector: Vector
-    speed: number
-    moveVector: Vector
-    size: number
-    originalSize: number
     skillTree: SkillTree
     weaponTree: WeaponTree
     passivTree: PassivTree
@@ -56,6 +51,13 @@ export interface Player {
     spaceFleet?: string
     settings: Settings
     playedTime: number
+}
+export interface PlayerInfo {
+    vector: Vector
+    speed: number
+    moveVector: Vector
+    size: number
+    originalSize: number
 }
 export interface Shop {
     currency: number
