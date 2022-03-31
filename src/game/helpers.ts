@@ -18,12 +18,9 @@ export function grow(object: type.PlayerInfo | type.Enemy, growMultiplier: numbe
     return object
 }
 export function percent(number: number, change: 'in' | 'de') {
-    if (change == 'in') {
-        return (number + 100) / 100
-    }
-    if (change == 'de') {
-        return number < 100 ? (100 - number) / 100 : 0
-    }
+    if (change == 'in') return (number + 100) / 100
+    if (change == 'de') return 1 - 1 * (1 - Math.pow(2, -0.015 * number))
+    //number < 100 ? (100 - number) / 100 : 0
     return 1
 }
 export function borderCheck(

@@ -1,9 +1,11 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
-        <div title="you get 1 skillpoint per 1000 highscore in normal mode">
-            Skill Points:
-            <br />
-            {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
+        <div>
+            <div data-title="you get 1 skillpoint per 1000 highscore in normal mode" class="w-25 d-inline">
+                Skill Points:
+                <br />
+                {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
+            </div>
         </div>
         <div class="row g-0 mt-2">
             <div class="col-1"></div>
@@ -13,7 +15,8 @@
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
+                        :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -29,7 +32,8 @@
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
+                        :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -45,7 +49,8 @@
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
+                        :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -62,7 +67,8 @@
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
+                        :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -79,7 +85,8 @@
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
-                        :title="skillDetails[skill.name].description"
+                        :data-title="skillDetails[skill.name].description"
+                        :line2="`costs: ${skillDetails[skill.name].tier}`"
                         :disabled="usedSkillPoints < 200"
                     >
                         {{ skillDetails[skill.name].name }}

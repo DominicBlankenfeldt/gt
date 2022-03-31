@@ -185,6 +185,7 @@
                         class="btn shadow-none"
                         style="position: absolute; left: 90%; top: 4% color:grey"
                         @click="buttonSound()"
+                        id="settingsBtn"
                         data-bs-toggle="modal"
                         data-bs-target="#settings"
                     >
@@ -298,7 +299,15 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="settings" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="unDoChanges()">
+        <div
+            class="modal fade"
+            id="settings"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+            @click="unDoChanges()"
+            style="margin-top: 11vh"
+        >
             <div class="modal-dialog" @click.stop="">
                 <div class="modal-content">
                     <div class="modal-body" style="background-color: grey">
@@ -379,7 +388,7 @@
                                 "
                                 :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
                             >
-                                use {{ shopItem }}
+                                use {{ shopDetails[shopItem].name }}
                             </label>
                         </div>
                         <div class="row justify-content-end mt-1">
@@ -422,6 +431,7 @@ export default defineComponent({
             passivAmount,
             percent,
             findPassivUpgrade,
+            shopDetails,
         }
     },
     data() {
@@ -531,7 +541,7 @@ export default defineComponent({
             let timer = Math.round(
                 900 *
                     percent(this.skillObject['spawnLessEnemy'], 'in') *
-                    (this.player.passivTree.passivType == 'nerfEnemies' ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(this.player, 'nerfEnemies') / 4, 'in') : 1)
             )
             return timer
         },
@@ -662,9 +672,8 @@ export default defineComponent({
             if ((this.player.playMode == 'totalchaos' && !this.bossFight) || this.bossEnemy.type == 'totalchaos') {
                 if (this.gameloopCounter % 60 == 0) this.handleTotalchaos()
             }
-            if (this.gameloopCounter2 % 20 == 0) this.handleEnemyGetBigger() // 0.3sek
             if (this.gameloopCounter2 % 60 == 0) this.growBlackHole() // 1sek
-            if (this.player.passivTree.passivType == 'moreItems') {
+            if (this.player.passivTree.passivType.includes('moreItems')) {
                 if (this.gameloopCounter2 % Math.round(120 * percent(findPassivUpgrade(this.player, 'moreItems'), 'de')) == 0) {
                     this.spawnItems(this.spawnBadItems) // 2sek
                     this.spawnBadItems = !this.spawnBadItems
@@ -682,7 +691,6 @@ export default defineComponent({
         start() {
             if (this.gameStarted) return
             this.buttonSound()
-
             this.player.hP = 1 + findWeaponUpgrade(this.player, 'moreHP')
             if (this.bossFight) {
                 this.bossEnemyPreparations()
@@ -702,23 +710,24 @@ export default defineComponent({
                         break
                 }
                 this.difficulty = 2
-            }
-            for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
-                if (this.player.shop[shopItem].use && this.player.shop[shopItem].amount > 0) {
-                    this.player.shop[shopItem].amount--
-                    switch (shopItem) {
-                        case 'lessStartEnemies':
-                            this.startingEnemies -= 2
-                            break
-                        case 'higherDifficultyTimer':
-                            this.difficultyTimer = 1320
-                            break
-                        case 'lowerScoreTimer':
-                            this.scoreTimer = 1080
-                            break
+                for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
+                    if (this.player.shop[shopItem].use && this.player.shop[shopItem].amount > 0) {
+                        this.player.shop[shopItem].amount--
+                        switch (shopItem) {
+                            case 'lessStartEnemies':
+                                this.startingEnemies -= 1 + this.player.shop.lessStartEnemies.lvl
+                                break
+                            case 'higherDifficultyTimer':
+                                this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl
+                                break
+                            case 'lowerScoreTimer':
+                                this.scoreTimer = 1200 - 120 * this.player.shop.lowerScoreTimer.lvl
+                                break
+                        }
                     }
                 }
             }
+
             this.scoreMultiplier = 2
             this.player.speed = 5
             this.reset()
@@ -849,13 +858,17 @@ export default defineComponent({
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     1.2 *
                     percent(this.skillObject['betterGrowPotion'], 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('increaseScore')
+                        ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
+                        : 1)
             } else {
                 this.player.size = this.player.originalSize * this.generalSize
                 this.score +=
                     this.scoreMultiplier *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
-                    (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in') : 1)
+                    (this.player.passivTree.passivType.includes('increaseScore')
+                        ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
+                        : 1)
             }
             let effectAmount = 0
             if (this.isGrow) effectAmount++
@@ -882,11 +895,20 @@ export default defineComponent({
             this.message = ''
         },
         async gameOver(message: string, messageType: string) {
-            for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
-                if (this.player.shop[shopItem].use && this.player.shop[shopItem].reBuy) {
-                    if (this.player.shop.currency >= shopDetails[shopItem].cost && this.player.shop[shopItem].amount < shopDetails[shopItem].max) {
-                        this.player.shop.currency -= shopDetails[shopItem].cost
-                        this.player.shop[shopItem].amount++
+            if (this.bossFight) {
+                this.score = 0
+                this.startButtonText = 'try again'
+                this.cancelButtonText = 'cancel'
+            } else {
+                for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
+                    if (this.player.shop[shopItem].use && this.player.shop[shopItem].reBuy) {
+                        if (
+                            this.player.shop.currency >= shopDetails[shopItem].cost &&
+                            this.player.shop[shopItem].amount < shopDetails[shopItem].max
+                        ) {
+                            this.player.shop.currency -= shopDetails[shopItem].cost
+                            this.player.shop[shopItem].amount++
+                        }
                     }
                 }
             }
@@ -901,11 +923,7 @@ export default defineComponent({
             this.reset()
             this.message = message
             this.messageType = messageType
-            if (this.bossFight) {
-                this.score = 0
-                this.startButtonText = 'try again'
-                this.cancelButtonText = 'cancel'
-            }
+
             switch (this.player.playMode) {
                 case 'normal':
                     if (this.score > this.player.highscore) this.player.highscore = this.score
@@ -970,7 +988,10 @@ export default defineComponent({
             }
             if (!this.skillObject['shotAbility']) {
                 this.$router.push('/skillTree')
-                this.buttonSound()
+                return
+            }
+            if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) {
+                document.getElementById('settingsBtn')?.click()
                 return
             }
             switch (type) {
@@ -1006,7 +1027,9 @@ export default defineComponent({
                         50 *
                             (this.player.defeatedBosses + 1) *
                             percent(this.player.defeatedBosses + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses * percent(this.fleetlvl, 'de'))
@@ -1016,7 +1039,9 @@ export default defineComponent({
                         25 *
                             (this.player.defeatedBossesHardcore + 1) *
                             percent(this.player.defeatedBossesHardcore + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(50 + this.player.defeatedBossesHardcore * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
@@ -1026,7 +1051,9 @@ export default defineComponent({
                         50 *
                             (this.player.defeatedBossesTotalchaos + 1) *
                             percent(this.player.defeatedBossesTotalchaos + 1 * 10, 'in') *
-                            (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                            (this.player.passivTree.passivType.includes('nerfBoss')
+                                ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de')
+                                : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
                     this.difficulty = roundHalf(2 + this.player.defeatedBossesTotalchaos * percent(this.fleetlvl, 'de'))
@@ -1136,7 +1163,7 @@ export default defineComponent({
                 this.bossEnemy.speed *
                     this.generalSize *
                     percent(this.fleetlvl / 20, 'de') *
-                    (this.player.passivTree.passivType == 'nerfBoss' ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
+                    (this.player.passivTree.passivType.includes('nerfBoss') ? percent(findPassivUpgrade(this.player, 'nerfBoss') / 2, 'de') : 1)
             )
             this.bossEnemy.vector = addVec(this.bossEnemy.vector, this.bossEnemy.moveVector)
             switch (borderCheck(this.bossEnemy, 'inner', this.field)) {
@@ -1235,9 +1262,10 @@ export default defineComponent({
                         let scoreIncrease =
                             50 *
                             this.scoreMultiplier *
-                            (this.player.passivTree.passivType == 'increaseScore'
+                            (this.player.passivTree.passivType.includes('increaseScore')
                                 ? percent(findPassivUpgrade(this.player, 'increaseScore') / 1.5, 'in')
-                                : 1)
+                                : 1) *
+                            percent(findWeaponUpgrade(this.player, 'scorePerHit'), 'in')
                         this.score += scoreIncrease
                         if (!this.bossFight) {
                             this.specialScores.push({
@@ -1376,7 +1404,9 @@ export default defineComponent({
         collectCoin(item: type.Item) {
             let scoreIncrease =
                 ((this.scoreMultiplier * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
-                (this.player.passivTree.passivType == 'increaseScore' ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5 : 1)
+                (this.player.passivTree.passivType.includes('increaseScore')
+                    ? percent(findPassivUpgrade(this.player, 'increaseScore'), 'in') / 1.5
+                    : 1)
             this.score += scoreIncrease
             this.specialScores.push({
                 vector: item.vector,
@@ -1490,10 +1520,7 @@ export default defineComponent({
             if (this.player.shop.currency > 10000) this.player.shop.currency = 10000
             createEnemy(this.enemies, this.generalSize, this.field, this.player, this.skillObject)
         },
-        handleEnemyGetBigger() {
-            if (this.isStopTime) return
-            for (let enemy of this.enemies) if (enemy.type == 'getbigger') enemy.size += 0.5
-        },
+
         handleEnemyRandom() {
             if (this.isStopTime) return
             for (let enemy of this.enemies) {
@@ -1516,29 +1543,36 @@ export default defineComponent({
             for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (!this.player.settings.abilitys[i].name) continue
                 if (this.pressedKeys[this.player.settings.abilitys[i].key] && this.skillObject[this.player.settings.abilitys[i].name]) {
-                    if (this.player.settings.abilitys[i].name == 'fastAbility') this.multiplicator *= 2
-                    if (this.player.settings.abilitys[i].name == 'slowAbility') this.multiplicator *= 0.5
                     if (this.player.shop.energyCell.amount < skillDetails[this.player.settings.abilitys[i].name].tier) continue
                     if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
-                    if (this.player.settings.abilitys[i].name != 'fastAbility' && this.player.settings.abilitys[i].name != 'slowAbility')
-                        this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                     switch (this.player.settings.abilitys[i].name) {
+                        case 'fastAbility':
+                            this.multiplicator *= 2
+                            break
+                        case 'slowAbility':
+                            this.multiplicator *= 0.5
+                            break
                         case 'bombAbility':
                             this.bombAbility()
                             break
                         case 'shotAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.shotAbility()
                             break
                         case 'magnetAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.magnetAbility()
                             break
                         case 'growAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.growAbility()
                             break
                         case 'slowEnemyAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.slowEnemyAbility()
                             break
                         case 'stopTimeAbility':
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.stopTimeAbility()
                             break
                     }
@@ -1570,6 +1604,7 @@ export default defineComponent({
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
             this.coolDowns['bombAbility'] = 1000
+            this.player.shop.energyCell.amount -= skillDetails['bombAbility'].tier
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.player.vector)) - lenVec(subVec(b.vector, this.player.vector))

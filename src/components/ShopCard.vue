@@ -1,32 +1,65 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
-        <div title="you get scrap when enemies die">
-            scrap:
-            <br />
-            {{ player.shop.currency }}
-        </div>
-        <div v-for="shopItem of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
-            <button
-                @click="buyShopItem(shopItem)"
-                class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
-                :title="shopDetails[shopItem].description"
-            >
-                {{ shopDetails[shopItem].name }}
+        <div>
+            <div data-title="you get scrap when enemies die" class="w-25 d-inline">
+                scrap:
                 <br />
-                {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
-            </button>
+                {{ player.shop.currency }}
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
             <div>
-                <label
-                    class="form-check-label w-25 rounded-bottom unselectable py-1 pointer"
-                    @click="
-                        {
-                            ;(player.shop[shopItem].reBuy = !player.shop[shopItem].reBuy), buttonSound()
-                        }
-                    "
-                    :style="{ backgroundColor: player.shop[shopItem].reBuy ? 'green' : 'red' }"
+                <div v-for="shopItem of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
+                    <button
+                        @click="buyShopItem(shopItem)"
+                        class="w-100 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
+                        :data-title="shopDetails[shopItem].description"
+                        :line2="`costs: ${shopDetails[shopItem].cost}`"
+                    >
+                        {{ shopDetails[shopItem].name }}
+                        <br />
+                        {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
+                    </button>
+                    <div>
+                        <label
+                            class="form-check-label w-100 rounded-bottom unselectable py-1 pointer"
+                            @click="
+                                {
+                                    ;(player.shop[shopItem].reBuy = !player.shop[shopItem].reBuy), buttonSound()
+                                }
+                            "
+                            :style="{ backgroundColor: player.shop[shopItem].reBuy ? 'green' : 'red' }"
+                        >
+                            auto rebuy
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column-reverse">
+                <div v-for="shopItem of ['lowerScoreTimer', 'higherDifficultyTimer', 'lessStartEnemies']" :key="shopItem" class="mt-2">
+                    <button
+                        @click="upgradeShopItem(shopItem)"
+                        class="w-100 btn btn-primary align-self-center shadow-none ms-1"
+                        style="padding-top: 1.375rem; padding-bottom: 1.375rem"
+                        :data-title="`costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`"
+                    >
+                        upgrade {{ shopDetails[shopItem].name }}
+                        <br />
+                        {{ player.shop[shopItem].lvl }}/{{ shopDetails[shopItem].maxlvl }}
+                    </button>
+                </div>
+            </div>
+            <div class="mt-2">
+                <button
+                    @click="upgradeShopItem('passivSlots')"
+                    class="w-100 btn btn-primary align-self-center shadow-none ms-1"
+                    style="padding-top: 1.375rem; padding-bottom: 1.375rem"
+                    :data-title="`costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`"
                 >
-                    auto rebuy
-                </label>
+                    {{ shopDetails['passivSlots'].name }}
+                    <br />
+                    {{ player.shop['passivSlots'].lvl }}/{{ shopDetails['passivSlots'].maxlvl }}
+                </button>
             </div>
         </div>
     </div>
@@ -66,6 +99,15 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
+        upgradeShopItem(shopElement: type.ShopElement) {
+            if (
+                this.player.shop.currency <= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost ||
+                this.player.shop[shopElement].lvl >= shopDetails[shopElement].maxlvl
+            )
+                return
+            this.player.shop.currency -= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost
+            this.player.shop[shopElement].lvl++
+        },
         buyShopItem(shopElement: type.ShopElement) {
             if (this.player.shop.currency <= shopDetails[shopElement].cost || this.player.shop[shopElement].amount >= shopDetails[shopElement].max)
                 return

@@ -1,15 +1,17 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div>
-            <div title="you get 1 weaponpoint per 500 highscore in hardcore mode">
-                Weapon Points:
-                <br />
-                {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
+            <div>
+                <div data-title="you get 1 weaponpoint per 500 highscore in hardcore mode" class="w-25 d-inline">
+                    Weapon Points:
+                    <br />
+                    {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
+                </div>
             </div>
-            <div class="mt-2 w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">weapontype:</div>
+            <div class="mt-2 w-25 btn btn-primary shadow-none rounded-0 rounded-top">weapontype:</div>
             <br />
             <select
-                class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
+                class="w-25 btn btn-primary shadow-none rounded-0 rounded-bottom"
                 v-model="player.weaponTree.weaponType"
                 :title="weaponDetails[player.weaponTree.weaponType].description"
                 @click="buttonSound()"
@@ -31,10 +33,11 @@
         </div>
         <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
             <button
-                class="mt-2 w-25 btn btn-primary align-self-center shadow-none"
+                class="mt-2 w-25 btn btn-primary shadow-none"
                 @click="lvlWeaponUpgrade(weaponUpgrade)"
                 @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-                :title="weaponDetails[weaponUpgrade.name].description"
+                :data-title="weaponDetails[weaponUpgrade.name].description"
+                :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
                 :disabled="weaponDetails[weaponUpgrade.name].tier == 10 && usedWeaponPoints < 30"
             >
                 {{ weaponDetails[weaponUpgrade.name].name }}
@@ -43,7 +46,7 @@
             </button>
         </div>
         <div class="mt-2">
-            <button class="btn btn-danger align-self-center shadow-none" @click="resetWeaponTree()">reset weapontree</button>
+            <button class="btn btn-danger shadow-none" @click="resetWeaponTree()">reset weapontree</button>
         </div>
     </div>
 </template>

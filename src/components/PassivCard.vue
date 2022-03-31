@@ -1,46 +1,56 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
-        <div title="you get 1 passivpoint per 2000 highscore in totalchaos mode">
-            Passiv Points:
-            <br />
-            {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
-        </div>
         <div>
-            <div class="mt-2 w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-top">passiv:</div>
-            <br />
-            <select
-                class="w-25 btn btn-primary align-self-center shadow-none rounded-0 rounded-bottom"
-                v-model="player.passivTree.passivType"
-                :title="passivDetails[player.passivTree.passivType]?.description"
-                @click="buttonSound()"
-            >
-                <option
-                    @click="buttonSound()"
-                    :selected="passivAvaibleType == player.passivTree.passivType"
-                    :value="passivAvaibleType"
-                    v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes"
-                    :key="passivAvaibleType"
-                    :title="passivDetails[passivAvaibleType]?.description"
-                >
-                    {{ passivAvaibleType }}
-                </option>
-                <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < passivAmount" disabled>
-                    unlock more by fight the boss
-                </option>
-            </select>
-        </div>
-        <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
-            <button
-                class="mt-2 w-25 btn btn-primary align-self-center shadow-none"
-                @click="lvlPassivUpgrade(passivUpgrade)"
-                @dblclick="lvlPassivUpgradex8(passivUpgrade)"
-                :title="passivDetails[passivUpgrade.name].description"
-                v-if="passivUpgrade.name == player.passivTree.passivType"
-            >
-                {{ passivDetails[passivUpgrade.name].name }}
+            <div data-title="you get 1 passivpoint per 2000 highscore in totalchaos mode" class="w-25 d-inline">
+                Passiv Points:
                 <br />
-                lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl }}
-            </button>
+                {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <div v-for="passiv of player.shop.passivSlots.lvl" :key="passiv" class="mx-1">
+                <div>
+                    <div class="mt-2 w-100 btn btn-primary shadow-none rounded-0 rounded-top">passiv:</div>
+                    <br />
+                    <select
+                        class="w-100 btn btn-primary shadow-none rounded-0 rounded-bottom"
+                        v-model="player.passivTree.passivType[passiv - 1]"
+                        :title="passivDetails[player.passivTree.passivType[passiv - 1]]?.description"
+                        @click="buttonSound()"
+                    >
+                        <option :value="player.passivTree.passivType[passiv - 1]" :title="player.passivTree.passivType[passiv - 1]?.description">
+                            {{ player.passivTree.passivType[passiv - 1] }}
+                        </option>
+                        <option
+                            @click="buttonSound()"
+                            :selected="passivAvaibleType == player.passivTree.passivType[passiv - 1]"
+                            :value="passivAvaibleType"
+                            v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes.filter(p => !player.passivTree.passivType.includes(p))"
+                            :key="passivAvaibleType"
+                            :title="passivDetails[passivAvaibleType]?.description"
+                        >
+                            {{ passivAvaibleType }}
+                        </option>
+                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < passivAmount" disabled>
+                            unlock more by fight the boss
+                        </option>
+                    </select>
+                </div>
+                <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
+                    <button
+                        class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                        @click="lvlPassivUpgrade(passivUpgrade)"
+                        @dblclick="lvlPassivUpgradex8(passivUpgrade)"
+                        :data-title="passivDetails[passivUpgrade.name].description"
+                        line2="costs: 1"
+                        v-if="passivUpgrade.name == player.passivTree.passivType[passiv - 1]"
+                    >
+                        {{ passivDetails[passivUpgrade.name].name }}
+                        <br />
+                        lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="mt-2">
             <button class="btn btn-danger align-self-center shadow-none" @click="resetPassivTree()">reset passivtree</button>

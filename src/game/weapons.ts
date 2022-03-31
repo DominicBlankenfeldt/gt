@@ -39,7 +39,7 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
             shotCoolDownDuration =
                 2000 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
                 vector: player.vector,
@@ -47,19 +47,19 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                     5 +
                     findWeaponUpgrade(player, 'biggerProjectile') *
                         generalSize *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
                     findWeaponUpgrade(player, 'moreDamage') *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
             } as type.Plasma)
             break
         case 'aimgun':
             shotCoolDownDuration =
                 2500 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
                 vector: player.vector,
@@ -67,12 +67,12 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                     5 +
                     findWeaponUpgrade(player, 'biggerProjectile') *
                         generalSize *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
                     findWeaponUpgrade(player, 'moreDamage') *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 aim: true,
             } as type.Plasma)
             break
@@ -80,7 +80,7 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
             shotCoolDownDuration =
                 2000 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
                 vector: player.vector,
@@ -88,12 +88,12 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                     5 +
                     findWeaponUpgrade(player, 'biggerProjectile') *
                         generalSize *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
                     findWeaponUpgrade(player, 'moreDamage') *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 split: true,
             } as type.Plasma)
             break
@@ -101,7 +101,7 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
             shotCoolDownDuration =
                 3000 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             for (let i = 0; i < 3; i++) {
                 plasmas.push({
                     moveVector: rotVec(moveVector, 15 * (i - 1)),
@@ -110,12 +110,12 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                         2 +
                         findWeaponUpgrade(player, 'biggerProjectile') *
                             generalSize *
-                            (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                            (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                     imgsrc: '/gt/img/char/plasma.png',
                     damage:
                         1 +
                         findWeaponUpgrade(player, 'moreDamage') *
-                            (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                            (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 } as type.Plasma)
             }
             break
@@ -123,7 +123,7 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
             shotCoolDownDuration =
                 1000 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
                 vector: player.vector,
@@ -131,19 +131,19 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                     5 +
                     findWeaponUpgrade(player, 'biggerProjectile') *
                         generalSize *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
                     findWeaponUpgrade(player, 'moreDamage') *
-                        (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
             } as type.Plasma)
             break
         case 'safegun':
             shotCoolDownDuration =
                 10000 *
                 percent(findWeaponUpgrade(player, 'fasterReload') * 5, 'de') *
-                (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'de') : 1)
             for (let i = 0; i < 8; i++) {
                 plasmas.push({
                     moveVector: rotVec(moveVector, (360 / 8) * i),
@@ -152,12 +152,12 @@ export function weapons(player: type.Player, generalSize: number, lastDirection:
                         2 +
                         findWeaponUpgrade(player, 'biggerProjectile') *
                             generalSize *
-                            (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                            (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                     imgsrc: '/gt/img/char/plasma.png',
                     damage:
                         1 +
                         findWeaponUpgrade(player, 'moreDamage') *
-                            (player.passivTree.passivType == 'increaseGun' ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
+                            (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1),
                 } as type.Plasma)
             }
             break
