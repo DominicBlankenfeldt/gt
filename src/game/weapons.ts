@@ -52,7 +52,7 @@ export function weapons(
                 vector: playerInfo.vector,
                 size:
                     5 +
-                    weaponObject['biggerProjectile'] *
+                    percent(percent(weaponObject['biggerProjectile'] * 10, 'in') * 10, 'in') *
                         generalSize *
                         (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
@@ -71,10 +71,10 @@ export function weapons(
                 moveVector: moveVector,
                 vector: playerInfo.vector,
                 size:
-                    5 +
-                    weaponObject['biggerProjectile'] *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                    5 *
+                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                    generalSize *
+                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
@@ -92,10 +92,10 @@ export function weapons(
                 moveVector: moveVector,
                 vector: playerInfo.vector,
                 size:
-                    5 +
-                    weaponObject['biggerProjectile'] *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                    5 *
+                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                    generalSize *
+                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
@@ -114,10 +114,10 @@ export function weapons(
                     moveVector: rotVec(moveVector, 15 * (i - 1)),
                     vector: playerInfo.vector,
                     size:
-                        2 +
-                        weaponObject['biggerProjectile'] *
-                            generalSize *
-                            (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                        2 *
+                        percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                        generalSize *
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                     imgsrc: '/gt/img/char/plasma.png',
                     damage:
                         1 +
@@ -135,10 +135,10 @@ export function weapons(
                 moveVector: moveVector,
                 vector: playerInfo.vector,
                 size:
-                    5 +
-                    weaponObject['biggerProjectile'] *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                    5 *
+                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                    generalSize *
+                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
                     1 +
@@ -156,10 +156,10 @@ export function weapons(
                     moveVector: rotVec(moveVector, (360 / 8) * i),
                     vector: playerInfo.vector,
                     size:
-                        2 +
-                        weaponObject['biggerProjectile'] *
-                            generalSize *
-                            (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                        2 *
+                        percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                        generalSize *
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                     imgsrc: '/gt/img/char/plasma.png',
                     damage:
                         1 +

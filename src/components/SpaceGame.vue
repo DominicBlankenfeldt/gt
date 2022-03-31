@@ -713,7 +713,7 @@ export default defineComponent({
                         this.player.shop[shopItem].amount--
                         switch (shopItem) {
                             case 'lessStartEnemies':
-                                this.startingEnemies -= 1 + this.player.shop.lessStartEnemies.lvl
+                                this.startingEnemies -= this.player.shop.lessStartEnemies.lvl
                                 break
                             case 'higherDifficultyTimer':
                                 this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl

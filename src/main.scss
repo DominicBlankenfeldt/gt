@@ -132,13 +132,13 @@
     visibility: visible;
 }
 [data-title]:after {
-    content: '' attr(data-title) '\A 'attr(line2) '';
+    content: '' attr(data-title) '\A 'attr(line2) ' ';
     background-color: grey;
     color: black;
     font-size: 100%;
     position: absolute;
     padding: 1px 5px 2px 5px;
-    bottom: -1.6em;
+    bottom: -2.7rem;
     left: 0%;
     white-space: pre;
     box-shadow: 1px 1px 3px #222222;

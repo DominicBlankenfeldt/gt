@@ -31,19 +31,55 @@
                 </option>
             </select>
         </div>
-        <div v-for="weaponUpgrade of player.weaponTree.weaponUpgrades" :key="weaponUpgrade.name">
-            <button
-                class="mt-2 w-25 btn btn-primary shadow-none"
-                @click="lvlWeaponUpgrade(weaponUpgrade)"
-                @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-                :data-title="weaponDetails[weaponUpgrade.name].description"
-                :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
-                :disabled="weaponDetails[weaponUpgrade.name].tier == 10 && usedWeaponPoints < 30"
-            >
-                {{ weaponDetails[weaponUpgrade.name].name }}
-                <br />
-                lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
-            </button>
+        <div class="row g-0 mt-2">
+            <div class="col-3"></div>
+            <div class="d-flex flex-column col-2 mx-1">
+                <div v-for="weaponUpgrade of tier1Upgrades" :key="weaponUpgrade.name">
+                    <button
+                        class="mt-2 w-100 btn btn-primary shadow-none"
+                        @click="lvlWeaponUpgrade(weaponUpgrade)"
+                        @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+                        :data-title="weaponDetails[weaponUpgrade.name].description"
+                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                    >
+                        {{ weaponDetails[weaponUpgrade.name].name }}
+                        <br />
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex flex-column col-2 mx-1">
+                <div v-for="weaponUpgrade of tier2Upgrades" :key="weaponUpgrade.name">
+                    <button
+                        class="mt-2 w-100 btn btn-primary shadow-none"
+                        @click="lvlWeaponUpgrade(weaponUpgrade)"
+                        @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+                        :data-title="weaponDetails[weaponUpgrade.name].description"
+                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                        :disabled="usedWeaponPoints < 40"
+                    >
+                        {{ weaponDetails[weaponUpgrade.name].name }}
+                        <br />
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
+            <div class="d-flex flex-column col-2 mx-1">
+                <div v-for="weaponUpgrade of tier10Upgrades" :key="weaponUpgrade.name">
+                    <button
+                        class="mt-2 w-100 btn btn-primary shadow-none"
+                        @click="lvlWeaponUpgrade(weaponUpgrade)"
+                        @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+                        :data-title="weaponDetails[weaponUpgrade.name].description"
+                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                        :disabled="usedWeaponPoints < 70"
+                    >
+                        {{ weaponDetails[weaponUpgrade.name].name }}
+                        <br />
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="mt-2">
             <button class="btn btn-danger shadow-none" @click="resetWeaponTree()">reset weapontree</button>
@@ -85,6 +121,36 @@ export default defineComponent({
             for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades)
                 allWeaponlvl += weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier
             return allWeaponlvl
+        },
+        tier1Upgrades() {
+            let tier1 = [] as type.WeaponUpgrade[]
+            for (let upgrade of this.player.weaponTree.weaponUpgrades) {
+                if (weaponDetails[upgrade.name].tier == 1 && weaponDetails[upgrade.name].maxlvl != 1) {
+                    tier1.push(upgrade)
+                }
+            }
+            tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1))
+            return tier1
+        },
+        tier2Upgrades() {
+            let tier2 = [] as type.WeaponUpgrade[]
+            for (let upgrade of this.player.weaponTree.weaponUpgrades) {
+                if (weaponDetails[upgrade.name].tier == 2 && weaponDetails[upgrade.name].maxlvl != 1) {
+                    tier2.push(upgrade)
+                }
+            }
+            tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1))
+            return tier2
+        },
+        tier10Upgrades() {
+            let tier10 = [] as type.WeaponUpgrade[]
+            for (let upgrade of this.player.weaponTree.weaponUpgrades) {
+                if (weaponDetails[upgrade.name].tier == 10 && weaponDetails[upgrade.name].maxlvl != 1) {
+                    tier10.push(upgrade)
+                }
+            }
+            tier10.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1))
+            return tier10
         },
     },
     mounted() {
