@@ -21,7 +21,7 @@
                         {{ skillDetails[skill.name].name }}
                         <br />
                         lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
                         }}
                     </button>
                 </div>
@@ -38,7 +38,7 @@
                         {{ skillDetails[skill.name].name }}
                         <br />
                         lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
                         }}
                     </button>
                 </div>
@@ -56,7 +56,7 @@
                         {{ skillDetails[skill.name].name }}
                         <br />
                         lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
                         }}
                     </button>
                 </div>
@@ -74,7 +74,7 @@
                         {{ skillDetails[skill.name].name }}
                         <br />
                         lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBossesTotalchaos : 0)
+                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
                         }}
                     </button>
                 </div>
