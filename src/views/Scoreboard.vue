@@ -2,13 +2,13 @@
     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <ScoreCard :bestPlayers="bestPlayersNormal" :player="player" title="normal" highscore="highscore" />
+                <ScoreCard :bestPlayers="bestPlayersNormal" :player="player" title="normal" highscore="normal" />
             </div>
             <div class="carousel-item">
-                <ScoreCard :bestPlayers="bestPlayersHardcore" :player="player" title="hardcore" highscore="highscoreHardcore" />
+                <ScoreCard :bestPlayers="bestPlayersHardcore" :player="player" title="hardcore" highscore="hardcore" />
             </div>
             <div class="carousel-item">
-                <ScoreCard :bestPlayers="bestPlayersTotalchaos" :player="player" title="totalchaos" highscore="highscoreTotalchaos" />
+                <ScoreCard :bestPlayers="bestPlayersTotalchaos" :player="player" title="totalchaos" highscore="totalchaos" />
             </div>
             <!-- <div class="carousel-item">
                 <ScoreCard :bestPlayers="bestPlayersPlayTime" :player="player" title="played-time" highscore="playedTime" />
@@ -85,15 +85,15 @@ export default defineComponent({
         }
     },
     async mounted() {
-        let result = await API.getBestPlayers('player.highscore')
+        let result = await API.getBestPlayers('player.highscore.normal')
         if (result) {
             this.bestPlayersNormal = result.reverse() as type.User[]
         }
-        result = await API.getBestPlayers('player.highscoreHardcore')
+        result = await API.getBestPlayers('player.highscore.hardcore')
         if (result) {
             this.bestPlayersHardcore = result.reverse() as type.User[]
         }
-        result = await API.getBestPlayers('player.highscoreTotalchaos')
+        result = await API.getBestPlayers('player.highscore.totalchaos')
         if (result) {
             this.bestPlayersTotalchaos = result.reverse() as type.User[]
         }

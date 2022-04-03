@@ -13,7 +13,7 @@
                 {{ bestPlayers[0]?.player.username }}
             </div>
             <div @click="choosePlayer(bestPlayers[0]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
-                {{ Math.round(bestPlayers[0]?.player[highscore]) }}
+                {{ Math.round(bestPlayers[0]?.player.highscore[highscore]) }}
             </div>
         </div>
         <div class="col-12 row g-0 justify-content-between">
@@ -25,7 +25,7 @@
                     {{ bestPlayers[1]?.player.username }}
                 </div>
                 <div @click="choosePlayer(bestPlayers[1]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
-                    {{ Math.round(bestPlayers[1]?.player[highscore]) }}
+                    {{ Math.round(bestPlayers[1]?.player.highscore[highscore]) }}
                 </div>
             </div>
 
@@ -37,7 +37,7 @@
                     {{ bestPlayers[2]?.player.username }}
                 </div>
                 <div @click="choosePlayer(bestPlayers[2]?.player)" data-bs-toggle="modal" :data-bs-target="`#playerCard${title}`">
-                    {{ Math.round(bestPlayers[2]?.player[highscore]) }}
+                    {{ Math.round(bestPlayers[2]?.player.highscore[highscore]) }}
                 </div>
             </div>
 
@@ -50,7 +50,7 @@
                     class="mt-2"
                 >
                     {{ bestPlayer?.player.username }} :
-                    {{ Math.round(bestPlayer?.player[highscore]) }}
+                    {{ Math.round(bestPlayer?.player.highscore[highscore]) }}
                 </div>
             </div>
         </div>
