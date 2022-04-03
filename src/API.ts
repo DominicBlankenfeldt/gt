@@ -73,6 +73,7 @@ export async function getBestPlayers(sortBy: string) {
 }
 export async function addPlayer(player: type.Player): Promise<void> {
     //plz rename to "updatePlayer"
+    console.log('h')
     const id = getAuth().currentUser?.uid
     if (id) {
         await updateDoc(doc(getFirestore(), 'users', id), {

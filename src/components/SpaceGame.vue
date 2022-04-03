@@ -50,6 +50,9 @@
                         <br />
                         {{ (effects.stopTime.duration / 1000).toFixed(1) }}
                     </div>
+                    <div>
+                        {{ gameStarted }}
+                    </div>
                 </div>
                 <div class="game" :class="{ noneCursor: gameStarted }">
                     <div
@@ -574,8 +577,11 @@ export default defineComponent({
         },
     },
     async mounted() {
+        console.log('mounted')
         // start game if not started on enter press
-        document.addEventListener('keyup', e => e.code == 'Enter' && !this.gameStarted && this.start())
+        document.addEventListener('keyup', e => {
+            if (e.code == 'Enter' && !this.gameStarted) this.start()
+        })
         window.addEventListener('resize', () => {
             this.changeDisplaySize()
         })
@@ -690,6 +696,7 @@ export default defineComponent({
         },
         start() {
             if (this.gameStarted) return
+            this.gameStarted = true
             this.buttonSound()
             this.playerInfo.hP = 1 + this.weaponObject['moreHP']
             if (this.bossFight) {
@@ -725,9 +732,9 @@ export default defineComponent({
                     }
                 }
             }
+            this.reset()
             this.scoreMultiplier = 2
             this.playerInfo.speed = 5
-            this.reset()
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
             this.score = 0
@@ -740,7 +747,7 @@ export default defineComponent({
             this.unlockMessage = ''
             this.startButtonText = 'start'
             this.cancelButtonText = ''
-            this.gameStarted = true
+
             window.onkeyup = (e: any) => {
                 this.pressedKeys[e.key] = false
             }
@@ -753,22 +760,22 @@ export default defineComponent({
             this.countgps()
         },
         reset() {
-            ;(this.effects = {
+            this.effects = {
                 grow: { active: false, duration: 0 },
                 magnet: { active: false, duration: 0 },
                 stopTime: { active: false, duration: 0 },
                 slowEnemies: { active: false, duration: 0 },
-            }),
-                (this.coolDowns = {
-                    bombAbility: 0,
-                    shotAbility: 0,
-                    fastAbility: 0,
-                    slowAbility: 0,
-                    magnetAbility: 0,
-                    slowEnemyAbility: 0,
-                    stopTimeAbility: 0,
-                    growAbility: 0,
-                })
+            }
+            this.coolDowns = {
+                bombAbility: 0,
+                shotAbility: 0,
+                fastAbility: 0,
+                slowAbility: 0,
+                magnetAbility: 0,
+                slowEnemyAbility: 0,
+                stopTimeAbility: 0,
+                growAbility: 0,
+            }
         },
         //total chaos mode
         handleTotalchaos() {
@@ -880,6 +887,7 @@ export default defineComponent({
             this.message = ''
         },
         async gameOver(message: string, messageType: string) {
+            console.log('gameOver')
             if (this.bossFight) {
                 this.score = 0
                 this.startButtonText = 'try again'
@@ -911,6 +919,7 @@ export default defineComponent({
             if (this.score > this.player.highscore[this.player.playMode]) this.player.highscore[this.player.playMode] = this.score
             this.setSkillPoints()
             try {
+                console.log('why', message)
                 await API.addPlayer(this.player)
             } catch {
                 API.logout()
