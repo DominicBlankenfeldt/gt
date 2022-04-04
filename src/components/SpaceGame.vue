@@ -53,9 +53,6 @@
                             <br />
                             {{ (effects.stopTime.duration / 1000).toFixed(1) }}
                         </div>
-                        <div>
-                            {{ gameStarted }}
-                        </div>
                     </div>
                     <div class="game" :class="{ noneCursor: gameStarted }">
                         <div
@@ -404,6 +401,7 @@
                                         }
                                     "
                                     :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
+                                    :data-title="shopDetails[shopItem].description"
                                 >
                                     use {{ shopDetails[shopItem].name }}
                                 </label>
@@ -598,10 +596,10 @@ export default defineComponent({
         document.onkeyup = (e: any) => {
             if (e.code == 'Enter' && !this.gameStarted) this.start()
         }
-        this.gameStarted = false
-        window.addEventListener('resize', () => {
+
+        window.onresize = () => {
             this.changeDisplaySize()
-        })
+        }
         setInterval(async () => {
             if (this.gameStarted) await this.gameloop()
         }, 1000 / 60)
@@ -712,7 +710,6 @@ export default defineComponent({
             await this.handleBossEnemyDead()
         },
         start() {
-            console.log('f')
             if (this.gameStarted) return
             this.gameStarted = true
             this.buttonSound()

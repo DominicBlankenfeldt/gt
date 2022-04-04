@@ -41,7 +41,8 @@
                         @click="upgradeShopItem(shopItem)"
                         class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                         style="padding-top: 1.375rem; padding-bottom: 1.375rem"
-                        :data-title="`costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`"
+                        :data-title="shopDetails[shopItem].description"
+                        :line2="`costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`"
                     >
                         upgrade {{ shopDetails[shopItem].name }}
                         <br />
@@ -54,7 +55,8 @@
                     @click="upgradeShopItem('passivSlots')"
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                     style="padding-top: 1.375rem; padding-bottom: 1.375rem"
-                    :data-title="`costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`"
+                    data-title="unlocks additional passive slots"
+                    :line2="`costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`"
                 >
                     {{ shopDetails['passivSlots'].name }}
                     <br />

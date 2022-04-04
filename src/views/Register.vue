@@ -110,7 +110,7 @@ export default defineComponent({
     },
     async mounted() {
         this.player = checkPlayer(this.player)
-        music.ButtonSound(10)
+        music.ButtonSound(50)
     },
     methods: {
         async register() {
@@ -126,8 +126,7 @@ export default defineComponent({
                 await API.register(this.email, this.password, this.player)
                 this.$router.push('/home')
             } catch (e) {
-                console.log("couldn't register", e)
-                music.ButtonSound(10)
+                music.ButtonSound(50)
                 this.error = 'Unfortunately, the account could not be registered'
             } finally {
                 this.registering = false

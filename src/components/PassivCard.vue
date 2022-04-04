@@ -19,7 +19,7 @@
                         @click="buttonSound()"
                     >
                         <option :value="player.passivTree.passivType[passiv - 1]" :title="player.passivTree.passivType[passiv - 1]?.description">
-                            {{ player.passivTree.passivType[passiv - 1] }}
+                            {{ passivDetails[player.passivTree.passivType[passiv - 1]].name }}
                         </option>
                         <option
                             @click="buttonSound()"
@@ -29,7 +29,7 @@
                             :key="passivAvaibleType"
                             :title="passivDetails[passivAvaibleType]?.description"
                         >
-                            {{ passivAvaibleType }}
+                            {{ passivDetails[passivAvaibleType].name }}
                         </option>
                         <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < passivAmount" disabled>
                             unlock more by fight the boss

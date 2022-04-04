@@ -31,7 +31,7 @@ export const weaponDetails = {
     biggerProjectile: { name: 'big plasma', maxlvl: 20, tier: 1, description: 'your plasma gets bigger' },
     fasterProjectile: { name: 'high frequency', maxlvl: 20, tier: 1, description: 'your plasma gets faster' },
     fasterReload: { name: 'load automatically', maxlvl: 20, tier: 1, description: 'increases your reload speed' },
-    scorePerHit: { name: 'scorePerHit', maxlvl: 15, tier: 2, description: 'increases the score received from shot enemies' },
+    scorePerHit: { name: 'goldenGun', maxlvl: 15, tier: 2, description: 'increases the score received from shot enemies' },
     moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
     standard: { description: 'the standard gun', maxlvl: 0 },
     shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
@@ -42,11 +42,11 @@ export const weaponDetails = {
 }
 export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).length
 export const passivDetails = {
-    increaseScore: { name: 'increaseScore', maxlvl: 50, description: 'increases overall score gain' },
-    increaseGun: { name: 'increaseGun', maxlvl: 50, description: 'increases all weapon stats' },
-    nerfEnemies: { name: 'nerfEnemies', maxlvl: 50, description: 'less enemies and they are slower' },
-    moreItems: { name: 'moreItems', maxlvl: 50, description: 'more items spawn' },
-    nerfBoss: { name: 'nerfBoss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
+    increaseScore: { name: 'all golden', maxlvl: 50, description: 'increases overall score gain' },
+    increaseGun: { name: 'modern weapons', maxlvl: 50, description: 'increases all weapon stats' },
+    nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and they are slower' },
+    moreItems: { name: 'oodles itemes', maxlvl: 50, description: 'more items spawn' },
+    nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
 }
 export const passivAmount = Object.values(passivDetails).length + 1
 export const maxEnergyCell = 100
@@ -56,7 +56,7 @@ export const maxLowerScoreTimer = 10
 export const shopDetails = {
     energyCell: { name: 'energyCell', max: maxEnergyCell, maxlvl: 3, description: 'is needed to use abilities', cost: 1, upgradeCost: 2000 },
     lessStartEnemies: {
-        name: 'lessStartEnemies',
+        name: 'corruption',
         max: maxLessStartEnemies,
         maxlvl: 3,
         description: 'fewer enemies appear at the beginning',
@@ -64,7 +64,7 @@ export const shopDetails = {
         upgradeCost: 1000,
     },
     higherDifficultyTimer: {
-        name: 'higherDifficultyTimer',
+        name: 'easy mode',
         max: maxHigherDifficultyTimer,
         maxlvl: 3,
         description: 'it takes longer to increase the difficulty',
@@ -72,7 +72,7 @@ export const shopDetails = {
         upgradeCost: 1000,
     },
     lowerScoreTimer: {
-        name: 'lowerScoreTimer',
+        name: 'faster gold',
         max: maxLowerScoreTimer,
         maxlvl: 3,
         description: 'the score growth is increased faster',
