@@ -47,8 +47,9 @@ export const passivDetails = {
     nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and they are slower' },
     moreItems: { name: 'oodles itemes', maxlvl: 50, description: 'more items spawn' },
     nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
+    none: { name: 'none', maxlvl: 0, description: 'none' },
 }
-export const passivAmount = Object.values(passivDetails).length + 1
+export const passivAmount = Object.values(passivDetails).length
 export const maxEnergyCell = 100
 export const maxLessStartEnemies = 10
 export const maxHigherDifficultyTimer = 10
