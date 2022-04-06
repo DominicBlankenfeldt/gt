@@ -33,6 +33,7 @@ export const weaponDetails = {
     fasterReload: { name: 'load automatically', maxlvl: 20, tier: 1, description: 'increases your reload speed' },
     scorePerHit: { name: 'goldenGun', maxlvl: 15, tier: 2, description: 'increases the score received from shot enemies' },
     moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
+
     standard: { description: 'the standard gun', maxlvl: 0 },
     shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
     MG: { description: 'faster reload', maxlvl: 0 },
@@ -125,7 +126,7 @@ export function checkPlayer(player: type.Player) {
     player.playedTime = player.playedTime || 0
     player.shop = player.shop || {}
     player.shop.currency = player.shop.currency || 0
-    for (const shopElement of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer', 'passivSlots']) {
+    for (const shopElement of Object.keys(shopDetails)) {
         player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || { amount: 0, reBuy: false, use: false, lvl: 1 }
     }
     player.weaponTree =
@@ -136,7 +137,9 @@ export function checkPlayer(player: type.Player) {
             weaponPoints: 0,
             weaponUpgrades: [] as type.WeaponUpgrade[],
         } as type.WeaponTree)
-    for (const weaponUpgrade of ['moreDamage', 'biggerProjectile', 'fasterProjectile', 'fasterReload', 'moreHP', 'scorePerHit']) {
+    for (const weaponUpgrade of Object.entries(weaponDetails)
+        .filter(([key, value]) => value.maxlvl)
+        .flatMap(([key, value]) => key) as type.weaponType[]) {
         if (checkWeaponUpgrade(player, weaponUpgrade)) {
             player.weaponTree.weaponUpgrades.push({ name: weaponUpgrade as type.WeaponUpgradeName, lvl: 0 })
         }
@@ -149,37 +152,16 @@ export function checkPlayer(player: type.Player) {
             skillPoints: 0,
             skills: [] as type.Skill[],
         } as type.SkillTree)
-    for (const skill of [
-        'shotAbility',
-        'fastAbility',
-        'slowAbility',
-        'bombAbility',
-        'magnetAbility',
-        'slowEnemyAbility',
-        'stopTimeAbility',
-        'growAbility',
-    ]) {
+    for (const skill of Object.entries(skillDetails)
+        .filter(([key, value]) => value.maxlvl == 1)
+        .flatMap(([key, value]) => key)) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
     }
-    for (const skill of [
-        'longerStopTime',
-        'longerSlowEnemies',
-        'slowEnemy',
-        'spawnLessEnemy',
-        'scoreMultiplicator',
-        'betterCoin',
-        'longerMagnet',
-        'betterGrowPotion',
-        'smallerBlackHole',
-        'scorePerEffect',
-        'strongerSlowEnemies',
-        'strongerMagnet',
-        'friendlierDarkhole',
-        'smallerEnemies',
-        'shieldGenerator',
-    ]) {
+    for (const skill of Object.entries(skillDetails)
+        .filter(([key, value]) => value.maxlvl != 1)
+        .flatMap(([key, value]) => key)) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
@@ -188,18 +170,15 @@ export function checkPlayer(player: type.Player) {
         player.passivTree ||
         ({
             passivType: ['none', 'none', 'none'],
-            passivAvaibleTypes: ['none'],
+            passivAvaibleTypes: [],
             passivPoints: 0,
             passivUpgrades: [] as type.PassivUpgrade[],
         } as type.PassivTree)
-    for (const passivUpgrade of ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss']) {
+    for (const passivUpgrade of Object.keys(passivDetails)) {
         if (checkPassivUpgrade(player, passivUpgrade)) {
             player.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
         }
     }
-    if (typeof player.passivTree.passivType == 'string') player.passivTree.passivType = ['none', 'none', 'none']
-    player.passivTree.passivType = player.passivTree.passivType || ['none', 'none', 'none']
-    player.passivTree.passivAvaibleTypes = player.passivTree.passivAvaibleTypes || ['none']
     return player
 }
 

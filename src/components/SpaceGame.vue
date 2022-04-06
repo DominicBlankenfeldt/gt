@@ -181,6 +181,9 @@
                             <br />
                             {{ unlockMessage }}
                         </div>
+                        <div v-if="pointsMessage" class="alert alert-success">
+                            {{ pointsMessage }}
+                        </div>
                         <button
                             v-if="!gameStarted"
                             class="btn shadow-none"
@@ -423,7 +426,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec, addVecNum, subVecVec } from '@/game/vectors'
-import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell, shopDetails } from '@/global'
+import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell, shopDetails, weaponDetails } from '@/global'
 import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
@@ -439,7 +442,7 @@ export default defineComponent({
         production
         currentUser
         skillDetails
-
+        weaponDetails
         return {
             findSkill,
             skillDetails,
@@ -456,6 +459,7 @@ export default defineComponent({
             user: currentUser,
             message: '',
             unlockMessage: '',
+            pointsMessage: '',
             messageType: '',
             startButtonText: 'start',
             cancelButtonText: '',
@@ -761,9 +765,9 @@ export default defineComponent({
             this.enemyPlasmas = [] as type.Plasma[]
             this.message = ''
             this.unlockMessage = ''
+            this.pointsMessage = ''
             this.startButtonText = 'start'
             this.cancelButtonText = ''
-
             window.onkeyup = (e: any) => {
                 this.pressedKeys[e.key] = false
             }
@@ -940,27 +944,28 @@ export default defineComponent({
             }
         },
         setSkillPoints() {
-            this.player.skillTree.skillPoints = Math.floor(this.player.highscore['normal'] / 1000)
-            this.player.weaponTree.weaponPoints = Math.floor(this.player.highscore['hardcore'] / 500)
-            this.player.passivTree.passivPoints = Math.floor(this.player.highscore['totalchaos'] / 2000)
+            if (this.player.skillTree.skillPoints < Math.floor(this.player.highscore['normal'] / 1000)) {
+                this.pointsMessage = `you get ${Math.floor(this.player.highscore['normal'] / 1000) - this.player.skillTree.skillPoints} skillpoints`
+                this.player.skillTree.skillPoints = Math.floor(this.player.highscore['normal'] / 1000)
+            }
+            if (this.player.weaponTree.weaponPoints < Math.floor(this.player.highscore['hardcore'] / 500)) {
+                this.pointsMessage = `you get ${
+                    Math.floor(this.player.highscore['hardcore'] / 500) - this.player.weaponTree.weaponPoints
+                } weaponpoints`
+                this.player.weaponTree.weaponPoints = Math.floor(this.player.highscore['hardcore'] / 500)
+            }
+            if (this.player.passivTree.passivPoints < Math.floor(this.player.highscore['totalchaos'] / 2000)) {
+                this.pointsMessage = `you get ${
+                    Math.floor(this.player.highscore['totalchaos'] / 2000) - this.player.passivTree.passivPoints
+                } passivpoints`
+                this.player.passivTree.passivPoints = Math.floor(this.player.highscore['totalchaos'] / 2000)
+            }
         },
         // boss
         bossAvailable(type: type.BossType) {
             if (!findSkill(this.player, 'shotAbility')) return `skill ${skillDetails['shotAbility'].name}`
             if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) return `select ${skillDetails['shotAbility'].name}`
-            switch (type) {
-                case 'normal':
-                    if (this.bossEnemy.type == 'normal') return 'cancel'
-                    break
-
-                case 'hardcore':
-                    if (this.bossEnemy.type == 'hardcore') return 'cancel'
-                    break
-
-                case 'totalchaos':
-                    if (this.bossEnemy.type == 'totalchaos') return 'cancel'
-                    break
-            }
+            if (this.bossEnemy.type == type) return 'cancel'
             if (this.player.highscore[type] >= this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de'))
                 return 'Boss fight available'
             else return `You need ${this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de')} highscore`
@@ -1140,8 +1145,10 @@ export default defineComponent({
         },
         async handleBossEnemyDead() {
             if (this.bossEnemy.hP <= 0) {
-                let newWeaponAvaibleType = ['standard', 'shotgun', 'MG', 'aimgun', 'splitgun', 'safegun'] as type.weaponType[]
-                let newPassivAvaibleType = ['increaseScore', 'increaseGun', 'nerfEnemies', 'moreItems', 'nerfBoss'] as type.PassivType[]
+                let newWeaponAvaibleType = Object.entries(weaponDetails)
+                    .filter(([key, value]) => !value.maxlvl)
+                    .flatMap(([key, value]) => key) as type.weaponType[]
+                let newPassivAvaibleType = Object.keys(this.passivObject) as type.PassivType[]
                 let unlock
                 this.player.defeatedBosses[this.bossEnemy.type]++
                 switch (this.bossEnemy.type) {
@@ -1152,7 +1159,6 @@ export default defineComponent({
                             this.player.weaponTree.weaponAvaibleTypes.push(unlock)
                             this.unlockMessage = `you have unlocked the ${unlock}`
                         }
-
                         break
                     case 'hardcore':
                         newPassivAvaibleType = newPassivAvaibleType.filter(n => this.player.passivTree.passivAvaibleTypes.every(p => n != p))
@@ -1161,7 +1167,6 @@ export default defineComponent({
                             this.player.passivTree.passivAvaibleTypes.push(unlock)
                             this.unlockMessage = `you have unlocked ${unlock}`
                         }
-
                         break
                     case 'totalchaos':
                         this.unlockMessage = `the maximum level of your skills is increased`
