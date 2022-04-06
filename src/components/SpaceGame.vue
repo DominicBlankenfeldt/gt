@@ -510,6 +510,7 @@ export default defineComponent({
             weaponObject: {} as type.WeaponObject,
             multiplicator: 1,
             shield: 0,
+            maxShield: 1,
             // boss
             bossEnemy: {} as type.BossEnemy,
             enemyPlasmas: [] as type.Plasma[],
@@ -770,7 +771,7 @@ export default defineComponent({
                 this.pressedKeys[e.key] = true
             }
             for (let i = 0; i < this.startingEnemies; i++) createEnemy(this.enemies, this.generalSize, this.field, this.skillObject, this.playerInfo)
-            if (this.skillObject['shieldGenerator']) this.shield = 1
+            if (this.skillObject['shieldGenerator']) this.shield = this.maxShield
             clearTimeout(this.countgpsID)
             this.countgps()
         },
@@ -1239,8 +1240,7 @@ export default defineComponent({
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.playerInfo, plasma)) {
                     if (this.shield) {
-                        this.shield--
-                        setTimeout(() => this.shield++, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
+                        this.handleShield()
                     } else {
                         this.playerInfo.hP--
                         if (this.playerInfo.hP <= 0) {
@@ -1252,6 +1252,12 @@ export default defineComponent({
                     return
                 }
             }
+        },
+        handleShield() {
+            this.shield--
+            setTimeout(() => {
+                if (this.shield < this.maxShield) this.shield++
+            }, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
         },
         blackHoleColision(item: type.Item) {
             this.gravity(item, this.playerInfo, 3, 1 - this.skillObject['friendlierDarkhole'] / 100)
@@ -1298,8 +1304,7 @@ export default defineComponent({
                 if (enemy.isMagnet) this.gravity(enemy, this.playerInfo, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.playerInfo)) {
                     if (this.shield) {
-                        this.shield--
-                        setTimeout(() => this.shield++, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
+                        this.handleShield()
                     } else {
                         this.playerInfo.hP--
                         if (this.playerInfo.hP <= 0) {
@@ -1497,9 +1502,6 @@ export default defineComponent({
         },
 
         //playermovement
-        handleShield() {
-            if (!this.shield) this.shield++
-        },
         handlePlayerMovement() {
             const newPlayer = playerMovement(
                 this.player,
