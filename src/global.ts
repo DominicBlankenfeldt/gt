@@ -87,9 +87,9 @@ export const shopDetails = {
     passivSlots: { name: 'passivSlots', maxlvl: 3, max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
 }
 export const houseDetails = {
-    skill: { name: 'research lab', maxlvl: 3, description: 'increase your skills max lvl', upgradeCost: 500000 },
-    weapon: { name: 'weapons lab', maxlvl: 3, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
-    passiv: { name: 'atom lab', maxlvl: 3, description: 'increase your passivs max lvl', upgradeCost: 500000 },
+    skill: { name: 'research lab', maxlvl: 5, description: 'increase your skills max lvl', upgradeCost: 500000 },
+    weapon: { name: 'weapons lab', maxlvl: 5, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
+    passiv: { name: 'atom lab', maxlvl: 5, description: 'increase your passivs max lvl', upgradeCost: 500000 },
 }
 //player
 

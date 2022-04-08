@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 7.2vh" v-if="dataLoad">
-        <div data-title="you get scrap when enemies die" class="w-25 d-inline">
+        <div data-title="you get a building license when you kill" line2="the totalchaos boss" class="w-25 d-inline">
             building licenses:
             <br />
             {{ player.defeatedBosses.totalchaos - usedLicenses }}/{{ player.defeatedBosses.totalchaos }}
