@@ -21,7 +21,7 @@ export const skillDetails = {
     longerMagnet: { name: 'permanent magnet', maxlvl: 20, tier: 1, description: 'the magnet lasts longer' },
     scorePerEffect: { name: 'golden effects', maxlvl: 20, tier: 2, description: 'gives you score per active effect' },
     strongerSlowEnemies: { name: 'super snowflake', maxlvl: 20, tier: 2, description: 'enhances the slow enemies effect' },
-    strongerMagnet: { name: 'super Magnet', maxlvl: 20, tier: 2, description: 'enhances the slow magnet effect' },
+    strongerMagnet: { name: 'super Magnet', maxlvl: 20, tier: 2, description: 'enhances the magnet effect' },
     friendlierDarkhole: { name: 'friendlier Darkhole', maxlvl: 20, tier: 2, description: 'weakens the attraction of the black holes' },
     smallerEnemies: { name: 'cute enemies', maxlvl: 20, tier: 2, description: 'makes enemies smaller' },
     shieldGenerator: { name: 'shield generator', maxlvl: 5, tier: 3, description: 'regularly gives you a shield' },
@@ -31,8 +31,9 @@ export const weaponDetails = {
     biggerProjectile: { name: 'big plasma', maxlvl: 20, tier: 1, description: 'your plasma gets bigger' },
     fasterProjectile: { name: 'high frequency', maxlvl: 20, tier: 1, description: 'your plasma gets faster' },
     fasterReload: { name: 'load automatically', maxlvl: 20, tier: 1, description: 'increases your reload speed' },
-    scorePerHit: { name: 'goldenGun', maxlvl: 15, tier: 2, description: 'increases the score received from shot enemies' },
+    scorePerHit: { name: 'goldenGun', maxlvl: 20, tier: 2, description: 'increases the score received from shot enemies' },
     moreHP: { name: 'defense systems', maxlvl: 2, tier: 10, description: 'gives you more HP' },
+    munitionsDepot: { name: 'munitions depot', maxlvl: 20, tier: 2, description: 'increases your energyCell storage' },
 
     standard: { description: 'the standard gun', maxlvl: 0 },
     shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
@@ -48,7 +49,9 @@ export const passivDetails = {
     nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and they are slower' },
     moreItems: { name: 'oodles itemes', maxlvl: 50, description: 'more items spawn' },
     nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
-    none: { name: 'none', maxlvl: 0, description: 'none' },
+    longerEffects: { name: 'infinite effects', maxlvl: 50, description: 'all effects last longer' },
+    moreScrap: { name: 'scrap collector', maxlvl: 50, description: 'you get more scrap' },
+    none: { name: 'none', maxlvl: 0, description: '<3' },
 }
 export const passivAmount = Object.values(passivDetails).length
 export const maxEnergyCell = 100
@@ -83,7 +86,11 @@ export const shopDetails = {
     },
     passivSlots: { name: 'passivSlots', maxlvl: 3, max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
 }
-
+export const houseDetails = {
+    skill: { name: 'research lab', maxlvl: 3, description: 'increase your skills max lvl', upgradeCost: 500000 },
+    weapon: { name: 'weapons lab', maxlvl: 3, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
+    passiv: { name: 'atom lab', maxlvl: 3, description: 'increase your passivs max lvl', upgradeCost: 500000 },
+}
 //player
 
 export function checkPlayer(player: type.Player) {
@@ -179,9 +186,19 @@ export function checkPlayer(player: type.Player) {
             player.passivTree.passivUpgrades.push({ name: passivUpgrade as type.PassivUpgradeName, lvl: 0 })
         }
     }
+    player.spaceport = player.spaceport || {
+        houses: [] as type.House[],
+    }
+    for (const house of Object.keys(houseDetails)) {
+        if (checkHouse(player, house)) {
+            player.spaceport.houses.push({ name: house as type.HouseName, lvl: 0, needScore: 0 })
+        }
+    }
     return player
 }
-
+function checkHouse(player: type.Player, house: string) {
+    return player.spaceport.houses[player.spaceport.houses.findIndex(s => s.name == house)] === undefined
+}
 function checkWeaponUpgrade(player: type.Player, weaponUpgrade: string) {
     return player.weaponTree.weaponUpgrades[player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)] === undefined
 }

@@ -168,6 +168,27 @@ export function weapons(
                 } as type.Plasma)
             }
             break
+        case 'bazooka':
+            shotCoolDownDuration =
+                6000 *
+                percent(weaponObject['fasterReload'] * 5, 'de') *
+                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
+            plasmas.push({
+                moveVector: moveVector,
+                vector: playerInfo.vector,
+                size:
+                    15 *
+                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
+                    generalSize *
+                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                imgsrc: '/gt/img/char/plasma.png',
+                damage:
+                    1 +
+                    weaponObject['moreDamage'] *
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1) *
+                        3,
+            } as type.Plasma)
+            break
     }
     return { shotCoolDownDuration: shotCoolDownDuration, plasmas: plasmas }
 }

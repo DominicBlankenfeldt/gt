@@ -19,7 +19,7 @@
                             />
                             <label class="placeholder-text"><div class="text">search Fleet</div></label>
                         </div>
-                        <button class="btn btn-outline-success shadow-none mb-3 ms-3" type="submit" @click="searchSpaceFleets()">Search</button>
+                        <button class="btn btn-primary shadow-none mb-3 ms-3" type="submit" @click="searchSpaceFleets()">Search</button>
                     </div>
                 </form>
             </div>
@@ -141,7 +141,7 @@
                 <div class="col-3">
                     <button
                         v-if="!player.spaceFleet"
-                        class="btn btn-warning shadow-none"
+                        class="btn btn-primary shadow-none"
                         data-bs-toggle="modal"
                         data-bs-target="#exampleModal"
                         @click="buttonSound()"

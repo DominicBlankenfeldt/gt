@@ -1,9 +1,11 @@
 <template>
     <div id="nav">
         <router-link v-if="!user" to="/" @keydown.enter.prevent>Login</router-link>
-        <router-link v-if="user" to="/home" @keydown.enter.prevent>Player-Card</router-link>
+        <router-link v-if="user" to="/home" @keydown.enter.prevent>Player Card</router-link>
         <a>|</a>
         <router-link v-if="user" to="/skillTree" @keydown.enter.prevent>Upgrades</router-link>
+        <a v-if="user">|</a>
+        <router-link v-if="user" to="/spaceport" @keydown.enter.prevent>Space Port</router-link>
         <a v-if="user">|</a>
         <router-link v-if="user" to="/fleet" @keydown.enter.prevent>Space Fleet</router-link>
         <a v-if="user">|</a>

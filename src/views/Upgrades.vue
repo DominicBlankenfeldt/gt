@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top: 8vh" v-if="dataLoad">
+    <div style="margin-top: 7.2vh" v-if="dataLoad">
         <div class="btn-group rounded w-50 mt-2" role="group" aria-label="Basic radio toggle button group">
             <input
                 type="radio"

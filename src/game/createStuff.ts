@@ -13,22 +13,9 @@ export function createEnemy(
     let type = ''
     let imgsrc = ''
     let timer = 0
+    timer++
     let moveArray = [0, 0] as type.Vector
     let circleDir = ''
-    switch (getRandomInt(4)) {
-        case 0:
-            imgsrc = '/gt/img/char/enemy_pingu.png'
-            break
-        case 1:
-            imgsrc = '/gt/img/char/enemy_cupcake.gif'
-            break
-        case 2:
-            imgsrc = '/gt/img/char/enemy_gasman.gif'
-            break
-        case 3:
-            imgsrc = '/gt/img/char/enemy_komet.gif'
-            break
-    }
     switch (getRandomInt(3)) {
         case 0:
             size = 20 * generalSize * percent(skillObject['smallerEnemies'], 'de')
@@ -64,23 +51,29 @@ export function createEnemy(
     switch (getRandomInt(6)) {
         case 0:
             type = 'curve'
+            imgsrc = '/gt/img/char/enemy_space_debris1.gif'
             break
         case 1:
             type = 'aimbot'
+            imgsrc = '/gt/img/char/enemy_komet.gif'
             break
         case 2:
             type = 'chasebot'
+            imgsrc = '/gt/img/char/enemy_gasman.gif'
             timer = 450
             break
         case 3:
             type = 'circle'
+            imgsrc = '/gt/img/char/enemy_rino_fish_spin.gif'
             break
         case 4:
             type = 'random'
+            imgsrc = '/gt/img/char/enemy_blue-nebula.gif'
             timer = 900
             break
         case 5:
             type = 'spiral'
+            imgsrc = '/gt/img/char/enemy_satenna.gif'
             timer = 100
             break
     }

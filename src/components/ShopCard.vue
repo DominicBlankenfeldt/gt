@@ -10,9 +10,25 @@
         <div class="d-flex justify-content-center">
             <div>
                 <div v-for="shopItem of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
+                    <label
+                        v-if="shopItem != 'energyCell'"
+                        class="form-check-label w-100 rounded-top unselectable pointer"
+                        style="height: 3vh"
+                        @click="
+                            {
+                                ;(player.shop[shopItem].use = !player.shop[shopItem].use), buttonSound()
+                            }
+                        "
+                        :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
+                        :data-title="shopDetails[shopItem].description"
+                    >
+                        use {{ shopDetails[shopItem].name }}
+                    </label>
                     <button
                         @click="buyShopItem(shopItem)"
-                        class="w-100 btn btn-primary align-self-center shadow-none rounded-0 rounded-top"
+                        class="w-100 btn btn-primary align-self-center shadow-none rounded-0"
+                        :class="shopItem == 'energyCell' ? 'rounded-top' : ''"
+                        style="height: 6vh"
                         :data-title="shopDetails[shopItem].description"
                         :line2="`costs: ${shopDetails[shopItem].cost}`"
                     >
@@ -29,6 +45,7 @@
                                 }
                             "
                             :style="{ backgroundColor: player.shop[shopItem].reBuy ? 'green' : 'red' }"
+                            style="height: 3vh"
                         >
                             auto rebuy
                         </label>
@@ -40,7 +57,7 @@
                     <button
                         @click="upgradeShopItem(shopItem)"
                         class="w-100 btn btn-primary align-self-center shadow-none ms-1"
-                        style="padding-top: 1.375rem; padding-bottom: 1.375rem"
+                        style="height: 12vh"
                         :data-title="shopDetails[shopItem].description"
                         :line2="`costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`"
                     >
@@ -54,7 +71,7 @@
                 <button
                     @click="upgradeShopItem('passivSlots')"
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1"
-                    style="padding-top: 1.375rem; padding-bottom: 1.375rem"
+                    style="height: 9vh"
                     data-title="unlocks additional passive slots"
                     :line2="`costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`"
                 >
@@ -73,6 +90,7 @@ import { currentUser } from '@/router'
 import { passivDetails, passivAmount, shopDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
+import { findWeaponUpgrade } from '@/game/helpers'
 export default defineComponent({
     setup() {
         currentUser
@@ -111,7 +129,11 @@ export default defineComponent({
             this.player.shop[shopElement].lvl++
         },
         buyShopItem(shopElement: type.ShopElement) {
-            if (this.player.shop.currency <= shopDetails[shopElement].cost || this.player.shop[shopElement].amount >= shopDetails[shopElement].max)
+            if (
+                this.player.shop.currency <= shopDetails[shopElement].cost ||
+                this.player.shop[shopElement].amount >=
+                    shopDetails[shopElement].max + (shopElement == 'energyCell' ? findWeaponUpgrade(this.player, 'munitionsDepot') : 0)
+            )
                 return
             this.buttonSound()
             this.player.shop.currency -= shopDetails[shopElement].cost

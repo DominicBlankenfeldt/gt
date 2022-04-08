@@ -32,6 +32,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/boss/bossEnemy.png"
   },
   {
+    "revision": "eac6444320082a7ea635882c7e34b882",
+    "url": "/gt/img/char/enemy_blue-nebula.gif"
+  },
+  {
     "revision": "a0ff9371ee1f55f4a70f4c9db7bd6588",
     "url": "/gt/img/char/enemy_cupcake.gif"
   },
@@ -58,6 +62,46 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "86f8f8797f19ae6ce1230229f3f9f5d6",
     "url": "/gt/img/char/enemy_pingu.png"
+  },
+  {
+    "revision": "8d9e22f179965c7a2c056b7dbe76fbbd",
+    "url": "/gt/img/char/enemy_plasma.png"
+  },
+  {
+    "revision": "6c92d6f2d93e30334e8382b99964bf30",
+    "url": "/gt/img/char/enemy_rino_fish_all.gif"
+  },
+  {
+    "revision": "6d29860b11d2ead274901c4d21312dbb",
+    "url": "/gt/img/char/enemy_rino_fish_spin.gif"
+  },
+  {
+    "revision": "90458f85c8e063d1ac215f98af88f46b",
+    "url": "/gt/img/char/enemy_rocket.png"
+  },
+  {
+    "revision": "70747863863cd93c80b08c272a618c48",
+    "url": "/gt/img/char/enemy_satenna.gif"
+  },
+  {
+    "revision": "00f2f74384b90f7ba18bea297c33a637",
+    "url": "/gt/img/char/enemy_satenna.png"
+  },
+  {
+    "revision": "6cf732d0579cbce84409696631f3a96b",
+    "url": "/gt/img/char/enemy_space_debris1.gif"
+  },
+  {
+    "revision": "ebba32f9a19c3ac4e9b2cac210bb7044",
+    "url": "/gt/img/char/enemy_space_debris1.png"
+  },
+  {
+    "revision": "43ff9182304c62e7f913da557c9feb4a",
+    "url": "/gt/img/char/enemy_space_debris2.gif"
+  },
+  {
+    "revision": "38de9d5c9f952f0d66e3ea79a40f9357",
+    "url": "/gt/img/char/enemy_space_debris2.png"
   },
   {
     "revision": "97efa4a7b44f4631deadc04b8af5519d",
@@ -136,20 +180,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "5bf15f08faf3c6bdeb4c90d694b2e683",
+    "revision": "1360d973bce978801d30a71f92f2bbbf",
     "url": "/gt/index.html"
   },
   {
-    "revision": "8a050f3219ccd98cbd90",
-    "url": "/gt/js/about.fb9e744e.js"
+    "revision": "e69e7e2a95331e165003",
+    "url": "/gt/js/about.54d1f624.js"
   },
   {
-    "revision": "cabecc4a6330732e8729",
-    "url": "/gt/js/app.5e3af720.js"
+    "revision": "fafea1de38a1d9ef6ed3",
+    "url": "/gt/js/app.0e07ced7.js"
   },
   {
-    "revision": "8b3b30d0ac566a6ed97d",
-    "url": "/gt/js/chunk-vendors.9cbe1e15.js"
+    "revision": "37659c5c6f741f74841e",
+    "url": "/gt/js/chunk-vendors.da24a504.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",

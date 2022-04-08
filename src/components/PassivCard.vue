@@ -42,12 +42,12 @@
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :data-title="passivDetails[passivUpgrade.name].description"
-                        line2="costs: 1"
+                        :line2="passivUpgrade.name != 'none' ? 'costs: 1' : ''"
                         v-if="passivUpgrade.name == player.passivTree.passivType[passiv - 1]"
                     >
                         {{ passivDetails[passivUpgrade.name].name }}
                         <br />
-                        lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl }}
+                        lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl + findHouse(player, 'passiv') * 5 }}
                     </button>
                 </div>
             </div>
@@ -62,12 +62,15 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { passivDetails, passivAmount } from '@/global'
+import { findHouse } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
+
 export default defineComponent({
     setup() {
         currentUser
         return {
+            findHouse,
             passivDetails,
             passivAmount,
         }
@@ -98,7 +101,7 @@ export default defineComponent({
     },
     methods: {
         async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
-            if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
+            if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
                 if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                     passivUpgrade.lvl++
                     this.buttonSound()
@@ -106,7 +109,7 @@ export default defineComponent({
         },
         async lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
             for (let i = 0; i < 8; i++) {
-                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl)
+                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
                     if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                         passivUpgrade.lvl++
                     }

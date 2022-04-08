@@ -3,6 +3,9 @@ import { subVec } from '@/game/vectors'
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
+export function findHouse(player: type.Player, house: type.HouseName) {
+    return player.spaceport.houses.find(c => c.name == house)!.lvl
+}
 export function findWeaponUpgrade(player: type.Player, weaponUpgrade: type.WeaponUpgradeName) {
     return player.weaponTree.weaponUpgrades[player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)].lvl
 }

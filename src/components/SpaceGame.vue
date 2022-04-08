@@ -5,7 +5,7 @@
             <div class="row g-0" style="height: 5vh; position: relative">
                 <div v-if="!bossEnemy.type" class="col-3">
                     <img src="../../public/img/items/coin/coin.gif" alt="coin" />
-                    Score: {{ Math.round(score) }}+{{ (scorePerTick * 60).toFixed(0) }}/s
+                    Score: {{ score > 1000000 ? Math.round(score / 1000) + 'k' : Math.round(score) }}+{{ (scorePerTick * 60).toFixed(0) }}/s
                     <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 </div>
                 <div v-else class="col-4"></div>
@@ -21,7 +21,13 @@
                 <div v-if="!bossEnemy.type" class="col-3">
                     <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                     Highscore:
-                    <span id="scoreSpan">{{ Math.round(player.highscore[player.playMode]) }}</span>
+                    <span id="scoreSpan">
+                        {{
+                            player.highscore[player.playMode] > 1000000
+                                ? Math.round(player.highscore[player.playMode] / 1000) + 'k'
+                                : Math.round(player.highscore[player.playMode])
+                        }}
+                    </span>
                     <img src="../../public/img/items/coin/coin.gif" alt="coin" />
                 </div>
                 <div v-else class="col-3"></div>
@@ -743,10 +749,10 @@ export default defineComponent({
                                 this.startingEnemies -= this.player.shop.lessStartEnemies.lvl
                                 break
                             case 'higherDifficultyTimer':
-                                this.difficultyTimer = 1200 + 120 * this.player.shop.higherDifficultyTimer.lvl
+                                this.difficultyTimer = 1200 + 90 * this.player.shop.higherDifficultyTimer.lvl
                                 break
                             case 'lowerScoreTimer':
-                                this.scoreTimer = 1200 - 120 * this.player.shop.lowerScoreTimer.lvl
+                                this.scoreTimer = 1200 - 90 * this.player.shop.lowerScoreTimer.lvl
                                 break
                         }
                     }
@@ -887,7 +893,7 @@ export default defineComponent({
             for (let effect of Object.values(this.effects)) {
                 if (effect.active) effectAmount++
             }
-            this.score += this.skillObject['scorePerEffect'] * effectAmount * 0.2
+            this.score += this.skillObject['scorePerEffect'] * effectAmount * 0.15
             this.scorePerTick = this.score - this.lastScore
         },
         countgps() {
@@ -925,9 +931,21 @@ export default defineComponent({
                 }
             }
             if (this.player.shop.energyCell.reBuy) {
-                while (this.player.shop.currency >= shopDetails['energyCell'].cost && this.player.shop.energyCell.amount < maxEnergyCell) {
+                while (
+                    this.player.shop.currency >= shopDetails['energyCell'].cost &&
+                    this.player.shop.energyCell.amount < maxEnergyCell + this.weaponObject['munitionsDepot']
+                ) {
                     this.player.shop.currency -= shopDetails['energyCell'].cost
                     this.player.shop.energyCell.amount++
+                }
+            }
+            for (let house of this.player.spaceport.houses) {
+                if (house.needScore) {
+                    house.needScore -= Math.round(this.score)
+                    if (house.needScore <= 0) {
+                        house.needScore = 0
+                        house.lvl++
+                    }
                 }
             }
             this.gameStarted = false
@@ -937,6 +955,7 @@ export default defineComponent({
             this.messageType = messageType
             if (this.score > this.player.highscore[this.player.playMode]) this.player.highscore[this.player.playMode] = this.score
             this.setSkillPoints()
+            this.player.shop.currency = Math.round(this.player.shop.currency)
             try {
                 await API.addPlayer(this.player)
             } catch {
@@ -1065,7 +1084,7 @@ export default defineComponent({
                             moveVector: norVec(rotVec(this.bossEnemy.moveVector, 90 * (i + 1))),
                             vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
                             size: 20 * this.generalSize,
-                            imgsrc: '/gt/img/char/plasma.png',
+                            imgsrc: '/gt/img/char/enemy_plasma.png',
                             damage: 1,
                         })
                     }
@@ -1076,7 +1095,7 @@ export default defineComponent({
                             moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 5) * i + 90)),
                             vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
                             size: 20 * this.generalSize,
-                            imgsrc: '/gt/img/char/plasma.png',
+                            imgsrc: '/gt/img/char/enemy_plasma.png',
                             damage: 1,
                         })
                     }
@@ -1087,7 +1106,7 @@ export default defineComponent({
                             moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 7) * i + 90)),
                             vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
                             size: 20 * this.generalSize,
-                            imgsrc: '/gt/img/char/plasma.png',
+                            imgsrc: '/gt/img/char/enemy_plasma.png',
                             damage: 1,
                         })
                     }
@@ -1169,7 +1188,7 @@ export default defineComponent({
                         }
                         break
                     case 'totalchaos':
-                        this.unlockMessage = `the maximum level of your skills is increased`
+                        this.unlockMessage = `you have received a construction license`
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
@@ -1262,7 +1281,7 @@ export default defineComponent({
             this.shield--
             setTimeout(() => {
                 if (this.shield < this.maxShield) this.shield++
-            }, 6000 * percent(this.skillObject['shieldGenerator'] * 10, 'de'))
+            }, 10000 * percent(this.skillObject['shieldGenerator'] * 5, 'de'))
         },
         blackHoleColision(item: type.Item) {
             this.gravity(item, this.playerInfo, 3, 1 - this.skillObject['friendlierDarkhole'] / 100)
@@ -1392,25 +1411,34 @@ export default defineComponent({
         },
         collectGrowPotion(item: type.Item) {
             if (!this.effects.grow.active) this.playerInfo.vector = subVec(this.playerInfo.vector, (this.playerInfo.size * this.generalSize) / 2)
-            this.effects.grow = { active: true, duration: (this.effects.grow.duration += (250 * item.size) / this.generalSize) }
+            this.effects.grow = {
+                active: true,
+                duration: (this.effects.grow.duration +=
+                    ((250 * item.size) / this.generalSize) * percent(this.passivObject['longerEffects'] / 3, 'in')),
+            }
         },
         collectMagnet(item: type.Item) {
             this.effects.magnet = {
                 active: true,
-                duration: (this.effects.magnet.duration += (250 * item.size * percent(this.skillObject['longerMagnet'], 'in')) / this.generalSize),
+                duration: (this.effects.magnet.duration +=
+                    ((250 * item.size * percent(this.skillObject['longerMagnet'], 'in')) / this.generalSize) *
+                    percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         collectStopTime(item: type.Item) {
             this.effects.stopTime = {
                 active: true,
-                duration: (this.effects.stopTime.duration += (75 * item.size * percent(this.skillObject['longerStopTime'], 'in')) / this.generalSize),
+                duration: (this.effects.stopTime.duration +=
+                    ((75 * item.size * percent(this.skillObject['longerStopTime'], 'in')) / this.generalSize) *
+                    percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         collectSlowEnemies(item: type.Item) {
             this.effects.slowEnemies = {
                 active: true,
                 duration: (this.effects.slowEnemies.duration +=
-                    (250 * item.size * percent(this.skillObject['longerSlowEnemies'], 'in')) / this.generalSize),
+                    ((250 * item.size * percent(this.skillObject['longerSlowEnemies'], 'in')) / this.generalSize) *
+                    percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         reduceDuartion() {
@@ -1492,7 +1520,7 @@ export default defineComponent({
         },
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
-            this.player.shop.currency++
+            this.player.shop.currency += 1 + this.passivObject['moreScrap'] / 50
             if (this.player.shop.currency > 10000) this.player.shop.currency = 10000
             createEnemy(this.enemies, this.generalSize, this.field, this.skillObject, this.playerInfo)
         },
@@ -1564,7 +1592,7 @@ export default defineComponent({
             this.coolDowns['magnetAbility'] = 10000
             this.effects.magnet = {
                 active: true,
-                duration: (this.effects.magnet.duration += 2500),
+                duration: (this.effects.magnet.duration += 2500 * percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         growAbility() {
@@ -1572,21 +1600,21 @@ export default defineComponent({
             if (!this.effects.grow.active) this.playerInfo.vector = subVec(this.playerInfo.vector, (this.playerInfo.size * this.generalSize) / 2)
             this.effects.grow = {
                 active: true,
-                duration: (this.effects.slowEnemies.duration += 2500),
+                duration: (this.effects.slowEnemies.duration += 2500 * percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         slowEnemyAbility() {
             this.coolDowns['slowEnemyAbility'] = 10000
             this.effects.slowEnemies = {
                 active: true,
-                duration: (this.effects.slowEnemies.duration += 2500),
+                duration: (this.effects.slowEnemies.duration += 2500 * percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         stopTimeAbility() {
             this.coolDowns['stopTimeAbility'] = 10000
             this.effects.stopTime = {
                 active: true,
-                duration: (this.effects.stopTime.duration += 700),
+                duration: (this.effects.stopTime.duration += 700 * percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
         },
         bombAbility() {

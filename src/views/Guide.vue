@@ -15,28 +15,6 @@
                 </p>
             </div>
         </div>
-        <!-- <div class="card mt-1">
-            <div class="card-header">Abilities</div>
-            <div class="card-body">
-                <p>
-                    {{ `With the key "${player.settings.abilitys[1]}" you can speed up your movement if you unlock the ability in your skilltree` }}
-                </p>
-                <p>
-                    {{ `With the key "${player.settings.abilitys[2]}" you can slow down your movement if you unlock the ability in your skilltree` }}
-                </p>
-                <p>
-                    {{
-                        `With the key "${player.settings.abilitys[3]}" you can remote ignition the nearest bomb if you unlock the ability in your skilltree`
-                    }}
-                </p>
-                <p>
-                    {{
-                        `With the key "${player.settings.abilitys[4]}" you can shoot at enemies (a hit gives you score) if you unlock the ability in your skilltree`
-                    }}
-                </p>
-            </div>
-        </div> -->
-
         <div class="card mt-1">
             <div class="card-header">Items</div>
             <div class="card-body">
@@ -74,17 +52,23 @@
             <div class="card-header">Enemies</div>
             <div class="card-body">
                 <div class="row justify-content-center">
-                    <div style="height: 2vw; width: 2vw">
-                        <img src="/gt/img/char/enemy_pingu.png" alt="" />
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_space_debris1.gif" alt="" height="35px" />
                     </div>
-                    <div style="height: 2vw; width: 2vw">
-                        <img src="/gt/img/char/enemy_cupcake.gif" alt="" />
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_komet.gif" alt="" height="35px" />
                     </div>
-                    <div style="height: 2vw; width: 2vw">
-                        <img src="/gt/img/char/enemy_gasman.gif" alt="" />
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_gasman.gif" alt="" height="35px" />
                     </div>
-                    <div style="height: 2vw; width: 2vw">
-                        <img src="/gt/img/char/enemy_komet.gif" alt="" />
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_rino_fish_spin.gif" alt="" height="35px" />
+                    </div>
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_blue-nebula.gif" alt="" height="35px" />
+                    </div>
+                    <div style="height: 3vw; width: 3vw">
+                        <img src="/gt/img/char/enemy_satenna.gif" alt="" height="35px" />
                     </div>
                 </div>
                 <p class="mt-1">They will kill you. wink smiley</p>

@@ -20,9 +20,7 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
-                        }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + findHouse(player, 'skill') * 3 }}
                     </button>
                 </div>
             </div>
@@ -37,9 +35,7 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
-                        }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
                     </button>
                 </div>
             </div>
@@ -55,9 +51,7 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
-                        }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + findHouse(player, 'skill') * 2 }}
                     </button>
                 </div>
             </div>
@@ -73,9 +67,7 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{
-                            skillDetails[skill.name].maxlvl + (skillDetails[skill.name].maxlvl > 1 ? player.defeatedBosses['totalchaos'] : 0)
-                        }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
                     </button>
                 </div>
             </div>
@@ -91,7 +83,7 @@
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
-                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
+                        lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + findHouse(player, 'skill') }}
                     </button>
                 </div>
             </div>
@@ -106,6 +98,7 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { skillDetails } from '@/global'
+import { findHouse } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
 
@@ -114,6 +107,7 @@ export default defineComponent({
         currentUser
         return {
             skillDetails,
+            findHouse,
         }
     },
     props: {
@@ -196,7 +190,7 @@ export default defineComponent({
             if (
                 skill.lvl <
                 skillDetails[skill.name].maxlvl +
-                    (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBosses['totalchaos'] : 0)
+                    (skillDetails[skill.name].maxlvl > 1 ? findHouse(this.player, 'skill') * (4 - skillDetails[skill.name].tier) : 0)
             )
                 if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                     skill.lvl++
@@ -216,7 +210,7 @@ export default defineComponent({
                 if (
                     skill.lvl <
                     skillDetails[skill.name].maxlvl +
-                        (skillDetails[skill.name].maxlvl > 1 && skillDetails[skill.name].tier < 3 ? this.player.defeatedBosses['totalchaos'] : 0)
+                        (skillDetails[skill.name].maxlvl > 1 ? findHouse(this.player, 'skill') * (4 - skillDetails[skill.name].tier) : 0)
                 )
                     if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
                         skill.lvl++

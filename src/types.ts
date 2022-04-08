@@ -43,6 +43,7 @@ export interface Player {
     spaceFleet?: string
     settings: Settings
     playedTime: number
+    spaceport: Spaceport
 }
 export interface Highscore {
     normal: number
@@ -157,7 +158,7 @@ export interface WeaponTree {
     weaponAvaibleTypes: weaponType[]
     weaponUpgrades: WeaponUpgrade[]
 }
-export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun' | 'safegun'
+export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun' | 'safegun' | 'bazooka'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
     lvl: number
@@ -165,7 +166,7 @@ export interface WeaponUpgrade {
 export type WeaponObject = {
     [key in WeaponUpgradeName]: number
 }
-export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP' | 'scorePerHit'
+export type WeaponUpgradeName = 'moreDamage' | 'biggerProjectile' | 'fasterProjectile' | 'fasterReload' | 'moreHP' | 'scorePerHit' | 'munitionsDepot'
 
 export interface PassivTree {
     passivType: PassivType[]
@@ -180,7 +181,7 @@ export interface PassivUpgrade {
 export type PassivObject = {
     [key in PassivUpgradeName]: number
 }
-export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss'
+export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss' | 'longerEffects' | 'moreScrap' | 'none'
 export type PassivType = 'none' | PassivUpgradeName
 export interface SkillTree {
     skillPoints: number
@@ -238,7 +239,15 @@ export interface Plasma {
     aim?: boolean
     split?: boolean
 }
-
+export interface Spaceport {
+    houses: House[]
+}
+export type HouseName = 'passiv' | 'weapon' | 'skill'
+export interface House {
+    lvl: number
+    needScore: number
+    name: HouseName
+}
 export type Vector = [number, number]
 
 export interface User {

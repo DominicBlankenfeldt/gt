@@ -122,15 +122,14 @@ export function enemyMovement(
         if (enemy.type == 'chasebot') {
             enemy.vector = moveChasebotEnemy(enemy, player, generalSize, isSlowEnemies, skillObject, playerInfo)
         } else {
-            enemy.moveVector = norVec(enemy.moveVector)
             enemy.vector = addVec(
                 enemy.vector,
                 mulVec(
-                    enemy.moveVector,
+                    norVec(enemy.moveVector),
                     difficulty *
                         percent(skillObject['slowEnemy'], 'de') *
                         generalSize *
-                        (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
+                        (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 150 : 1) *
                         (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                         enemy.speed
                 )
@@ -156,7 +155,7 @@ function moveChasebotEnemy(
             dirVec(playerInfo.vector, enemy.vector),
             2 *
                 generalSize *
-                (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
+                (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 150 : 1) *
                 (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                 enemy.speed
         )
@@ -190,7 +189,7 @@ function moveSpiralEnemy(
                     generalSize *
                     (player.passivTree.passivType.includes('nerfEnemies') ? percent(findPassivUpgrade(player, 'nerfEnemies') / 4, 'de') : 1) *
                     0.4 *
-                    (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 200 : 1) *
+                    (isSlowEnemies ? 0.75 - skillObject['strongerSlowEnemies'] / 150 : 1) *
                     enemy.speed
             )
         )

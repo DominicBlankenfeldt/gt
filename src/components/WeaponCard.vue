@@ -44,7 +44,7 @@
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 3 }}
                     </button>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2 }}
                     </button>
                 </div>
             </div>
@@ -91,6 +91,7 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { weaponDetails, weaponAmount } from '@/global'
+import { findHouse } from '@/game/helpers'
 import * as music from '@/music'
 import * as type from '@/types'
 
@@ -100,6 +101,7 @@ export default defineComponent({
         return {
             weaponDetails,
             weaponAmount,
+            findHouse,
         }
     },
     data() {
@@ -159,18 +161,34 @@ export default defineComponent({
     },
     methods: {
         lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
-            if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-                if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
-                    weaponUpgrade.lvl++
-                    this.buttonSound()
-                }
+            if (weaponDetails[weaponUpgrade.name].tier < 10) {
+                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
+                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
+                        weaponUpgrade.lvl++
+                        this.buttonSound()
+                    }
+            } else {
+                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
+                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
+                        weaponUpgrade.lvl++
+                        this.buttonSound()
+                    }
+            }
         },
         lvlWeaponUpgradex8(weaponUpgrade: type.WeaponUpgrade) {
             for (let i = 0; i < 8; i++) {
-                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
-                        weaponUpgrade.lvl++
-                    }
+                if (weaponDetails[weaponUpgrade.name].tier < 10) {
+                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
+                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
+                            weaponUpgrade.lvl++
+                        }
+                } else {
+                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
+                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
+                            weaponUpgrade.lvl++
+                            this.buttonSound()
+                        }
+                }
             }
         },
         resetWeaponTree() {
