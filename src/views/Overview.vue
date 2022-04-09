@@ -2,7 +2,7 @@
     <div v-if="dataLoad" class="w-75 mt-5" style="margin-left: 12.5vw">
         <PlayerCard :playerProp="player" :editAble="true" />
     </div>
-    <div v-if="newVersion" @click="reload()" class="footer" style="background-color: gray">there is a new version click here to upgrade</div>
+    <!-- <div v-if="newVersion" @click="reload()" class="footer" style="background-color: gray">there is a new version click here to upgrade</div> -->
 </template>
 
 <script lang="ts">
