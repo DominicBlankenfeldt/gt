@@ -24,7 +24,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/avatars/char_005.png"
   },
   {
-    "revision": "71219dbc489121e324577e129d405050",
+    "revision": "76211b56720ddece1c56a467fedb2c02",
     "url": "/gt/img/boss/bossEnemy.gif"
   },
   {
@@ -32,7 +32,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/boss/bossEnemy.png"
   },
   {
-    "revision": "eac6444320082a7ea635882c7e34b882",
+    "revision": "3530b6f87abc1b90346def043eac7ca8",
     "url": "/gt/img/char/enemy_blue-nebula.gif"
   },
   {
@@ -44,7 +44,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_cupcake.png"
   },
   {
-    "revision": "103a67a06d620fd7d62e7fd02607edd2",
+    "revision": "4da5f7f943c3e3ca0c6b805b6081e23b",
     "url": "/gt/img/char/enemy_gasman.gif"
   },
   {
@@ -52,7 +52,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_gasman.png"
   },
   {
-    "revision": "a8d375ca4605b0e642add53ad3d8f673",
+    "revision": "0f15779b1134d4273d2ee115e26c67af",
     "url": "/gt/img/char/enemy_komet.gif"
   },
   {
@@ -68,11 +68,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/enemy_plasma.png"
   },
   {
-    "revision": "6c92d6f2d93e30334e8382b99964bf30",
+    "revision": "16333b57c50aa4f9c1d2e860b92c0799",
     "url": "/gt/img/char/enemy_rino_fish_all.gif"
   },
   {
-    "revision": "6d29860b11d2ead274901c4d21312dbb",
+    "revision": "315f4dcb72b9917eeda12e23cf913a7e",
     "url": "/gt/img/char/enemy_rino_fish_spin.gif"
   },
   {
@@ -108,7 +108,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/char/plasma.png"
   },
   {
-    "revision": "f8b19de8cb44ec5af71a52bc325fa40d",
+    "revision": "8fd2b57c76b376b5f0d9196af3c2afec",
     "url": "/gt/img/char/playership.png"
   },
   {
@@ -128,23 +128,23 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/items/bomb/bomb.gif"
   },
   {
-    "revision": "1f8c92289c6e1fe98fe43305f2ef7c92",
+    "revision": "2fedd5f4ba1acb1eb1f610a24ccfbebb",
     "url": "/gt/img/items/clock/clock.png"
   },
   {
-    "revision": "801a264bc03115117174ceb139e147e2",
+    "revision": "648a0d32934edd102d4f9fa086b755bf",
     "url": "/gt/img/items/coin/coin.gif"
   },
   {
-    "revision": "7cdbbbba7940cac1db57860cf442d525",
+    "revision": "0b27455f0e9011c5113cdcf51c44b358",
     "url": "/gt/img/items/darkhole/darkhole.png"
   },
   {
-    "revision": "7e716c6a5e119ac0edd91513133ff5fd",
+    "revision": "cf19297d0b5156f95e9f7308fb5d70d0",
     "url": "/gt/img/items/magnet/magnet.png"
   },
   {
-    "revision": "25628fa8faf6702b8df17b37541861e2",
+    "revision": "576cccb63c114982ccb53a1b39683402",
     "url": "/gt/img/items/potion/potion.gif"
   },
   {
@@ -180,7 +180,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "335fee6e19619325a9dcf1b074d13efc",
+    "revision": "f05a1b6ef9ea257211b6d8ca2d8df375",
     "url": "/gt/index.html"
   },
   {
@@ -188,8 +188,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.54d1f624.js"
   },
   {
-    "revision": "59b95c04ccc405cd8199",
-    "url": "/gt/js/app.13dd5f32.js"
+    "revision": "8c5d81b7c680284a7790",
+    "url": "/gt/js/app.0cee2546.js"
   },
   {
     "revision": "37659c5c6f741f74841e",
