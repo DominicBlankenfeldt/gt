@@ -41,6 +41,7 @@ export const weaponDetails = {
     aimgun: { description: 'plamsa pursues enemies', maxlvl: 0 },
     splitgun: { description: 'plasma shatters after collision', maxlvl: 0 },
     safegun: { description: 'throws plasma around the player', maxlvl: 0 },
+    bazooka: { description: 'fires a huge powerful plasma ball', maxlvl: 0 },
 }
 export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).length
 export const passivDetails = {

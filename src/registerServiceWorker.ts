@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
+import { ref } from 'vue'
+export const newVersion = ref(false)
 
 if (process.env.NODE_ENV === 'production') {
     register(`${process.env.BASE_URL}service-worker.js`, {
@@ -28,7 +30,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const cacheName = 'v0.1.1'
+const cacheName = 'v0.1.2'
 
 self.addEventListener('activate', event => {
     // Remove old caches
@@ -40,6 +42,7 @@ self.addEventListener('activate', event => {
             return keys.map(async cache => {
                 if (cache !== cacheName) {
                     console.log('Service Worker: Removing old cache: ' + cache)
+                    newVersion.value = true
                     return await caches.delete(cache)
                 }
             })
