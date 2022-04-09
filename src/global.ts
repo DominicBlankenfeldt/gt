@@ -178,7 +178,7 @@ export function checkPlayer(player: type.Player) {
         player.passivTree ||
         ({
             passivType: ['none', 'none', 'none'],
-            passivAvaibleTypes: [],
+            passivAvaibleTypes: ['none'],
             passivPoints: 0,
             passivUpgrades: [] as type.PassivUpgrade[],
         } as type.PassivTree)
