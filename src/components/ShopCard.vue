@@ -34,7 +34,9 @@
                     >
                         {{ shopDetails[shopItem].name }}
                         <br />
-                        {{ player.shop[shopItem].amount }}/{{ shopDetails[shopItem].max }}
+                        {{ player.shop[shopItem].amount }}/{{
+                            shopDetails[shopItem].max + (shopItem == 'energyCell' ? findWeaponUpgrade(player, 'munitionsDepot') : 0)
+                        }}
                     </button>
                     <div>
                         <label
@@ -98,6 +100,7 @@ export default defineComponent({
             shopDetails,
             passivDetails,
             passivAmount,
+            findWeaponUpgrade,
         }
     },
     data() {

@@ -179,14 +179,13 @@ export default defineComponent({
             for (let i = 0; i < 8; i++) {
                 if (weaponDetails[weaponUpgrade.name].tier < 10) {
                     if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
-                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints > 0) {
+                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
                             weaponUpgrade.lvl++
                         }
                 } else {
                     if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
                         if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
                             weaponUpgrade.lvl++
-                            this.buttonSound()
                         }
                 }
             }
