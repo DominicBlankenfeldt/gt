@@ -19,8 +19,8 @@ if (process.env.NODE_ENV === 'production') {
             console.log('New content is downloading.')
         },
         updated() {
-            newVersion.value = true
             console.log('New content is available; please refresh.')
+            newVersion.value = true
         },
         offline() {
             console.log('No internet connection found. App is running in offline mode.')
@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const cacheName = 'v0.1.6'
+const cacheName = 'v0.1.7'
 
 self.addEventListener('activate', event => {
     // Remove old caches
