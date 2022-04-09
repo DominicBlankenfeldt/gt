@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === 'production') {
             console.log('New content is downloading.')
         },
         updated() {
+            newVersion.value = true
             console.log('New content is available; please refresh.')
         },
         offline() {
@@ -30,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const cacheName = 'v0.1.2'
+const cacheName = 'v0.1.3'
 
 self.addEventListener('activate', event => {
     // Remove old caches
@@ -42,7 +43,6 @@ self.addEventListener('activate', event => {
             return keys.map(async cache => {
                 if (cache !== cacheName) {
                     console.log('Service Worker: Removing old cache: ' + cache)
-                    newVersion.value = true
                     return await caches.delete(cache)
                 }
             })
