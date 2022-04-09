@@ -2,6 +2,7 @@
     <div v-if="dataLoad" class="w-75 mt-5" style="margin-left: 12.5vw">
         <PlayerCard :playerProp="player" :editAble="true" />
     </div>
+    <div v-if="newVersion" @click="reload()" class="footer" style="background-color: gray">there is a new version click here to upgrade</div>
 </template>
 
 <script lang="ts">
@@ -11,6 +12,7 @@ import { checkPlayer } from '@/global'
 import * as type from '@/types'
 import { currentUser } from '@/router'
 import * as music from '@/music'
+import { newVersion } from '@/registerServiceWorker'
 import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
     components: {
@@ -18,6 +20,9 @@ export default defineComponent({
     },
     setup() {
         currentUser
+        return {
+            newVersion,
+        }
     },
     data() {
         return {
@@ -53,6 +58,9 @@ export default defineComponent({
     },
 
     methods: {
+        reload() {
+            this.$router.go(0)
+        },
         changeImg(id: string) {
             this.player.img = id
         },
