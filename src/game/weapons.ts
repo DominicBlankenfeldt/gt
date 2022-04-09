@@ -177,7 +177,7 @@ export function weapons(
                 moveVector: moveVector,
                 vector: playerInfo.vector,
                 size:
-                    15 *
+                    10 *
                     percent(weaponObject['biggerProjectile'] * 10, 'in') *
                     generalSize *
                     (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
@@ -186,7 +186,7 @@ export function weapons(
                     1 +
                     weaponObject['moreDamage'] *
                         (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1) *
-                        3,
+                        2,
             } as type.Plasma)
             break
     }

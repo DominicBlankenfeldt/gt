@@ -44,7 +44,7 @@
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 3 }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2 }}
                     </button>
                 </div>
             </div>

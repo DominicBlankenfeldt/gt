@@ -47,7 +47,9 @@
                     >
                         {{ passivDetails[passivUpgrade.name].name }}
                         <br />
-                        lvl: {{ passivUpgrade.lvl }}/{{ passivDetails[passivUpgrade.name].maxlvl + findHouse(player, 'passiv') * 5 }}
+                        lvl: {{ passivUpgrade.lvl }}/{{
+                            passivDetails[passivUpgrade.name].maxlvl + (passivUpgrade.name != 'none' ? findHouse(player, 'passiv') * 5 : 0)
+                        }}
                     </button>
                 </div>
             </div>
@@ -101,6 +103,7 @@ export default defineComponent({
     },
     methods: {
         async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
+            if (passivUpgrade.name == 'none') return
             if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
                 if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                     passivUpgrade.lvl++
@@ -108,6 +111,7 @@ export default defineComponent({
                 }
         },
         async lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
+            if (passivUpgrade.name == 'none') return
             for (let i = 0; i < 8; i++) {
                 if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
                     if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
