@@ -18,13 +18,13 @@ export function createEnemy(
     let circleDir = ''
     switch (getRandomInt(3)) {
         case 0:
-            size = 20 * generalSize * percent(skillObject['smallerEnemies'], 'de')
+            size = 25 * generalSize * percent(skillObject['smallerEnemies'] / 2, 'de')
             break
         case 1:
-            size = 25 * generalSize * percent(skillObject['smallerEnemies'], 'de')
+            size = 30 * generalSize * percent(skillObject['smallerEnemies'] / 2, 'de')
             break
         case 2:
-            size = 30 * generalSize * percent(skillObject['smallerEnemies'], 'de')
+            size = 35 * generalSize * percent(skillObject['smallerEnemies'] / 2, 'de')
             break
     }
     switch (getRandomInt(4)) {

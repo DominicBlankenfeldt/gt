@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const cacheName = 'v0.1.0'
+const cacheName = 'v0.1.1'
 
 self.addEventListener('activate', event => {
     // Remove old caches

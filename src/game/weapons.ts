@@ -45,7 +45,7 @@ export function weapons(
         case 'standard':
             shotCoolDownDuration =
                 2000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
@@ -65,7 +65,7 @@ export function weapons(
         case 'aimgun':
             shotCoolDownDuration =
                 2500 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
@@ -86,7 +86,7 @@ export function weapons(
         case 'splitgun':
             shotCoolDownDuration =
                 2000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
@@ -107,7 +107,7 @@ export function weapons(
         case 'shotgun':
             shotCoolDownDuration =
                 3000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             for (let i = 0; i < 3; i++) {
                 plasmas.push({
@@ -129,7 +129,7 @@ export function weapons(
         case 'MG':
             shotCoolDownDuration =
                 1000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
@@ -149,7 +149,7 @@ export function weapons(
         case 'safegun':
             shotCoolDownDuration =
                 10000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             for (let i = 0; i < 8; i++) {
                 plasmas.push({
@@ -171,7 +171,7 @@ export function weapons(
         case 'bazooka':
             shotCoolDownDuration =
                 6000 *
-                percent(weaponObject['fasterReload'] * 5, 'de') *
+                percent(weaponObject['fasterReload'] * 1.5, 'de') *
                 (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             plasmas.push({
                 moveVector: moveVector,
