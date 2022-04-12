@@ -8,15 +8,14 @@
             </div>
         </div>
         <div class="d-flex justify-content-center">
-            <div v-for="passiv of player.passivTree.passivType" :key="passiv" class="mx-1">
-                <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
+            <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
+                <div class="mx-1" v-if="player.passivTree.passivType.includes(passivUpgrade.name)">
                     <button
-                        class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                        class="mt-2 w-100 btn btn-primary shadow-none"
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :data-title="passivDetails[passivUpgrade.name].description"
                         :line2="passivUpgrade.name != 'none' ? 'costs: 1' : ''"
-                        v-if="passivUpgrade.name == player.passivTree.passivType[passiv - 1]"
                     >
                         {{ passivDetails[passivUpgrade.name].name }}
                         <br />

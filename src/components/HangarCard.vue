@@ -14,6 +14,7 @@
                     <label
                         class="btn btn-outline-primary w-100 shadow-none"
                         style="height: 12vh"
+                        :data-title="weaponDetails[weapon].description"
                         :for="`btn${weapon}`"
                         @click="
                             {
@@ -38,12 +39,15 @@
         <div class="d-flex justify-content-center">
             <div v-for="passiv of player.passivTree.passivAvaibleTypes" :key="passiv" class="mx-1">
                 <button
+                    v-if="player.passivTree.passivAvaibleTypes.length <= 1 || passiv != 'none'"
                     @click="selectPassiv(passiv)"
+                    @dblclick="clearSelect(passiv)"
                     style="height: 12vh"
                     class="btn shadow-none"
                     :class="player.passivTree.passivType.includes(passiv) ? 'btn-primary' : 'btn-outline-primary'"
+                    :data-title="passivDetails[passiv].description"
                 >
-                    {{ passiv }}
+                    {{ passivDetails[passiv].name }}
                 </button>
             </div>
         </div>
@@ -53,7 +57,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, passivAmount, weaponStats } from '@/global'
+import { passivDetails, weaponDetails, passivAmount, weaponStats } from '@/global'
 import { findHouse } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -64,6 +68,7 @@ export default defineComponent({
         return {
             findHouse,
             passivDetails,
+            weaponDetails,
             passivAmount,
             weaponStats,
         }
@@ -96,7 +101,10 @@ export default defineComponent({
                 if (this.player.passivTree.passivType.length < this.player.shop.passivSlots.lvl) this.player.passivTree.passivType.push(passiv)
             }
         },
-
+        clearSelect(passiv: type.PassivType) {
+            this.player.passivTree.passivType = [] as type.PassivType[]
+            this.player.passivTree.passivType.push(passiv)
+        },
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)
         },
