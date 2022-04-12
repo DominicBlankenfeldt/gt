@@ -518,6 +518,7 @@ export default defineComponent({
             skillObject: {} as type.SkillObject,
             passivObject: {} as type.PassivObject,
             weaponObject: {} as type.WeaponObject,
+            fleetSkillObject: {} as type.FleetSkillObject,
             multiplicator: 1,
             shield: 0,
             maxShield: 1,
@@ -604,6 +605,7 @@ export default defineComponent({
     },
     async mounted() {
         // start game if not started on enter press
+        this.buttonSound()
         document.onkeyup = (e: any) => {
             if (e.code == 'Enter' && !this.gameStarted) this.start()
         }
@@ -632,11 +634,12 @@ export default defineComponent({
         this.playerInfo.size *= this.generalSize
         this.playerStartPosition()
         this.bossFight = false
-        this.buttonSound()
+
         this.tip = tips(getRandomInt(this.tipsNumber))
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
         this.weaponObject = this.player.weaponTree.weaponUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.WeaponObject
+        if (this.fleet) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
         this.dataLoad = true
     },
     methods: {
@@ -730,13 +733,13 @@ export default defineComponent({
             } else {
                 switch (this.player.playMode) {
                     case 'normal':
-                        this.startingEnemies = 5
+                        this.startingEnemies = 6
                         break
                     case 'hardcore':
                         this.startingEnemies = 50
                         break
                     case 'totalchaos':
-                        this.startingEnemies = 5
+                        this.startingEnemies = 6
                         break
                 }
                 this.player.playedGames[this.player.playMode]++
@@ -1020,8 +1023,8 @@ export default defineComponent({
                             percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
-                    this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type] * percent(this.fleetlvl, 'de'))
-                    this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type] * percent(this.fleetlvl, 'de'))
+                    this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
+                    this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
                     break
                 case 'hardcore':
                     this.bossEnemy.maxHP = Math.round(
@@ -1030,8 +1033,8 @@ export default defineComponent({
                             percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
-                    this.startingEnemies = Math.round(50 + this.player.defeatedBosses[this.bossEnemy.type] * percent(this.fleetlvl, 'de'))
-                    this.difficulty = roundHalf(2 * percent(this.fleetlvl, 'de'))
+                    this.startingEnemies = Math.round(50 + this.player.defeatedBosses[this.bossEnemy.type])
+                    this.difficulty = roundHalf(2)
                     break
                 case 'totalchaos':
                     this.bossEnemy.maxHP = Math.round(
@@ -1040,9 +1043,15 @@ export default defineComponent({
                             percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
-                    this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type] * percent(this.fleetlvl, 'de'))
-                    this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type] * percent(this.fleetlvl, 'de'))
+                    this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
+                    this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
             }
+            this.startingEnemies -= this.fleetSkillObject['bossEnemies']
+            this.startingEnemies = Math.round(this.startingEnemies * percent(this.fleetlvl, 'de'))
+            if (this.startingEnemies < 1) this.startingEnemies = 1
+            this.difficulty -= this.fleetSkillObject['bossDifficulty']
+            this.difficulty = roundHalf(this.difficulty * percent(this.fleetlvl, 'de'))
+            if (this.difficulty < 2) this.difficulty = 2
             this.bossEnemy.hP = this.bossEnemy.maxHP
             this.bossEnemy.speed = 5
             do {

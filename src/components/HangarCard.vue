@@ -1,0 +1,107 @@
+<template>
+    <div v-if="dataLoad" style="margin-top: 6vh; color: white">
+        <div class="d-flex justify-content-center">
+            <div class="btn-group rounded mt-2" role="group" aria-label="Basic radio toggle button group">
+                <div v-for="weapon of player.weaponTree.weaponAvaibleTypes" :key="weapon" class="mx-1">
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="weaponRadio"
+                        :id="`btn${weapon}`"
+                        autocomplete="off"
+                        :checked="player.weaponTree.weaponType == weapon"
+                    />
+                    <label
+                        class="btn btn-outline-primary w-100 shadow-none"
+                        style="height: 12vh"
+                        :for="`btn${weapon}`"
+                        @click="
+                            {
+                                ;(player.weaponTree.weaponType = weapon), buttonSound()
+                            }
+                        "
+                    >
+                        {{ weapon }}
+                        <br />
+                        dmg:{{ weaponStats[weapon].dmg }}
+                        <br />
+                        reload:{{ weaponStats[weapon].reload }}s
+                        <br />
+                        size:{{ weaponStats[weapon].size }}
+                        <br />
+                        plasmas:{{ weaponStats[weapon].spheres }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mt-2">{{ player.passivTree.passivType.length }}/{{ player.shop.passivSlots.lvl }}</div>
+        <div class="d-flex justify-content-center">
+            <div v-for="passiv of player.passivTree.passivAvaibleTypes" :key="passiv" class="mx-1">
+                <button
+                    @click="selectPassiv(passiv)"
+                    style="height: 12vh"
+                    class="btn shadow-none"
+                    :class="player.passivTree.passivType.includes(passiv) ? 'btn-primary' : 'btn-outline-primary'"
+                >
+                    {{ passiv }}
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, PropType } from 'vue'
+import { currentUser } from '@/router'
+import { passivDetails, passivAmount, weaponStats } from '@/global'
+import { findHouse } from '@/game/helpers'
+import * as type from '@/types'
+import * as music from '@/music'
+
+export default defineComponent({
+    setup() {
+        currentUser
+        return {
+            findHouse,
+            passivDetails,
+            passivAmount,
+            weaponStats,
+        }
+    },
+    data() {
+        return {
+            player: {} as type.Player,
+            user: currentUser,
+            choosenWeapon: '',
+            choosenPassivs: [] as type.PassivType[],
+            dataLoad: false,
+        }
+    },
+    props: {
+        playerProp: {
+            type: Object as PropType<type.Player>,
+            required: true,
+        },
+    },
+    computed: {},
+    mounted() {
+        this.player = this.playerProp
+        this.dataLoad = true
+    },
+    methods: {
+        selectPassiv(passiv: type.PassivType) {
+            if (this.player.passivTree.passivType.includes(passiv)) {
+                this.player.passivTree.passivType = this.player.passivTree.passivType.filter(p => p != passiv)
+            } else {
+                if (this.player.passivTree.passivType.length < this.player.shop.passivSlots.lvl) this.player.passivTree.passivType.push(passiv)
+            }
+        },
+
+        buttonSound() {
+            music.ButtonSound(this.player.settings.effectVolume)
+        },
+    },
+})
+</script>
+
+<style scoped lang="scss"></style>

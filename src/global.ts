@@ -1,6 +1,10 @@
 import { ref } from 'vue'
 import * as type from '@/types'
 export const production = ref(process.env.NODE_ENV === 'production' ? true : false)
+export const fleetSkillDetails = {
+    bossEnemies: { name: 'bossEnemies', maxlvl: 5, tier: 1, description: '' },
+    bossDifficulty: { name: 'bossDifficulty', maxlvl: 5, tier: 1, description: '' },
+}
 export const skillDetails = {
     fastAbility: { name: 'rocket propulsion', maxlvl: 1, tier: 1, description: 'you can speed up your movement' },
     slowAbility: { name: 'sapr flame', maxlvl: 1, tier: 1, description: ' you can slow down your movement' },
@@ -43,6 +47,15 @@ export const weaponDetails = {
     safegun: { description: 'throws plasma around the player', maxlvl: 0 },
     bazooka: { description: 'fires a huge powerful plasma ball', maxlvl: 0 },
 }
+export const weaponStats = {
+    standard: { dmg: 1, reload: 2, size: 5, spheres: 1 },
+    aimgun: { dmg: 1, reload: 2.5, size: 5, spheres: 1 },
+    splitgun: { dmg: 1, reload: 2, size: 5, spheres: 1 },
+    shotgun: { dmg: 1, reload: 3, size: 2, spheres: 3 },
+    MG: { dmg: 1, reload: 1, size: 5, spheres: 1 },
+    safegun: { dmg: 1, reload: 10, size: 2, spheres: 8 },
+    bazooka: { dmg: 10, reload: 6, size: 10, spheres: 1 },
+} as type.WeaponStats
 export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).length
 export const passivDetails = {
     increaseScore: { name: 'all golden', maxlvl: 50, description: 'increases overall score gain' },

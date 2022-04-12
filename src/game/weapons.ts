@@ -183,10 +183,9 @@ export function weapons(
                     (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
                 imgsrc: '/gt/img/char/plasma.png',
                 damage:
-                    1 +
+                    10 +
                     weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1) *
-                        2,
+                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
             } as type.Plasma)
             break
     }

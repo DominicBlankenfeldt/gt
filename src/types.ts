@@ -158,6 +158,15 @@ export interface WeaponTree {
     weaponAvaibleTypes: weaponType[]
     weaponUpgrades: WeaponUpgrade[]
 }
+export type WeaponStats = {
+    [key in weaponType]: WeaponStat
+}
+export interface WeaponStat {
+    dmg: number
+    reload: number
+    size: number
+    spheres: number
+}
 export type weaponType = 'standard' | 'shotgun' | 'MG' | 'aimgun' | 'splitgun' | 'safegun' | 'bazooka'
 export interface WeaponUpgrade {
     name: WeaponUpgradeName
@@ -263,6 +272,9 @@ export interface Field {
     borderRight: number
     borderDown: number
 }
+export type FleetSkillObject = {
+    [key in FleetSkillName]: number
+}
 export interface SpaceFleet {
     founder: string
     members: string[]
@@ -271,8 +283,13 @@ export interface SpaceFleet {
     public: boolean
     img: string
     id?: string
+    skills: FleetSkill[]
 }
-
+export interface FleetSkill {
+    name: FleetSkillName
+    lvl: number
+}
+export type FleetSkillName = 'bossEnemies' | 'bossDifficulty'
 export interface SpecialScore {
     score: number
     vector: Vector

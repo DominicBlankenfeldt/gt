@@ -8,34 +8,7 @@
             </div>
         </div>
         <div class="d-flex justify-content-center">
-            <div v-for="passiv of player.shop.passivSlots.lvl" :key="passiv" class="mx-1">
-                <div>
-                    <div class="mt-2 w-100 btn btn-primary shadow-none rounded-0 rounded-top">passiv:</div>
-                    <br />
-                    <select
-                        class="w-100 btn btn-primary shadow-none rounded-0 rounded-bottom"
-                        v-model="player.passivTree.passivType[passiv - 1]"
-                        :title="passivDetails[player.passivTree.passivType[passiv - 1]]?.description"
-                        @click="buttonSound()"
-                    >
-                        <option :value="player.passivTree.passivType[passiv - 1]" :title="player.passivTree.passivType[passiv - 1]?.description">
-                            {{ passivDetails[player.passivTree.passivType[passiv - 1]].name }}
-                        </option>
-                        <option
-                            @click="buttonSound()"
-                            :selected="passivAvaibleType == player.passivTree.passivType[passiv - 1]"
-                            :value="passivAvaibleType"
-                            v-for="passivAvaibleType of player.passivTree.passivAvaibleTypes.filter(p => !player.passivTree.passivType.includes(p))"
-                            :key="passivAvaibleType"
-                            :title="passivDetails[passivAvaibleType]?.description"
-                        >
-                            {{ passivDetails[passivAvaibleType].name }}
-                        </option>
-                        <option style="color: black" value="" v-if="player.passivTree.passivAvaibleTypes.length < passivAmount" disabled>
-                            unlock more by fight the boss
-                        </option>
-                    </select>
-                </div>
+            <div v-for="passiv of player.passivTree.passivType" :key="passiv" class="mx-1">
                 <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
                     <button
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"

@@ -8,28 +8,6 @@
                     {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
                 </div>
             </div>
-            <div class="mt-2 w-25 btn btn-primary shadow-none rounded-0 rounded-top">weapontype:</div>
-            <br />
-            <select
-                class="w-25 btn btn-primary shadow-none rounded-0 rounded-bottom"
-                v-model="player.weaponTree.weaponType"
-                :title="weaponDetails[player.weaponTree.weaponType].description"
-                @click="buttonSound()"
-            >
-                <option
-                    :selected="weaponAvaibleType == player.weaponTree.weaponType"
-                    :value="weaponAvaibleType"
-                    v-for="weaponAvaibleType of player.weaponTree.weaponAvaibleTypes"
-                    :key="weaponAvaibleType"
-                    :title="weaponDetails[weaponAvaibleType].description"
-                    @click="buttonSound()"
-                >
-                    {{ weaponAvaibleType }}
-                </option>
-                <option style="color: black" value="" v-if="player.weaponTree.weaponAvaibleTypes.length < weaponAmount" disabled>
-                    unlock more by fight the boss
-                </option>
-            </select>
         </div>
         <div class="row g-0 mt-2">
             <div class="col-3"></div>

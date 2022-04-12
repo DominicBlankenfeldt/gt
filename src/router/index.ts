@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import Games from '../views/Games.vue'
-import SkillTree from '../views/Upgrades.vue'
 import Scoreboard from '../views/Scoreboard.vue'
 import Register from '../views/Register.vue'
 import Landing from '../views/Landing.vue'
@@ -37,12 +36,6 @@ const routes: Array<RouteRecordRaw> = [
         component: Games,
     },
     {
-        path: '/skillTree',
-        name: 'SkillTree',
-        component: SkillTree,
-        meta: { requiresAuth: true },
-    },
-    {
         path: '/fleet',
         name: 'Fleet',
         component: Fleet,
@@ -62,6 +55,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/spaceport',
         name: 'Spaceport',
+        meta: { requiresAuth: true },
         component: Spaceport,
     },
 ]

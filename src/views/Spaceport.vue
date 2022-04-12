@@ -1,24 +1,152 @@
 <template>
-    <div style="margin-top: 7.2vh" v-if="dataLoad">
-        <div data-title="you get a building license when you kill" line2="the totalchaos boss" class="w-25 d-inline">
-            building licenses:
-            <br />
-            {{ player.defeatedBosses.totalchaos - usedLicenses }}/{{ player.defeatedBosses.totalchaos }}
+    <div style="margin-top: 5vh" v-if="dataLoad">
+        <div class="btn-group rounded w-50 mt-2" role="group" aria-label="Basic radio toggle button group">
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnBuilding"
+                autocomplete="off"
+                :checked="choosenTree == 'building'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="0"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnBuilding"
+                @click="
+                    {
+                        ;(choosenTree = 'building'), buttonSound()
+                    }
+                "
+            >
+                building space
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnSkillTree"
+                autocomplete="off"
+                :checked="choosenTree == 'skillTree'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="1"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnSkillTree"
+                @click="
+                    {
+                        ;(choosenTree = 'skillTree'), buttonSound()
+                    }
+                "
+            >
+                research lab
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnWeapon"
+                autocomplete="off"
+                :checked="choosenTree == 'weapon'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="2"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnWeapon"
+                @click="
+                    {
+                        ;(choosenTree = 'weapon'), buttonSound()
+                    }
+                "
+            >
+                weapons lab
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnPassiv"
+                autocomplete="off"
+                :checked="choosenTree == 'passiv'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="3"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnPassiv"
+                @click="
+                    {
+                        ;(choosenTree = 'passiv'), buttonSound()
+                    }
+                "
+            >
+                atom lab
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnShop"
+                autocomplete="off"
+                :checked="choosenTree == 'shop'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="4"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnShop"
+                @click="
+                    {
+                        ;(choosenTree = 'shop'), buttonSound()
+                    }
+                "
+            >
+                shop
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
+                id="btnHangar"
+                autocomplete="off"
+                :checked="choosenTree == 'hangar'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="5"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnHangar"
+                @click="
+                    {
+                        ;(choosenTree = 'hangar'), buttonSound()
+                    }
+                "
+            >
+                hangar
+            </label>
         </div>
-        <div class="row g-0" style="margin-top: 6vh">
-            <div class="col-5"></div>
-            <div class="d-flex flex-column col-2 mx-1">
-                <div v-for="house of player.spaceport.houses" :key="house.name">
-                    <button
-                        class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-                        @click="upgradeHouse(house)"
-                        :data-title="house.needScore == 0 ? houseDetails[house.name].description : 'in construction'"
-                        :line2="house.needScore == 0 ? 'costs: 1' : `you must earn ${house.needScore} score`"
-                    >
-                        {{ houseDetails[house.name].name }}
-                        <br />
-                        lvl: {{ house.lvl }}/{{ houseDetails[house.name].maxlvl }}
-                    </button>
+        <div id="carouselUpgrades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+            <div class="carousel-inner">
+                <div class="carousel-item">
+                    <BuildingCard :playerProp="player" style="min-height: 70vh" />
+                </div>
+                <div class="carousel-item active">
+                    <SkillCard :playerProp="player" style="min-height: 70vh" />
+                </div>
+                <div class="carousel-item">
+                    <WeaponCard :playerProp="player" style="min-height: 70vh" />
+                </div>
+                <div class="carousel-item">
+                    <PassivCard :playerProp="player" style="min-height: 70vh" />
+                </div>
+                <div class="carousel-item">
+                    <ShopCard :playerProp="player" style="min-height: 70vh" />
+                </div>
+                <div class="carousel-item">
+                    <HangarCard :playerProp="player" style="min-height: 70vh" />
                 </div>
             </div>
         </div>
@@ -26,33 +154,36 @@
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { checkPlayer, houseDetails } from '@/global'
+import { checkPlayer } from '@/global'
 import { currentUser } from '@/router'
+import SkillCard from '@/components/SkillCard.vue'
+import WeaponCard from '@/components/WeaponCard.vue'
+import PassivCard from '@/components/PassivCard.vue'
+import ShopCard from '@/components/ShopCard.vue'
+import BuildingCard from '@/components/BuildingCard.vue'
+import HangarCard from '@/components/HangarCard.vue'
 import * as API from '@/API'
 import * as type from '@/types'
 import * as music from '@/music'
 export default defineComponent({
     setup() {
         currentUser
-        return {
-            houseDetails,
-        }
     },
-    computed: {
-        usedLicenses() {
-            let used = 0
-            for (let house of this.player.spaceport.houses) {
-                used += house.lvl
-                if (house.needScore > 0) used++
-            }
-            return used
-        },
+    components: {
+        SkillCard,
+        WeaponCard,
+        PassivCard,
+        ShopCard,
+        BuildingCard,
+        HangarCard,
     },
     data() {
         return {
             player: {} as type.Player,
+            timer: 0,
             user: currentUser,
             dataLoad: false,
+            choosenTree: 'skillTree',
         }
     },
     async unmounted() {
@@ -80,11 +211,6 @@ export default defineComponent({
     },
 
     methods: {
-        upgradeHouse(house: type.House) {
-            if (house.needScore == 0 && this.player.defeatedBosses.totalchaos - this.usedLicenses > 0) {
-                house.needScore = (house.lvl + 1) * houseDetails[house.name].upgradeCost
-            }
-        },
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)
         },

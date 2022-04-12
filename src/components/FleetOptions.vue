@@ -137,7 +137,14 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer d-flex flex-row-reverse">
+            <div class="card-footer d-flex justify-content-between">
+                <div class="col-3" v-if="player.spaceFleet">
+                    <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.founder">leave</button>
+                    <button class="btn btn-danger shadow-none" @click="deleteSpaceFleet()" v-else>delete</button>
+                </div>
+                <div class="col-3" v-if="player.spaceFleet">
+                    <button class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#skillModal">skills</button>
+                </div>
                 <div class="col-3">
                     <button
                         v-if="!player.spaceFleet"
@@ -151,11 +158,6 @@
                     <button v-if="user?.uid == fleet?.founder" @click="editSave()" class="btn btn-secondary shadow-none">
                         {{ edit ? 'save' : 'edit' }}
                     </button>
-                </div>
-                <div class="col-6"></div>
-                <div class="col-3" v-if="player.spaceFleet">
-                    <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.founder">leave</button>
-                    <button class="btn btn-danger shadow-none" @click="deleteSpaceFleet()" v-else>delete</button>
                 </div>
             </div>
 
@@ -215,6 +217,37 @@
                 </div>
             </div>
             <!-- modal -->
+            <!-- modal -->
+            <div class="modal fade" id="skillModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">skill tree</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div>{{ amountPoints() - usedSkillpoints }}/{{ amountPoints() }}</div>
+                            <div v-for="skill of fleet.skills" :key="skill.name">
+                                <button
+                                    class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                                    @click="lvlSkill(skill)"
+                                    :data-title="fleetSkillDetails[skill.name].description"
+                                    :line2="`costs: ${fleetSkillDetails[skill.name].tier}`"
+                                >
+                                    {{ fleetSkillDetails[skill.name].name }}
+                                    <br />
+                                    lvl: {{ skill.lvl }}/{{ fleetSkillDetails[skill.name].maxlvl }}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" @click="buttonSound()">Close</button>
+                            <button type="button" class="btn btn-success shadow-none" @click="saveFleet()" data-bs-dismiss="modal">save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal -->
+
             <div
                 style="margin-top: 15vh"
                 class="modal fade"
@@ -240,10 +273,15 @@ import { defineComponent } from 'vue'
 import * as type from '@/types'
 import * as API from '@/API'
 import { currentUser } from '@/router'
-import { checkPlayer } from '@/global'
+import { checkPlayer, fleetSkillDetails } from '@/global'
 import * as music from '@/music'
 import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
+    setup() {
+        return {
+            fleetSkillDetails,
+        }
+    },
     components: {
         PlayerCard,
     },
@@ -269,6 +307,10 @@ export default defineComponent({
                 name: '',
                 info: '',
                 public: false,
+                skills: [
+                    { name: 'bossEnemies', lvl: 0 },
+                    { name: 'bossDifficulty', lvl: 0 },
+                ],
             } as type.SpaceFleet,
         }
     },
@@ -306,7 +348,6 @@ export default defineComponent({
             }
             return score
         },
-
         fleetlvl() {
             let lvl = 0
             for (let member of this.fleetMembers.map(m => m.player)) {
@@ -326,8 +367,20 @@ export default defineComponent({
             }
             return score / games || 0
         },
+        usedSkillpoints() {
+            let points = 0
+            for (let skill of this.fleet.skills) points += skill.lvl * fleetSkillDetails[skill.name].tier
+            return points
+        },
     },
     methods: {
+        amountPoints() {
+            return Math.floor(this.fleetScore / 1000000)
+        },
+        lvlSkill(skill: type.FleetSkill) {
+            if (this.amountPoints() - this.usedSkillpoints < fleetSkillDetails[skill.name].tier) return
+            skill.lvl++
+        },
         closeChoosePlayer() {
             this.choosenPlayerLoad = false
             this.buttonSound()
@@ -358,7 +411,7 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.founder || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],
@@ -377,6 +430,9 @@ export default defineComponent({
             this.fleetMembers = fleetMembers.filter(m => this.fleet.members.includes(m.id))
             this.fleetFounder = this.fleetMembers.find(m => m.id == this.fleet.founder)!.player
         },
+        async saveFleet() {
+            await API.addSpaceFleet(this.fleet)
+        },
         async createFleet() {
             if (!this.user) return
             this.buttonSound()
@@ -387,6 +443,10 @@ export default defineComponent({
                 name: this.nameInput,
                 info: this.infoInput,
                 public: this.publicInput,
+                skills: [
+                    { name: 'bossEnemies', lvl: 0 },
+                    { name: 'bossDifficulty', lvl: 0 },
+                ],
             })
             if (result) this.player.spaceFleet = result
             try {
