@@ -2,8 +2,8 @@ import { ref } from 'vue'
 import * as type from '@/types'
 export const production = ref(process.env.NODE_ENV === 'production' ? true : false)
 export const fleetSkillDetails = {
-    bossEnemies: { name: 'bossEnemies', maxlvl: 5, tier: 1, description: '' },
-    bossDifficulty: { name: 'bossDifficulty', maxlvl: 5, tier: 1, description: '' },
+    bossEnemies: { name: 'common superiority', maxlvl: 5, tier: 1, description: 'reduce enemies in a boss fight' },
+    bossDifficulty: { name: `together it's easier`, maxlvl: 5, tier: 1, description: 'reduce the difficulty in a boss fight' },
 }
 export const skillDetails = {
     fastAbility: { name: 'rocket propulsion', maxlvl: 1, tier: 1, description: 'you can speed up your movement' },
@@ -77,7 +77,6 @@ export const shopDetails = {
     lessStartEnemies: {
         name: 'corruption',
         max: maxLessStartEnemies,
-        maxlvl: 3,
         description: 'fewer enemies appear at the beginning',
         cost: 10,
         upgradeCost: 1000,
@@ -85,7 +84,6 @@ export const shopDetails = {
     higherDifficultyTimer: {
         name: 'easy mode',
         max: maxHigherDifficultyTimer,
-        maxlvl: 3,
         description: 'it takes longer to increase the difficulty',
         cost: 10,
         upgradeCost: 1000,
@@ -93,17 +91,17 @@ export const shopDetails = {
     lowerScoreTimer: {
         name: 'faster gold',
         max: maxLowerScoreTimer,
-        maxlvl: 3,
         description: 'the score growth is increased faster',
         cost: 10,
         upgradeCost: 1000,
     },
-    passivSlots: { name: 'passivSlots', maxlvl: 3, max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
+    passivSlots: { name: 'passivSlots', max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
 }
 export const houseDetails = {
-    skill: { name: 'research lab', maxlvl: 5, description: 'increase your skills max lvl', upgradeCost: 500000 },
-    weapon: { name: 'weapons lab', maxlvl: 5, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
-    passiv: { name: 'atom lab', maxlvl: 5, description: 'increase your passivs max lvl', upgradeCost: 500000 },
+    skill: { name: 'research lab', startlvl: 0, maxlvl: 5, description: 'increase your skills max lvl', upgradeCost: 500000 },
+    weapon: { name: 'weapons lab', startlvl: 0, maxlvl: 5, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
+    passiv: { name: 'atom lab', startlvl: 0, maxlvl: 5, description: 'increase your passivs max lvl', upgradeCost: 500000 },
+    shop: { name: 'shop', startlvl: 1, maxlvl: 5, description: 'increase max lvl of shop items', upgradeCost: 500000 },
 }
 //player
 
@@ -173,16 +171,7 @@ export function checkPlayer(player: type.Player) {
             skillPoints: 0,
             skills: [] as type.Skill[],
         } as type.SkillTree)
-    for (const skill of Object.entries(skillDetails)
-        .filter(([key, value]) => value.maxlvl == 1)
-        .flatMap(([key, value]) => key)) {
-        if (checkSkill(player, skill)) {
-            player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
-        }
-    }
-    for (const skill of Object.entries(skillDetails)
-        .filter(([key, value]) => value.maxlvl != 1)
-        .flatMap(([key, value]) => key)) {
+    for (const skill of Object.entries(skillDetails).flatMap(([key, value]) => key)) {
         if (checkSkill(player, skill)) {
             player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 })
         }
@@ -205,7 +194,7 @@ export function checkPlayer(player: type.Player) {
     }
     for (const house of Object.keys(houseDetails)) {
         if (checkHouse(player, house)) {
-            player.spaceport.houses.push({ name: house as type.HouseName, lvl: 0, needScore: 0 })
+            player.spaceport.houses.push({ name: house as type.HouseName, lvl: houseDetails[house as type.HouseName].startlvl, needScore: 0 })
         }
     }
     return player

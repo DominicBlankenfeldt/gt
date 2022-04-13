@@ -1,6 +1,7 @@
-import { findPassivUpgrade, percent } from '@/game/helpers'
+import { percent } from '@/game/helpers'
 import * as type from '@/types'
 import { rotVec } from '@/game/vectors'
+import { weaponStats } from '@/global'
 
 export function weapons(
     player: type.Player,
@@ -10,7 +11,6 @@ export function weapons(
     weaponObject: type.WeaponObject,
     passivObject: type.PassivObject
 ) {
-    let shotCoolDownDuration
     const plasmas = [] as type.Plasma[]
     let moveVector: type.Vector
     switch (lastDirection) {
@@ -41,152 +41,54 @@ export function weapons(
         default:
             moveVector = [1, 0]
     }
+    const shotCoolDownDuration =
+        weaponStats[player.weaponTree.weaponType].reload *
+        1000 *
+        percent(weaponObject['fasterReload'] * 1.5, 'de') *
+        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
+    const size =
+        weaponStats[player.weaponTree.weaponType].size +
+        percent(percent(weaponObject['biggerProjectile'] * 10, 'in') * 10, 'in') *
+            generalSize *
+            (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1)
+    const damage =
+        weaponStats[player.weaponTree.weaponType].dmg +
+        weaponObject['moreDamage'] * (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1)
     switch (player.weaponTree.weaponType) {
         case 'standard':
-            shotCoolDownDuration =
-                2000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
-            plasmas.push({
-                moveVector: moveVector,
-                vector: playerInfo.vector,
-                size:
-                    5 +
-                    percent(percent(weaponObject['biggerProjectile'] * 10, 'in') * 10, 'in') *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                imgsrc: '/gt/img/char/plasma.png',
-                damage:
-                    1 +
-                    weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-            } as type.Plasma)
-            break
         case 'aimgun':
-            shotCoolDownDuration =
-                2500 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
-            plasmas.push({
-                moveVector: moveVector,
-                vector: playerInfo.vector,
-                size:
-                    5 *
-                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                    generalSize *
-                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                imgsrc: '/gt/img/char/plasma.png',
-                damage:
-                    1 +
-                    weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                aim: true,
-            } as type.Plasma)
-            break
         case 'splitgun':
-            shotCoolDownDuration =
-                2000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
-            plasmas.push({
-                moveVector: moveVector,
-                vector: playerInfo.vector,
-                size:
-                    5 *
-                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                    generalSize *
-                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                imgsrc: '/gt/img/char/plasma.png',
-                damage:
-                    1 +
-                    weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                split: true,
-            } as type.Plasma)
-            break
-        case 'shotgun':
-            shotCoolDownDuration =
-                3000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
-            for (let i = 0; i < 3; i++) {
-                plasmas.push({
-                    moveVector: rotVec(moveVector, 15 * (i - 1)),
-                    vector: playerInfo.vector,
-                    size:
-                        2 *
-                        percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                    imgsrc: '/gt/img/char/plasma.png',
-                    damage:
-                        1 +
-                        weaponObject['moreDamage'] *
-                            (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                } as type.Plasma)
-            }
-            break
         case 'MG':
-            shotCoolDownDuration =
-                1000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
+        case 'bazooka':
             plasmas.push({
                 moveVector: moveVector,
                 vector: playerInfo.vector,
-                size:
-                    5 *
-                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                    generalSize *
-                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                size: size,
                 imgsrc: '/gt/img/char/plasma.png',
-                damage:
-                    1 +
-                    weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                damage: damage,
             } as type.Plasma)
             break
         case 'safegun':
-            shotCoolDownDuration =
-                10000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
             for (let i = 0; i < 8; i++) {
                 plasmas.push({
                     moveVector: rotVec(moveVector, (360 / 8) * i),
                     vector: playerInfo.vector,
-                    size:
-                        2 *
-                        percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                        generalSize *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                    size: size,
                     imgsrc: '/gt/img/char/plasma.png',
-                    damage:
-                        1 +
-                        weaponObject['moreDamage'] *
-                            (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
+                    damage: damage,
                 } as type.Plasma)
             }
             break
-        case 'bazooka':
-            shotCoolDownDuration =
-                6000 *
-                percent(weaponObject['fasterReload'] * 1.5, 'de') *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'de') : 1)
-            plasmas.push({
-                moveVector: moveVector,
-                vector: playerInfo.vector,
-                size:
-                    10 *
-                    percent(weaponObject['biggerProjectile'] * 10, 'in') *
-                    generalSize *
-                    (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-                imgsrc: '/gt/img/char/plasma.png',
-                damage:
-                    10 +
-                    weaponObject['moreDamage'] *
-                        (player.passivTree.passivType.includes('increaseGun') ? percent(passivObject['increaseGun'] / 2, 'in') : 1),
-            } as type.Plasma)
+        case 'shotgun':
+            for (let i = 0; i < 3; i++) {
+                plasmas.push({
+                    moveVector: rotVec(moveVector, 15 * (i - 1)),
+                    vector: playerInfo.vector,
+                    size: size,
+                    imgsrc: '/gt/img/char/plasma.png',
+                    damage: damage,
+                } as type.Plasma)
+            }
             break
     }
     return { shotCoolDownDuration: shotCoolDownDuration, plasmas: plasmas }

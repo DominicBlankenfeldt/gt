@@ -30,7 +30,7 @@
                         :class="shopItem == 'energyCell' ? 'rounded-top' : ''"
                         style="height: 6vh"
                         :data-title="shopDetails[shopItem].description"
-                        :line2="`costs: ${shopDetails[shopItem].cost}`"
+                        :line2="player.shop[shopItem].amount < shopDetails[shopItem].max ? `costs: ${shopDetails[shopItem].cost}` : 'full'"
                     >
                         {{ shopDetails[shopItem].name }}
                         <br />
@@ -61,11 +61,15 @@
                         class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                         style="height: 12vh"
                         :data-title="shopDetails[shopItem].description"
-                        :line2="`costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`"
+                        :line2="
+                            player.shop[shopItem].lvl < shopDetails[shopItem].maxlvl
+                                ? `costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`
+                                : 'max lvl'
+                        "
                     >
                         upgrade {{ shopDetails[shopItem].name }}
                         <br />
-                        {{ player.shop[shopItem].lvl }}/{{ shopDetails[shopItem].maxlvl }}
+                        {{ player.shop[shopItem].lvl }}/{{ findHouse(player, 'shop') }}
                     </button>
                 </div>
             </div>
@@ -75,11 +79,15 @@
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                     style="height: 9vh"
                     data-title="unlocks additional passive slots"
-                    :line2="`costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`"
+                    :line2="
+                        player.shop['passivSlots'].lvl < shopDetails['passivSlots'].maxlvl
+                            ? `costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`
+                            : 'max lvl'
+                    "
                 >
                     {{ shopDetails['passivSlots'].name }}
                     <br />
-                    {{ player.shop['passivSlots'].lvl }}/{{ shopDetails['passivSlots'].maxlvl }}
+                    {{ player.shop['passivSlots'].lvl }}/{{ findHouse(player, 'shop') }}
                 </button>
             </div>
         </div>
@@ -92,7 +100,7 @@ import { currentUser } from '@/router'
 import { passivDetails, passivAmount, shopDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
-import { findWeaponUpgrade } from '@/game/helpers'
+import { findHouse, findWeaponUpgrade } from '@/game/helpers'
 export default defineComponent({
     setup() {
         currentUser
@@ -100,6 +108,7 @@ export default defineComponent({
             shopDetails,
             passivDetails,
             passivAmount,
+            findHouse,
             findWeaponUpgrade,
         }
     },
@@ -125,7 +134,7 @@ export default defineComponent({
         upgradeShopItem(shopElement: type.ShopElement) {
             if (
                 this.player.shop.currency <= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost ||
-                this.player.shop[shopElement].lvl >= shopDetails[shopElement].maxlvl
+                this.player.shop[shopElement].lvl >= findHouse(this.player, 'shop')
             )
                 return
             this.player.shop.currency -= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost

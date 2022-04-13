@@ -251,7 +251,7 @@ export interface Plasma {
 export interface Spaceport {
     houses: House[]
 }
-export type HouseName = 'passiv' | 'weapon' | 'skill'
+export type HouseName = 'passiv' | 'weapon' | 'skill' | 'shop'
 export interface House {
     lvl: number
     needScore: number

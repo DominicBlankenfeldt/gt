@@ -15,7 +15,14 @@
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :data-title="passivDetails[passivUpgrade.name].description"
-                        :line2="passivUpgrade.name != 'none' ? 'costs: 1' : ''"
+                        :line2="
+                            passivUpgrade.lvl <
+                            passivDetails[passivUpgrade.name].maxlvl + (passivUpgrade.name != 'none' ? findHouse(player, 'passiv') * 5 : 0)
+                                ? passivUpgrade.name != 'none'
+                                    ? 'costs: 1'
+                                    : ''
+                                : 'max lvl'
+                        "
                     >
                         {{ passivDetails[passivUpgrade.name].name }}
                         <br />

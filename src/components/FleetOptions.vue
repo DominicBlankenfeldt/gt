@@ -378,6 +378,7 @@ export default defineComponent({
             return Math.floor(this.fleetScore / 1000000)
         },
         lvlSkill(skill: type.FleetSkill) {
+            if (this.user?.uid != this.fleet.founder) return
             if (this.amountPoints() - this.usedSkillpoints < fleetSkillDetails[skill.name].tier) return
             skill.lvl++
         },

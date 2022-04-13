@@ -27,7 +27,7 @@
                                     minlength="3"
                                     class="form-control"
                                     id="email"
-                                    type="text"
+                                    type="email"
                                     v-model="email"
                                     :class="{ dirty: email }"
                                     autocomplete="off"

@@ -18,7 +18,11 @@
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                        :line2="
+                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2
+                                ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
+                                : 'max lvl'
+                        "
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
@@ -33,7 +37,11 @@
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                        :line2="
+                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2
+                                ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
+                                : 'max lvl'
+                        "
                         :disabled="usedWeaponPoints < 40"
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
@@ -49,7 +57,11 @@
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
                         :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="`costs: ${weaponDetails[weaponUpgrade.name].tier}`"
+                        :line2="
+                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl
+                                ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
+                                : 'max lvl'
+                        "
                         :disabled="usedWeaponPoints < 70"
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}

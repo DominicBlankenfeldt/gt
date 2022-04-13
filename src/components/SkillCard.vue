@@ -16,7 +16,11 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
-                        :line2="`costs: ${skillDetails[skill.name].tier}`"
+                        :line2="
+                            skill.lvl < skillDetails[skill.name].maxlvl + findHouse(player, 'skill') * 3
+                                ? `costs: ${skillDetails[skill.name].tier}`
+                                : 'max lvl'
+                        "
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -31,7 +35,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
-                        :line2="`costs: ${skillDetails[skill.name].tier}`"
+                        :line2="skill.lvl < skillDetails[skill.name].maxlvl ? `costs: ${skillDetails[skill.name].tier}` : 'max lvl'"
                     >
                         {{ skillDetails[skill.name].name }}
                         <br />
@@ -46,7 +50,11 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
-                        :line2="`costs: ${skillDetails[skill.name].tier}`"
+                        :line2="
+                            skill.lvl < skillDetails[skill.name].maxlvl + findHouse(player, 'skill') * 2
+                                ? `costs: ${skillDetails[skill.name].tier}`
+                                : 'max lvl'
+                        "
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -62,7 +70,7 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
-                        :line2="`costs: ${skillDetails[skill.name].tier}`"
+                        :line2="skill.lvl < skillDetails[skill.name].maxlvl ? `costs: ${skillDetails[skill.name].tier}` : 'max lvl'"
                         :disabled="usedSkillPoints < 100"
                     >
                         {{ skillDetails[skill.name].name }}
@@ -78,7 +86,11 @@
                         @click="lvlSkill(skill)"
                         @dblclick="lvlSkillx8(skill)"
                         :data-title="skillDetails[skill.name].description"
-                        :line2="`costs: ${skillDetails[skill.name].tier}`"
+                        :line2="
+                            skill.lvl < skillDetails[skill.name].maxlvl + findHouse(player, 'skill')
+                                ? `costs: ${skillDetails[skill.name].tier}`
+                                : 'max lvl'
+                        "
                         :disabled="usedSkillPoints < 200"
                     >
                         {{ skillDetails[skill.name].name }}

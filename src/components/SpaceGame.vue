@@ -631,10 +631,10 @@ export default defineComponent({
         this.player = checkPlayer(this.player) as type.Player
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
+        this.buttonSound()
         this.playerInfo.size *= this.generalSize
         this.playerStartPosition()
         this.bossFight = false
-        this.buttonSound()
         this.tip = tips(getRandomInt(this.tipsNumber))
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
@@ -1574,24 +1574,24 @@ export default defineComponent({
                             this.bombAbility()
                             break
                         case 'shotAbility':
-                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.shotAbility()
+
                             break
                         case 'magnetAbility':
-                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.magnetAbility()
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             break
                         case 'growAbility':
-                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.growAbility()
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             break
                         case 'slowEnemyAbility':
-                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.slowEnemyAbility()
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             break
                         case 'stopTimeAbility':
-                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             this.stopTimeAbility()
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             break
                     }
                 }
@@ -1630,7 +1630,7 @@ export default defineComponent({
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
             this.coolDowns['bombAbility'] = 1000
-            this.player.shop.energyCell.amount -= skillDetails['bombAbility'].tier
+
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.playerInfo.vector)) - lenVec(subVec(b.vector, this.playerInfo.vector))
@@ -1642,6 +1642,7 @@ export default defineComponent({
         },
         shotAbility() {
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
+            this.player.shop.energyCell.amount -= skillDetails['shotAbility'].tier
             music.plasmaSound(this.player.settings.effectVolume)
             let weapon = weapons(this.player, this.generalSize, this.lastDirection, this.playerInfo, this.weaponObject, this.passivObject)
             this.coolDowns['shotAbility'] = weapon.shotCoolDownDuration
