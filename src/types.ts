@@ -1,3 +1,4 @@
+export type Vector = [number, number]
 export interface Enemy {
     vector: Vector
     speed: number
@@ -44,7 +45,9 @@ export interface Player {
     settings: Settings
     playedTime: number
     spaceport: Spaceport
+    ship: Ship
 }
+
 export interface Highscore {
     normal: number
     hardcore: number
@@ -82,6 +85,15 @@ export interface ShopItem {
     lvl: number
 }
 export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyTimer' | 'lowerScoreTimer' | 'passivSlots'
+export interface Ship {
+    models: Model[]
+    selectedModel: Model
+}
+export interface Model {
+    img: string
+    id: number
+    rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
+}
 export interface Settings {
     abilitys: Abilitys
     moves: Moves
@@ -251,13 +263,12 @@ export interface Plasma {
 export interface Spaceport {
     houses: House[]
 }
-export type HouseName = 'passiv' | 'weapon' | 'skill' | 'shop'
+export type HouseName = 'passiv' | 'weapon' | 'skill' | 'shop' | 'hangar'
 export interface House {
     lvl: number
     needScore: number
     name: HouseName
 }
-export type Vector = [number, number]
 
 export interface User {
     player: Player
@@ -289,6 +300,7 @@ export interface FleetSkill {
     name: FleetSkillName
     lvl: number
 }
+
 export type FleetSkillName = 'bossEnemies' | 'bossDifficulty'
 export interface SpecialScore {
     score: number

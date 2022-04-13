@@ -72,7 +72,7 @@
                             style="position: absolute"
                         >
                             <img
-                                :src="`/gt/img/char/playership.png`"
+                                :src="`/gt/img/char/playership${player.ship.selectedModel.img}.png`"
                                 alt=""
                                 :style="{
                                     width: playerInfo.size + 'px',
@@ -432,8 +432,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec, addVecNum, subVecVec } from '@/game/vectors'
-import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell, shopDetails, weaponDetails } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow } from '@/game/helpers'
+import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell, shopDetails, weaponDetails, modelDetails } from '@/global'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -488,6 +488,7 @@ export default defineComponent({
             itemSpawn: true,
             //player
             player: {} as type.Player,
+            maxEnergyCell: maxEnergyCell,
             playerInfo: {
                 vector: [0, 0] as type.Vector,
                 moveVector: [0, 0] as type.Vector,
@@ -632,6 +633,15 @@ export default defineComponent({
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
         this.buttonSound()
+        ;(this.playerInfo = {
+            vector: [0, 0] as type.Vector,
+            moveVector: [0, 0] as type.Vector,
+            size: modelDetails[this.player.ship.selectedModel.rarity].size,
+            originalSize: modelDetails[this.player.ship.selectedModel.rarity].size,
+            speed: modelDetails[this.player.ship.selectedModel.rarity].speed,
+            hP: modelDetails[this.player.ship.selectedModel.rarity].hp,
+        }),
+            (this.maxEnergyCell = modelDetails[this.player.ship.selectedModel.rarity].store)
         this.playerInfo.size *= this.generalSize
         this.playerStartPosition()
         this.bossFight = false
@@ -762,7 +772,7 @@ export default defineComponent({
                 }
             }
             this.reset()
-            this.scoreMultiplier = 2
+            this.scoreMultiplier = modelDetails[this.player.ship.selectedModel.rarity].scoreMultiplier
             this.playerInfo.speed = 5
             this.gameloopLastCounter = 0
             this.gameloopCounter = 0
@@ -936,7 +946,7 @@ export default defineComponent({
             if (this.player.shop.energyCell.reBuy) {
                 while (
                     this.player.shop.currency >= shopDetails['energyCell'].cost &&
-                    this.player.shop.energyCell.amount < maxEnergyCell + this.weaponObject['munitionsDepot']
+                    this.player.shop.energyCell.amount < this.maxEnergyCell + this.weaponObject['munitionsDepot']
                 ) {
                     this.player.shop.currency -= shopDetails['energyCell'].cost
                     this.player.shop.energyCell.amount++
@@ -956,6 +966,7 @@ export default defineComponent({
             this.reset()
             this.message = message
             this.messageType = messageType
+            this.newModel()
             if (this.score > this.player.highscore[this.player.playMode]) this.player.highscore[this.player.playMode] = this.score
             this.setSkillPoints()
             this.player.shop.currency = Math.round(this.player.shop.currency)
@@ -963,6 +974,50 @@ export default defineComponent({
                 await API.addPlayer(this.player)
             } catch {
                 API.logout()
+            }
+        },
+        newModel() {
+            // common: { size: 25, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: 'green' },
+            // uncommon: { size: 22, speed: 4.5, hp: 1, scoreMultiplier: 2, store: 90, color: 'green' },
+            // rare: { size: 20, speed: 5, hp: 2, scoreMultiplier: 2.5, store: 100, color: 'green' },
+            // epic: { size: 18, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: 'green' },
+            // legendary: { size: 15, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: 'green' },
+            let rarity = 0 as number
+            let raityString = ''
+            let max = 5
+            let counter = 0
+            let random = getRandomInt(100)
+            if (this.score < 10000) return
+            while (random < 33 && counter <= max) {
+                rarity++
+                counter++
+                random = getRandomInt(100)
+            }
+            switch (rarity) {
+                case 0:
+                    break
+                case 1:
+                    raityString = 'common'
+                    break
+                case 2:
+                    raityString = 'uncommon'
+                    break
+                case 3:
+                    raityString = 'rare'
+                    break
+                case 4:
+                    raityString = 'epic'
+                    break
+                case 5:
+                    raityString = 'legendary'
+                    break
+            }
+            if (rarity && this.player.ship.models.length < findHouse(this.player, 'hangar')) {
+                this.player.ship.models.push({
+                    id: Math.random(),
+                    img: getRandomInt(18) + 1 + '',
+                    rarity: 'common',
+                })
             }
         },
         setSkillPoints() {

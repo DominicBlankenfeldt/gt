@@ -102,6 +102,14 @@ export const houseDetails = {
     weapon: { name: 'weapons lab', startlvl: 0, maxlvl: 5, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
     passiv: { name: 'atom lab', startlvl: 0, maxlvl: 5, description: 'increase your passivs max lvl', upgradeCost: 500000 },
     shop: { name: 'shop', startlvl: 1, maxlvl: 5, description: 'increase max lvl of shop items', upgradeCost: 500000 },
+    hangar: { name: 'hangar', startlvl: 1, maxlvl: 5, description: 'increases the maximum number of spaceships', upgradeCost: 500000 },
+}
+export const modelDetails = {
+    common: { size: 25, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: 'green' },
+    uncommon: { size: 22, speed: 4.5, hp: 1, scoreMultiplier: 2, store: 90, color: 'green' },
+    rare: { size: 20, speed: 5, hp: 2, scoreMultiplier: 2.5, store: 100, color: 'green' },
+    epic: { size: 18, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: 'green' },
+    legendary: { size: 15, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: 'green' },
 }
 //player
 
@@ -197,6 +205,7 @@ export function checkPlayer(player: type.Player) {
             player.spaceport.houses.push({ name: house as type.HouseName, lvl: houseDetails[house as type.HouseName].startlvl, needScore: 0 })
         }
     }
+    player.ship = player.ship || { models: [{ img: 1, rarity: 'common', id: 0 }], selectedModel: { img: 1, rarity: 'common', id: 0 } }
     return player
 }
 function checkHouse(player: type.Player, house: string) {

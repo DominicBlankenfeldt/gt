@@ -109,7 +109,75 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   },
   {
     "revision": "8fd2b57c76b376b5f0d9196af3c2afec",
-    "url": "/gt/img/char/playership.png"
+    "url": "/gt/img/char/playership1.png"
+  },
+  {
+    "revision": "12f028bd94a2b59b0c1e25d8cc258aba",
+    "url": "/gt/img/char/playership10.png"
+  },
+  {
+    "revision": "a91d8e45db8fa626e3c5bc19d29ccc2c",
+    "url": "/gt/img/char/playership11.png"
+  },
+  {
+    "revision": "3edfbde65dd07b363159bb339286d00a",
+    "url": "/gt/img/char/playership12.png"
+  },
+  {
+    "revision": "136fc102f3abe0c4e42e7109a3aac0e2",
+    "url": "/gt/img/char/playership13.png"
+  },
+  {
+    "revision": "cdcd41899f13c4c7b7302ae3c22ed670",
+    "url": "/gt/img/char/playership14.png"
+  },
+  {
+    "revision": "77a2771c55b30d2ccdccb12427f04808",
+    "url": "/gt/img/char/playership15.png"
+  },
+  {
+    "revision": "ec45ad5e5c912e48b572fb6487420fae",
+    "url": "/gt/img/char/playership16.png"
+  },
+  {
+    "revision": "96db1cbb70bb336dc5f6c4c44b347cbf",
+    "url": "/gt/img/char/playership17.png"
+  },
+  {
+    "revision": "f3f4c7fddcb242659e4baf68579380d9",
+    "url": "/gt/img/char/playership18.png"
+  },
+  {
+    "revision": "007d0a9eb5a5b53643ee441193c85c67",
+    "url": "/gt/img/char/playership2.png"
+  },
+  {
+    "revision": "5f5b60ca83965c42e56eabc031760e0d",
+    "url": "/gt/img/char/playership3.png"
+  },
+  {
+    "revision": "3864d88bf485b031bd007d325f9328dc",
+    "url": "/gt/img/char/playership4.png"
+  },
+  {
+    "revision": "909a588f7f13c7d4544035dac0b4eba8",
+    "url": "/gt/img/char/playership5.png"
+  },
+  {
+    "revision": "89b8fd0d3ec4f22ba9aa10a0fd93f5e3",
+    "url": "/gt/img/char/playership6.png"
+  },
+  {
+    "revision": "583d87e82b94281ec50b603cdff1109c",
+    "url": "/gt/img/char/playership7.png"
+  },
+  {
+    "revision": "d08d5cc59efa786b33ffc9ed844b29a2",
+    "url": "/gt/img/char/playership8.png"
+  },
+  {
+    "revision": "5056f2c93c7640d3565aa676a7a0ce5d",
+    "url": "/gt/img/char/playership9.png"
   },
   {
     "revision": "2f1e686338694976cd617a7839962206",
@@ -180,20 +248,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "8b684ef6e8a5939061ecd78bb36db76a",
+    "revision": "47c7c73fda61371be3873fd7a01f2409",
     "url": "/gt/index.html"
   },
   {
-    "revision": "e69e7e2a95331e165003",
-    "url": "/gt/js/about.54d1f624.js"
+    "revision": "d1fb25b65f86bd9c484e",
+    "url": "/gt/js/about.467a6fe3.js"
   },
   {
-    "revision": "707da8de2ee770f29a1f",
-    "url": "/gt/js/app.448abe68.js"
+    "revision": "84a0d4d41153e0cb04d2",
+    "url": "/gt/js/app.85a1093b.js"
   },
   {
-    "revision": "37659c5c6f741f74841e",
-    "url": "/gt/js/chunk-vendors.da24a504.js"
+    "revision": "2d2feff5b1b09e2ecb53",
+    "url": "/gt/js/chunk-vendors.f6802701.js"
   },
   {
     "revision": "8134543b0bedca1e33ccdbdf11908c38",

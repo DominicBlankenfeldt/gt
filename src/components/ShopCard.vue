@@ -30,12 +30,17 @@
                         :class="shopItem == 'energyCell' ? 'rounded-top' : ''"
                         style="height: 6vh"
                         :data-title="shopDetails[shopItem].description"
-                        :line2="player.shop[shopItem].amount < shopDetails[shopItem].max ? `costs: ${shopDetails[shopItem].cost}` : 'full'"
+                        :line2="
+                            player.shop[shopItem].amount < modelDetails[player.ship.selectedModel.rarity].store
+                                ? `costs: ${shopDetails[shopItem].cost}`
+                                : 'full'
+                        "
                     >
                         {{ shopDetails[shopItem].name }}
                         <br />
                         {{ player.shop[shopItem].amount }}/{{
-                            shopDetails[shopItem].max + (shopItem == 'energyCell' ? findWeaponUpgrade(player, 'munitionsDepot') : 0)
+                            modelDetails[player.ship.selectedModel.rarity].store +
+                            (shopItem == 'energyCell' ? findWeaponUpgrade(player, 'munitionsDepot') : 0)
                         }}
                     </button>
                     <div>
@@ -97,7 +102,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, passivAmount, shopDetails } from '@/global'
+import { passivDetails, passivAmount, shopDetails, modelDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
 import { findHouse, findWeaponUpgrade } from '@/game/helpers'
@@ -108,6 +113,7 @@ export default defineComponent({
             shopDetails,
             passivDetails,
             passivAmount,
+            modelDetails,
             findHouse,
             findWeaponUpgrade,
         }
@@ -144,7 +150,9 @@ export default defineComponent({
             if (
                 this.player.shop.currency <= shopDetails[shopElement].cost ||
                 this.player.shop[shopElement].amount >=
-                    shopDetails[shopElement].max + (shopElement == 'energyCell' ? findWeaponUpgrade(this.player, 'munitionsDepot') : 0)
+                    (shopElement != 'energyCell'
+                        ? shopDetails[shopElement].max
+                        : modelDetails[this.player.ship.selectedModel.rarity].store + findWeaponUpgrade(this.player, 'munitionsDepot'))
             )
                 return
             this.buttonSound()

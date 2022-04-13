@@ -51,13 +51,53 @@
                 </button>
             </div>
         </div>
+        <div class="mt-2">{{ player.ship.models.length }}/{{ findHouse(player, 'hangar') }}</div>
+        <div class="d-flex justify-content-center">
+            <div v-for="model of player.ship.models" :key="model.id" class="mx-1">
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="modelRadio"
+                    :id="`model${model.id}`"
+                    autocomplete="off"
+                    :checked="player.ship.selectedModel.id == model.id"
+                />
+                <label
+                    class="btn btn-outline-primary w-100 shadow-none"
+                    style="height: 25vh"
+                    :for="`model${model.id}`"
+                    @click="
+                        {
+                            ;(player.ship.selectedModel = model), buttonSound()
+                        }
+                    "
+                >
+                    <div :style="{ color: modelDetails[model.rarity].color }">
+                        {{ model.rarity }}
+                    </div>
+                    <div class="mt-1">
+                        <img :src="`/gt/img/char/playership${model.img}.png`" alt="" style="height: 6vh; width: 6vh" />
+                    </div>
+                    <br />
+                    HP:{{ modelDetails[model.rarity].hp }}
+                    <br />
+                    size:{{ modelDetails[model.rarity].size }}
+                    <br />
+                    speed:{{ modelDetails[model.rarity].speed }}
+                    <br />
+                    store:{{ modelDetails[model.rarity].store }}
+                    <br />
+                    scoreMultiplier:{{ modelDetails[model.rarity].scoreMultiplier }}
+                </label>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, weaponDetails, passivAmount, weaponStats } from '@/global'
+import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails } from '@/global'
 import { findHouse } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -69,6 +109,7 @@ export default defineComponent({
             findHouse,
             passivDetails,
             weaponDetails,
+            modelDetails,
             passivAmount,
             weaponStats,
         }
