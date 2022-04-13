@@ -61,7 +61,7 @@ export const passivDetails = {
     increaseScore: { name: 'all golden', maxlvl: 50, description: 'increases overall score gain' },
     increaseGun: { name: 'modern weapons', maxlvl: 50, description: 'increases all weapon stats' },
     nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and they are slower' },
-    moreItems: { name: 'oodles itemes', maxlvl: 50, description: 'more items spawn' },
+    moreItems: { name: 'oodles items', maxlvl: 50, description: 'more items spawn' },
     nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
     longerEffects: { name: 'infinite effects', maxlvl: 50, description: 'all effects last longer' },
     moreScrap: { name: 'scrap collector', maxlvl: 50, description: 'you get more scrap' },

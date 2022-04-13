@@ -12,7 +12,11 @@ export function changeVolume(volume: number) {
 }
 export function start() {
     if (!musicStarts.value) {
-        audioElement.play()
+        try {
+            audioElement.play()
+        } catch {
+            return
+        }
     }
     musicStarts.value = true
 }

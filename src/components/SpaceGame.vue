@@ -605,7 +605,7 @@ export default defineComponent({
     },
     async mounted() {
         // start game if not started on enter press
-        this.buttonSound()
+
         document.onkeyup = (e: any) => {
             if (e.code == 'Enter' && !this.gameStarted) this.start()
         }
@@ -634,7 +634,7 @@ export default defineComponent({
         this.playerInfo.size *= this.generalSize
         this.playerStartPosition()
         this.bossFight = false
-
+        this.buttonSound()
         this.tip = tips(getRandomInt(this.tipsNumber))
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
