@@ -39,8 +39,9 @@
                         {{ shopDetails[shopItem].name }}
                         <br />
                         {{ player.shop[shopItem].amount }}/{{
-                            modelDetails[player.ship.selectedModel.rarity].store +
-                            (shopItem == 'energyCell' ? findWeaponUpgrade(player, 'munitionsDepot') : 0)
+                            shopItem == 'energyCell'
+                                ? modelDetails[player.ship.selectedModel.rarity].store + findWeaponUpgrade(player, 'munitionsDepot')
+                                : shopDetails[buyShopItem.name].max
                         }}
                     </button>
                     <div>
