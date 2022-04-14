@@ -63,7 +63,7 @@
                     :checked="player.ship.selectedModel.id == model.id"
                 />
                 <label
-                    class="btn btn-outline-primary w-100 shadow-none"
+                    class="btn btn-outline-primary w-100 shadow-none rounded-0 rounded-top"
                     style="height: 25vh"
                     :for="`model${model.id}`"
                     @click="
@@ -89,6 +89,31 @@
                     <br />
                     scoreMultiplier:{{ modelDetails[model.rarity].scoreMultiplier }}
                 </label>
+                <button
+                    class="btn btn-danger w-100 rounded-0 rounded-bottom"
+                    :disabled="player.ship.selectedModel.id == model.id"
+                    data-bs-toggle="modal"
+                    data-bs-target="#sellConfirm"
+                    @click="selectedSellModel = model"
+                >
+                    sell
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="sellConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 11vh">
+        <div class="modal-dialog" @click.stop="">
+            <div class="modal-content">
+                <div class="modal-body" style="background-color: grey">
+                    <div>do you really want to sell this spaceship</div>
+
+                    <div class="row justify-content-end mt-1">
+                        <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-3">No</button>
+                        <button class="btn btn-primary col-3" data-bs-dismiss="modal" @click="sellModel()">Yes</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -97,7 +122,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails } from '@/global'
+import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails, maxCurrency } from '@/global'
 import { findHouse } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -119,6 +144,7 @@ export default defineComponent({
             player: {} as type.Player,
             user: currentUser,
             choosenWeapon: '',
+            selectedSellModel: {} as type.Model,
             choosenPassivs: [] as type.PassivType[],
             dataLoad: false,
         }
@@ -135,6 +161,28 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
+        sellModel() {
+            if (this.player.ship.selectedModel == this.selectedSellModel) return
+            switch (this.selectedSellModel.rarity) {
+                case 'common':
+                    this.player.shop.currency += 10
+                    break
+                case 'uncommon':
+                    this.player.shop.currency += 20
+                    break
+                case 'rare':
+                    this.player.shop.currency += 30
+                    break
+                case 'epic':
+                    this.player.shop.currency += 40
+                    break
+                case 'legendary':
+                    this.player.shop.currency += 50
+                    break
+            }
+            this.player.ship.models = this.player.ship.models.filter(m => m != this.selectedSellModel)
+            this.selectedSellModel = {} as type.Model
+        },
         selectPassiv(passiv: type.PassivType) {
             if (this.player.passivTree.passivType.includes(passiv)) {
                 this.player.passivTree.passivType = this.player.passivTree.passivType.filter(p => p != passiv)

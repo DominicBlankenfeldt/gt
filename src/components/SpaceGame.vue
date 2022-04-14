@@ -184,10 +184,10 @@
                         </div>
                         <div v-if="message" :class="messageType">
                             {{ message }}
-                            <br />
-                            {{ unlockMessage }}
                         </div>
-                        <div v-if="pointsMessage" class="alert alert-success">
+                        <div v-if="pointsMessage || unlockMessage" class="alert alert-success">
+                            {{ unlockMessage }}
+                            <br />
                             {{ pointsMessage }}
                         </div>
                         <button
@@ -432,7 +432,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { addVec, dirVec, lenVec, lenVecSqrt, mulVec, norVec, rotVec, subVec, addVecNum, subVecVec } from '@/game/vectors'
-import { checkPlayer, production, skillDetails, weaponAmount, passivAmount, maxEnergyCell, shopDetails, weaponDetails, modelDetails } from '@/global'
+import {
+    checkPlayer,
+    production,
+    skillDetails,
+    weaponAmount,
+    passivAmount,
+    maxEnergyCell,
+    shopDetails,
+    weaponDetails,
+    modelDetails,
+    maxCurrency,
+} from '@/global'
 import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
@@ -977,11 +988,6 @@ export default defineComponent({
             }
         },
         newModel() {
-            // common: { size: 25, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: 'green' },
-            // uncommon: { size: 22, speed: 4.5, hp: 1, scoreMultiplier: 2, store: 90, color: 'green' },
-            // rare: { size: 20, speed: 5, hp: 2, scoreMultiplier: 2.5, store: 100, color: 'green' },
-            // epic: { size: 18, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: 'green' },
-            // legendary: { size: 15, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: 'green' },
             let rarity = 0 as number
             let raityString = ''
             let max = 5
@@ -1016,8 +1022,9 @@ export default defineComponent({
                 this.player.ship.models.push({
                     id: Math.random(),
                     img: getRandomInt(18) + 1 + '',
-                    rarity: 'common',
+                    rarity: raityString as type.Rarity,
                 })
+                this.unlockMessage = `you have received a ${raityString} spaceship`
             }
         },
         setSkillPoints() {
@@ -1585,7 +1592,7 @@ export default defineComponent({
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
             this.player.shop.currency += 1 + this.passivObject['moreScrap'] / 50
-            if (this.player.shop.currency > 10000) this.player.shop.currency = 10000
+            if (this.player.shop.currency > maxCurrency) this.player.shop.currency = maxCurrency
             createEnemy(this.enemies, this.generalSize, this.field, this.skillObject, this.playerInfo)
         },
 

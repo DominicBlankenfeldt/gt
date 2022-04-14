@@ -92,8 +92,9 @@ export interface Ship {
 export interface Model {
     img: string
     id: number
-    rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
+    rarity: Rarity
 }
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
 export interface Settings {
     abilitys: Abilitys
     moves: Moves
