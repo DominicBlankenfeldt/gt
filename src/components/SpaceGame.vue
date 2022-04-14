@@ -748,7 +748,7 @@ export default defineComponent({
             if (this.gameStarted) return
             this.gameStarted = true
             this.buttonSound()
-            this.playerInfo.hP = 1 + this.weaponObject['moreHP']
+            this.playerInfo.hP = this.playerInfo.hP + this.weaponObject['moreHP']
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {

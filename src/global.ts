@@ -106,11 +106,11 @@ export const houseDetails = {
     hangar: { name: 'hangar', startlvl: 1, maxlvl: 5, description: 'increases the maximum number of spaceships', upgradeCost: 500000 },
 }
 export const modelDetails = {
-    common: { size: 25, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: '#A9A9A9' }, //DarGray
-    uncommon: { size: 22, speed: 4.5, hp: 1, scoreMultiplier: 2, store: 90, color: '#006400' }, //DarkGreen
-    rare: { size: 20, speed: 5, hp: 2, scoreMultiplier: 2.5, store: 100, color: '#00008B' }, //DarkBlue
-    epic: { size: 18, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: '#8A2BE2' }, //BlueVilet
-    legendary: { size: 15, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: '#B8860B' }, //DarkGoldenRod
+    common: { size: 30, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: '#A9A9A9' }, //DarGray
+    uncommon: { size: 28, speed: 4.5, hp: 1, scoreMultiplier: 2, store: 90, color: '#006400' }, //DarkGreen
+    rare: { size: 26, speed: 5, hp: 2, scoreMultiplier: 2.5, store: 100, color: '#00008B' }, //DarkBlue
+    epic: { size: 24, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: '#8A2BE2' }, //BlueVilet
+    legendary: { size: 22, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: '#B8860B' }, //DarkGoldenRod
 }
 //player
 
