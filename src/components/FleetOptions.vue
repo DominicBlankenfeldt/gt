@@ -432,7 +432,7 @@ export default defineComponent({
             this.fleetFounder = this.fleetMembers.find(m => m.id == this.fleet.founder)!.player
         },
         async saveFleet() {
-            await API.addSpaceFleet(this.fleet)
+            await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
         },
         async createFleet() {
             if (!this.user) return
