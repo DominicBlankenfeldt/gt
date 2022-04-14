@@ -660,7 +660,7 @@ export default defineComponent({
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
         this.weaponObject = this.player.weaponTree.weaponUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.WeaponObject
-        if (this.fleet) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
+        if (this.fleet.founder) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
         this.dataLoad = true
     },
     methods: {
@@ -686,7 +686,7 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.founder || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],

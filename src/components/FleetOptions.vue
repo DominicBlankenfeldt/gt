@@ -328,7 +328,7 @@ export default defineComponent({
             } catch {
                 API.logout()
             }
-             this.loadFleet()
+            this.loadFleet()
         } else {
             this.$router.go(-1)
         }
@@ -422,6 +422,8 @@ export default defineComponent({
                         info: '',
                         public: false,
                     } as type.SpaceFleet
+                    await API.addPlayer(this.player)
+                    this.$router.go(0)
                     return
                 }
             }
