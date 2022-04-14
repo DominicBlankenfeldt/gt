@@ -31,7 +31,10 @@
                         style="height: 6vh"
                         :data-title="shopDetails[shopItem].description"
                         :line2="
-                            player.shop[shopItem].amount < modelDetails[player.ship.selectedModel.rarity].store
+                            player.shop[shopItem].amount <
+                            (shopItem == 'energyCell'
+                                ? modelDetails[player.ship.selectedModel.rarity].store + findWeaponUpgrade(player, 'munitionsDepot')
+                                : shopDetails[shopItem].max)
                                 ? `costs: ${shopDetails[shopItem].cost}`
                                 : 'full'
                         "
@@ -41,7 +44,7 @@
                         {{ player.shop[shopItem].amount }}/{{
                             shopItem == 'energyCell'
                                 ? modelDetails[player.ship.selectedModel.rarity].store + findWeaponUpgrade(player, 'munitionsDepot')
-                                : shopDetails[buyShopItem.name].max
+                                : shopDetails[shopItem].max
                         }}
                     </button>
                     <div>
