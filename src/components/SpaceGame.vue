@@ -635,11 +635,11 @@ export default defineComponent({
                 if (result) {
                     this.player = result.player
                 }
-                if (this.player.spaceFleet) await this.loadFleet()
             } catch {
                 API.logout()
             }
         }
+        if (this.player.spaceFleet) await this.loadFleet()
         this.player = checkPlayer(this.player) as type.Player
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)

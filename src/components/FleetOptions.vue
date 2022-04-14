@@ -325,10 +325,10 @@ export default defineComponent({
                     music.changeVolume(this.player.settings.musicVolume)
                     this.buttonSound()
                 }
-                this.loadFleet()
             } catch {
                 API.logout()
             }
+             this.loadFleet()
         } else {
             this.$router.go(-1)
         }
