@@ -747,7 +747,7 @@ export default defineComponent({
             if (this.gameStarted) return
             this.gameStarted = true
             this.buttonSound()
-            this.playerInfo.hP = this.playerInfo.hP + this.weaponObject['moreHP']
+            this.playerInfo.hP = modelDetails[this.player.ship.selectedModel.rarity].hp + this.weaponObject['moreHP']
             if (this.bossFight) {
                 this.bossEnemyPreparations()
             } else {
