@@ -71,7 +71,7 @@
                         style="height: 12vh"
                         :data-title="shopDetails[shopItem].description"
                         :line2="
-                            player.shop[shopItem].lvl < shopDetails[shopItem].maxlvl
+                            player.shop[shopItem].lvl < findHouse(player, 'shop')
                                 ? `costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`
                                 : 'max lvl'
                         "
@@ -89,7 +89,7 @@
                     style="height: 9vh"
                     data-title="unlocks additional passive slots"
                     :line2="
-                        player.shop['passivSlots'].lvl < shopDetails['passivSlots'].maxlvl
+                        player.shop['passivSlots'].lvl < findHouse(player, 'shop')
                             ? `costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`
                             : 'max lvl'
                     "

@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const cacheName = 'v0.2.7'
+const cacheName = 'v0.2.8'
 
 self.addEventListener('activate', event => {
     // Remove old caches
@@ -49,3 +49,9 @@ self.addEventListener('activate', event => {
         })()
     )
 })
+export function reload() {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+        // sometime later…
+        reg.update()
+    })
+}

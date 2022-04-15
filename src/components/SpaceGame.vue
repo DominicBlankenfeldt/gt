@@ -185,10 +185,10 @@
                         <div v-if="message" :class="messageType">
                             {{ message }}
                         </div>
-                        <div v-if="pointsMessage || unlockMessage" class="alert alert-success">
-                            {{ unlockMessage }}
-                            <br />
-                            {{ pointsMessage }}
+                        <div v-if="receiveMessages.length" class="alert alert-success">
+                            <div v-for="receiveMessage of receiveMessages" :key="receiveMessage">
+                                {{ receiveMessage }}
+                            </div>
                         </div>
                         <button
                             v-if="!gameStarted"
@@ -475,8 +475,7 @@ export default defineComponent({
             dataLoad: false,
             user: currentUser,
             message: '',
-            unlockMessage: '',
-            pointsMessage: '',
+            receiveMessages: [] as string[],
             messageType: '',
             startButtonText: 'start',
             cancelButtonText: '',
@@ -794,8 +793,7 @@ export default defineComponent({
             this.plasmas = [] as type.Plasma[]
             this.enemyPlasmas = [] as type.Plasma[]
             this.message = ''
-            this.unlockMessage = ''
-            this.pointsMessage = ''
+            this.receiveMessages = [] as string[]
             this.startButtonText = 'start'
             this.cancelButtonText = ''
             window.onkeyup = (e: any) => {
@@ -988,13 +986,15 @@ export default defineComponent({
             }
         },
         newModel() {
+            if (this.score < 10000) return
             let rarity = 0 as number
             let raityString = ''
-            let max = 5
+            let max = 2
+            max += Math.floor(this.score / 3333333)
+            if (max > 5) max = 5
             let counter = 0
             let random = getRandomInt(100)
-            if (this.score < 10000) return
-            while (random < 33 && counter <= max) {
+            while (random < 40 && counter <= max) {
                 rarity++
                 counter++
                 random = getRandomInt(100)
@@ -1024,24 +1024,26 @@ export default defineComponent({
                     img: getRandomInt(18) + 1 + '',
                     rarity: raityString as type.Rarity,
                 })
-                this.unlockMessage = `you have received a ${raityString} spaceship`
+                this.receiveMessages.push(`you have received a ${raityString} spaceship`)
             }
         },
         setSkillPoints() {
             if (this.player.skillTree.skillPoints < Math.floor(this.player.highscore['normal'] / 1000)) {
-                this.pointsMessage = `you get ${Math.floor(this.player.highscore['normal'] / 1000) - this.player.skillTree.skillPoints} skillpoints`
+                this.receiveMessages.push(
+                    `you get ${Math.floor(this.player.highscore['normal'] / 1000) - this.player.skillTree.skillPoints} skillpoints`
+                )
                 this.player.skillTree.skillPoints = Math.floor(this.player.highscore['normal'] / 1000)
             }
             if (this.player.weaponTree.weaponPoints < Math.floor(this.player.highscore['hardcore'] / 500)) {
-                this.pointsMessage = `you get ${
-                    Math.floor(this.player.highscore['hardcore'] / 500) - this.player.weaponTree.weaponPoints
-                } weaponpoints`
+                this.receiveMessages.push(
+                    `you get ${Math.floor(this.player.highscore['hardcore'] / 500) - this.player.weaponTree.weaponPoints} weaponpoints`
+                )
                 this.player.weaponTree.weaponPoints = Math.floor(this.player.highscore['hardcore'] / 500)
             }
             if (this.player.passivTree.passivPoints < Math.floor(this.player.highscore['totalchaos'] / 2000)) {
-                this.pointsMessage = `you get ${
-                    Math.floor(this.player.highscore['totalchaos'] / 2000) - this.player.passivTree.passivPoints
-                } passivpoints`
+                this.receiveMessages.push(
+                    `you get ${Math.floor(this.player.highscore['totalchaos'] / 2000) - this.player.passivTree.passivPoints} passivpoints`
+                )
                 this.player.passivTree.passivPoints = Math.floor(this.player.highscore['totalchaos'] / 2000)
             }
         },
@@ -1247,7 +1249,7 @@ export default defineComponent({
                         if (newWeaponAvaibleType.length > 0) {
                             unlock = newWeaponAvaibleType[getRandomInt(newWeaponAvaibleType.length - 1)]
                             this.player.weaponTree.weaponAvaibleTypes.push(unlock)
-                            this.unlockMessage = `you have unlocked the ${unlock}`
+                            this.receiveMessages.push(`you have unlocked the ${unlock}`)
                         }
                         break
                     case 'hardcore':
@@ -1255,11 +1257,11 @@ export default defineComponent({
                         if (newPassivAvaibleType.length > 0) {
                             unlock = newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)]
                             this.player.passivTree.passivAvaibleTypes.push(unlock)
-                            this.unlockMessage = `you have unlocked ${unlock}`
+                            this.receiveMessages.push(`you have unlocked the ${unlock}`)
                         }
                         break
                     case 'totalchaos':
-                        this.unlockMessage = `you have received a construction license`
+                        this.receiveMessages.push(`you have received a construction license`)
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy

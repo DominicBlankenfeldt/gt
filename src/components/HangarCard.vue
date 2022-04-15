@@ -51,7 +51,9 @@
                 </button>
             </div>
         </div>
-        <div class="mt-2">{{ player.ship.models.length }}/{{ findHouse(player, 'hangar') }}</div>
+        <div class="mt-2" data-title="you can get a spaceship after each round">
+            {{ player.ship.models.length }}/{{ findHouse(player, 'hangar') }}
+        </div>
         <div class="d-flex justify-content-center">
             <div v-for="model of player.ship.models" :key="model.id" class="mx-1">
                 <input
@@ -122,8 +124,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails, maxCurrency } from '@/global'
-import { findHouse } from '@/game/helpers'
+import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails } from '@/global'
+import { findHouse, sellModel } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
 
@@ -162,26 +164,7 @@ export default defineComponent({
     },
     methods: {
         sellModel() {
-            if (this.player.ship.selectedModel == this.selectedSellModel) return
-            switch (this.selectedSellModel.rarity) {
-                case 'common':
-                    this.player.shop.currency += 10
-                    break
-                case 'uncommon':
-                    this.player.shop.currency += 20
-                    break
-                case 'rare':
-                    this.player.shop.currency += 30
-                    break
-                case 'epic':
-                    this.player.shop.currency += 40
-                    break
-                case 'legendary':
-                    this.player.shop.currency += 50
-                    break
-            }
-            this.player.ship.models = this.player.ship.models.filter(m => m != this.selectedSellModel)
-            this.selectedSellModel = {} as type.Model
+            this.player = sellModel(this.player, this.selectedSellModel)
         },
         selectPassiv(passiv: type.PassivType) {
             if (this.player.passivTree.passivType.includes(passiv)) {

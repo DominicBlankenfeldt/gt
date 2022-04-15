@@ -1,5 +1,6 @@
 import * as type from '@/types'
 import { subVec } from '@/game/vectors'
+import { maxCurrency } from '@/global'
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
@@ -47,4 +48,28 @@ export function borderCheck(
 }
 export function roundHalf(num: number) {
     return Math.round(num * 2) / 2
+}
+export function sellModel(player: type.Player, model: type.Model): type.Player {
+    if (player.ship.selectedModel != model) {
+        switch (model.rarity) {
+            case 'common':
+                player.shop.currency += 10
+                break
+            case 'uncommon':
+                player.shop.currency += 20
+                break
+            case 'rare':
+                player.shop.currency += 30
+                break
+            case 'epic':
+                player.shop.currency += 40
+                break
+            case 'legendary':
+                player.shop.currency += 50
+                break
+        }
+        if (player.shop.currency > maxCurrency) player.shop.currency = maxCurrency
+        player.ship.models = player.ship.models.filter(m => m != model)
+    }
+    return player
 }

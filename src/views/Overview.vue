@@ -16,7 +16,7 @@ import { checkPlayer } from '@/global'
 import * as type from '@/types'
 import { currentUser } from '@/router'
 import * as music from '@/music'
-import { newVersion } from '@/registerServiceWorker'
+import { newVersion, reload } from '@/registerServiceWorker'
 import PlayerCard from '@/components/PlayerCard.vue'
 export default defineComponent({
     components: {
@@ -64,6 +64,7 @@ export default defineComponent({
     methods: {
         reload() {
             this.$router.go(0)
+            reload()
         },
         changeImg(id: string) {
             this.player.img = id
