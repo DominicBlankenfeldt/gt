@@ -89,11 +89,32 @@
                 type="radio"
                 class="btn-check"
                 name="btnradio"
+                id="btnPeculiarity"
+                autocomplete="off"
+                :checked="choosenTree == 'peculiarity'"
+                data-bs-target="#carouselUpgrades"
+                data-bs-slide-to="4"
+            />
+            <label
+                class="btn btn-outline-primary w-25 shadow-none"
+                for="btnPeculiarity"
+                @click="
+                    {
+                        ;(choosenTree = 'peculiarity'), buttonSound()
+                    }
+                "
+            >
+                peculiarity
+            </label>
+            <input
+                type="radio"
+                class="btn-check"
+                name="btnradio"
                 id="btnShop"
                 autocomplete="off"
                 :checked="choosenTree == 'shop'"
                 data-bs-target="#carouselUpgrades"
-                data-bs-slide-to="4"
+                data-bs-slide-to="5"
             />
             <label
                 class="btn btn-outline-primary w-25 shadow-none"
@@ -114,7 +135,7 @@
                 autocomplete="off"
                 :checked="choosenTree == 'hangar'"
                 data-bs-target="#carouselUpgrades"
-                data-bs-slide-to="5"
+                data-bs-slide-to="6"
             />
             <label
                 class="btn btn-outline-primary w-25 shadow-none"
@@ -142,6 +163,7 @@
                 <div class="carousel-item">
                     <PassivCard :playerProp="player" style="min-height: 70vh" />
                 </div>
+                <div class="carousel-item"><PeculiarityCard :playerProp="player" style="min-height: 70vh" /></div>
                 <div class="carousel-item">
                     <ShopCard :playerProp="player" style="min-height: 70vh" />
                 </div>
@@ -162,6 +184,7 @@ import PassivCard from '@/components/PassivCard.vue'
 import ShopCard from '@/components/ShopCard.vue'
 import BuildingCard from '@/components/BuildingCard.vue'
 import HangarCard from '@/components/HangarCard.vue'
+import PeculiarityCard from '@/components/PeculiarityCard.vue'
 import * as API from '@/API'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -176,6 +199,7 @@ export default defineComponent({
         ShopCard,
         BuildingCard,
         HangarCard,
+        PeculiarityCard,
     },
     data() {
         return {

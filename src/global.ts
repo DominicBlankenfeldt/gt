@@ -112,6 +112,13 @@ export const modelDetails = {
     epic: { size: 24, speed: 5.5, hp: 2, scoreMultiplier: 3, store: 120, color: '#8A2BE2' }, //BlueVilet
     legendary: { size: 22, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: '#B8860B' }, //DarkGoldenRod
 }
+export const peculiarityDetails = {
+    darkHole: { name: 'darkHole', description: 'coming soon' },
+    growPotion: { name: 'growPotion', description: 'coming soon' },
+    slowSpeed: { name: 'slowSpeed', description: 'coming soon' },
+    immunity: { name: 'immunity', description: 'coming soon' },
+}
+export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
 
 export function checkPlayer(player: type.Player) {
@@ -201,12 +208,19 @@ export function checkPlayer(player: type.Player) {
     player.spaceport = player.spaceport || {
         houses: [] as type.House[],
     }
+    player.spaceport.buildingLicenses = player.spaceport.buildingLicenses || 0
     for (const house of Object.keys(houseDetails)) {
         if (checkHouse(player, house)) {
             player.spaceport.houses.push({ name: house as type.HouseName, lvl: houseDetails[house as type.HouseName].startlvl, needScore: 0 })
         }
     }
-    player.ship = player.ship || { models: [{ img: 1, rarity: 'common', id: 0 }], selectedModel: { img: 1, rarity: 'common', id: 0 } }
+    player.ship = player.ship || {
+        models: [{ img: 1, rarity: 'common', id: 0 }],
+        selectedModel: { img: 1, rarity: 'common', id: 0 },
+        autoSell: false,
+    }
+    player.ship.autoSell = player.ship.autoSell || false
+    player.peculiarities = player.peculiarities || { available: [], selected: '' as type.PeculiarityName }
     return player
 }
 function checkHouse(player: type.Player, house: string) {

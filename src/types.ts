@@ -46,8 +46,13 @@ export interface Player {
     playedTime: number
     spaceport: Spaceport
     ship: Ship
+    peculiarities: Peculiarities
 }
-
+export interface Peculiarities {
+    selected: PeculiarityName
+    available: PeculiarityName[]
+}
+export type PeculiarityName = 'darkHole' | 'growPotion' | 'slowSpeed' | 'immunity'
 export interface Highscore {
     normal: number
     hardcore: number
@@ -88,6 +93,7 @@ export type ShopElement = 'energyCell' | 'lessStartEnemies' | 'higherDifficultyT
 export interface Ship {
     models: Model[]
     selectedModel: Model
+    autoSell: Rarity | false
 }
 export interface Model {
     img: string
@@ -262,6 +268,7 @@ export interface Plasma {
     split?: boolean
 }
 export interface Spaceport {
+    buildingLicenses: number
     houses: House[]
 }
 export type HouseName = 'passiv' | 'weapon' | 'skill' | 'shop' | 'hangar'

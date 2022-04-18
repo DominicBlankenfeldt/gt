@@ -1,7 +1,7 @@
 <template>
     <div style="margin-top: 6vh; color: white" v-if="dataLoad">
-        <div data-title="you get a building license when you kill" line2="the totalchaos boss" class="w-25 d-inline">
-            {{ `building licenses: ${player.defeatedBosses.totalchaos - usedLicenses} ` }}
+        <div data-title="you can buy a building license" line2="in the shop" class="w-25 d-inline">
+            {{ `Building Licenses: ${player.spaceport.buildingLicenses - usedLicenses} ` }}
         </div>
         <div class="row g-0 mt-2">
             <div class="col-5"></div>
@@ -71,7 +71,7 @@ export default defineComponent({
 
     methods: {
         upgradeHouse(house: type.House) {
-            if (house.needScore == 0 && this.player.defeatedBosses.totalchaos - this.usedLicenses > 0) {
+            if (house.needScore == 0 && this.player.spaceport.buildingLicenses - this.usedLicenses > 0) {
                 house.needScore = (house.lvl + 1) * houseDetails[house.name].upgradeCost
             }
         },

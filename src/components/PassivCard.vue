@@ -2,7 +2,7 @@
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div>
             <div data-title="you get 1 passivpoint per 2000 highscore in totalchaos mode" class="w-25 d-inline">
-                Passiv Points:
+                Atom Points:
                 <br />
                 {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
             </div>
@@ -11,7 +11,7 @@
             <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
                 <div class="mx-1" v-if="player.passivTree.passivType.includes(passivUpgrade.name)">
                     <button
-                        class="mt-2 w-100 btn btn-primary shadow-none"
+                        class="mt-2 w-100 btn btn-primary shadow-none rounded-0 rounded-top"
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
                         :data-title="passivDetails[passivUpgrade.name].description"
@@ -30,6 +30,7 @@
                             passivDetails[passivUpgrade.name].maxlvl + (passivUpgrade.name != 'none' ? findHouse(player, 'passiv') * 5 : 0)
                         }}
                     </button>
+                    <button class="w-100 btn btn-danger shadow-none rounded-0 rounded-bottom" @click="resetPassiv(passivUpgrade)">reset</button>
                 </div>
             </div>
         </div>
@@ -81,7 +82,7 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
-        async lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
+        lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
             if (passivUpgrade.name == 'none') return
             if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
                 if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
@@ -89,7 +90,7 @@ export default defineComponent({
                     this.buttonSound()
                 }
         },
-        async lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
+        lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
             if (passivUpgrade.name == 'none') return
             for (let i = 0; i < 8; i++) {
                 if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
@@ -98,13 +99,15 @@ export default defineComponent({
                     }
             }
         },
-        async resetPassivTree() {
+        resetPassivTree() {
             this.buttonSound()
-            this.player.passivTree.passivPoints -= this.usedPassivPoints
             for (let passivUpgrade of this.player.passivTree.passivUpgrades) {
-                this.player.passivTree.passivPoints += passivUpgrade.lvl
                 passivUpgrade.lvl = 0
             }
+        },
+        resetPassiv(passiv: type.PassivUpgrade) {
+            this.buttonSound()
+            passiv.lvl = 0
         },
         buttonSound() {
             music.ButtonSound(this.player.settings.effectVolume)

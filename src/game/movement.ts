@@ -22,9 +22,9 @@ export function plasmaMovement(
         }
         plasma.moveVector = mulVec(
             norVec(plasma.moveVector),
-            (7 + findWeaponUpgrade(player, 'fasterProjectile')) *
+            (7 + findWeaponUpgrade(player, 'fasterProjectile') / 2) *
                 generalSize *
-                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 2, 'in') : 1)
+                (player.passivTree.passivType.includes('increaseGun') ? percent(findPassivUpgrade(player, 'increaseGun') / 3, 'in') : 1)
         )
         plasma.vector = addVec(plasma.vector, plasma.moveVector)
         if (borderCheck(plasma, 'outer', field)) plasmas = deletePlasma(plasmas, plasma)
