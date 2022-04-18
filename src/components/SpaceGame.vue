@@ -1607,7 +1607,7 @@ export default defineComponent({
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
         },
         async touchBlackHole() {
-            if ((this.player.peculiarities.selected = 'darkHole')) {
+            if (this.player.peculiarities.selected == 'darkHole') {
                 this.handleDamage(1, 'you got sucked in')
             } else {
                 await this.gameOver('you got sucked in', 'alert alert-danger')
