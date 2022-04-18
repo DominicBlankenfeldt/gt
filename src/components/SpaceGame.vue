@@ -259,8 +259,16 @@
                             <button v-if="player.passivTree.passivAvaibleTypes.length >= passivAmount && !cancelButtonText" class="btn shadow-none">
                                 <a>you have unlocked all passivs</a>
                             </button>
-                            <button class="btn shadow-none" @keydown.enter.prevent @click="startBossFight('totalchaos')" v-if="!cancelButtonText">
+                            <button
+                                class="btn shadow-none"
+                                @keydown.enter.prevent
+                                @click="startBossFight('totalchaos')"
+                                v-if="player.peculiarities.available.length < peculiarityAmout && !cancelButtonText"
+                            >
                                 <a>{{ bossAvailable('totalchaos') }}</a>
+                            </button>
+                            <button v-if="player.peculiarities.available.length >= peculiarityAmout && !cancelButtonText" class="btn shadow-none">
+                                <a>you have unlocked all peculiarities</a>
                             </button>
                         </div>
                     </div>
@@ -438,13 +446,17 @@ import {
     skillDetails,
     weaponAmount,
     passivAmount,
+    peculiarityAmout,
     maxEnergyCell,
     shopDetails,
     weaponDetails,
     modelDetails,
     maxCurrency,
+    houseDetails,
+    peculiarityDetails,
+    passivDetails,
 } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse } from '@/game/helpers'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse, sellModel } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -465,8 +477,9 @@ export default defineComponent({
             skillDetails,
             weaponAmount,
             passivAmount,
-            percent,
+            peculiarityAmout,
             shopDetails,
+            percent,
         }
     },
     data() {
@@ -497,6 +510,7 @@ export default defineComponent({
             enemiesType: '',
             itemSpawn: true,
             //player
+            immunity: false,
             player: {} as type.Player,
             maxEnergyCell: maxEnergyCell,
             playerInfo: {
@@ -849,9 +863,23 @@ export default defineComponent({
         chaosPlayerSpeed() {
             switch (getRandomInt(2)) {
                 case 0:
+                    if (
+                        this.player.peculiarities.selected == 'slowSpeed' &&
+                        Object.values(this.player.settings.abilitys)
+                            .map(e => e.name)
+                            .includes('fastAbility')
+                    )
+                        break
                     this.playerInfo.speed *= 0.5
                     break
                 case 1:
+                    if (
+                        this.player.peculiarities.selected == 'slowSpeed' &&
+                        Object.values(this.player.settings.abilitys)
+                            .map(e => e.name)
+                            .includes('slowAbility')
+                    )
+                        break
                     this.playerInfo.speed *= 2
                     break
             }
@@ -967,6 +995,7 @@ export default defineComponent({
                     if (house.needScore <= 0) {
                         house.needScore = 0
                         house.lvl++
+                        this.receiveMessages.push(`${houseDetails[house.name].name} was finished`)
                     }
                 }
             }
@@ -994,6 +1023,13 @@ export default defineComponent({
             if (max > 5) max = 5
             let counter = 0
             let random = getRandomInt(100)
+            let map = {
+                common: 1,
+                uncommon: 2,
+                rare: 3,
+                epic: 4,
+                legendary: 5,
+            }
             while (random < 40 && counter <= max) {
                 rarity++
                 counter++
@@ -1019,11 +1055,15 @@ export default defineComponent({
                     break
             }
             if (rarity && this.player.ship.models.length < findHouse(this.player, 'hangar')) {
-                this.player.ship.models.push({
+                let model = {
                     id: Math.random(),
                     img: getRandomInt(18) + 1 + '',
                     rarity: raityString as type.Rarity,
-                })
+                }
+                this.player.ship.models.push(model)
+                if (this.player.ship.autoSell && rarity <= map[this.player.ship.autoSell]) {
+                    this.player = sellModel(this.player, model)
+                }
                 this.receiveMessages.push(`you have received a ${raityString} spaceship`)
             }
         },
@@ -1241,6 +1281,7 @@ export default defineComponent({
                     .filter(([key, value]) => !value.maxlvl)
                     .flatMap(([key, value]) => key) as type.weaponType[]
                 let newPassivAvaibleType = Object.keys(this.passivObject) as type.PassivType[]
+                let newPeculiarities = Object.keys(peculiarityDetails) as type.PeculiarityName[]
                 let unlock
                 this.player.defeatedBosses[this.bossEnemy.type]++
                 switch (this.bossEnemy.type) {
@@ -1257,11 +1298,16 @@ export default defineComponent({
                         if (newPassivAvaibleType.length > 0) {
                             unlock = newPassivAvaibleType[getRandomInt(newPassivAvaibleType.length - 1)]
                             this.player.passivTree.passivAvaibleTypes.push(unlock)
-                            this.receiveMessages.push(`you have unlocked the ${unlock}`)
+                            this.receiveMessages.push(`you have unlocked the ${passivDetails[unlock].name}`)
                         }
                         break
                     case 'totalchaos':
-                        this.receiveMessages.push(`you have received a construction license`)
+                        newPeculiarities = newPeculiarities.filter(n => this.player.peculiarities.available.every(p => n != p))
+                        if (newPeculiarities.length > 0) {
+                            unlock = newPeculiarities[getRandomInt(newPeculiarities.length - 1)]
+                            this.player.peculiarities.available.push(unlock)
+                            this.receiveMessages.push(`you have unlocked the ${peculiarityDetails[unlock].name}`)
+                        }
                         break
                 }
                 this.bossEnemy = {} as type.BossEnemy
@@ -1336,16 +1382,26 @@ export default defineComponent({
             }
             for (let plasma of this.enemyPlasmas) {
                 if (this.collisionsCheck(this.playerInfo, plasma)) {
-                    if (this.shield) {
-                        this.handleShield()
-                    } else {
-                        this.playerInfo.hP--
-                        if (this.playerInfo.hP <= 0) {
-                            await this.gameOver('you got killed by plasma', 'alert alert-danger')
-                            return
-                        }
-                    }
+                    this.handleDamage(1, 'you got killed by plasma')
                     this.deletePlasma(plasma)
+                    return
+                }
+            }
+        },
+        async handleDamage(dmg: number, deathReason: string) {
+            if (this.player.peculiarities.selected == 'immunity') {
+                this.immunity = true
+                setTimeout(() => {
+                    this.immunity = false
+                }, 1000)
+            }
+            if (this.immunity) return
+            if (this.shield) {
+                this.handleShield()
+            } else {
+                this.playerInfo.hP -= dmg
+                if (this.playerInfo.hP <= 0) {
+                    await this.gameOver(deathReason, 'alert alert-danger')
                     return
                 }
             }
@@ -1400,15 +1456,7 @@ export default defineComponent({
                 if (this.effects.magnet.active) this.gravity(this.playerInfo, enemy, 2, -0.3 - this.skillObject['strongerMagnet'] / 100)
                 if (enemy.isMagnet) this.gravity(enemy, this.playerInfo, 2, 0.7)
                 if (this.collisionsCheck(enemy, this.playerInfo)) {
-                    if (this.shield) {
-                        this.handleShield()
-                    } else {
-                        this.playerInfo.hP--
-                        if (this.playerInfo.hP <= 0) {
-                            await this.gameOver('you got killed by an enemy', 'alert alert-danger')
-                            return
-                        }
-                    }
+                    this.handleDamage(1, 'you got killed by an enemy')
                     this.respawnEnemy(enemy)
                 }
             }
@@ -1489,6 +1537,11 @@ export default defineComponent({
                 duration: (this.effects.grow.duration +=
                     ((250 * item.size) / this.generalSize) * percent(this.passivObject['longerEffects'] / 3, 'in')),
             }
+            if (this.player.peculiarities.selected == 'growPotion') {
+                if (this.playerInfo.hP < modelDetails[this.player.ship.selectedModel.rarity].hp + this.weaponObject['moreHP']) {
+                    this.playerInfo.hP++
+                }
+            }
         },
         collectMagnet(item: type.Item) {
             this.effects.magnet = {
@@ -1554,7 +1607,11 @@ export default defineComponent({
             for (let enemy of [...this.enemies]) this.respawnEnemy(enemy)
         },
         async touchBlackHole() {
-            await this.gameOver('you got sucked in', 'alert alert-danger')
+            if ((this.player.peculiarities.selected = 'darkHole')) {
+                this.handleDamage(1, 'you got sucked in')
+            } else {
+                await this.gameOver('you got sucked in', 'alert alert-danger')
+            }
         },
         growBlackHole() {
             if (this.effects.stopTime.active) return
@@ -1629,9 +1686,11 @@ export default defineComponent({
                     if (this.coolDowns[this.player.settings.abilitys[i].name] > 0) continue
                     switch (this.player.settings.abilitys[i].name) {
                         case 'fastAbility':
+                            if (this.player.peculiarities.selected == 'slowSpeed' && this.player.playMode == 'totalchaos') break
                             this.multiplicator *= 2
                             break
                         case 'slowAbility':
+                            if (this.player.peculiarities.selected == 'slowSpeed' && this.player.playMode == 'totalchaos') break
                             this.multiplicator *= 0.5
                             break
                         case 'bombAbility':
@@ -1639,7 +1698,6 @@ export default defineComponent({
                             break
                         case 'shotAbility':
                             this.shotAbility()
-
                             break
                         case 'magnetAbility':
                             this.magnetAbility()
@@ -1694,7 +1752,7 @@ export default defineComponent({
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
             this.coolDowns['bombAbility'] = 1000
-
+            this.player.shop.energyCell.amount -= skillDetails['bombAbility'].tier
             if (bombs.length) {
                 bombs.sort((a, b) => {
                     return lenVec(subVec(a.vector, this.playerInfo.vector)) - lenVec(subVec(b.vector, this.playerInfo.vector))

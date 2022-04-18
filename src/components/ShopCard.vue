@@ -2,7 +2,7 @@
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div>
             <div data-title="you get scrap when enemies die" class="w-25 d-inline">
-                scrap:
+                Scrap:
                 <br />
                 {{ player.shop.currency }}
             </div>
@@ -99,6 +99,19 @@
                     {{ player.shop['passivSlots'].lvl }}/{{ findHouse(player, 'shop') }}
                 </button>
             </div>
+            <div class="mt-2 ms-1">
+                <button
+                    @click="buyBuildingLicenses()"
+                    class="w-100 btn btn-primary align-self-center shadow-none ms-1"
+                    style="height: 9vh"
+                    data-title="buy a Building License"
+                    line2="costs: 2500 scrap"
+                >
+                    building
+                    <br />
+                    license
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -141,6 +154,12 @@ export default defineComponent({
         this.dataLoad = true
     },
     methods: {
+        buyBuildingLicenses() {
+            if (this.player.shop.currency < 2500) return
+            this.buttonSound()
+            this.player.shop.currency -= 2500
+            this.player.spaceport.buildingLicenses++
+        },
         upgradeShopItem(shopElement: type.ShopElement) {
             if (
                 this.player.shop.currency <= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost ||

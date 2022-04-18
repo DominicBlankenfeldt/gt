@@ -69,7 +69,7 @@ export function sellModel(player: type.Player, model: type.Model): type.Player {
                 break
         }
         if (player.shop.currency > maxCurrency) player.shop.currency = maxCurrency
-        player.ship.models = player.ship.models.filter(m => m != model)
+        player.ship.models = player.ship.models.filter(m => m.id != model.id)
     }
     return player
 }

@@ -92,14 +92,63 @@
                     scoreMultiplier:{{ modelDetails[model.rarity].scoreMultiplier }}
                 </label>
                 <button
-                    class="btn btn-danger w-100 rounded-0 rounded-bottom"
+                    class="btn btn-danger w-100 rounded-0 rounded-bottom shadow-none"
                     :disabled="player.ship.selectedModel.id == model.id"
                     data-bs-toggle="modal"
                     data-bs-target="#sellConfirm"
-                    @click="selectedSellModel = model"
+                    @click="
+                        {
+                            ;(selectedSellModel = model), buttonSound()
+                        }
+                    "
                 >
                     sell
                 </button>
+            </div>
+        </div>
+        <div class="mt-2">auto sell</div>
+        <div class="d-flex justify-content-center">
+            <div>
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="rarityRadio"
+                    :id="`btnFalse`"
+                    autocomplete="off"
+                    :checked="player.ship.autoSell == false"
+                />
+                <label
+                    class="btn btn-outline-primary w-100 shadow-none"
+                    :for="`btnFalse`"
+                    @click="
+                        {
+                            ;(player.ship.autoSell = false), buttonSound()
+                        }
+                    "
+                >
+                    off
+                </label>
+            </div>
+            <div v-for="rarity of ['common', 'uncommon', 'rare', 'epic', 'legendary']" :key="rarity" class="mx-1">
+                <input
+                    type="radio"
+                    class="btn-check"
+                    name="rarityRadio"
+                    :id="`btn${rarity}`"
+                    autocomplete="off"
+                    :checked="player.ship.autoSell == rarity"
+                />
+                <label
+                    class="btn btn-outline-primary w-100 shadow-none"
+                    :for="`btn${rarity}`"
+                    @click="
+                        {
+                            ;(player.ship.autoSell = rarity), buttonSound()
+                        }
+                    "
+                >
+                    {{ rarity }} or lower
+                </label>
             </div>
         </div>
     </div>
@@ -112,7 +161,7 @@
                     <div>do you really want to sell this spaceship</div>
 
                     <div class="row justify-content-end mt-1">
-                        <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-3">No</button>
+                        <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-3" @click="buttonSound()">No</button>
                         <button class="btn btn-primary col-3" data-bs-dismiss="modal" @click="sellModel()">Yes</button>
                     </div>
                 </div>
@@ -164,9 +213,11 @@ export default defineComponent({
     },
     methods: {
         sellModel() {
+            this.buttonSound()
             this.player = sellModel(this.player, this.selectedSellModel)
         },
         selectPassiv(passiv: type.PassivType) {
+            this.buttonSound()
             if (this.player.passivTree.passivType.includes(passiv)) {
                 this.player.passivTree.passivType = this.player.passivTree.passivType.filter(p => p != passiv)
             } else {

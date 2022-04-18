@@ -2,7 +2,7 @@
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
         <div>
             <div data-title="you get 1 skillpoint per 1000 highscore in normal mode" class="w-25 d-inline">
-                Skill Points:
+                Research Points:
                 <br />
                 {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
             </div>
