@@ -1150,12 +1150,14 @@ export default defineComponent({
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
             }
-            this.startingEnemies -= this.fleetSkillObject['bossEnemies']
-            this.startingEnemies = Math.round(this.startingEnemies * percent(this.fleetlvl, 'de'))
-            if (this.startingEnemies < 1) this.startingEnemies = 1
-            this.difficulty -= this.fleetSkillObject['bossDifficulty']
-            this.difficulty = roundHalf(this.difficulty * percent(this.fleetlvl, 'de'))
-            if (this.difficulty < 2) this.difficulty = 2
+            if (this.fleet.founder) {
+                this.startingEnemies -= this.fleetSkillObject['bossEnemies']
+                this.startingEnemies = Math.round(this.startingEnemies * percent(this.fleetlvl, 'de'))
+                if (this.startingEnemies < 1) this.startingEnemies = 1
+                this.difficulty -= this.fleetSkillObject['bossDifficulty']
+                this.difficulty = roundHalf(this.difficulty * percent(this.fleetlvl, 'de'))
+                if (this.difficulty < 2) this.difficulty = 2
+            }
             this.bossEnemy.hP = this.bossEnemy.maxHP
             this.bossEnemy.speed = 5
             do {
