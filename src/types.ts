@@ -52,7 +52,7 @@ export interface Peculiarities {
     selected: PeculiarityName
     available: PeculiarityName[]
 }
-export type PeculiarityName = 'darkHole' | 'growPotion' | 'slowSpeed' | 'immunity'
+export type PeculiarityName = 'darkHole' | 'growPotion' | 'slowSpeed' | 'immunity' | 'generator'
 export interface Highscore {
     normal: number
     hardcore: number
@@ -132,6 +132,7 @@ export type AbilityName =
     | 'slowEnemyAbility'
     | 'stopTimeAbility'
     | 'growAbility'
+
 export type Key =
     | 'a'
     | 'b'
@@ -209,8 +210,17 @@ export interface PassivUpgrade {
 export type PassivObject = {
     [key in PassivUpgradeName]: number
 }
-export type PassivUpgradeName = 'increaseScore' | 'increaseGun' | 'nerfEnemies' | 'moreItems' | 'nerfBoss' | 'longerEffects' | 'moreScrap' | 'none'
-export type PassivType = 'none' | PassivUpgradeName
+export type PassivUpgradeName =
+    | 'increaseScore'
+    | 'increaseGun'
+    | 'nerfEnemies'
+    | 'moreItems'
+    | 'nerfBoss'
+    | 'longerEffects'
+    | 'moreScrap'
+    | 'shipStats'
+    | 'none'
+export type PassivType = PassivUpgradeName
 export interface SkillTree {
     skillPoints: number
     skills: Skill[]

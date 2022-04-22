@@ -455,6 +455,7 @@ import {
     houseDetails,
     peculiarityDetails,
     passivDetails,
+    hangarSize,
 } from '@/global'
 import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse, sellModel } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
@@ -657,15 +658,6 @@ export default defineComponent({
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
         this.buttonSound()
-        ;(this.playerInfo = {
-            vector: [0, 0] as type.Vector,
-            moveVector: [0, 0] as type.Vector,
-            size: modelDetails[this.player.ship.selectedModel.rarity].size,
-            originalSize: modelDetails[this.player.ship.selectedModel.rarity].size,
-            speed: modelDetails[this.player.ship.selectedModel.rarity].speed,
-            hP: modelDetails[this.player.ship.selectedModel.rarity].hp,
-        }),
-            (this.maxEnergyCell = modelDetails[this.player.ship.selectedModel.rarity].store)
         this.playerInfo.size *= this.generalSize
         this.playerStartPosition()
         this.bossFight = false
@@ -674,6 +666,15 @@ export default defineComponent({
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
         this.weaponObject = this.player.weaponTree.weaponUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.WeaponObject
         if (this.fleet.founder) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
+        this.playerInfo = {
+            vector: [0, 0] as type.Vector,
+            moveVector: [0, 0] as type.Vector,
+            size: modelDetails[this.player.ship.selectedModel.rarity].size * percent(this.passivObject.shipStats / 5, 'de'),
+            originalSize: modelDetails[this.player.ship.selectedModel.rarity].size * percent(this.passivObject.shipStats / 5, 'de'),
+            speed: modelDetails[this.player.ship.selectedModel.rarity].speed * percent(this.passivObject.shipStats / 5, 'in'),
+            hP: modelDetails[this.player.ship.selectedModel.rarity].hp,
+        }
+        this.maxEnergyCell = modelDetails[this.player.ship.selectedModel.rarity].store * percent(this.passivObject.shipStats / 5, 'in')
         this.dataLoad = true
     },
     methods: {
@@ -749,6 +750,17 @@ export default defineComponent({
                 }
             } else {
                 if (this.gameloopCounter2 % 120 == 0) this.spawnItems(true) // 2sek
+            }
+            if (this.player.peculiarities.selected == 'generator') {
+                if (this.gameloopCounter2 % 600 == 0) {
+                    if (
+                        this.player.shop.currency >= shopDetails['energyCell'].cost &&
+                        this.player.shop.energyCell.amount < this.maxEnergyCell + this.weaponObject['munitionsDepot']
+                    ) {
+                        this.player.shop.currency -= shopDetails['energyCell'].cost
+                        this.player.shop.energyCell.amount++
+                    }
+                }
             }
             this.handlePlayerMovement()
             this.handlePlasmaMovement()
@@ -1030,7 +1042,7 @@ export default defineComponent({
                 epic: 4,
                 legendary: 5,
             }
-            while (random < 40 && counter <= max) {
+            while (random < 30 + findHouse(this.player, 'hangar') * 3 && counter <= max) {
                 rarity++
                 counter++
                 random = getRandomInt(100)
@@ -1054,7 +1066,7 @@ export default defineComponent({
                     raityString = 'legendary'
                     break
             }
-            if (rarity && this.player.ship.models.length < findHouse(this.player, 'hangar')) {
+            if (rarity && this.player.ship.models.length < hangarSize) {
                 let model = {
                     id: Math.random(),
                     img: getRandomInt(18) + 1 + '',
@@ -1122,9 +1134,9 @@ export default defineComponent({
             switch (this.bossEnemy.type) {
                 case 'normal':
                     this.bossEnemy.maxHP = Math.round(
-                        50 *
+                        60 *
                             (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
+                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
@@ -1132,9 +1144,9 @@ export default defineComponent({
                     break
                 case 'hardcore':
                     this.bossEnemy.maxHP = Math.round(
-                        25 *
+                        30 *
                             (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
+                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
                     this.startingEnemies = Math.round(50 + this.player.defeatedBosses[this.bossEnemy.type])
@@ -1142,9 +1154,9 @@ export default defineComponent({
                     break
                 case 'totalchaos':
                     this.bossEnemy.maxHP = Math.round(
-                        50 *
+                        60 *
                             (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 10, 'in') *
+                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
                             (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
                     )
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])

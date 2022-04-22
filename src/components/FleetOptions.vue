@@ -225,7 +225,9 @@
                             <h5 class="modal-title" id="exampleModalLabel">skill tree</h5>
                         </div>
                         <div class="modal-body">
-                            <div data-title="you receive 1 point per 1.000.000 fleet score">{{ amountPoints() - usedSkillpoints }}}}</div>
+                            <div data-title="you receive 1 point per 1.000.000 fleet score">
+                                {{ amountPoints() - usedSkillpoints }}/{{ amountPoints() }}
+                            </div>
                             <div v-for="skill of fleet.skills" :key="skill.name">
                                 <button
                                     class="mt-2 w-100 btn btn-primary align-self-center shadow-none"

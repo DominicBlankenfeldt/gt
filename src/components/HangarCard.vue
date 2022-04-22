@@ -51,9 +51,7 @@
                 </button>
             </div>
         </div>
-        <div class="mt-2" data-title="you can get a spaceship after each round">
-            {{ player.ship.models.length }}/{{ findHouse(player, 'hangar') }}
-        </div>
+        <div class="mt-2" data-title="you can get a spaceship after each round">{{ player.ship.models.length }}/{{ hangarSize }}</div>
         <div class="d-flex justify-content-center">
             <div v-for="model of player.ship.models" :key="model.id" class="mx-1">
                 <input
@@ -173,7 +171,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails } from '@/global'
+import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails, hangarSize } from '@/global'
 import { findHouse, sellModel } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -188,6 +186,7 @@ export default defineComponent({
             modelDetails,
             passivAmount,
             weaponStats,
+            hangarSize,
         }
     },
     data() {

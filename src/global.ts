@@ -65,6 +65,7 @@ export const passivDetails = {
     nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
     longerEffects: { name: 'infinite effects', maxlvl: 50, description: 'all effects last longer' },
     moreScrap: { name: 'scrap collector', maxlvl: 50, description: 'you get more scrap' },
+    shipStats: { name: 'shipStats', maxlvl: 50, description: 'increases the stats of your spaceship' },
     none: { name: 'none', maxlvl: 0, description: '<3' },
 }
 export const passivAmount = Object.values(passivDetails).length
@@ -98,12 +99,13 @@ export const shopDetails = {
     },
     passivSlots: { name: 'passivSlots', max: 3, description: 'allows to use several passive', cost: 2000, upgradeCost: 2000 },
 }
+export const hangarSize = 5
 export const houseDetails = {
     skill: { name: 'research lab', startlvl: 0, maxlvl: 5, description: 'increase your skills max lvl', upgradeCost: 500000 },
     weapon: { name: 'weapons lab', startlvl: 0, maxlvl: 5, description: 'increase your weaponupgrades max lvl', upgradeCost: 500000 },
     passiv: { name: 'atom lab', startlvl: 0, maxlvl: 5, description: 'increase your passivs max lvl', upgradeCost: 500000 },
     shop: { name: 'shop', startlvl: 1, maxlvl: 5, description: 'increase max lvl of shop items', upgradeCost: 500000 },
-    hangar: { name: 'hangar', startlvl: 1, maxlvl: 5, description: 'increases the maximum number of spaceships', upgradeCost: 500000 },
+    hangar: { name: 'hangar', startlvl: 1, maxlvl: 5, description: 'you are more likely to get better spaceships', upgradeCost: 500000 },
 }
 export const modelDetails = {
     common: { size: 30, speed: 4, hp: 1, scoreMultiplier: 1.5, store: 80, color: '#A9A9A9' }, //DarGray
@@ -113,10 +115,11 @@ export const modelDetails = {
     legendary: { size: 22, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: '#B8860B' }, //DarkGoldenRod
 }
 export const peculiarityDetails = {
-    darkHole: { name: 'darkHole', description: 'coming soon' },
-    growPotion: { name: 'growPotion', description: 'coming soon' },
-    slowSpeed: { name: 'slowSpeed', description: 'coming soon' },
-    immunity: { name: 'immunity', description: 'coming soon' },
+    darkHole: { name: 'harmlessly darkhole', description: 'a black hole only does damage' },
+    growPotion: { name: 'heal potion', description: 'a grow potion restores life' },
+    slowSpeed: { name: 'cruise control', description: 'share four rocket propulsion and sapr flame automatically in total chaos mode' },
+    immunity: { name: 'immunity', description: 'you are immune for 1 second after a hit' },
+    generator: { name: 'generator', description: 'buys energy cells during a round' },
 }
 export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
