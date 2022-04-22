@@ -1,7 +1,7 @@
 <template>
     <div v-if="dataLoad" style="margin-top: 6vh; color: white">
-        <div v-if="player.peculiarities.available == 0" data-title="you get peculiarities when you defeat the total chaos boss">
-            you have no peculiarities
+        <div v-if="player.peculiarities.available == 0">
+            <div data-title="you get peculiarities when you defeat the total chaos boss" class="w-25 d-inline">you have no peculiarities</div>
         </div>
         <div class="btn-group rounded mt-2" role="group" aria-label="Basic radio toggle button group" v-else>
             <div v-for="peculiarity of player.peculiarities.available" :key="peculiarity" class="mx-1">
