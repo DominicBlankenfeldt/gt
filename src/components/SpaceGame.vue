@@ -447,7 +447,6 @@ import {
     weaponAmount,
     passivAmount,
     peculiarityAmout,
-    maxEnergyCell,
     shopDetails,
     weaponDetails,
     modelDetails,
@@ -457,7 +456,7 @@ import {
     passivDetails,
     hangarSize,
 } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse, sellModel } from '@/game/helpers'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse, sellModel, buyModel } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -513,7 +512,7 @@ export default defineComponent({
             //player
             immunity: false,
             player: {} as type.Player,
-            maxEnergyCell: maxEnergyCell,
+            maxEnergyCell: 0,
             playerInfo: {
                 vector: [0, 0] as type.Vector,
                 moveVector: [0, 0] as type.Vector,
@@ -674,7 +673,7 @@ export default defineComponent({
             speed: modelDetails[this.player.ship.selectedModel.rarity].speed * percent(this.passivObject.shipStats / 5, 'in'),
             hP: modelDetails[this.player.ship.selectedModel.rarity].hp,
         }
-        this.maxEnergyCell = modelDetails[this.player.ship.selectedModel.rarity].store * percent(this.passivObject.shipStats / 5, 'in')
+        this.maxEnergyCell = Math.round(modelDetails[this.player.ship.selectedModel.rarity].store * percent(this.passivObject.shipStats / 5, 'in'))
         this.dataLoad = true
     },
     methods: {
@@ -1028,56 +1027,11 @@ export default defineComponent({
         },
         newModel() {
             if (this.score < 10000) return
-            let rarity = 0 as number
-            let raityString = ''
-            let max = 2
-            max += Math.floor(this.score / 3333333)
+            let max = 2 + Math.floor(this.score / 3333333)
             if (max > 5) max = 5
-            let counter = 0
-            let random = getRandomInt(100)
-            let map = {
-                common: 1,
-                uncommon: 2,
-                rare: 3,
-                epic: 4,
-                legendary: 5,
-            }
-            while (random < 30 + findHouse(this.player, 'hangar') * 3 && counter <= max) {
-                rarity++
-                counter++
-                random = getRandomInt(100)
-            }
-            switch (rarity) {
-                case 0:
-                    break
-                case 1:
-                    raityString = 'common'
-                    break
-                case 2:
-                    raityString = 'uncommon'
-                    break
-                case 3:
-                    raityString = 'rare'
-                    break
-                case 4:
-                    raityString = 'epic'
-                    break
-                case 5:
-                    raityString = 'legendary'
-                    break
-            }
-            if (rarity && this.player.ship.models.length < hangarSize) {
-                let model = {
-                    id: Math.random(),
-                    img: getRandomInt(18) + 1 + '',
-                    rarity: raityString as type.Rarity,
-                }
-                this.player.ship.models.push(model)
-                if (this.player.ship.autoSell && rarity <= map[this.player.ship.autoSell]) {
-                    this.player = sellModel(this.player, model)
-                }
-                this.receiveMessages.push(`you have received a ${raityString} spaceship`)
-            }
+            let result = buyModel(this.player, max, 0)
+            this.player = result.player
+            if (result.receiveMessage) this.receiveMessages.push(result.receiveMessage)
         },
         setSkillPoints() {
             if (this.player.skillTree.skillPoints < Math.floor(this.player.highscore['normal'] / 1000)) {
@@ -1133,32 +1087,17 @@ export default defineComponent({
             this.bossEnemy.moveVector = norVec([(Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2])
             switch (this.bossEnemy.type) {
                 case 'normal':
-                    this.bossEnemy.maxHP = Math.round(
-                        60 *
-                            (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
-                            (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
-                    )
+                    this.bossEnemy.maxHP = Math.round(60 * this.bossLifeMultiplier())
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
                     break
                 case 'hardcore':
-                    this.bossEnemy.maxHP = Math.round(
-                        30 *
-                            (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
-                            (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
-                    )
+                    this.bossEnemy.maxHP = Math.round(30 * this.bossLifeMultiplier())
                     this.startingEnemies = Math.round(50 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2)
                     break
                 case 'totalchaos':
-                    this.bossEnemy.maxHP = Math.round(
-                        60 *
-                            (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
-                            percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
-                            (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
-                    )
+                    this.bossEnemy.maxHP = Math.round(60 * this.bossLifeMultiplier())
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
             }
@@ -1178,6 +1117,13 @@ export default defineComponent({
                     getRandomInt(this.field.borderDown - this.field.borderUp - this.bossEnemy.size) + this.field.borderUp,
                 ] as type.Vector
             } while (lenVec(subVec(this.bossEnemy.vector, this.playerInfo.vector)) < 250 * this.generalSize)
+        },
+        bossLifeMultiplier() {
+            return (
+                (this.player.defeatedBosses[this.bossEnemy.type] + 1) *
+                percent(this.player.defeatedBosses[this.bossEnemy.type] + 1 * 20, 'in') *
+                (this.player.passivTree.passivType.includes('nerfBoss') ? percent(this.passivObject['nerfBoss'] / 2, 'de') : 1)
+            )
         },
         bossEnemyAbilitys() {
             this.bossEnemy.speed = 5
@@ -1206,6 +1152,17 @@ export default defineComponent({
         bossEnemyAbilityShot() {
             switch (this.bossEnemy.type) {
                 case 'normal':
+                    for (let i = 0; i < 7; i++) {
+                        this.enemyPlasmas.push({
+                            moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 7) * i + 90)),
+                            vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
+                            size: 20 * this.generalSize,
+                            imgsrc: '/gt/img/char/enemy_plasma.png',
+                            damage: 1,
+                        })
+                    }
+                    break
+                case 'hardcore':
                     for (let i = 0; i < 3; i++) {
                         this.enemyPlasmas.push({
                             moveVector: norVec(rotVec(this.bossEnemy.moveVector, 90 * (i + 1))),
@@ -1216,21 +1173,10 @@ export default defineComponent({
                         })
                     }
                     break
-                case 'hardcore':
+                case 'totalchaos':
                     for (let i = 0; i < 5; i++) {
                         this.enemyPlasmas.push({
                             moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 5) * i + 90)),
-                            vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
-                            size: 20 * this.generalSize,
-                            imgsrc: '/gt/img/char/enemy_plasma.png',
-                            damage: 1,
-                        })
-                    }
-                    break
-                case 'totalchaos':
-                    for (let i = 0; i < 7; i++) {
-                        this.enemyPlasmas.push({
-                            moveVector: norVec(rotVec(this.bossEnemy.moveVector, (180 / 7) * i + 90)),
                             vector: addVec(this.bossEnemy.vector, this.bossEnemy.size / 2),
                             size: 20 * this.generalSize,
                             imgsrc: '/gt/img/char/enemy_plasma.png',
@@ -1403,13 +1349,13 @@ export default defineComponent({
             }
         },
         async handleDamage(dmg: number, deathReason: string) {
+            if (this.immunity) return
             if (this.player.peculiarities.selected == 'immunity') {
                 this.immunity = true
                 setTimeout(() => {
                     this.immunity = false
                 }, 1000)
             }
-            if (this.immunity) return
             if (this.shield) {
                 this.handleShield()
             } else {

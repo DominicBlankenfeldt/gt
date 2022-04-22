@@ -1,6 +1,6 @@
 import * as type from '@/types'
 import { subVec } from '@/game/vectors'
-import { maxCurrency } from '@/global'
+import { hangarSize, maxCurrency } from '@/global'
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
@@ -72,4 +72,54 @@ export function sellModel(player: type.Player, model: type.Model): type.Player {
         player.ship.models = player.ship.models.filter(m => m.id != model.id)
     }
     return player
+}
+export function buyModel(player: type.Player, max: number, rarity: number) {
+    let raityString = ''
+    let receiveMessage = ''
+    let counter = 0
+    let random = getRandomInt(100)
+    const map = {
+        common: 1,
+        uncommon: 2,
+        rare: 3,
+        epic: 4,
+        legendary: 5,
+    }
+    while (random < 30 + findHouse(player, 'hangar') * 3 && counter <= max) {
+        rarity++
+        counter++
+        random = getRandomInt(100)
+    }
+    switch (rarity) {
+        case 0:
+            break
+        case 1:
+            raityString = 'common'
+            break
+        case 2:
+            raityString = 'uncommon'
+            break
+        case 3:
+            raityString = 'rare'
+            break
+        case 4:
+            raityString = 'epic'
+            break
+        case 5:
+            raityString = 'legendary'
+            break
+    }
+    if (rarity && player.ship.models.length < hangarSize) {
+        const model = {
+            id: Math.random(),
+            img: getRandomInt(18) + 1 + '',
+            rarity: raityString as type.Rarity,
+        }
+        player.ship.models.push(model)
+        if (player.ship.autoSell && rarity <= map[player.ship.autoSell]) {
+            player = sellModel(player, model)
+            receiveMessage = `you have received a ${raityString} spaceship`
+        }
+    }
+    return { player: player as type.Player, receiveMessage: receiveMessage }
 }

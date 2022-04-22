@@ -69,13 +69,12 @@ export const passivDetails = {
     none: { name: 'none', maxlvl: 0, description: '<3' },
 }
 export const passivAmount = Object.values(passivDetails).length
-export const maxEnergyCell = 100
 export const maxLessStartEnemies = 10
 export const maxHigherDifficultyTimer = 10
 export const maxLowerScoreTimer = 10
 export const maxCurrency = 10000
 export const shopDetails = {
-    energyCell: { name: 'energyCell', max: maxEnergyCell, maxlvl: 3, description: 'is needed to use abilities', cost: 1, upgradeCost: 2000 },
+    energyCell: { name: 'energyCell', max: 100, maxlvl: 3, description: 'is needed to use abilities', cost: 1, upgradeCost: 2000 },
     lessStartEnemies: {
         name: 'corruption',
         max: maxLessStartEnemies,

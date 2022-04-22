@@ -50,7 +50,7 @@ self.addEventListener('activate', event => {
     )
 })
 export function reload() {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
+    navigator.serviceWorker.register(`${process.env.BASE_URL}service-worker.js`).then(reg => {
         // sometime later…
         reg.update()
     })

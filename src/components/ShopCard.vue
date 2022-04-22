@@ -31,23 +31,14 @@
                         style="height: 6vh"
                         :data-title="shopDetails[shopItem].description"
                         :line2="
-                            player.shop[shopItem].amount <
-                            (shopItem == 'energyCell'
-                                ? modelDetails[player.ship.selectedModel.rarity].store +
-                                  findWeaponUpgrade(player, 'munitionsDepot') * percent(findPassivUpgrade(player, 'shipStats') / 5, 'in')
-                                : shopDetails[shopItem].max)
+                            player.shop[shopItem].amount < (shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max)
                                 ? `costs: ${shopDetails[shopItem].cost}`
                                 : 'full'
                         "
                     >
                         {{ shopDetails[shopItem].name }}
                         <br />
-                        {{ player.shop[shopItem].amount }}/{{
-                            shopItem == 'energyCell'
-                                ? modelDetails[player.ship.selectedModel.rarity].store +
-                                  findWeaponUpgrade(player, 'munitionsDepot') * percent(findPassivUpgrade(player, 'shipStats') / 5, 'in')
-                                : shopDetails[shopItem].max
-                        }}
+                        {{ player.shop[shopItem].amount }}/{{ shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max }}
                     </button>
                     <div>
                         <label
@@ -162,10 +153,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, passivAmount, shopDetails, modelDetails, hangarSize } from '@/global'
+import { passivDetails, passivAmount, shopDetails, modelDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
-import { findHouse, findWeaponUpgrade, findPassivUpgrade, percent, getRandomInt, sellModel } from '@/game/helpers'
+import { findHouse, findWeaponUpgrade, findPassivUpgrade, percent, getRandomInt, sellModel, buyModel } from '@/game/helpers'
 export default defineComponent({
     setup() {
         currentUser
@@ -185,6 +176,7 @@ export default defineComponent({
             player: {} as type.Player,
             user: currentUser,
             receiveMessage: '',
+            maxEnergyCell: 0,
             dataLoad: false,
         }
     },
@@ -197,60 +189,19 @@ export default defineComponent({
 
     mounted() {
         this.player = this.playerProp
+        this.maxEnergyCell = Math.round(
+            modelDetails[this.player.ship.selectedModel.rarity].store +
+                findWeaponUpgrade(this.player, 'munitionsDepot') * percent(findPassivUpgrade(this.player, 'shipStats') / 5, 'in')
+        )
         this.dataLoad = true
     },
     methods: {
         buyModel() {
             if (this.player.shop.currency < 500) return
             this.player.shop.currency -= 500
-            let rarity = 1 as number
-            let raityString = ''
-            let max = 4
-            let counter = 0
-            let random = getRandomInt(100)
-            let map = {
-                common: 1,
-                uncommon: 2,
-                rare: 3,
-                epic: 4,
-                legendary: 5,
-            }
-            while (random < 30 + findHouse(this.player, 'hangar') * 3 && counter <= max) {
-                rarity++
-                counter++
-                random = getRandomInt(100)
-            }
-            switch (rarity) {
-                case 0:
-                    break
-                case 1:
-                    raityString = 'common'
-                    break
-                case 2:
-                    raityString = 'uncommon'
-                    break
-                case 3:
-                    raityString = 'rare'
-                    break
-                case 4:
-                    raityString = 'epic'
-                    break
-                case 5:
-                    raityString = 'legendary'
-                    break
-            }
-            if (rarity && this.player.ship.models.length < hangarSize) {
-                let model = {
-                    id: Math.random(),
-                    img: getRandomInt(18) + 1 + '',
-                    rarity: raityString as type.Rarity,
-                }
-                this.player.ship.models.push(model)
-                if (this.player.ship.autoSell && rarity <= map[this.player.ship.autoSell]) {
-                    this.player = sellModel(this.player, model)
-                }
-                this.receiveMessage = `you have received a ${raityString} spaceship`
-            }
+            let result = buyModel(this.player, 4, 1)
+            this.player = result.player
+            this.receiveMessage = result.receiveMessage
         },
         buyBuildingLicenses() {
             if (this.player.shop.currency < 2500) return
@@ -270,11 +221,7 @@ export default defineComponent({
         buyShopItem(shopElement: type.ShopElement) {
             if (
                 this.player.shop.currency <= shopDetails[shopElement].cost ||
-                this.player.shop[shopElement].amount >=
-                    (shopElement != 'energyCell'
-                        ? shopDetails[shopElement].max
-                        : modelDetails[this.player.ship.selectedModel.rarity].store +
-                          findWeaponUpgrade(this.player, 'munitionsDepot') * percent(findPassivUpgrade(this.player, 'shipStats') / 5, 'in'))
+                this.player.shop[shopElement].amount >= (shopElement != 'energyCell' ? shopDetails[shopElement].max : this.maxEnergyCell)
             )
                 return
             this.buttonSound()
