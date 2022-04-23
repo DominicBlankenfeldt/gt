@@ -62,9 +62,9 @@ export default defineComponent({
     },
 
     methods: {
-        reload() {
+        async reload() {
+            await reload()
             this.$router.go(0)
-            reload()
         },
         changeImg(id: string) {
             this.player.img = id

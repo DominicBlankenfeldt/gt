@@ -110,6 +110,7 @@ export function buyModel(player: type.Player, max: number, rarity: number) {
             break
     }
     if (rarity && player.ship.models.length < hangarSize) {
+        receiveMessage = `you have received a ${raityString} spaceship`
         const model = {
             id: Math.random(),
             img: getRandomInt(18) + 1 + '',
@@ -118,7 +119,6 @@ export function buyModel(player: type.Player, max: number, rarity: number) {
         player.ship.models.push(model)
         if (player.ship.autoSell && rarity <= map[player.ship.autoSell]) {
             player = sellModel(player, model)
-            receiveMessage = `you have received a ${raityString} spaceship`
         }
     }
     return { player: player as type.Player, receiveMessage: receiveMessage }

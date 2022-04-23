@@ -15,7 +15,6 @@
                                 class="form-control"
                                 aria-label="fleetname"
                                 aria-describedby="basic-addon1"
-                                required
                             />
                             <label class="placeholder-text"><div class="text">search Fleet</div></label>
                         </div>
@@ -23,10 +22,10 @@
                     </div>
                 </form>
             </div>
-            <div v-for="fleet of searchedFleets.filter(f => f.public)" :key="fleet.id">
+            <div v-for="fleet of searchedFleets.filter(f => f.fleetInfo.public)" :key="fleet.id">
                 <div class="row g-0 mt-1">
-                    <div class="col-2">{{ fleet.name }}</div>
-                    <div class="col-9">{{ fleet.info }}</div>
+                    <div class="col-2">{{ fleet.fleetInfo.name }}</div>
+                    <div class="col-9">{{ fleet.fleetInfo.info }}</div>
                     <button class="col-1 btn btn-outline-success" v-if="fleet.members.length < 5" @click="joinSpaceFleet(fleet)">join</button>
                     <button class="col-1 btn btn-outline-danger" v-else disabled>full</button>
                 </div>
@@ -35,11 +34,11 @@
             <div v-else>
                 <div class="card-body">
                     <div>
-                        <h3 v-if="!edit">{{ fleet?.name }}</h3>
+                        <h3 v-if="!edit">{{ fleet?.fleetInfo.name }}</h3>
                         <div v-else class="input-contain mb-3">
                             <input
-                                v-model="fleet.name"
-                                :class="{ dirty: fleet.name }"
+                                v-model="fleet.fleetInfo.name"
+                                :class="{ dirty: fleet.fleetInfo.name }"
                                 type="text"
                                 class="form-control"
                                 aria-label="fleetname"
@@ -54,13 +53,13 @@
                         <div class="col-4">
                             <img src="/gt/img/placeholder_wappen_150.png" alt="placeholder" />
                             <div v-if="!edit">
-                                {{ fleet.public ? 'public' : 'private' }}
+                                {{ fleet.fleetInfo.public ? 'public' : 'private' }}
                             </div>
                             <div v-else>
                                 <label class="form-check-label" for="flexCheckDefault">
                                     <input
                                         class="form-check-input shadow-none"
-                                        v-model="fleet.public"
+                                        v-model="fleet.fleetInfo.public"
                                         type="checkbox"
                                         value=""
                                         id="flexCheckDefault"
@@ -121,12 +120,12 @@
 
                     <div v-if="!edit" style="border: solid black 1px" class="mt-4">
                         <div>fleetinfo:</div>
-                        <div>{{ fleet?.info }}</div>
+                        <div>{{ fleet?.fleetInfo.info }}</div>
                     </div>
                     <div v-else class="input-contain mt-4">
                         <input
-                            v-model="fleet.info"
-                            :class="{ dirty: fleet.info }"
+                            v-model="fleet.fleetInfo.info"
+                            :class="{ dirty: fleet.fleetInfo.info }"
                             type="text"
                             class="form-control"
                             aria-label="fleetname"
@@ -139,7 +138,7 @@
             </div>
             <div class="card-footer d-flex justify-content-between">
                 <div class="col-3" v-if="player.spaceFleet">
-                    <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.founder">leave</button>
+                    <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.fleetInfo.founder">leave</button>
                     <button class="btn btn-danger shadow-none" @click="deleteSpaceFleet()" v-else>delete</button>
                 </div>
                 <div class="col-3" v-if="player.spaceFleet">
@@ -155,7 +154,7 @@
                     >
                         create fleet
                     </button>
-                    <button v-if="user?.uid == fleet?.founder" @click="editSave()" class="btn btn-secondary shadow-none">
+                    <button v-if="user?.uid == fleet?.fleetInfo.founder" @click="editSave()" class="btn btn-secondary shadow-none">
                         {{ edit ? 'save' : 'edit' }}
                     </button>
                 </div>
@@ -243,7 +242,6 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" @click="buttonSound()">Close</button>
-                            <button type="button" class="btn btn-success shadow-none" @click="saveFleet()" data-bs-dismiss="modal">save</button>
                         </div>
                     </div>
                 </div>
@@ -304,11 +302,13 @@ export default defineComponent({
             fleetMembers: [] as type.User[],
             fleet: {
                 members: [] as string[],
-                founder: '',
-                img: '',
-                name: '',
-                info: '',
-                public: false,
+                fleetInfo: {
+                    founder: '',
+                    img: '',
+                    name: '',
+                    info: '',
+                    public: false,
+                },
                 skills: [
                     { name: 'bossEnemies', lvl: 0 },
                     { name: 'bossDifficulty', lvl: 0 },
@@ -380,9 +380,11 @@ export default defineComponent({
             return Math.floor(this.fleetScore / 1000000)
         },
         lvlSkill(skill: type.FleetSkill) {
-            if (this.user?.uid != this.fleet.founder) return
+            if (!this.fleet.id) return
+            if (this.user?.uid != this.fleet.fleetInfo.founder) return
             if (this.amountPoints() - this.usedSkillpoints < fleetSkillDetails[skill.name].tier) return
             skill.lvl++
+            API.lvlFleetSkill(this.fleet.id, this.fleet.skills)
         },
         closeChoosePlayer() {
             this.choosenPlayerLoad = false
@@ -395,14 +397,21 @@ export default defineComponent({
         },
         deleteMember(member: type.User) {
             this.buttonSound()
+            if (!this.fleet.id) return
+            try {
+                API.removeFleetMember(this.fleet.id, member.id)
+            } catch {
+                API.logout()
+            }
             this.fleet.members = this.fleet.members.filter(m => m != member.id)
             this.fleetMembers = this.fleetMembers.filter(m => m.id != member.id)
         },
         async editSave() {
             this.buttonSound()
+            if (!this.fleet.id) return
             if (this.edit) {
                 try {
-                    await API.updateAPI('spaceFleets', this.player.spaceFleet!, this.fleet)
+                    API.updateFleetInfo(this.fleet.id, this.fleet.fleetInfo)
                 } catch (e) {
                     API.logout()
                 }
@@ -414,15 +423,21 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet.founder || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.fleetInfo.founder || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],
-                        founder: '',
-                        img: '',
-                        name: '',
-                        info: '',
-                        public: false,
+                        fleetInfo: {
+                            founder: '',
+                            img: '',
+                            name: '',
+                            info: '',
+                            public: false,
+                        },
+                        skills: [
+                            { name: 'bossEnemies', lvl: 0 },
+                            { name: 'bossDifficulty', lvl: 0 },
+                        ],
                     } as type.SpaceFleet
                     await API.addPlayer(this.player)
                     this.$router.go(0)
@@ -433,21 +448,20 @@ export default defineComponent({
             let fleetMembers = []
             for (let member of result) fleetMembers.push(member)
             this.fleetMembers = fleetMembers.filter(m => this.fleet.members.includes(m.id))
-            this.fleetFounder = this.fleetMembers.find(m => m.id == this.fleet.founder)!.player
-        },
-        async saveFleet() {
-            await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
+            this.fleetFounder = this.fleetMembers.find(m => m.id == this.fleet.fleetInfo.founder)!.player
         },
         async createFleet() {
             if (!this.user) return
             this.buttonSound()
             let result = await API.addSpaceFleet({
-                founder: this.user.uid,
+                fleetInfo: {
+                    founder: this.user.uid,
+                    img: '',
+                    name: this.nameInput,
+                    info: this.infoInput,
+                    public: this.publicInput,
+                },
                 members: [this.user.uid] as string[],
-                img: '',
-                name: this.nameInput,
-                info: this.infoInput,
-                public: this.publicInput,
                 skills: [
                     { name: 'bossEnemies', lvl: 0 },
                     { name: 'bossDifficulty', lvl: 0 },
@@ -476,9 +490,7 @@ export default defineComponent({
             if (!fleet.id) return
             this.buttonSound()
             try {
-                fleet = await API.getPlayerSpaceFleet(fleet.id!)
-                fleet.members.push(this.user.uid)
-                await API.updateAPI('spaceFleets', fleet.id!, fleet)
+                API.addFleetMember(fleet.id, this.user.uid)
                 this.searchedFleets = [] as type.SpaceFleet[]
                 this.player.spaceFleet = fleet.id
                 await API.addPlayer(this.player)
@@ -488,15 +500,14 @@ export default defineComponent({
             }
         },
         async leaveSpaceFleet() {
-            if (this.fleet.founder == this.user?.uid) return
+            if (!this.user) return
+            if (this.fleet.fleetInfo.founder == this.user.uid) return
             if (!this.fleet.id) return
             this.buttonSound()
             try {
-                this.fleet = await API.getPlayerSpaceFleet(this.fleet.id!)
-                this.fleet.members = this.fleet.members.filter(m => m != this.user?.uid)
+                API.removeFleetMember(this.fleet.id, this.user.uid)
                 this.player.spaceFleet = ''
                 await API.addPlayer(this.player)
-                await API.updateAPI('spaceFleets', this.fleet.id!, this.fleet)
                 this.loadFleet()
             } catch {
                 API.logout()

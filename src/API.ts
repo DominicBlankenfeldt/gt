@@ -11,6 +11,8 @@ import {
     getDoc,
     limitToLast,
     where,
+    arrayUnion,
+    arrayRemove,
 } from 'firebase/firestore'
 import { collection, addDoc, getDocs, updateDoc, query, orderBy, limit } from 'firebase/firestore'
 import { currentUser } from './router'
@@ -117,4 +119,24 @@ export async function searchSpaceFleet(name: string) {
         docs.push(doc)
     })
     return docs.map(spaceFleet => ({ ...spaceFleet.data(), id: spaceFleet.id }))
+}
+export async function addFleetMember(fleetID: string, playerId: string) {
+    await updateDoc(doc(getFirestore(), 'spaceFleets', fleetID), {
+        members: arrayUnion(playerId),
+    })
+}
+export async function removeFleetMember(fleetID: string, playerId: string) {
+    await updateDoc(doc(getFirestore(), 'spaceFleets', fleetID), {
+        members: arrayRemove(playerId),
+    })
+}
+export async function lvlFleetSkill(fleetID: string, skills: type.FleetSkill[]) {
+    await updateDoc(doc(getFirestore(), 'spaceFleets', fleetID), {
+        skills: skills,
+    })
+}
+export async function updateFleetInfo(fleetID: string, fleetInfo: type.FleetInfo) {
+    await updateDoc(doc(getFirestore(), 'spaceFleets', fleetID), {
+        fleetInfo: fleetInfo,
+    })
 }

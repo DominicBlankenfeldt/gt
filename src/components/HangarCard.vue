@@ -51,6 +51,35 @@
                 </button>
             </div>
         </div>
+        <div style="color: white" class="mt-2">
+            <div v-if="player.peculiarities.available == 0">
+                <div data-title="you get peculiarities when you defeat the total chaos boss" class="w-25 d-inline">you have no peculiarities</div>
+            </div>
+            <div class="btn-group rounded mt-2" role="group" aria-label="Basic radio toggle button group" v-else>
+                <div v-for="peculiarity of player.peculiarities.available" :key="peculiarity" class="mx-1">
+                    <input
+                        type="radio"
+                        class="btn-check"
+                        name="peculiarityRadio"
+                        :id="`btn${peculiarity}`"
+                        autocomplete="off"
+                        :checked="player.peculiarities.selected == peculiarity"
+                    />
+                    <label
+                        class="btn btn-outline-primary w-100 shadow-none"
+                        :data-title="peculiarityDetails[peculiarity].description"
+                        :for="`btn${peculiarity}`"
+                        @click="
+                            {
+                                ;(player.peculiarities.selected = peculiarity), buttonSound()
+                            }
+                        "
+                    >
+                        {{ peculiarityDetails[peculiarity].name }}
+                    </label>
+                </div>
+            </div>
+        </div>
         <div class="mt-2" data-title="you can get a spaceship after each round">{{ player.ship.models.length }}/{{ hangarSize }}</div>
         <div class="d-flex justify-content-center">
             <div v-for="model of player.ship.models" :key="model.id" class="mx-1">
@@ -87,7 +116,7 @@
                     <br />
                     store:{{ modelDetails[model.rarity].store }}
                     <br />
-                    scoreMultiplier:{{ modelDetails[model.rarity].scoreMultiplier }}
+                    score:{{ modelDetails[model.rarity].scoreMultiplier }}
                 </label>
                 <button
                     class="btn btn-danger w-100 rounded-0 rounded-bottom shadow-none"
@@ -217,6 +246,7 @@ export default defineComponent({
         },
         selectPassiv(passiv: type.PassivType) {
             this.buttonSound()
+            this.player.passivTree.passivType = this.player.passivTree.passivType.filter(p => p != 'none')
             if (this.player.passivTree.passivType.includes(passiv)) {
                 this.player.passivTree.passivType = this.player.passivTree.passivType.filter(p => p != passiv)
             } else {

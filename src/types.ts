@@ -305,14 +305,17 @@ export type FleetSkillObject = {
     [key in FleetSkillName]: number
 }
 export interface SpaceFleet {
-    founder: string
     members: string[]
+    skills: FleetSkill[]
+    fleetInfo: FleetInfo
+    id?: string
+}
+export interface FleetInfo {
+    founder: string
     info: string
     name: string
     public: boolean
     img: string
-    id?: string
-    skills: FleetSkill[]
 }
 export interface FleetSkill {
     name: FleetSkillName

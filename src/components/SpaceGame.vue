@@ -664,7 +664,8 @@ export default defineComponent({
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
         this.weaponObject = this.player.weaponTree.weaponUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.WeaponObject
-        if (this.fleet.founder) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
+        if (this.fleet.fleetInfo.founder)
+            this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
         this.playerInfo = {
             vector: [0, 0] as type.Vector,
             moveVector: [0, 0] as type.Vector,
@@ -699,15 +700,21 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet.founder || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.fleetInfo.founder || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],
-                        founder: '',
-                        img: '',
-                        name: '',
-                        info: '',
-                        public: false,
+                        fleetInfo: {
+                            founder: '',
+                            img: '',
+                            name: '',
+                            info: '',
+                            public: false,
+                        },
+                        skills: [
+                            { name: 'bossEnemies', lvl: 0 },
+                            { name: 'bossDifficulty', lvl: 0 },
+                        ],
                     } as type.SpaceFleet
                     return
                 }
@@ -813,10 +820,12 @@ export default defineComponent({
             this.gameloopCounter = 0
             this.score = 0
             this.playerStartPosition()
+
             this.enemies = [] as type.Enemy[]
             this.items = [] as type.Item[]
             this.plasmas = [] as type.Plasma[]
             this.enemyPlasmas = [] as type.Plasma[]
+            this.specialScores = [] as type.SpecialScore[]
             this.message = ''
             this.receiveMessages = [] as string[]
             this.startButtonText = 'start'
@@ -1058,9 +1067,15 @@ export default defineComponent({
             if (!findSkill(this.player, 'shotAbility')) return `skill ${skillDetails['shotAbility'].name}`
             if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) return `select ${skillDetails['shotAbility'].name}`
             if (this.bossEnemy.type == type) return 'cancel'
-            if (this.player.highscore[type] >= this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de'))
+            if (
+                this.player.highscore[type] >=
+                Math.round(this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de'))
+            )
                 return 'Boss fight available'
-            else return `You need ${this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de')} highscore`
+            else
+                return `You need ${Math.round(
+                    this.highscoreMultiplier[type] * (this.player.defeatedBosses[type] + 1) * percent(this.fleetlvl, 'de')
+                )} highscore`
         },
         startBossFight(type: type.BossType) {
             if (this.bossEnemy.type == type) {
@@ -1101,7 +1116,7 @@ export default defineComponent({
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
             }
-            if (this.fleet.founder) {
+            if (this.fleet.fleetInfo.founder) {
                 this.startingEnemies -= this.fleetSkillObject['bossEnemies']
                 this.startingEnemies = Math.round(this.startingEnemies * percent(this.fleetlvl, 'de'))
                 if (this.startingEnemies < 1) this.startingEnemies = 1
