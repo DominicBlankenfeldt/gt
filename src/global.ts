@@ -119,6 +119,7 @@ export const peculiarityDetails = {
     slowSpeed: { name: 'cruise control', description: 'share four rocket propulsion and sapr flame automatically in total chaos mode' },
     immunity: { name: 'immunity', description: 'you are immune for 1 second after a hit' },
     generator: { name: 'generator', description: 'buys energy cells during a round' },
+    autoShot: { name: 'autoShot', description: 'you automatically shoot free plasma' },
 }
 export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
@@ -223,6 +224,7 @@ export function checkPlayer(player: type.Player) {
     }
     player.ship.autoSell = player.ship.autoSell || false
     player.peculiarities = player.peculiarities || { available: [], selected: '' as type.PeculiarityName }
+    player.daily = player.daily || { day: 0, tasks: [] as type.Task[], tasksDone: 0 }
     return player
 }
 function checkHouse(player: type.Player, house: string) {

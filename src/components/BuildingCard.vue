@@ -8,7 +8,8 @@
             <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="house of player.spaceport.houses" :key="house.name">
                     <button
-                        class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                        class="mt-2 w-100 btn align-self-center shadow-none"
+                        :class="[house.needScore == 0 ? 'btn-primary' : 'btn-secondary']"
                         @click="upgradeHouse(house)"
                         :data-title="house.needScore == 0 ? houseDetails[house.name].description : 'in construction'"
                         :line2="

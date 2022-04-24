@@ -47,12 +47,18 @@ export interface Player {
     spaceport: Spaceport
     ship: Ship
     peculiarities: Peculiarities
+    daily: Daily
+}
+export interface Daily {
+    day: number
+    tasks: Task[]
+    tasksDone: number
 }
 export interface Peculiarities {
     selected: PeculiarityName
     available: PeculiarityName[]
 }
-export type PeculiarityName = 'darkHole' | 'growPotion' | 'slowSpeed' | 'immunity' | 'generator'
+export type PeculiarityName = 'darkHole' | 'growPotion' | 'slowSpeed' | 'immunity' | 'generator' | 'autoShot'
 export interface Highscore {
     normal: number
     hardcore: number
@@ -327,4 +333,8 @@ export interface SpecialScore {
     score: number
     vector: Vector
     duration: number
+}
+export interface Task {
+    type: string
+    need: number
 }

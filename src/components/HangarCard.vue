@@ -200,7 +200,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails, hangarSize } from '@/global'
+import { passivDetails, weaponDetails, passivAmount, weaponStats, modelDetails, hangarSize, peculiarityDetails } from '@/global'
 import { findHouse, sellModel } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -216,6 +216,7 @@ export default defineComponent({
             passivAmount,
             weaponStats,
             hangarSize,
+            peculiarityDetails,
         }
     },
     data() {

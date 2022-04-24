@@ -582,6 +582,9 @@ export default defineComponent({
         }
     },
     computed: {
+        haveShotAbility() {
+            return () => Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')
+        },
         fleetlvl() {
             let lvl = 0
             for (let member of this.fleetMembers) {
@@ -768,6 +771,7 @@ export default defineComponent({
                     }
                 }
             }
+            if (this.player.peculiarities.selected == 'autoShot' && this.haveShotAbility && this.coolDowns.shotAbility == 0) this.shotAbility(false)
             this.handlePlayerMovement()
             this.handlePlasmaMovement()
             this.handleEnemyMovement()
@@ -1065,7 +1069,7 @@ export default defineComponent({
         // boss
         bossAvailable(type: type.BossType) {
             if (!findSkill(this.player, 'shotAbility')) return `skill ${skillDetails['shotAbility'].name}`
-            if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) return `select ${skillDetails['shotAbility'].name}`
+            if (!this.haveShotAbility) return `select ${skillDetails['shotAbility'].name}`
             if (this.bossEnemy.type == type) return 'cancel'
             if (
                 this.player.highscore[type] >=
@@ -1086,7 +1090,7 @@ export default defineComponent({
                 this.$router.push('/skillTree')
                 return
             }
-            if (!Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')) {
+            if (!this.haveShotAbility) {
                 document.getElementById('settingsBtn')?.click()
                 return
             }
@@ -1672,7 +1676,7 @@ export default defineComponent({
                             this.bombAbility()
                             break
                         case 'shotAbility':
-                            this.shotAbility()
+                            this.shotAbility(true)
                             break
                         case 'magnetAbility':
                             this.magnetAbility()
@@ -1737,9 +1741,9 @@ export default defineComponent({
                 this.collectClearField()
             }
         },
-        shotAbility() {
+        shotAbility(pay: boolean) {
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
-            this.player.shop.energyCell.amount -= skillDetails['shotAbility'].tier
+            if (pay) this.player.shop.energyCell.amount -= skillDetails['shotAbility'].tier
             music.plasmaSound(this.player.settings.effectVolume)
             let weapon = weapons(this.player, this.generalSize, this.lastDirection, this.playerInfo, this.weaponObject, this.passivObject)
             this.coolDowns['shotAbility'] = weapon.shotCoolDownDuration
