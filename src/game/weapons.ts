@@ -66,6 +66,7 @@ export function weapons(
                 size: size,
                 imgsrc: '/gt/img/char/plasma.png',
                 damage: damage,
+                aim: player.weaponTree.weaponType == 'aimgun' ? true : null,
             } as type.Plasma)
             break
         case 'safegun':
