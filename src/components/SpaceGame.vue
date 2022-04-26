@@ -667,8 +667,7 @@ export default defineComponent({
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
         this.passivObject = this.player.passivTree.passivUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.PassivObject
         this.weaponObject = this.player.weaponTree.weaponUpgrades.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.WeaponObject
-        if (this.fleet.fleetInfo.founder)
-            this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
+        if (this.fleet.fleetInfo) this.fleetSkillObject = this.fleet.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.FleetSkillObject
         this.playerInfo = {
             vector: [0, 0] as type.Vector,
             moveVector: [0, 0] as type.Vector,
@@ -703,7 +702,7 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet.fleetInfo.founder || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.fleetInfo || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],
@@ -1120,7 +1119,7 @@ export default defineComponent({
                     this.startingEnemies = Math.round(4 + this.player.defeatedBosses[this.bossEnemy.type])
                     this.difficulty = roundHalf(2 + this.player.defeatedBosses[this.bossEnemy.type])
             }
-            if (this.fleet.fleetInfo.founder) {
+            if (this.fleet.fleetInfo) {
                 this.startingEnemies -= this.fleetSkillObject['bossEnemies']
                 this.startingEnemies = Math.round(this.startingEnemies * percent(this.fleetlvl, 'de'))
                 if (this.startingEnemies < 1) this.startingEnemies = 1
