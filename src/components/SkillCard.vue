@@ -134,6 +134,7 @@ export default defineComponent({
             timer: 0,
             user: currentUser,
             dataLoad: false,
+            pressedKeys: {} as Record<string, boolean>,
         }
     },
     computed: {
@@ -196,26 +197,39 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
+        window.onkeyup = (e: any) => {
+            this.pressedKeys[e.key] = false
+        }
+        window.onkeydown = (e: any) => {
+            this.pressedKeys[e.key] = true
+        }
     },
     methods: {
         lvlSkill(skill: type.Skill) {
-            if (
-                skill.lvl <
-                skillDetails[skill.name].maxlvl +
+            let counter = 1
+            if (this.pressedKeys['Shift'])
+                counter =
+                    skillDetails[skill.name].maxlvl +
                     (skillDetails[skill.name].maxlvl > 1 ? findHouse(this.player, 'skill') * (4 - skillDetails[skill.name].tier) : 0)
-            )
-                if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
-                    skill.lvl++
-                    this.buttonSound()
-                    if (skillDetails[skill.name].maxlvl == 1) {
-                        for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-                            if (!this.player.settings.abilitys[i].name) {
-                                this.player.settings.abilitys[i].name = skill.name as type.AbilityName
-                                return
+            for (let i = 0; i < counter; i++) {
+                if (
+                    skill.lvl <
+                    skillDetails[skill.name].maxlvl +
+                        (skillDetails[skill.name].maxlvl > 1 ? findHouse(this.player, 'skill') * (4 - skillDetails[skill.name].tier) : 0)
+                )
+                    if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
+                        skill.lvl++
+                        if (i == 0) this.buttonSound()
+                        if (skillDetails[skill.name].maxlvl == 1) {
+                            for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
+                                if (!this.player.settings.abilitys[i].name) {
+                                    this.player.settings.abilitys[i].name = skill.name as type.AbilityName
+                                    return
+                                }
                             }
                         }
                     }
-                }
+            }
         },
         lvlSkillx8(skill: type.Skill) {
             for (let i = 0; i < 8; i++) {

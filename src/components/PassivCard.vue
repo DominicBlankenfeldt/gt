@@ -62,6 +62,7 @@ export default defineComponent({
             player: {} as type.Player,
             user: currentUser,
             dataLoad: false,
+            pressedKeys: {} as Record<string, boolean>,
         }
     },
     props: {
@@ -80,15 +81,25 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
+        window.onkeyup = (e: any) => {
+            this.pressedKeys[e.key] = false
+        }
+        window.onkeydown = (e: any) => {
+            this.pressedKeys[e.key] = true
+        }
     },
     methods: {
         lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
+            let counter = 1
             if (passivUpgrade.name == 'none') return
-            if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
-                if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
-                    passivUpgrade.lvl++
-                    this.buttonSound()
-                }
+            if (this.pressedKeys['Shift']) counter = passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5
+            for (let i = 0; i < counter; i++) {
+                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
+                    if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
+                        passivUpgrade.lvl++
+                        if (i == 0) this.buttonSound()
+                    }
+            }
         },
         lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
             if (passivUpgrade.name == 'none') return

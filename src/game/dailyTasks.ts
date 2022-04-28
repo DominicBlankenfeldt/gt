@@ -3,42 +3,42 @@ import * as type from '@/types'
 export const tasks = {
     0: {
         type: 'collectItems',
-        need: 0,
+        need: 50,
     },
     1: {
         type: 'deadEnemies',
-        need: 0,
+        need: 100,
     },
     2: {
         type: 'getScore',
-        need: 0,
+        need: 100000,
     },
     3: {
         type: 'payCurrency',
-        need: 0,
+        need: 1000,
     },
     4: {
         type: 'playNormal',
-        need: 0,
+        need: 5,
     },
     5: {
         type: 'playHardcore',
-        need: 0,
+        need: 5,
     },
     6: {
         type: 'playTotalchaos',
-        need: 0,
+        need: 5,
     },
     7: {
         type: 'useAbilities',
-        need: 0,
+        need: 100,
     },
     8: {
         type: 'useShopItems',
-        need: 0,
+        need: 10,
     },
     9: {
         type: 'getSpaceShips',
-        need: 0,
+        need: 5,
     },
 }

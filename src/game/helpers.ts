@@ -85,7 +85,7 @@ export function buyModel(player: type.Player, max: number, rarity: number) {
         epic: 4,
         legendary: 5,
     }
-    while (random < 30 + findHouse(player, 'hangar') * 3 && counter <= max) {
+    while (random < 30 + findHouse(player, 'hangar') * 3 && counter < max) {
         rarity++
         counter++
         random = getRandomInt(100)
@@ -122,4 +122,7 @@ export function buyModel(player: type.Player, max: number, rarity: number) {
         }
     }
     return { player: player as type.Player, receiveMessage: receiveMessage }
+}
+export function int(x: number) {
+    return x
 }

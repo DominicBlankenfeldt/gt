@@ -1,6 +1,6 @@
 <template>
     <div id="test" style="height:92vh;width:100vw:">
-        <div v-if="dataLoad" style="color: red">
+        <div v-if="dataLoad" style="color: #18191a">
             <div class="col-1"></div>
             <div class="row g-0" style="height: 5vh; position: relative">
                 <div v-if="!bossEnemy.type" class="col-3">
@@ -37,7 +37,20 @@
             </div>
             <div>
                 <div class="d-flex justify-content-between">
-                    <div class="col-1">
+                    <div class="col-1" v-if="!gameStarted && currentUser">
+                        <div>lvl:{{ player.lvlTree.lvl }}</div>
+                        <div class="mt-4">xp:{{ player.lvlTree.xp }}/{{ player.lvlTree.lvl * 100 }}</div>
+                        <div class="mt-4">tasks({{ player.daily.tasksDone }}/3)</div>
+                        <div v-for="task in player.daily.tasks" :key="task.type" class="mt-4" :style="{ color: task.need > 0 ? 'red' : 'green' }">
+                            <div>
+                                {{ task.type }}
+                            </div>
+                            <div>
+                                {{ taskNeed(task) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-1" v-else>
                         <div>durations</div>
                         <div class="mt-4" :style="{ color: effects.magnet.active ? 'green' : 'red' }">
                             Magnet:
@@ -60,6 +73,7 @@
                             {{ (effects.stopTime.duration / 1000).toFixed(1) }}
                         </div>
                     </div>
+
                     <div class="game" :class="{ noneCursor: gameStarted }">
                         <div
                             :style="{
@@ -293,10 +307,10 @@
                 </div>
             </div>
             <div class="mt-3">
-                <div v-if="!user && !gameStarted">Log in to use all features.</div>
-                <div v-if="user && !gameStarted">{{ tip }}</div>
+                <div v-if="!user && !gameStarted" style="color: white">Log in to use all features.</div>
+                <div v-if="user && !gameStarted" style="color: white">{{ tip }}</div>
                 <div v-if="gameStarted" class="d-flex justify-content-center">
-                    <div v-for="hp of playerInfo.hP" :key="hp">
+                    <div v-for="hp of playerInfo.hP" :key="hp" style="color: red">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="2vw"
@@ -408,20 +422,26 @@
                                     oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
                                 />
                             </div>
-                            <div v-for="shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-1">
-                                <label
-                                    class="form-check-label w-100 rounded-bottom unselectable py-1 pointer"
-                                    style="color: black"
-                                    @click="
-                                        {
-                                            ;(player.shop[shopItem].use = !player.shop[shopItem].use), buttonSound()
-                                        }
-                                    "
-                                    :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
-                                    :data-title="shopDetails[shopItem].description"
+                            <div v-if="currentUser">
+                                <div
+                                    v-for="shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']"
+                                    :key="shopItem"
+                                    class="mt-1"
                                 >
-                                    use {{ shopDetails[shopItem].name }}
-                                </label>
+                                    <label
+                                        class="form-check-label w-100 rounded-bottom unselectable py-1 pointer"
+                                        style="color: black"
+                                        @click="
+                                            {
+                                                ;(player.shop[shopItem].use = !player.shop[shopItem].use), buttonSound()
+                                            }
+                                        "
+                                        :style="{ backgroundColor: player.shop[shopItem].use ? 'green' : 'red' }"
+                                        :data-title="shopDetails[shopItem].description"
+                                    >
+                                        use {{ shopDetails[shopItem].name }}
+                                    </label>
+                                </div>
                             </div>
                             <div class="row justify-content-end mt-1">
                                 <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
@@ -456,10 +476,11 @@ import {
     passivDetails,
     hangarSize,
 } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, findHouse, sellModel, buyModel } from '@/game/helpers'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, buyModel, int } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
+import { tasks } from '@/game/dailyTasks'
 import { tips } from '@/game/tip'
 import { currentUser } from '@/router'
 import * as music from '@/music'
@@ -469,10 +490,10 @@ import * as API from '@/API'
 export default defineComponent({
     setup() {
         production
-        currentUser
         skillDetails
         weaponDetails
         return {
+            currentUser,
             findSkill,
             skillDetails,
             weaponAmount,
@@ -527,6 +548,7 @@ export default defineComponent({
                 stopTime: { active: false, duration: 0 },
                 slowEnemies: { active: false, duration: 0 },
             },
+            counters: {} as type.TaskObject,
             bossFight: false,
             lastDirection: 0,
             plasmas: [] as type.Plasma[],
@@ -582,6 +604,10 @@ export default defineComponent({
         }
     },
     computed: {
+        scoreScaling() {
+            let help = int(1.01 ** (this.player.lvlTree.lvl - 1) * 1.1 ** this.player.daily.tasksDone)
+            return help
+        },
         haveShotAbility() {
             return () => Object.values(this.player.settings.abilitys).some(a => a.name == 'shotAbility')
         },
@@ -657,11 +683,10 @@ export default defineComponent({
         }
         if (this.player.spaceFleet) await this.loadFleet()
         this.player = checkPlayer(this.player) as type.Player
+        this.daily()
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
         this.buttonSound()
-        this.playerInfo.size *= this.generalSize
-        this.playerStartPosition()
         this.bossFight = false
         this.tip = tips(getRandomInt(this.tipsNumber))
         this.skillObject = this.player.skillTree.skills.reduce((a, v) => ({ ...a, [v.name]: v.lvl }), {}) as type.SkillObject
@@ -676,10 +701,47 @@ export default defineComponent({
             speed: modelDetails[this.player.ship.selectedModel.rarity].speed * percent(this.passivObject.shipStats / 5, 'in'),
             hP: modelDetails[this.player.ship.selectedModel.rarity].hp,
         }
+        this.playerInfo.size *= this.generalSize
+        this.playerStartPosition()
+        this.counters = Object.values(tasks).reduce((a, v) => ({ ...a, [v.type]: 0 }), {}) as type.TaskObject
         this.maxEnergyCell = Math.round(modelDetails[this.player.ship.selectedModel.rarity].store * percent(this.passivObject.shipStats / 5, 'in'))
         this.dataLoad = true
     },
     methods: {
+        taskNeed(task: type.Task) {
+            return task.need > 0 ? task.need : 'finished'
+        },
+        daily() {
+            let today = parseInt(new Date().toISOString().replace('-', '').split('T')[0].replace('-', ''))
+            if (this.player.daily.day < today) {
+                this.player.daily.day = today
+                let avaibleTasks = Object.values(tasks) as type.Task[]
+                this.player.daily.tasks = []
+                for (let i = 0; i < 3; i++) {
+                    this.player.daily.tasks.push(avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0])
+                    this.player.daily.tasks[i].need *= this.player.lvlTree.lvl
+                }
+            }
+        },
+        handleTasks() {
+            for (let task of this.player.daily.tasks) {
+                if (task.need > 0) {
+                    task.need -= this.counters[task.type]
+                    if (task.need <= 0) {
+                        this.player.daily.tasksDone++
+                        this.handleGainXp(100)
+                    }
+                }
+            }
+            this.counters = Object.values(tasks).reduce((a, v) => ({ ...a, [v.type]: 0 }), {}) as type.TaskObject
+        },
+        handleGainXp(xp: number) {
+            this.player.lvlTree.xp += xp
+            if (this.player.lvlTree.xp >= this.player.lvlTree.xp * 100) {
+                this.player.lvlTree.lvl++
+                this.player.lvlTree.xp = 0
+            }
+        },
         unDoChanges() {
             music.ButtonSound(this.player.settings.effectVolume)
             this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
@@ -788,12 +850,15 @@ export default defineComponent({
             } else {
                 switch (this.player.playMode) {
                     case 'normal':
+                        this.counters.playNormal++
                         this.startingEnemies = 6
                         break
                     case 'hardcore':
+                        this.counters.playHardcore++
                         this.startingEnemies = 50
                         break
                     case 'totalchaos':
+                        this.counters.playTotalchaos++
                         this.startingEnemies = 6
                         break
                 }
@@ -801,6 +866,7 @@ export default defineComponent({
                 this.difficulty = 2
                 for (let shopItem of ['lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer'] as type.ShopElement[]) {
                     if (this.player.shop[shopItem].use && this.player.shop[shopItem].amount > 0) {
+                        this.counters.useShopItems++
                         this.player.shop[shopItem].amount--
                         switch (shopItem) {
                             case 'lessStartEnemies':
@@ -951,6 +1017,7 @@ export default defineComponent({
                 this.playerInfo.size = this.playerInfo.originalSize * 2 * this.generalSize
                 this.score +=
                     this.scoreMultiplier *
+                    this.scoreScaling *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     1.2 *
                     percent(this.skillObject['betterGrowPotion'], 'in') *
@@ -959,6 +1026,7 @@ export default defineComponent({
                 this.playerInfo.size = this.playerInfo.originalSize * this.generalSize
                 this.score +=
                     this.scoreMultiplier *
+                    this.scoreScaling *
                     percent(this.skillObject['scoreMultiplicator'], 'in') *
                     (this.player.passivTree.passivType.includes('increaseScore') ? percent(this.passivObject['increaseScore'] / 1.5, 'in') : 1)
             }
@@ -998,11 +1066,14 @@ export default defineComponent({
                             this.player.shop[shopItem].amount < shopDetails[shopItem].max
                         ) {
                             this.player.shop.currency -= shopDetails[shopItem].cost
+                            this.counters.payCurrency += shopDetails[shopItem].cost
                             this.player.shop[shopItem].amount++
                         }
                     }
                 }
             }
+            this.counters.getScore = this.score
+            this.player.shop.currency += (1 + this.passivObject['moreScrap'] / 50) * this.counters.deadEnemies
             if (this.player.shop.energyCell.reBuy) {
                 while (
                     this.player.shop.currency >= shopDetails['energyCell'].cost &&
@@ -1039,7 +1110,8 @@ export default defineComponent({
         },
         newModel() {
             if (this.score < 10000) return
-            let max = 2 + Math.floor(this.score / 3333333)
+            this.counters.getSpaceShips++
+            let max = 2 + Math.floor(this.score / 333333)
             if (max > 5) max = 5
             let result = buyModel(this.player, max, 0)
             this.player = result.player
@@ -1341,6 +1413,7 @@ export default defineComponent({
                         this.respawnEnemy(enemy)
                         let scoreIncrease =
                             50 *
+                            this.scoreScaling *
                             this.scoreMultiplier *
                             (this.player.passivTree.passivType.includes('increaseScore')
                                 ? percent(this.passivObject['increaseScore'] / 1.5, 'in')
@@ -1441,6 +1514,7 @@ export default defineComponent({
         },
         playerItemColision(item: type.Item) {
             music.itemSound(this.player.settings.effectVolume, item)
+            this.counters.collectItems++
             this.items = this.items.filter(i => i != item)
             switch (item.type) {
                 case 'coin':
@@ -1499,7 +1573,7 @@ export default defineComponent({
         },
         collectCoin(item: type.Item) {
             let scoreIncrease =
-                ((this.scoreMultiplier * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
+                ((this.scoreMultiplier * this.scoreScaling * 15 * item.size * percent(this.skillObject['betterCoin'], 'in')) / this.generalSize) *
                 (this.player.passivTree.passivType.includes('increaseScore') ? percent(this.passivObject['increaseScore'], 'in') / 1.5 : 1)
             this.score += scoreIncrease
             this.specialScores.push({
@@ -1628,7 +1702,7 @@ export default defineComponent({
         },
         respawnEnemy(enemy: type.Enemy) {
             this.enemies = this.enemies.filter(e => e != enemy)
-            this.player.shop.currency += 1 + this.passivObject['moreScrap'] / 50
+            this.counters.deadEnemies++
             if (this.player.shop.currency > maxCurrency) this.player.shop.currency = maxCurrency
             createEnemy(this.enemies, this.generalSize, this.field, this.skillObject, this.playerInfo)
         },
@@ -1698,6 +1772,7 @@ export default defineComponent({
             }
         },
         magnetAbility() {
+            this.counters.useAbilities++
             this.coolDowns['magnetAbility'] = 10000
             this.effects.magnet = {
                 active: true,
@@ -1705,6 +1780,7 @@ export default defineComponent({
             }
         },
         growAbility() {
+            this.counters.useAbilities++
             this.coolDowns['growAbility'] = 10000
             if (!this.effects.grow.active) this.playerInfo.vector = subVec(this.playerInfo.vector, (this.playerInfo.size * this.generalSize) / 2)
             this.effects.grow = {
@@ -1713,6 +1789,7 @@ export default defineComponent({
             }
         },
         slowEnemyAbility() {
+            this.counters.useAbilities++
             this.coolDowns['slowEnemyAbility'] = 10000
             this.effects.slowEnemies = {
                 active: true,
@@ -1720,6 +1797,7 @@ export default defineComponent({
             }
         },
         stopTimeAbility() {
+            this.counters.useAbilities++
             this.coolDowns['stopTimeAbility'] = 10000
             this.effects.stopTime = {
                 active: true,
@@ -1729,6 +1807,7 @@ export default defineComponent({
         bombAbility() {
             let bombs = [...this.items].filter(i => i.type == 'clearField')
             if (!bombs.length) return
+            this.counters.useAbilities++
             this.coolDowns['bombAbility'] = 1000
             this.player.shop.energyCell.amount -= skillDetails['bombAbility'].tier
             if (bombs.length) {
@@ -1742,6 +1821,7 @@ export default defineComponent({
         },
         shotAbility(pay: boolean) {
             if (this.player.playMode == 'hardcore' && !this.bossFight) return
+            this.counters.useAbilities++
             if (pay) this.player.shop.energyCell.amount -= skillDetails['shotAbility'].tier
             music.plasmaSound(this.player.settings.effectVolume)
             let weapon = weapons(this.player, this.generalSize, this.lastDirection, this.playerInfo, this.weaponObject, this.passivObject)

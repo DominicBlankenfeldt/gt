@@ -99,6 +99,7 @@ export default defineComponent({
             player: {} as type.Player,
             user: currentUser,
             dataLoad: false,
+            pressedKeys: {} as Record<string, boolean>,
         }
     },
     props: {
@@ -148,21 +149,34 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
+        window.onkeyup = (e: any) => {
+            this.pressedKeys[e.key] = false
+        }
+        window.onkeydown = (e: any) => {
+            this.pressedKeys[e.key] = true
+        }
     },
     methods: {
         lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
+            let counter = 1
             if (weaponDetails[weaponUpgrade.name].tier < 10) {
-                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
-                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
-                        weaponUpgrade.lvl++
-                        this.buttonSound()
-                    }
+                if (this.pressedKeys['Shift']) counter = weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2
+                for (let i = 0; i < counter; i++) {
+                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
+                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
+                            weaponUpgrade.lvl++
+                            if (i == 0) this.buttonSound()
+                        }
+                }
             } else {
-                if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-                    if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
-                        weaponUpgrade.lvl++
-                        this.buttonSound()
-                    }
+                if (this.pressedKeys['Shift']) counter = weaponDetails[weaponUpgrade.name].maxlvl
+                for (let i = 0; i < counter; i++) {
+                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
+                        if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
+                            weaponUpgrade.lvl++
+                            if (i == 0) this.buttonSound()
+                        }
+                }
             }
         },
         lvlWeaponUpgradex8(weaponUpgrade: type.WeaponUpgrade) {

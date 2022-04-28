@@ -225,6 +225,7 @@ export function checkPlayer(player: type.Player) {
     player.ship.autoSell = player.ship.autoSell || false
     player.peculiarities = player.peculiarities || { available: [], selected: '' as type.PeculiarityName }
     player.daily = player.daily || { day: 0, tasks: [] as type.Task[], tasksDone: 0 }
+    player.lvlTree = player.lvlTree || { lvl: 1, xp: 0 }
     return player
 }
 function checkHouse(player: type.Player, house: string) {

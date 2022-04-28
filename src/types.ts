@@ -48,11 +48,35 @@ export interface Player {
     ship: Ship
     peculiarities: Peculiarities
     daily: Daily
+    lvlTree: LvlTree
+}
+export interface LvlTree {
+    lvl: number
+    xp: number
 }
 export interface Daily {
     day: number
     tasks: Task[]
     tasksDone: number
+}
+export interface Task {
+    type: TaskName
+    need: number
+}
+export type TaskName =
+    | 'collectItems'
+    | 'deadEnemies'
+    | 'getScore'
+    | 'payCurrency'
+    | 'playNormal'
+    | 'playHardcore'
+    | 'playTotalchaos'
+    | 'useAbilities'
+    | 'useShopItems'
+    | 'getSpaceShips'
+
+export type TaskObject = {
+    [key in TaskName]: number
 }
 export interface Peculiarities {
     selected: PeculiarityName
@@ -333,8 +357,4 @@ export interface SpecialScore {
     score: number
     vector: Vector
     duration: number
-}
-export interface Task {
-    type: string
-    need: number
 }
