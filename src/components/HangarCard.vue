@@ -35,7 +35,11 @@
                 </div>
             </div>
         </div>
-        <div class="mt-2">{{ player.passivTree.passivType.length }}/{{ player.shop.passivSlots.lvl }}</div>
+        <div class="mt-2">
+            <div class="w-25 d-inline" :data-title="'you get a passiv when' + '\n' + ' you kill the hardcore boss'">
+                {{ player.passivTree.passivType.length }}/{{ player.shop.passivSlots.lvl }}
+            </div>
+        </div>
         <div class="d-flex justify-content-center">
             <div v-for="passiv of player.passivTree.passivAvaibleTypes" :key="passiv" class="mx-1">
                 <button
@@ -80,7 +84,9 @@
                 </div>
             </div>
         </div>
-        <div class="mt-2" data-title="you can get a spaceship after each round">{{ player.ship.models.length }}/{{ hangarSize }}</div>
+        <div class="mt-2">
+            <div class="w-25 d-inline" data-title="you can get a spaceship after each round">{{ player.ship.models.length }}/{{ hangarSize }}</div>
+        </div>
         <div class="d-flex justify-content-center">
             <div v-for="model of player.ship.models" :key="model.id" class="mx-1">
                 <input

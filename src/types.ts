@@ -53,7 +53,25 @@ export interface Player {
 export interface LvlTree {
     lvl: number
     xp: number
+    lvlSkills: LvlSkill[]
+    lvlWeaponUpgrade: LvlWeaponUpgrade[]
+    lvlPassiv: LvlPassiv[]
 }
+export interface LvlSkill {
+    name: LvlSkillName
+    lvl: number
+}
+export interface LvlWeaponUpgrade {
+    name: LvlWeaponUpgradeName
+    lvl: number
+}
+export interface LvlPassiv {
+    name: LvlPassivName
+    lvl: number
+}
+export type LvlSkillName = 'tier1' | 'tier2' | 'tier3'
+export type LvlWeaponUpgradeName = 'tier1' | 'tier2'
+export type LvlPassivName = 'tier1'
 export interface Daily {
     day: number
     tasks: Task[]

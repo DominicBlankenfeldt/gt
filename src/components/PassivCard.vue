@@ -14,20 +14,23 @@
                         class="mt-2 w-100 btn btn-primary shadow-none rounded-0 rounded-top"
                         @click="lvlPassivUpgrade(passivUpgrade)"
                         @dblclick="lvlPassivUpgradex8(passivUpgrade)"
-                        :data-title="passivDetails[passivUpgrade.name].description"
-                        :line2="
-                            passivUpgrade.lvl <
-                            passivDetails[passivUpgrade.name].maxlvl + (passivUpgrade.name != 'none' ? findHouse(player, 'passiv') * 5 : 0)
+                        :data-title="
+                            passivDetails[passivUpgrade.name].description +
+                            '\n' +
+                            (passivUpgrade.lvl <
+                            passivDetails[passivUpgrade.name].maxlvl +
+                                (passivUpgrade.name != 'none' ? (findHouse(player, 'passiv') + findlvlPassiv(player, 'tier1')) * 5 : 0)
                                 ? passivUpgrade.name != 'none'
                                     ? 'costs: 1'
                                     : ''
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                     >
                         {{ passivDetails[passivUpgrade.name].name }}
                         <br />
                         lvl: {{ passivUpgrade.lvl }}/{{
-                            passivDetails[passivUpgrade.name].maxlvl + (passivUpgrade.name != 'none' ? findHouse(player, 'passiv') * 5 : 0)
+                            passivDetails[passivUpgrade.name].maxlvl +
+                            (passivUpgrade.name != 'none' ? (findHouse(player, 'passiv') + findlvlPassiv(player, 'tier1')) * 5 : 0)
                         }}
                     </button>
                     <button class="w-100 btn btn-danger shadow-none rounded-0 rounded-bottom" @click="resetPassiv(passivUpgrade)">reset</button>
@@ -44,7 +47,7 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { passivDetails, passivAmount } from '@/global'
-import { findHouse } from '@/game/helpers'
+import { findHouse, findlvlPassiv } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
 
@@ -53,6 +56,7 @@ export default defineComponent({
         currentUser
         return {
             findHouse,
+            findlvlPassiv,
             passivDetails,
             passivAmount,
         }
@@ -92,9 +96,13 @@ export default defineComponent({
         lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
             let counter = 1
             if (passivUpgrade.name == 'none') return
-            if (this.pressedKeys['Shift']) counter = passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5
+            if (this.pressedKeys['Shift'])
+                counter = passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5
             for (let i = 0; i < counter; i++) {
-                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
+                if (
+                    passivUpgrade.lvl <
+                    passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5
+                )
                     if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                         passivUpgrade.lvl++
                         if (i == 0) this.buttonSound()
@@ -104,7 +112,10 @@ export default defineComponent({
         lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
             if (passivUpgrade.name == 'none') return
             for (let i = 0; i < 8; i++) {
-                if (passivUpgrade.lvl < passivDetails[passivUpgrade.name].maxlvl + findHouse(this.player, 'passiv') * 5)
+                if (
+                    passivUpgrade.lvl <
+                    passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5
+                )
                     if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
                         passivUpgrade.lvl++
                     }

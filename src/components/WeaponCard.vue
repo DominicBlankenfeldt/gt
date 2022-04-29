@@ -17,16 +17,20 @@
                         class="mt-2 w-100 btn btn-primary shadow-none"
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-                        :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="
-                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2
+                        :data-title="
+                            weaponDetails[weaponUpgrade.name].description +
+                            '\n' +
+                            (weaponUpgrade.lvl <
+                            weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier1')) * 2
                                 ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2 }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{
+                            weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier1')) * 2
+                        }}
                     </button>
                 </div>
             </div>
@@ -36,17 +40,21 @@
                         class="mt-2 w-100 btn btn-primary shadow-none"
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-                        :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="
-                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2
+                        :data-title="
+                            weaponDetails[weaponUpgrade.name].description +
+                            '\n' +
+                            (weaponUpgrade.lvl <
+                            weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier2')) * 2
                                 ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                         :disabled="usedWeaponPoints < 40"
                     >
                         {{ weaponDetails[weaponUpgrade.name].name }}
                         <br />
-                        lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl + findHouse(player, 'weapon') * 2 }}
+                        lvl: {{ weaponUpgrade.lvl }}/{{
+                            weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier2')) * 2
+                        }}
                     </button>
                 </div>
             </div>
@@ -56,11 +64,12 @@
                         class="mt-2 w-100 btn btn-primary shadow-none"
                         @click="lvlWeaponUpgrade(weaponUpgrade)"
                         @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-                        :data-title="weaponDetails[weaponUpgrade.name].description"
-                        :line2="
-                            weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl
+                        :data-title="
+                            weaponDetails[weaponUpgrade.name].description +
+                            '\n' +
+                            (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl
                                 ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                         :disabled="usedWeaponPoints < 70"
                     >
@@ -81,7 +90,7 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { weaponDetails, weaponAmount } from '@/global'
-import { findHouse } from '@/game/helpers'
+import { findHouse, findlvlWeaponUpgrade } from '@/game/helpers'
 import * as music from '@/music'
 import * as type from '@/types'
 
@@ -92,6 +101,7 @@ export default defineComponent({
             weaponDetails,
             weaponAmount,
             findHouse,
+            findlvlWeaponUpgrade,
         }
     },
     data() {
@@ -160,9 +170,20 @@ export default defineComponent({
         lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
             let counter = 1
             if (weaponDetails[weaponUpgrade.name].tier < 10) {
-                if (this.pressedKeys['Shift']) counter = weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2
+                if (this.pressedKeys['Shift'])
+                    counter =
+                        weaponDetails[weaponUpgrade.name].maxlvl +
+                        (findHouse(this.player, 'weapon') +
+                            findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
+                            2
                 for (let i = 0; i < counter; i++) {
-                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
+                    if (
+                        weaponUpgrade.lvl <
+                        weaponDetails[weaponUpgrade.name].maxlvl +
+                            (findHouse(this.player, 'weapon') +
+                                findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
+                                2
+                    )
                         if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
                             weaponUpgrade.lvl++
                             if (i == 0) this.buttonSound()
@@ -182,7 +203,13 @@ export default defineComponent({
         lvlWeaponUpgradex8(weaponUpgrade: type.WeaponUpgrade) {
             for (let i = 0; i < 8; i++) {
                 if (weaponDetails[weaponUpgrade.name].tier < 10) {
-                    if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl + findHouse(this.player, 'weapon') * 2)
+                    if (
+                        weaponUpgrade.lvl <
+                        weaponDetails[weaponUpgrade.name].maxlvl +
+                            (findHouse(this.player, 'weapon') +
+                                findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
+                                2
+                    )
                         if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
                             weaponUpgrade.lvl++
                         }

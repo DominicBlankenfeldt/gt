@@ -476,7 +476,7 @@ import {
     passivDetails,
     hangarSize,
 } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, buyModel, int } from '@/game/helpers'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, buyModel, int, handleGainXp } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -729,19 +729,13 @@ export default defineComponent({
                     task.need -= this.counters[task.type]
                     if (task.need <= 0) {
                         this.player.daily.tasksDone++
-                        this.handleGainXp(100)
+                        this.player = handleGainXp(this.player, 100)
                     }
                 }
             }
             this.counters = Object.values(tasks).reduce((a, v) => ({ ...a, [v.type]: 0 }), {}) as type.TaskObject
         },
-        handleGainXp(xp: number) {
-            this.player.lvlTree.xp += xp
-            if (this.player.lvlTree.xp >= this.player.lvlTree.xp * 100) {
-                this.player.lvlTree.lvl++
-                this.player.lvlTree.xp = 0
-            }
-        },
+
         unDoChanges() {
             music.ButtonSound(this.player.settings.effectVolume)
             this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
@@ -1093,6 +1087,7 @@ export default defineComponent({
                     }
                 }
             }
+            this.handleTasks()
             this.gameStarted = false
             this.tip = tips(getRandomInt(this.tipsNumber))
             this.reset()

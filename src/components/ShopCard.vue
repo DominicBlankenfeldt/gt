@@ -29,11 +29,12 @@
                         class="w-100 btn btn-primary align-self-center shadow-none rounded-0"
                         :class="shopItem == 'energyCell' ? 'rounded-top' : ''"
                         style="height: 6vh"
-                        :data-title="shopDetails[shopItem].description"
-                        :line2="
-                            player.shop[shopItem].amount < (shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max)
+                        :data-title="
+                            shopDetails[shopItem].description +
+                            '\n' +
+                            (player.shop[shopItem].amount < (shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max)
                                 ? `costs: ${shopDetails[shopItem].cost}`
-                                : 'full'
+                                : 'full')
                         "
                     >
                         {{ shopDetails[shopItem].name }}
@@ -62,11 +63,12 @@
                         @click="upgradeShopItem(shopItem)"
                         class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                         style="height: 12vh"
-                        :data-title="shopDetails[shopItem].description"
-                        :line2="
-                            player.shop[shopItem].lvl < findHouse(player, 'shop')
+                        :data-title="
+                            shopDetails[shopItem].description +
+                            '\n' +
+                            (player.shop[shopItem].lvl < findHouse(player, 'shop')
                                 ? `costs: ${player.shop[shopItem].lvl * shopDetails[shopItem].upgradeCost}`
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                     >
                         upgrade {{ shopDetails[shopItem].name }}
@@ -80,11 +82,12 @@
                     @click="upgradeShopItem('passivSlots')"
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                     style="height: 9vh"
-                    data-title="unlocks additional passive slots"
-                    :line2="
-                        player.shop['passivSlots'].lvl < findHouse(player, 'shop')
+                    :data-title="
+                        'unlocks additional passive slots' +
+                        '\n' +
+                        (player.shop['passivSlots'].lvl < findHouse(player, 'shop')
                             ? `costs: ${player.shop['passivSlots'].lvl * shopDetails['passivSlots'].upgradeCost}`
-                            : 'max lvl'
+                            : 'max lvl')
                     "
                 >
                     {{ shopDetails['passivSlots'].name }}
@@ -97,8 +100,7 @@
                     @click="buyBuildingLicenses()"
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1"
                     style="height: 9vh"
-                    data-title="buy a Building License"
-                    line2="costs: 2500 scrap"
+                    :data-title="'buy a Building License' + '\n' + 'costs: 2500 scrap'"
                 >
                     building
                     <br />
@@ -108,8 +110,7 @@
                     @click="buyModel()"
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1 mt-1"
                     style="height: 9vh"
-                    data-title="buy a random spaceship"
-                    line2="costs: 500 scrap"
+                    :data-title="'buy a random spaceship' + '\n' + 'costs: 500 scrap'"
                     data-bs-toggle="modal"
                     data-bs-target="#modelModal"
                 >
@@ -156,7 +157,7 @@ import { currentUser } from '@/router'
 import { passivDetails, passivAmount, shopDetails, modelDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
-import { findHouse, findWeaponUpgrade, findPassivUpgrade, percent, getRandomInt, sellModel, buyModel } from '@/game/helpers'
+import { findHouse, findWeaponUpgrade, findPassivUpgrade, percent, buyModel, payCurrency, handleGainXp } from '@/game/helpers'
 export default defineComponent({
     setup() {
         currentUser
@@ -198,15 +199,26 @@ export default defineComponent({
     methods: {
         buyModel() {
             if (this.player.shop.currency < 500) return
-            this.player.shop.currency -= 500
+            this.player = payCurrency(this.player, 500)
             let result = buyModel(this.player, 4, 1)
             this.player = result.player
+            for (let task of this.player.daily.tasks) {
+                if (task.type == 'getSpaceShips') {
+                    if (task.need > 0) {
+                        task.need--
+                        if (task.need <= 0) {
+                            this.player.daily.tasksDone++
+                            this.player = handleGainXp(this.player, 100)
+                        }
+                    }
+                }
+            }
             this.receiveMessage = result.receiveMessage
         },
         buyBuildingLicenses() {
             if (this.player.shop.currency < 2500) return
             this.buttonSound()
-            this.player.shop.currency -= 2500
+            this.player = payCurrency(this.player, 2500)
             this.player.spaceport.buildingLicenses++
         },
         upgradeShopItem(shopElement: type.ShopElement) {
@@ -215,6 +227,7 @@ export default defineComponent({
                 this.player.shop[shopElement].lvl >= findHouse(this.player, 'shop')
             )
                 return
+            this.player = payCurrency(this.player, this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost)
             this.player.shop.currency -= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost
             this.player.shop[shopElement].lvl++
         },
@@ -225,7 +238,7 @@ export default defineComponent({
             )
                 return
             this.buttonSound()
-            this.player.shop.currency -= shopDetails[shopElement].cost
+            this.player = payCurrency(this.player, shopDetails[shopElement].cost)
             this.player.shop[shopElement].amount++
         },
         buyShopItemx8(shopElement: type.ShopElement) {

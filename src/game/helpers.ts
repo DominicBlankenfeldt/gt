@@ -1,6 +1,15 @@
 import * as type from '@/types'
 import { subVec } from '@/game/vectors'
 import { hangarSize, maxCurrency } from '@/global'
+export function findlvlSkill(player: type.Player, skill: type.LvlSkillName) {
+    return player.lvlTree.lvlSkills.find(c => c.name == skill)!.lvl
+}
+export function findlvlWeaponUpgrade(player: type.Player, weaponUpgrade: type.LvlWeaponUpgradeName) {
+    return player.lvlTree.lvlWeaponUpgrade.find(c => c.name == weaponUpgrade)!.lvl
+}
+export function findlvlPassiv(player: type.Player, passiv: type.LvlPassivName) {
+    return player.lvlTree.lvlPassiv.find(c => c.name == passiv)!.lvl
+}
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }
@@ -125,4 +134,27 @@ export function buyModel(player: type.Player, max: number, rarity: number) {
 }
 export function int(x: number) {
     return x
+}
+export function payCurrency(player: type.Player, amount: number) {
+    player.shop.currency += amount
+    for (const task of player.daily.tasks) {
+        if (task.type == 'payCurrency') {
+            if (task.need > 0) {
+                task.need -= amount
+                if (task.need <= 0) {
+                    player.daily.tasksDone++
+                    player = handleGainXp(player, 100)
+                }
+            }
+        }
+    }
+    return player
+}
+export function handleGainXp(player: type.Player, xp: number) {
+    player.lvlTree.xp += xp
+    if (player.lvlTree.xp >= player.lvlTree.lvl * 100) {
+        player.lvlTree.lvl++
+        player.lvlTree.xp = 0
+    }
+    return player
 }

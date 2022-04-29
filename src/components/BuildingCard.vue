@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 6vh; color: white" v-if="dataLoad">
-        <div data-title="you can buy a building license" line2="in the shop" class="w-25 d-inline">
+        <div :data-title="`you can buy a building\nlicense in the shop`" class="w-25 d-inline">
             {{ `Building Licenses: ${player.spaceport.buildingLicenses - usedLicenses} ` }}
         </div>
         <div class="row g-0 mt-2">
@@ -11,13 +11,14 @@
                         class="mt-2 w-100 btn align-self-center shadow-none"
                         :class="[house.needScore == 0 ? 'btn-primary' : 'btn-secondary']"
                         @click="upgradeHouse(house)"
-                        :data-title="house.needScore == 0 ? houseDetails[house.name].description : 'in construction'"
-                        :line2="
-                            house.lvl < houseDetails[house.name].maxlvl
+                        :data-title="
+                            (house.needScore == 0 ? houseDetails[house.name].description : 'in construction') +
+                            '\n' +
+                            (house.lvl < houseDetails[house.name].maxlvl
                                 ? house.needScore == 0
                                     ? 'costs: 1'
                                     : `you must earn ${house.needScore} score`
-                                : 'max lvl'
+                                : 'max lvl')
                         "
                     >
                         {{ houseDetails[house.name].name }}

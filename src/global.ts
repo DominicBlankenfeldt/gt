@@ -60,12 +60,12 @@ export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).
 export const passivDetails = {
     increaseScore: { name: 'all golden', maxlvl: 50, description: 'increases overall score gain' },
     increaseGun: { name: 'modern weapons', maxlvl: 50, description: 'increases all weapon stats' },
-    nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and they are slower' },
+    nerfEnemies: { name: 'cute enemies', maxlvl: 50, description: 'less enemies and\nthey are slower' },
     moreItems: { name: 'oodles items', maxlvl: 50, description: 'more items spawn' },
-    nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and slow it down' },
+    nerfBoss: { name: 'cute boss', maxlvl: 50, description: 'reduce boss hp and\nslow it down' },
     longerEffects: { name: 'infinite effects', maxlvl: 50, description: 'all effects last longer' },
     moreScrap: { name: 'scrap collector', maxlvl: 50, description: 'you get more scrap' },
-    shipStats: { name: 'shipStats', maxlvl: 50, description: 'increases the stats of your spaceship' },
+    shipStats: { name: 'shipStats', maxlvl: 50, description: 'increases the stats\nof your spaceship' },
     none: { name: 'none', maxlvl: 0, description: '<3' },
 }
 export const passivAmount = Object.values(passivDetails).length
@@ -114,12 +114,24 @@ export const modelDetails = {
     legendary: { size: 22, speed: 6, hp: 3, scoreMultiplier: 3.5, store: 150, color: '#B8860B' }, //DarkGoldenRod
 }
 export const peculiarityDetails = {
-    darkHole: { name: 'harmlessly darkhole', description: 'a black hole only does damage' },
-    growPotion: { name: 'heal potion', description: 'a grow potion restores life' },
-    slowSpeed: { name: 'cruise control', description: 'share four rocket propulsion and sapr flame automatically in total chaos mode' },
-    immunity: { name: 'immunity', description: 'you are immune for 1 second after a hit' },
-    generator: { name: 'generator', description: 'buys energy cells during a round' },
-    autoShot: { name: 'autoShot', description: 'you automatically shoot free plasma' },
+    darkHole: { name: 'harmlessly darkhole', description: 'a black hole\nonly does damage' },
+    growPotion: { name: 'heal potion', description: 'a grow potion\nrestores life' },
+    slowSpeed: { name: 'cruise control', description: 'share four rocket propulsion\nand sapr flame automatically\nin total chaos mode' },
+    immunity: { name: 'immunity', description: 'you are immune for 1 second\nafter a hit' },
+    generator: { name: 'generator', description: 'buys energy cells\nduring a round' },
+    autoShot: { name: 'autoShot', description: 'you automatically\nshoot free plasma' },
+}
+export const lvlSkillsDetails = {
+    tier1: { name: 'tier1', description: 'increase your tier1 skills max lvl', maxlvl: 5 },
+    tier2: { name: 'tier2', description: 'increase your tier2 skills max lvl', maxlvl: 5 },
+    tier3: { name: 'tier3', description: 'increase your tier3 skills max lvl', maxlvl: 5 },
+}
+export const lvlWeaponUpgradeDetails = {
+    tier1: { name: 'tier1', description: 'increase your tier1 weaponupgrades max lvl', maxlvl: 5 },
+    tier2: { name: 'tier2', description: 'increase your tier2 weaponupgrades max lvl', maxlvl: 5 },
+}
+export const lvlPassivDetails = {
+    tier1: { name: 'tier1', description: 'increase your passivs max lvl', maxlvl: 5 },
 }
 export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
@@ -226,7 +238,34 @@ export function checkPlayer(player: type.Player) {
     player.peculiarities = player.peculiarities || { available: [], selected: '' as type.PeculiarityName }
     player.daily = player.daily || { day: 0, tasks: [] as type.Task[], tasksDone: 0 }
     player.lvlTree = player.lvlTree || { lvl: 1, xp: 0 }
+    player.lvlTree.lvlSkills = player.lvlTree.lvlSkills || []
+    for (const lvlSkill of Object.keys(lvlSkillsDetails)) {
+        if (checkLvlSkill(player, lvlSkill)) {
+            player.lvlTree.lvlSkills.push({ name: lvlSkill as type.LvlSkillName, lvl: 0 })
+        }
+    }
+    player.lvlTree.lvlWeaponUpgrade = player.lvlTree.lvlWeaponUpgrade || []
+    for (const lvlWeaponUpgrade of Object.keys(lvlWeaponUpgradeDetails)) {
+        if (checkLvlWeaponUpgrade(player, lvlWeaponUpgrade)) {
+            player.lvlTree.lvlWeaponUpgrade.push({ name: lvlWeaponUpgrade as type.LvlWeaponUpgradeName, lvl: 0 })
+        }
+    }
+    player.lvlTree.lvlPassiv = player.lvlTree.lvlPassiv || []
+    for (const lvlPassiv of Object.keys(lvlPassivDetails)) {
+        if (checkLvlPassiv(player, lvlPassiv)) {
+            player.lvlTree.lvlPassiv.push({ name: lvlPassiv as type.LvlPassivName, lvl: 0 })
+        }
+    }
     return player
+}
+function checkLvlSkill(player: type.Player, lvlSkill: string) {
+    return player.lvlTree.lvlSkills[player.lvlTree.lvlSkills.findIndex(s => s.name == lvlSkill)] === undefined
+}
+function checkLvlWeaponUpgrade(player: type.Player, lvlWeaponUpgrade: string) {
+    return player.lvlTree.lvlWeaponUpgrade[player.lvlTree.lvlWeaponUpgrade.findIndex(s => s.name == lvlWeaponUpgrade)] === undefined
+}
+function checkLvlPassiv(player: type.Player, lvlPassiv: string) {
+    return player.lvlTree.lvlPassiv[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlPassiv)] === undefined
 }
 function checkHouse(player: type.Player, house: string) {
     return player.spaceport.houses[player.spaceport.houses.findIndex(s => s.name == house)] === undefined
