@@ -213,7 +213,7 @@ export default defineComponent({
             pressedKeys: {} as Record<string, boolean>,
         }
     },
-    async unmounted() {
+    async beforeUnmount() {
         try {
             await API.updatePlayer(this.player)
         } catch {
