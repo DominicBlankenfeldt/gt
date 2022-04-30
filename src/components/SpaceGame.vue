@@ -682,7 +682,7 @@ export default defineComponent({
             }
         }
         if (this.player.spaceFleet) await this.loadFleet()
-        this.player = checkPlayer(this.player) as type.Player
+        this.player = checkPlayer(this.player, this.user!) as type.Player
         this.daily()
         this.settingsInput = JSON.parse(JSON.stringify(this.player.settings))
         music.changeVolume(this.player.settings.musicVolume)
@@ -709,7 +709,7 @@ export default defineComponent({
     },
     methods: {
         taskNeed(task: type.Task) {
-            return task.need > 0 ? task.need : 'finished'
+            return task.need > 0 ? Math.round(task.need) : 'finished'
         },
         daily() {
             let today = parseInt(new Date().toISOString().replace('-', '').split('T')[0].replace('-', ''))
@@ -749,7 +749,7 @@ export default defineComponent({
             this.buttonSound()
             this.player.settings = JSON.parse(JSON.stringify(this.settingsInput))
             try {
-                await API.addPlayer(this.player)
+                await API.updatePlayer(this.player)
             } catch {
                 API.logout()
             }
@@ -1099,7 +1099,7 @@ export default defineComponent({
             this.setSkillPoints()
             this.player.shop.currency = Math.round(this.player.shop.currency)
             try {
-                await API.addPlayer(this.player)
+                await API.updatePlayer(this.player)
             } catch {
                 API.logout()
             }

@@ -30,6 +30,7 @@ export type Dir = 'left' | 'right'
 export type EnemyType = 'curve' | 'aimbot' | 'chasebot' | 'getbigger' | 'circle' | 'random' | 'spiral'
 
 export interface Player {
+    id?: string
     skillTree: SkillTree
     weaponTree: WeaponTree
     passivTree: PassivTree

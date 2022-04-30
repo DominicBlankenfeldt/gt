@@ -111,7 +111,7 @@ export default defineComponent({
                 API.logout()
             }
         }
-        this.player = checkPlayer(this.player) as type.Player
+        this.player = checkPlayer(this.player, this.user!) as type.Player
         this.buttonSound()
     },
     methods: {

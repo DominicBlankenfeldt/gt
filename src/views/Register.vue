@@ -109,7 +109,6 @@ export default defineComponent({
         }
     },
     async mounted() {
-        this.player = checkPlayer(this.player)
         music.ButtonSound(50)
     },
     methods: {

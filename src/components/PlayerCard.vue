@@ -265,7 +265,7 @@ export default defineComponent({
             this.editProfile = !this.editProfile
             if (save) {
                 try {
-                    await API.addPlayer(this.player)
+                    await API.updatePlayer(this.player)
                 } catch {
                     API.logout()
                 }

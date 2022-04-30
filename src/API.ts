@@ -57,6 +57,8 @@ export async function logout(): Promise<void> {
 export async function register(email: string, password: string, player: type.Player): Promise<void> {
     const auth = getAuth()
     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    player.id = auth.currentUser?.uid
+    console.log(player)
     await setDoc(doc(getFirestore(), 'users', userCredential.user.uid), {
         email: email,
         role: 'user',
@@ -73,8 +75,7 @@ export async function getBestPlayers(sortBy: string) {
     })
     return docs.map(bestPlayers => ({ ...bestPlayers.data(), id: bestPlayers.id }))
 }
-export async function addPlayer(player: type.Player): Promise<void> {
-    //plz rename to "updatePlayer"
+export async function updatePlayer(player: type.Player): Promise<void> {
     const id = getAuth().currentUser?.uid
     if (id) {
         await updateDoc(doc(getFirestore(), 'users', id), {

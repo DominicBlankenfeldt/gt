@@ -56,7 +56,7 @@ export default defineComponent({
                 API.logout()
             }
         }
-        this.player = checkPlayer(this.player) as type.Player
+        this.player = checkPlayer(this.player, this.user!) as type.Player
         this.buttonSound()
         this.dataLoad = true
     },
@@ -74,7 +74,7 @@ export default defineComponent({
             this.buttonSound()
             if (save) {
                 try {
-                    await API.addPlayer(this.player)
+                    await API.updatePlayer(this.player)
                 } catch {
                     API.logout()
                 }

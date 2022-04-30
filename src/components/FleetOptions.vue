@@ -323,7 +323,7 @@ export default defineComponent({
                 result = await API.getPlayer()
                 if (result) {
                     this.player = result.player
-                    this.player = checkPlayer(this.player) as type.Player
+                    this.player = checkPlayer(this.player, this.user!) as type.Player
                     music.changeVolume(this.player.settings.musicVolume)
                     this.buttonSound()
                 }
@@ -439,7 +439,7 @@ export default defineComponent({
                             { name: 'bossDifficulty', lvl: 0 },
                         ],
                     } as type.SpaceFleet
-                    await API.addPlayer(this.player)
+                    await API.updatePlayer(this.player)
                     this.$router.go(0)
                     return
                 }
@@ -469,7 +469,7 @@ export default defineComponent({
             })
             if (result) this.player.spaceFleet = result
             try {
-                await API.addPlayer(this.player)
+                await API.updatePlayer(this.player)
                 this.loadFleet()
             } catch {
                 API.logout()
@@ -493,7 +493,7 @@ export default defineComponent({
                 API.addFleetMember(fleet.id, this.user.uid)
                 this.searchedFleets = [] as type.SpaceFleet[]
                 this.player.spaceFleet = fleet.id
-                await API.addPlayer(this.player)
+                await API.updatePlayer(this.player)
                 this.loadFleet()
             } catch {
                 this.error = 'fleet is full'
@@ -507,7 +507,7 @@ export default defineComponent({
             try {
                 API.removeFleetMember(this.fleet.id, this.user.uid)
                 this.player.spaceFleet = ''
-                await API.addPlayer(this.player)
+                await API.updatePlayer(this.player)
                 this.loadFleet()
             } catch {
                 API.logout()

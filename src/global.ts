@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import * as type from '@/types'
+import { User } from 'firebase/auth'
 export const production = ref(process.env.NODE_ENV === 'production' ? true : false)
 export const fleetSkillDetails = {
     bossEnemies: { name: 'common superiority', maxlvl: 5, tier: 1, description: 'reduce enemies in a boss fight' },
@@ -136,8 +137,9 @@ export const lvlPassivDetails = {
 export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
 
-export function checkPlayer(player: type.Player) {
+export function checkPlayer(player: type.Player, user?: User) {
     player = player || {}
+    if (user) player.id = player.id || user.uid
     player.settings = player.settings || {
         abilitys: {
             1: { key: '1', name: '' },

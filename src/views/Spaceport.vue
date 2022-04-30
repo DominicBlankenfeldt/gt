@@ -214,7 +214,7 @@ export default defineComponent({
     },
     async unmounted() {
         try {
-            await API.addPlayer(this.player)
+            await API.updatePlayer(this.player)
         } catch {
             API.logout()
         }
@@ -230,7 +230,7 @@ export default defineComponent({
                 API.logout()
             }
         }
-        this.player = checkPlayer(this.player) as type.Player
+        this.player = checkPlayer(this.player, this.user!) as type.Player
         music.changeVolume(this.player.settings.musicVolume)
         this.buttonSound()
         this.dataLoad = true
