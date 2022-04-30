@@ -155,13 +155,13 @@
                     <BuildingCard :playerProp="player" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item active">
-                    <SkillCard :playerProp="player" style="min-height: 70vh" />
+                    <SkillCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
-                    <WeaponCard :playerProp="player" style="min-height: 70vh" />
+                    <WeaponCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
-                    <PassivCard :playerProp="player" style="min-height: 70vh" />
+                    <PassivCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
                 </div>
                 <div class="carousel-item">
                     <LvlCard :playerProp="player" style="min-height: 70vh" />
@@ -210,6 +210,7 @@ export default defineComponent({
             user: currentUser,
             dataLoad: false,
             choosenTree: 'skillTree',
+            pressedKeys: {} as Record<string, boolean>,
         }
     },
     async unmounted() {
@@ -220,6 +221,12 @@ export default defineComponent({
         }
     },
     async mounted() {
+        window.onkeyup = (e: any) => {
+            this.pressedKeys[e.key] = false
+        }
+        window.onkeydown = (e: any) => {
+            this.pressedKeys[e.key] = true
+        }
         if (this.user) {
             try {
                 let result = await API.getPlayer()

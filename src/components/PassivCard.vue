@@ -66,12 +66,15 @@ export default defineComponent({
             player: {} as type.Player,
             user: currentUser,
             dataLoad: false,
-            pressedKeys: {} as Record<string, boolean>,
         }
     },
     props: {
         playerProp: {
             type: Object as PropType<type.Player>,
+            required: true,
+        },
+        pressedKeys: {
+            type: Object as PropType<Record<string, boolean>>,
             required: true,
         },
     },
@@ -85,12 +88,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        window.onkeyup = (e: any) => {
-            this.pressedKeys[e.key] = false
-        }
-        window.onkeydown = (e: any) => {
-            this.pressedKeys[e.key] = true
-        }
     },
     methods: {
         lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {

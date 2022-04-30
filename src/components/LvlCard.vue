@@ -115,12 +115,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        window.onkeyup = (e: any) => {
-            this.pressedKeys[e.key] = false
-        }
-        window.onkeydown = (e: any) => {
-            this.pressedKeys[e.key] = true
-        }
     },
     methods: {
         lvlUpgrade(upgrade: type.LvlSkill) {

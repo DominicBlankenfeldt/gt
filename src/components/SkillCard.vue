@@ -139,6 +139,10 @@ export default defineComponent({
             type: Object as PropType<type.Player>,
             required: true,
         },
+        pressedKeys: {
+            type: Object as PropType<Record<string, boolean>>,
+            required: true,
+        },
     },
     data() {
         return {
@@ -146,7 +150,6 @@ export default defineComponent({
             timer: 0,
             user: currentUser,
             dataLoad: false,
-            pressedKeys: {} as Record<string, boolean>,
         }
     },
     computed: {
@@ -209,12 +212,6 @@ export default defineComponent({
     mounted() {
         this.player = this.playerProp
         this.dataLoad = true
-        window.onkeyup = (e: any) => {
-            this.pressedKeys[e.key] = false
-        }
-        window.onkeydown = (e: any) => {
-            this.pressedKeys[e.key] = true
-        }
     },
     methods: {
         lvlSkill(skill: type.Skill) {
