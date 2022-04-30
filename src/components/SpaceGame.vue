@@ -37,10 +37,10 @@
             </div>
             <div>
                 <div class="d-flex justify-content-between">
-                    <div class="col-1" v-if="!gameStarted && currentUser">
+                    <div class="col-1" v-if="!gameStarted && currentUser" style="margin-top: 12vh; color: white">
                         <div>lvl:{{ player.lvlTree.lvl }}</div>
                         <div class="mt-4">xp:{{ player.lvlTree.xp }}/{{ player.lvlTree.lvl * 100 }}</div>
-                        <div class="mt-4">tasks({{ player.daily.tasksDone }}/3)</div>
+                        <div class="mt-5">tasks({{ player.daily.tasksDone }}/3)</div>
                         <div v-for="task in player.daily.tasks" :key="task.type" class="mt-4" :style="{ color: task.need > 0 ? 'red' : 'green' }">
                             <div>
                                 {{ task.type }}
@@ -49,8 +49,13 @@
                                 {{ taskNeed(task) }}
                             </div>
                         </div>
+                        <div style="color: white">
+                            <div class="mt-5">general info</div>
+                            <div class="mt-4">scrap:{{ player.shop.currency }}</div>
+                            <div class="mt-4">hanger:{{ player.ship.models.length }}/{{ 5 }}</div>
+                        </div>
                     </div>
-                    <div class="col-1" v-else>
+                    <div class="col-1" style="margin-top: 12vh; color: white" v-else>
                         <div>durations</div>
                         <div class="mt-4" :style="{ color: effects.magnet.active ? 'green' : 'red' }">
                             Magnet:
@@ -286,7 +291,7 @@
                             </button>
                         </div>
                     </div>
-                    <div class="col-1">
+                    <div class="col-1" style="margin-top: 12vh; color: white">
                         <div>cooldowns ({{ player.shop.energyCell.amount }})</div>
                         <div
                             class="mt-4"
@@ -785,6 +790,11 @@ export default defineComponent({
         },
         //game
         async gameloop() {
+            console.log(
+                1.1 ** this.player.daily.tasksDone,
+                1.01 ** (this.player.lvlTree.lvl - 1),
+                int(1.01 ** (this.player.lvlTree.lvl - 1) * 1.1 ** this.player.daily.tasksDone)
+            )
             this.player.playedTime++
             this.multiplicator = 1
             this.handlePlayerAbilities()
