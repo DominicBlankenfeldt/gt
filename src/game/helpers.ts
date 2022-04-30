@@ -136,7 +136,7 @@ export function int(x: number) {
     return x
 }
 export function payCurrency(player: type.Player, amount: number) {
-    player.shop.currency += amount
+    player.shop.currency -= amount
     for (const task of player.daily.tasks) {
         if (task.type == 'payCurrency') {
             if (task.need > 0) {
