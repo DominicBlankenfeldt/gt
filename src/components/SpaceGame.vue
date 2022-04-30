@@ -715,6 +715,7 @@ export default defineComponent({
             let today = parseInt(new Date().toISOString().replace('-', '').split('T')[0].replace('-', ''))
             if (this.player.daily.day < today) {
                 this.player.daily.day = today
+                this.player.daily.tasksDone = 0
                 let avaibleTasks = Object.values(tasks) as type.Task[]
                 this.player.daily.tasks = []
                 for (let i = 0; i < 3; i++) {
