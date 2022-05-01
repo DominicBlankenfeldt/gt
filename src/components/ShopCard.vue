@@ -228,7 +228,6 @@ export default defineComponent({
             )
                 return
             this.player = payCurrency(this.player, this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost)
-            this.player.shop.currency -= this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost
             this.player.shop[shopElement].lvl++
         },
         buyShopItem(shopElement: type.ShopElement) {
@@ -248,7 +247,7 @@ export default defineComponent({
                     this.player.shop[shopElement].amount >= shopDetails[shopElement].max
                 )
                     return
-                this.player.shop.currency -= shopDetails[shopElement].cost
+                this.player = payCurrency(this.player, shopDetails[shopElement].cost)
                 this.player.shop[shopElement].amount++
             }
         },
