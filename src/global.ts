@@ -134,6 +134,10 @@ export const lvlWeaponUpgradeDetails = {
 export const lvlPassivDetails = {
     tier1: { name: 'tier1', description: 'increase your passivs max lvl', maxlvl: 5 },
 }
+export const lvlShopDetails = {
+    tier1: { name: 'tier1', description: 'you get more scrap', maxlvl: 5 },
+    tier2: { name: 'tier2', description: 'Items in the store become cheaper', maxlvl: 5 },
+}
 export const peculiarityAmout = Object.values(peculiarityDetails).length
 //player
 
@@ -258,6 +262,12 @@ export function checkPlayer(player: type.Player, user?: User) {
             player.lvlTree.lvlPassiv.push({ name: lvlPassiv as type.LvlPassivName, lvl: 0 })
         }
     }
+    player.lvlTree.lvlShop = player.lvlTree.lvlShop || []
+    for (const lvlShop of Object.keys(lvlShopDetails)) {
+        if (checkLvlShop(player, lvlShop)) {
+            player.lvlTree.lvlShop.push({ name: lvlShop as type.LvlShopName, lvl: 0 })
+        }
+    }
     return player
 }
 function checkLvlSkill(player: type.Player, lvlSkill: string) {
@@ -268,6 +278,9 @@ function checkLvlWeaponUpgrade(player: type.Player, lvlWeaponUpgrade: string) {
 }
 function checkLvlPassiv(player: type.Player, lvlPassiv: string) {
     return player.lvlTree.lvlPassiv[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlPassiv)] === undefined
+}
+function checkLvlShop(player: type.Player, lvlShop: string) {
+    return player.lvlTree.lvlShop[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlShop)] === undefined
 }
 function checkHouse(player: type.Player, house: string) {
     return player.spaceport.houses[player.spaceport.houses.findIndex(s => s.name == house)] === undefined

@@ -9,7 +9,7 @@
         </div>
         <div class="row g-0 mt-2">
             <div class="col-2"></div>
-            <div class="d-flex flex-column col-3 mx-1">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="skill of player.lvlTree.lvlSkills" :key="skill.name">
                     <button
                         @click="lvlUpgrade(skill)"
@@ -30,7 +30,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-3 mx-1">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="lvlWeaponUpgrade of player.lvlTree.lvlWeaponUpgrade" :key="lvlWeaponUpgrade.name">
                     <button
                         @click="lvlUpgrade(lvlWeaponUpgrade)"
@@ -48,7 +48,7 @@
                     </button>
                 </div>
             </div>
-            <div class="d-flex flex-column col-3 mx-1">
+            <div class="d-flex flex-column col-2 mx-1">
                 <div v-for="passiv of player.lvlTree.lvlPassiv" :key="passiv.name">
                     <button
                         @click="lvlUpgrade(passiv)"
@@ -65,6 +65,21 @@
                     </button>
                 </div>
             </div>
+            <div class="d-flex flex-column col-2 mx-1">
+                <div v-for="shop of player.lvlTree.lvlShop" :key="shop.name">
+                    <button
+                        @click="lvlUpgrade(shop)"
+                        class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+                        :data-title="
+                            lvlShopDetails[shop.name].description + '\n' + (shop.lvl < lvlShopDetails[shop.name].maxlvl ? `costs: 1` : 'max lvl')
+                        "
+                    >
+                        {{ lvlShopDetails[shop.name].name }}
+                        <br />
+                        lvl: {{ shop.lvl }}/{{ lvlShopDetails[shop.name].maxlvl }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -72,7 +87,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
-import { lvlSkillsDetails, lvlWeaponUpgradeDetails, lvlPassivDetails } from '@/global'
+import { lvlSkillsDetails, lvlWeaponUpgradeDetails, lvlPassivDetails, lvlShopDetails } from '@/global'
 import { findlvlSkill, findlvlWeaponUpgrade, findlvlPassiv } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
@@ -84,6 +99,7 @@ export default defineComponent({
             lvlSkillsDetails,
             lvlWeaponUpgradeDetails,
             lvlPassivDetails,
+            lvlShopDetails,
             findlvlSkill,
             findlvlWeaponUpgrade,
             findlvlPassiv,

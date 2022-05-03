@@ -10,6 +10,9 @@ export function findlvlWeaponUpgrade(player: type.Player, weaponUpgrade: type.Lv
 export function findlvlPassiv(player: type.Player, passiv: type.LvlPassivName) {
     return player.lvlTree.lvlPassiv.find(c => c.name == passiv)!.lvl
 }
+export function findlvlShop(player: type.Player, shop: type.LvlShopName) {
+    return player.lvlTree.lvlShop.find(c => c.name == shop)!.lvl
+}
 export function findSkill(player: type.Player, skill: type.SkillName) {
     return player.skillTree.skills.find(c => c.name == skill)!.lvl
 }

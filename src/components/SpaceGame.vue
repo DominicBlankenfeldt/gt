@@ -481,7 +481,7 @@ import {
     passivDetails,
     hangarSize,
 } from '@/global'
-import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, buyModel, int, handleGainXp } from '@/game/helpers'
+import { borderCheck, findSkill, getRandomInt, percent, roundHalf, grow, buyModel, int, handleGainXp, findlvlShop } from '@/game/helpers'
 import { weapons } from '@/game/weapons'
 import { plasmaMovement, playerMovement, enemyMovement } from '@/game/movement'
 import { createEnemy, createItems } from '@/game/createStuff'
@@ -1078,7 +1078,8 @@ export default defineComponent({
                 }
             }
             this.counters.getScore = this.score
-            this.player.shop.currency += (1 + this.passivObject['moreScrap'] / 50) * this.counters.deadEnemies
+            this.player.shop.currency +=
+                1 * percent(this.passivObject['moreScrap'], 'in') * percent(findlvlShop(this.player, 'tier1') * 5, 'in') * this.counters.deadEnemies
             if (this.player.shop.energyCell.reBuy) {
                 while (
                     this.player.shop.currency >= shopDetails['energyCell'].cost &&
