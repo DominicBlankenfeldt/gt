@@ -107,12 +107,22 @@
                     class="w-100 btn btn-primary align-self-center shadow-none ms-1 mt-1"
                     style="height: 9vh"
                     :data-title="'buy a random spaceship' + '\n' + `costs: ${modelCost} scrap`"
-                    data-bs-toggle="modal"
+                    :data-bs-toggle="player.shop.currency >= modelCost ? 'modal' : null"
                     data-bs-target="#modelModal"
                 >
                     random
                     <br />
                     spaceship
+                </button>
+                <button
+                    @click="buyTasks()"
+                    class="w-100 btn btn-primary align-self-center shadow-none ms-1 mt-1"
+                    style="height: 9vh"
+                    :data-title="'buy a new tasks' + '\n' + `costs: ${tasksCost} scrap`"
+                >
+                    new
+                    <br />
+                    tasks
                 </button>
             </div>
         </div>
@@ -153,7 +163,18 @@ import { currentUser } from '@/router'
 import { passivDetails, passivAmount, shopDetails, modelDetails } from '@/global'
 import * as type from '@/types'
 import * as music from '@/music'
-import { findHouse, findWeaponUpgrade, findPassivUpgrade, percent, buyModel, payCurrency, handleGainXp, findlvlShop } from '@/game/helpers'
+import {
+    findHouse,
+    findWeaponUpgrade,
+    findPassivUpgrade,
+    percent,
+    buyModel,
+    payCurrency,
+    handleGainXp,
+    findlvlShop,
+    getRandomInt,
+} from '@/game/helpers'
+import { tasks } from '@/game/dailyTasks'
 export default defineComponent({
     setup() {
         currentUser
@@ -177,6 +198,7 @@ export default defineComponent({
             dataLoad: false,
             modelCost: 500,
             licenseCost: 2500,
+            tasksCost: 500,
         }
     },
     props: {
@@ -194,11 +216,23 @@ export default defineComponent({
         )
         this.modelCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de')
         this.licenseCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de')
+        this.tasksCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de')
         this.dataLoad = true
     },
     methods: {
         upgradeCosts(shopElement: type.ShopElement) {
             return this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost * percent(findlvlShop(this.player, 'tier2') * 10, 'de')
+        },
+        buyTasks() {
+            if (this.player.shop.currency < this.tasksCost) return
+            this.player = payCurrency(this.player, this.tasksCost)
+            this.player.daily.tasksDone = 0
+            let avaibleTasks = Object.values(tasks) as type.Task[]
+            this.player.daily.tasks = []
+            for (let i = 0; i < 3; i++) {
+                this.player.daily.tasks.push(avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0])
+                this.player.daily.tasks[i].need *= this.player.lvlTree.lvl
+            }
         },
         buyModel() {
             if (this.player.shop.currency < this.modelCost) return

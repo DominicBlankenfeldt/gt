@@ -31,8 +31,9 @@ export default defineComponent({
 }
 .site {
     background-image: url(/gt/img/space.jpg);
-    height: 100%;
+    background-size: 100% 100%;
+    height: 100vh;
     min-height: 100vh;
-    width: 100%;
+    width: 100vw;
 }
 </style>

@@ -236,7 +236,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/ships.xcf"
   },
   {
-    "revision": "6469866f22acc122b7eb5d96b06e07e5",
+    "revision": "430cc6c74bd228eae6691b0bf4b2c696",
     "url": "/gt/img/space.jpg"
   },
   {
@@ -248,7 +248,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/img/uiol/spaceshipinside.png"
   },
   {
-    "revision": "a8f8cbb69312b4b66e15419b1de200a9",
+    "revision": "cf5f9b2bde446edad82dfbec374111f3",
     "url": "/gt/index.html"
   },
   {
@@ -256,8 +256,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gt/js/about.e948fd23.js"
   },
   {
-    "revision": "7e06859cde0911b6f9b9",
-    "url": "/gt/js/app.7c01f671.js"
+    "revision": "f45a2fac6e026dc233cb",
+    "url": "/gt/js/app.5bd6a451.js"
   },
   {
     "revision": "8f41ea054e93b0e6b0e3",

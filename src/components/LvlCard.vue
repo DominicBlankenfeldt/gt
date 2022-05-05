@@ -69,6 +69,7 @@
                 <div v-for="shop of player.lvlTree.lvlShop" :key="shop.name">
                     <button
                         @click="lvlUpgrade(shop)"
+                        :disabled="shop.name == 'tier2' && findlvlShop(player, 'tier1') < 5"
                         class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
                         :data-title="
                             lvlShopDetails[shop.name].description + '\n' + (shop.lvl < lvlShopDetails[shop.name].maxlvl ? `costs: 1` : 'max lvl')
@@ -88,7 +89,7 @@
 import { defineComponent, PropType } from 'vue'
 import { currentUser } from '@/router'
 import { lvlSkillsDetails, lvlWeaponUpgradeDetails, lvlPassivDetails, lvlShopDetails } from '@/global'
-import { findlvlSkill, findlvlWeaponUpgrade, findlvlPassiv } from '@/game/helpers'
+import { findlvlSkill, findlvlWeaponUpgrade, findlvlPassiv, findlvlShop } from '@/game/helpers'
 import * as type from '@/types'
 import * as music from '@/music'
 
@@ -103,6 +104,7 @@ export default defineComponent({
             findlvlSkill,
             findlvlWeaponUpgrade,
             findlvlPassiv,
+            findlvlShop,
         }
     },
     data() {

@@ -280,7 +280,7 @@ function checkLvlPassiv(player: type.Player, lvlPassiv: string) {
     return player.lvlTree.lvlPassiv[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlPassiv)] === undefined
 }
 function checkLvlShop(player: type.Player, lvlShop: string) {
-    return player.lvlTree.lvlShop[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlShop)] === undefined
+    return player.lvlTree.lvlShop[player.lvlTree.lvlShop.findIndex(s => s.name == lvlShop)] === undefined
 }
 function checkHouse(player: type.Player, house: string) {
     return player.spaceport.houses[player.spaceport.houses.findIndex(s => s.name == house)] === undefined
