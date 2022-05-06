@@ -127,6 +127,7 @@ export default defineComponent({
             for (let lvlSkill of this.player.lvlTree.lvlSkills) allPassivlvl += lvlSkill.lvl
             for (let lvlWeaponUpgrade of this.player.lvlTree.lvlWeaponUpgrade) allPassivlvl += lvlWeaponUpgrade.lvl
             for (let lvlPassiv of this.player.lvlTree.lvlPassiv) allPassivlvl += lvlPassiv.lvl
+            for (let lvlShop of this.player.lvlTree.lvlShop) allPassivlvl += lvlShop.lvl
             return allPassivlvl
         },
     },
