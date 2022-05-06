@@ -4,7 +4,6 @@
             v-if="type != 'textarea'"
             v-bind="$attrs"
             class="form-control shadow-none"
-            :id="id"
             :type="type"
             :value="modelValue"
             @input="updateValue"
@@ -21,7 +20,7 @@
             :class="{ dirty: modelValue }"
             rows="3"
         ></textarea>
-        <label class="placeholder-text" :for="id">
+        <label class="placeholder-text">
             <div class="text">{{ placeholder }}</div>
         </label>
         <button v-if="btnText" type="button" @click="affirm()" :class="btnClass">{{ btnText }}</button>
@@ -35,9 +34,7 @@ export default defineComponent({
         return
     },
     data() {
-        return {
-            id: '',
-        }
+        return {}
     },
     props: {
         placeholder: {
@@ -61,9 +58,6 @@ export default defineComponent({
             type: Function,
         },
     },
-    mounted() {
-        this.id = JSON.stringify(Math.random())
-    },
     methods: {
         updateValue(event: Event) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -84,6 +78,7 @@ export default defineComponent({
 //material inputs
 .input-contain {
     position: relative;
+
     input {
         text-align: start;
         padding-left: 1.5rem;
@@ -107,6 +102,31 @@ export default defineComponent({
                 border-color: var(--navbarColor1);
                 color: var(--navbarColor1);
             }
+        }
+    }
+    input[type='date'] {
+        &:invalid::-webkit-datetime-edit {
+            display: none;
+        }
+        &::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+        }
+    }
+
+    input[type='file'] {
+        line-height: 1rem;
+        &::-webkit-file-upload-button {
+            margin-top: 0.05rem;
+            padding: 0.3rem;
         }
     }
     button {
@@ -142,7 +162,8 @@ export default defineComponent({
         }
     }
     input:focus + .placeholder-text .text,
-    input.dirty + .placeholder-text .text {
+    input.dirty + .placeholder-text .text,
+    input[type='file'] + .placeholder-text .text {
         background-color: white;
         border-radius: 25%;
         font-size: 1.1rem;
