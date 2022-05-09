@@ -1,28 +1,35 @@
 <template>
-    <div class="input-contain mt-3">
+    <div class="input-contain mt-3" style="text-shadow: none">
         <input
             v-if="type != 'textarea'"
             v-bind="$attrs"
             class="form-control shadow-none"
+            :id="id"
             :type="type"
             :value="modelValue"
             @input="updateValue"
             :class="{ dirty: modelValue }"
+            name=""
+            :list="id2"
             autocomplete="off"
-            style="text-shadow: none"
         />
+
         <textarea
-            v-else
+            v-if="type == 'textarea'"
             v-bind="$attrs"
+            :id="id"
             class="form-control shadow-none"
             @input="updateValue"
             :value="modelValue"
             :class="{ dirty: modelValue }"
             rows="3"
         ></textarea>
-        <label class="placeholder-text">
+        <label class="placeholder-text" :for="id">
             <div class="text">{{ placeholder }}</div>
         </label>
+        <datalist :id="id2" v-if="options">
+            <option :value="optionKey ? option[optionKey] : option" v-for="option of options" :key="JSON.stringify(option)"></option>
+        </datalist>
         <button v-if="btnText" type="button" @click="affirm()" :class="btnClass">{{ btnText }}</button>
     </div>
 </template>
@@ -34,7 +41,22 @@ export default defineComponent({
         return
     },
     data() {
-        return {}
+        return {
+            id: '',
+            id2: '',
+        }
+    },
+    mounted() {
+        this.id = JSON.stringify(Math.random())
+        this.id2 = JSON.stringify(Math.random())
+        if (this.type == 'date') {
+            if (this.modelValue.length == 10) {
+                return
+            }
+            const date = new Date()
+            const result = date.toISOString().split('T')[0]
+            this.updateValue(result)
+        }
     },
     props: {
         placeholder: {
@@ -57,12 +79,24 @@ export default defineComponent({
         btnAction: {
             type: Function,
         },
+        options: {
+            type: Array,
+        },
+        optionKey: {
+            type: String,
+        },
     },
     methods: {
-        updateValue(event: Event) {
+        updateValue(event: Event | string) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            this.$emit('update:modelValue', event.target.value)
+            if (typeof event == 'string') {
+                this.$emit('update:modelValue', event)
+            } else {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                this.$emit('update:modelValue', event.target.value)
+            }
         },
         async affirm() {
             try {
@@ -105,20 +139,22 @@ export default defineComponent({
         }
     }
     input[type='date'] {
-        &:invalid::-webkit-datetime-edit {
-            display: none;
-        }
-        &::-webkit-calendar-picker-indicator {
-            background: transparent;
-            bottom: 0;
+        &:not(.dirty)::-webkit-datetime-edit {
             color: transparent;
             cursor: pointer;
+        }
+        &:focus::-webkit-datetime-edit {
+            display: block !important;
+        }
+        &::-webkit-calendar-picker-indicator {
+            cursor: pointer;
             height: auto;
-            left: 0;
+            width: 5%;
             position: absolute;
+            left: 94%;
             right: 0;
             top: 0;
-            width: auto;
+            bottom: 0;
         }
     }
 
@@ -152,12 +188,14 @@ export default defineComponent({
         display: flex;
         color: gray;
         pointer-events: none;
+
         .text {
             font-size: 1.4rem; // placeholder
             padding: 0 0.5rem;
             margin: 0 1rem;
             transform: translate(0);
             color: gray;
+            border-radius: 1rem;
             transition: transform 0.15s ease-out, font-size 0.15s ease-out, background-color 0.2s ease-out, color 0.15s ease-out;
         }
     }
@@ -165,15 +203,28 @@ export default defineComponent({
     input.dirty + .placeholder-text .text,
     input[type='file'] + .placeholder-text .text {
         background-color: white;
-        border-radius: 25%;
+        border-radius: 1rem;
         font-size: 1.1rem;
         color: rgb(22, 22, 22);
         transform: translate(0, -100%);
+        &.text:after {
+            content: '';
+            position: absolute;
+            left: 0px;
+            // top: 25%;
+            width: 100%;
+            border-radius: 1rem 1rem 0rem 0rem;
+            height: 50%;
+            border-top: 2px solid black;
+            border-left: 2px solid black;
+            border-right: 2px solid black;
+        }
     }
     input:focus + .placeholder-text .text {
         border-color: var(--navbarColor1);
         color: var(--navbarColor1);
     }
+
     textarea {
         text-align: start;
         padding-left: 1.5rem;
@@ -182,6 +233,7 @@ export default defineComponent({
         border: 2px solid black;
         border-radius: 1rem;
         padding-top: 1rem;
+        text-shadow: none;
         .placeholder-text {
             font-size: 1.4rem; //input fontsize
             padding: 1rem 1.2rem;
@@ -222,17 +274,29 @@ export default defineComponent({
     textarea:focus + .placeholder-text .text,
     textarea.dirty + .placeholder-text .text {
         background-color: white;
-        border-radius: 25%;
+        border-radius: 1rem;
         font-size: 1.1rem;
         color: black;
         transform: translate(0, -80%);
+        &.text:after {
+            content: '';
+            position: absolute;
+            left: 0px;
+            // top: 25%;
+            width: 100%;
+            border-radius: 1rem 1rem 0rem 0rem;
+            height: 50%;
+            border-top: 2px solid black;
+            border-left: 2px solid black;
+            border-right: 2px solid black;
+        }
     }
     textarea:focus + .placeholder-text .text {
         border-color: var(--navbarColor1);
         color: var(--navbarColor1);
     }
-    textarea + .placeholder-text {
-        align-items: flex-start;
+    option {
+        text-align: start;
     }
 }
 </style>
