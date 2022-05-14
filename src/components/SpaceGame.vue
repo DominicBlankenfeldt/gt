@@ -356,76 +356,71 @@
                 <div class="modal-dialog" @click.stop="">
                     <div class="modal-content">
                         <div class="modal-body" style="background-color: grey">
-                            <div class="row mt-1">
-                                <div class="col-9" style="color: black">music volume:</div>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    class="col-3"
-                                    style="background-color: darkgrey"
+                            <div>
+                                <SexyInput
+                                    :labelBorder="true"
+                                    placeholder="music volume"
+                                    type="range"
                                     v-model="settingsInput.musicVolume"
+                                    style="background-color: darkgrey"
+                                    labelStyle="background-color: darkgrey; color: black"
                                     @change="changeVolume(settingsInput.musicVolume)"
                                 />
                             </div>
-                            <div class="row mt-1">
-                                <div class="col-9" style="color: black">effect volume:</div>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    class="col-3"
-                                    style="background-color: darkgrey"
+                            <div>
+                                <SexyInput
+                                    :labelBorder="true"
+                                    placeholder="effect volume"
+                                    type="range"
                                     v-model="settingsInput.effectVolume"
+                                    style="background-color: darkgrey"
+                                    labelStyle="background-color: darkgrey; color: black"
                                 />
                             </div>
-                            <div class="row mt-1" v-for="number of usedAbilitys.length" :key="number">
-                                <select
-                                    class="col-9"
-                                    @click="buttonSound()"
-                                    v-model="settingsInput.abilitys[number].name"
-                                    style="background-color: grey"
-                                >
-                                    <option
-                                        :value="
-                                            Object.keys(skillDetails).filter(
-                                                sD => skillDetails[sD].name == skillDetails[usedAbilitys[number - 1]].name
-                                            )[0]
+
+                            <div class="row mt-1" v-for="number of 4" :key="number">
+                                <div>
+                                    <SexyInput
+                                        :labelBorder="true"
+                                        :placeholder="`ability ${number}`"
+                                        type="select"
+                                        :options="availableAbilitys.filter(a => !usedAbilitys.includes(a))"
+                                        v-model="settingsInput.abilitys[number].name"
+                                        style="background-color: darkgrey"
+                                        labelStyle="background-color: darkgrey; color: black"
+                                        :optionProjection="(a:string)=>skillDetails[a]?.name"
+                                        :selectedProjection="(a:string)=>skillDetails[a]?.name"
+                                        @selectItem="event => (settingsInput.abilitys[number].name = event)"
+                                        side-input-max-length="1"
+                                        :sideInputVModel="settingsInput.abilitys[number].key"
+                                        side-input-type="text"
+                                        :side-input-on-input="
+                                            () => {
+                                                this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1')
+                                            }
                                         "
-                                    >
-                                        {{ skillDetails[usedAbilitys[number - 1]].name }}
-                                    </option>
-                                    <option
-                                        :value="ability"
-                                        v-for="ability of availableAbilitys.filter(a => !usedAbilitys.includes(a))"
-                                        :key="ability"
-                                        @click="buttonSound()"
-                                    >
-                                        {{ skillDetails[ability].name }}
-                                    </option>
-                                    <option style="color: black" disabled>unlock more by use the skilltree</option>
-                                </select>
-                                <input
-                                    class="col-3"
-                                    style="background-color: darkgrey"
-                                    v-model="settingsInput.abilitys[number].key"
-                                    type="text"
-                                    pattern="[a-z0-9]"
-                                    maxlength="1"
-                                    oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                                />
+                                        @update:sideInputVModel="
+                                            v => {
+                                                settingsInput.abilitys[number].key = v
+                                            }
+                                        "
+                                        noElementMessage="no element found"
+                                    />
+                                </div>
                             </div>
-                            <div class="row mt-1" v-for="direction in ['up', 'left', 'down', 'right']" :key="direction">
-                                <div class="col-9" style="color: black">move {{ direction }}:</div>
-                                <input
-                                    class="col-3"
-                                    style="background-color: darkgrey"
-                                    v-model="settingsInput.moves[direction]"
-                                    type="text"
-                                    pattern="[a-z0-9]"
-                                    maxlength="1"
-                                    oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
-                                />
+                            <div class="row">
+                                <div v-for="direction in ['up', 'down', 'left', 'right']" :key="direction" class="col-6">
+                                    <SexyInput
+                                        :labelBorder="true"
+                                        :placeholder="`move ${direction}`"
+                                        type="text"
+                                        v-model="settingsInput.moves[direction]"
+                                        style="background-color: darkgrey"
+                                        labelStyle="background-color: darkgrey; color: black"
+                                        maxlength="1"
+                                        oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
+                                    />
+                                </div>
                             </div>
                             <div v-if="currentUser">
                                 <div
@@ -491,8 +486,12 @@ import { currentUser } from '@/router'
 import * as music from '@/music'
 import * as type from '@/types'
 import * as API from '@/API'
+import SexyInput from './SexyInput.vue'
 
 export default defineComponent({
+    components: {
+        SexyInput,
+    },
     setup() {
         production
         skillDetails
@@ -653,9 +652,15 @@ export default defineComponent({
         checkSettings() {
             let double = true
             if (
-                [...new Set(Object.values(this.settingsInput.moves).concat(Object.values(this.settingsInput.abilitys).map(a => a.key)))].filter(
-                    s => s
-                ).length <
+                [
+                    ...new Set(
+                        Object.values(this.settingsInput.moves).concat(
+                            Object.values(this.settingsInput.abilitys)
+                                .filter(e => e.key && e.name)
+                                .map(a => a.key)
+                        )
+                    ),
+                ].filter(s => s).length <
                 4 + this.usedAbilitys.length
             )
                 double = false

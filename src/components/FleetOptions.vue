@@ -6,19 +6,17 @@
         <div class="card" style="width: 75%; margin-top: 3rem">
             <div class="card-header">
                 <form class="form-inline" v-if="!player.spaceFleet">
-                    <div class="d-flex justify-content-center card-body" style="width: 100%">
-                        <div class="input-contain mb-3">
-                            <input
+                    <div class="card-body w-100 d-flex justify-content-center">
+                        <div class="w-50">
+                            <SexyInput
+                                :labelBorder="true"
+                                placeholder="search Fleet"
                                 v-model="searchInput"
-                                :class="{ dirty: searchInput }"
                                 type="text"
-                                class="form-control"
-                                aria-label="fleetname"
-                                aria-describedby="basic-addon1"
-                            />
-                            <label class="placeholder-text"><div class="text">search Fleet</div></label>
+                                btnText="Search"
+                                :btnAction="searchSpaceFleets"
+                            ></SexyInput>
                         </div>
-                        <button class="btn btn-primary shadow-none mb-3 ms-3" type="submit" @click="searchSpaceFleets()">Search</button>
                     </div>
                 </form>
             </div>
@@ -35,17 +33,9 @@
                 <div class="card-body">
                     <div>
                         <h3 v-if="!edit">{{ fleet?.fleetInfo.name }}</h3>
-                        <div v-else class="input-contain mb-3">
-                            <input
-                                v-model="fleet.fleetInfo.name"
-                                :class="{ dirty: fleet.fleetInfo.name }"
-                                type="text"
-                                class="form-control"
-                                aria-label="fleetname"
-                                aria-describedby="basic-addon1"
-                                required
-                            />
-                            <label class="placeholder-text"><div class="text">fleetname</div></label>
+
+                        <div v-else>
+                            <SexyInput :labelBorder="true" placeholder="fleetname" v-model="fleet.fleetInfo.name" type="text" required></SexyInput>
                         </div>
                     </div>
 
@@ -122,17 +112,8 @@
                         <div>fleetinfo:</div>
                         <div>{{ fleet?.fleetInfo.info }}</div>
                     </div>
-                    <div v-else class="input-contain mt-4">
-                        <input
-                            v-model="fleet.fleetInfo.info"
-                            :class="{ dirty: fleet.fleetInfo.info }"
-                            type="text"
-                            class="form-control"
-                            aria-label="fleetname"
-                            aria-describedby="basic-addon1"
-                            required
-                        />
-                        <label class="placeholder-text"><div class="text">fleet info</div></label>
+                    <div v-else>
+                        <SexyInput :labelBorder="true" placeholder="fleet info" v-model="fleet.fleetInfo.info" type="text" required></SexyInput>
                     </div>
                 </div>
             </div>
@@ -168,31 +149,12 @@
                             <h5 class="modal-title" id="exampleModalLabel">create fleet</h5>
                         </div>
                         <div class="modal-body">
-                            <div class="input-contain mb-3">
-                                <input
-                                    v-model="nameInput"
-                                    :class="{ dirty: nameInput }"
-                                    type="text"
-                                    class="form-control"
-                                    aria-label="fleetname"
-                                    aria-describedby="basic-addon1"
-                                    required
-                                />
-                                <label class="placeholder-text"><div class="text">fleetname</div></label>
+                            <div>
+                                <SexyInput :labelBorder="true" placeholder="fleetname" v-model="nameInput" type="text" required></SexyInput>
                             </div>
-
-                            <div class="textarea-contain">
-                                <textarea
-                                    class="form-control"
-                                    aria-label="With textarea"
-                                    v-model="infoInput"
-                                    :class="{ dirty: infoInput }"
-                                ></textarea>
-                                <label class="placeholder-text">
-                                    <div class="text">Info text</div>
-                                </label>
+                            <div>
+                                <SexyInput :labelBorder="true" placeholder="Info text" v-model="infoInput" type="textarea" required></SexyInput>
                             </div>
-
                             <div class="form-check" style="margin-top: 1rem">
                                 <label class="form-check-label" for="flexCheckDefault">
                                     <input
@@ -276,6 +238,7 @@ import { currentUser } from '@/router'
 import { checkPlayer, fleetSkillDetails } from '@/global'
 import * as music from '@/music'
 import PlayerCard from '@/components/PlayerCard.vue'
+import SexyInput from '@/components/SexyInput.vue'
 export default defineComponent({
     setup() {
         return {
@@ -284,6 +247,7 @@ export default defineComponent({
     },
     components: {
         PlayerCard,
+        SexyInput,
     },
     data() {
         return {
@@ -423,7 +387,7 @@ export default defineComponent({
             let result
             if (this.player.spaceFleet) {
                 this.fleet = await API.getPlayerSpaceFleet(this.player.spaceFleet)
-                if (!this.fleet.fleetInfo.founder || !this.fleet.members.includes(this.user!.uid)) {
+                if (!this.fleet.fleetInfo || !this.fleet.members.includes(this.user!.uid)) {
                     this.player.spaceFleet = ''
                     this.fleet = {
                         members: [] as string[],

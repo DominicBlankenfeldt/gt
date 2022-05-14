@@ -1,16 +1,103 @@
 <template>
-    <div class="input-contain mt-3" style="text-shadow: none">
+    <div class="input-contain mt-3 shadow-none">
+        <!-- error -->
+        <div>
+            <div v-if="error && !isListVisible" class="error">
+                {{ error }}
+            </div>
+        </div>
+        <!-- /error -->
+        <!-- search Icon -->
+        <div v-if="type == 'search' && (isListVisible || modelValue)" class="search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path
+                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                />
+            </svg>
+        </div>
+        <!-- /search Icon -->
+        <!-- standard input field -->
         <input
-            v-if="type != 'textarea'"
+            v-if="type != 'textarea' && type != 'select'"
             v-bind="$attrs"
             class="form-control shadow-none"
             :type="viewPassword ? 'text' : type"
             :value="modelValue"
             @input="updateValue"
-            :class="{ dirty: modelValue }"
-            :list="id"
+            @focus="onFocus"
+            @blur="onBlur"
+            :class="[{ dirty: modelValue }, type == 'range' ? 'pe-4' : '', error && labelBorder ? 'mt-4' : '']"
+            :style="btnText || type == 'password' || sideInputType ? `border-radius: 0.5rem 0 0 0.5rem; width:${inputWidth}` : ''"
+            :id="id"
+            :list="id2"
             autocomplete="off"
         />
+        <!-- /standard input field -->
+        <!-- options for datalist -->
+        <div :id="wrapperId" class="simple-typeahead input-contain" v-if="type == 'select'">
+            <input
+                v-bind="$attrs"
+                :id="id"
+                class="simple-typeahead-input form-control shadow-none"
+                :style="[
+                    btnText || sideInputType ? `border-radius: 0.5rem 0 0 0.5rem; width:${inputWidth}` : '',
+                    isListVisible ? 'border-radius: 0.5rem 0 0 0' : '',
+                ]"
+                :class="{ dirty: modelValue }"
+                type="text"
+                :value="selectedProjection(modelValue)"
+                @input="onInput"
+                @focus="onFocus"
+                @blur="onBlur"
+                @keydown.down.prevent="onArrowDown"
+                @keydown.up.prevent="onArrowUp"
+                @keydown.enter.tab.prevent="selectCurrentSelection"
+                autocomplete="off"
+            />
+            <!-- label for select -->
+            <label class="placeholder-text">
+                <div class="text" :style="labelStyle" :class="{ withBorder: labelBorder }">
+                    {{ placeholder }}
+                </div>
+            </label>
+            <!-- /label for select -->
+            <div
+                v-if="isListVisible && type == 'select'"
+                class="simple-typeahead-list"
+                :style="[btnText || sideInputType ? `width:${inputWidth}` : '']"
+            >
+                <div v-if="$slots['list-header']">
+                    <slot name="list-header"></slot>
+                </div>
+                <div
+                    class="simple-typeahead-list-item"
+                    :class="{
+                        'simple-typeahead-list-item-active': currentSelectionIndex == index,
+                    }"
+                    v-for="(item, index) in filteredItems"
+                    :key="index"
+                    @mousedown.prevent
+                    @click="selectItem(item)"
+                    @mouseenter="currentSelectionIndex = index"
+                >
+                    <span class="simple-typeahead-list-item-text" :data-text="optionProjection(item)" v-if="$slots['list-item-text']">
+                        <slot name="list-item-text" :item="item" :optionProjection="optionProjection" :boldMatchText="boldMatchText"></slot>
+                    </span>
+                    <span
+                        class="simple-typeahead-list-item-text"
+                        :data-text="optionProjection(item)"
+                        v-html="boldMatchText(optionProjection(item))"
+                        v-else
+                    ></span>
+                </div>
+                <div v-if="!filteredItems.length">{{ noElementMessage }}</div>
+                <div v-if="$slots['list-footer']">
+                    <slot name="list-footer"></slot>
+                </div>
+            </div>
+        </div>
+        <!-- /options for datalist -->
+        <!-- standard textarea field -->
         <textarea
             v-if="type == 'textarea'"
             v-bind="$attrs"
@@ -20,24 +107,37 @@
             :class="{ dirty: modelValue }"
             rows="3"
         ></textarea>
-        <label class="placeholder-text">
-            <div class="text">{{ placeholder }}</div>
+        <!-- /standard textarea field -->
+        <!-- label for select -->
+        <label class="placeholder-text" v-if="type != 'select'">
+            <div class="text" :style="labelStyle" :class="{ withBorder: labelBorder }">
+                {{ placeholder }}
+            </div>
         </label>
-        <datalist :id="id" v-if="options">
-            <option :value="optionKey ? option[optionKey] : option" v-for="option of options" :key="JSON.stringify(option)"></option>
-        </datalist>
-        <button v-if="btnText" type="button" @click="affirm()" :class="btnClass">{{ btnText }}</button>
+        <!-- /label for select -->
+        <!-- sideInput -->
+        <input
+            v-if="sideInputType"
+            class="sideInput"
+            :type="sideInputType"
+            :style="sideInputStyle"
+            :maxlength="sideInputMaxLength"
+            @input="updateSideValue"
+            :value="sideInputVModel"
+        />
+        <!-- /sideInput -->
+        <!-- sideInput for rangeInput -->
+        <input type="number" class="sideInput" @input="inputNumber" :value="modelValue" v-if="type == 'range'" min="0" max="100" />
+        <!-- /sideInput for rangeInput -->
+        <!-- sideButton -->
+        <button v-if="btnText" type="button" @click="affirm()" :class="btnClass">
+            {{ btnText }}
+        </button>
+        <!-- /sideButton -->
+        <!-- sideButton for passwordInput -->
         <button v-if="type == 'password'" type="button" @click="showPassword()" :class="btnClass">
             <template v-if="!viewPassword">
-                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                    <path
-                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"
-                    />
-                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
-                </svg>
-            </template>
-            <template v-else>
-                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" fill="currentColor" class="bi bi-eye-slash" viewBox="0 0 16 16">
                     <path
                         d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"
                     />
@@ -49,44 +149,38 @@
                     />
                 </svg>
             </template>
+            <template v-else>
+                <svg xmlns="http://www.w3.org/2000/svg" width="70%" height="70%" fill="currentColor" class="bi bi-eye" viewBox="0 0 14 16">
+                    <path
+                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"
+                    />
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+                </svg>
+            </template>
         </button>
+        <!-- /sideButton for passwordInput -->
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+
 export default defineComponent({
     setup() {
         return
     },
-    data() {
-        return {
-            id: '',
-            viewPassword: false,
-        }
-    },
-    mounted() {
-        this.id = 'input' + Math.random()
-        if (this.type == 'date') {
-            if (this.modelValue.length == 10) {
-                return
-            }
-            const date = new Date()
-            const result = date.toISOString().split('T')[0]
-            this.updateValue(result)
-        }
-    },
     props: {
         placeholder: {
-            type: String,
+            type: String as any,
             required: true,
         },
         modelValue: {
-            type: String || Number,
+            type: String,
             required: true,
         },
         type: {
             type: String,
+            required: true,
         },
         btnText: {
             type: String,
@@ -94,21 +188,184 @@ export default defineComponent({
         btnClass: {
             type: String,
         },
+        sideInputType: {
+            type: String,
+        },
+        sideInputStyle: {
+            type: String,
+        },
+        sideInputMaxLength: {
+            type: String,
+        },
+        sideInputOnInput: {
+            type: Function,
+            default: () => {
+                return
+            },
+        },
+        sideInputVModel: {
+            type: String,
+        },
+        labelStyle: {
+            type: String,
+        },
+        labelBorder: {
+            type: Boolean,
+            default: false,
+        },
         btnAction: {
             type: Function,
         },
         options: {
             type: Array,
         },
-        optionKey: {
+        optionProjection: {
+            type: Function,
+            default: (item: any) => {
+                return item
+            },
+        },
+        selectedProjection: {
+            type: Function,
+            default: (item: any) => {
+                return item
+            },
+        },
+        minInputLength: {
+            type: Number,
+            default: 2,
+            validator: (prop: any) => {
+                return prop >= 0
+            },
+        },
+        noElementMessage: {
+            type: String,
+            default: '',
+        },
+        controlInput: {
+            type: Boolean,
+            default: true,
+        },
+        selectOnBlur: {
+            type: Boolean,
+            default: false,
+        },
+        error: {
             type: String,
         },
+        borderColor: {
+            type: String,
+            default: 'black',
+        },
+        errorColor: {
+            type: String,
+            default: 'red',
+        },
+        sideWidth: {
+            type: String,
+            default: '20',
+        },
+    },
+    data() {
+        return {
+            id: 'input' + Math.random(), //id for the standard input field
+            id2: 'list' + Math.random(), //id for the datalist
+            viewPassword: false,
+            element: null as unknown as HTMLInputElement, //the standard element
+            isInputFocused: false, //checked if the select Input is focus
+            currentSelectionIndex: 0, //the index of the selected option in datalist
+        }
+    },
+    computed: {
+        wrapperId() {
+            //the id for the div around the datalist
+            return `${this.id}_wrapper`
+        },
+        filteredItems() {
+            //options that are still possible
+            const regexp = new RegExp(this.escapeRegExp(this.modelValue), 'i')
+            return this.options!.filter(item => this.optionProjection(item).match(regexp))
+        },
+        isListVisible() {
+            //make the datalist Visible
+            return this.isInputFocused
+        },
+        currentSelection() {
+            //the option which is currently selected
+            return this.isListVisible && this.currentSelectionIndex < this.filteredItems.length
+                ? this.filteredItems[this.currentSelectionIndex]
+                : undefined
+        },
+        borderColorComputed() {
+            //determines the color of the border
+            return this.error ? this.errorColor : this.borderColor
+        },
+        rangeTrackSize() {
+            //determines the marked area of rangeInput
+            if (!this.element) return '0%'
+            const min = +this.element!.min || 0
+            const max = +this.element!.max || 100
+            const value = parseInt(this.modelValue)
+            const size = ((value - min) / (max - min)) * 100
+            return size + '%'
+        },
+        inputWidth() {
+            let width = 100
+            if (this.type == 'range' || this.type == 'password' || this.sideInputType || this.btnText) {
+                width -= parseInt(this.sideWidth)
+            }
+            return width + '%'
+        },
+    },
+    mounted() {
+        if (this.type == 'date') {
+            //set standard value to today
+            if (this.modelValue.length == 10) {
+                //return when standard value is set
+                return
+            }
+            const date = new Date()
+            const result = date.toISOString().split('T')[0]
+            this.updateValue(result)
+        }
+        if (this.type == 'time') {
+            //set standard value to current time
+            if (this.modelValue.length == 5) {
+                //return when standard value is set
+                return
+            }
+            const date = new Date()
+            let time = ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2)
+            this.updateValue(time)
+        }
+        if (this.type == 'range') {
+            //set Element to standardInput and sets the background in the range input
+            setTimeout(() => {
+                this.element = document.getElementById(this.id) as HTMLInputElement
+            }, 1)
+        }
     },
     methods: {
         showPassword() {
+            //makes password visible/invisible
             this.viewPassword = !this.viewPassword
         },
-        updateValue(event: Event | string) {
+        async inputNumber(event: Event) {
+            //enables the sideInput during rangeInput
+            await this.updateValue(event)
+        },
+        updateValue(event: Event | string | any) {
+            //correct the value if necessary and update it
+            if (this.controlInput) {
+                if (this.type == 'range') {
+                    let inputValue = parseInt(event.target.value)
+                    if (inputValue > (this.element.max || 100)) inputValue = parseInt(this.element.max) || 100
+                    if (inputValue < (this.element.min || 0)) inputValue = parseInt(this.element.min) || 0
+                    if (isNaN(inputValue)) inputValue = 0
+                    this.$emit('update:modelValue', inputValue)
+                    return
+                }
+            }
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             if (typeof event == 'string') {
@@ -119,12 +376,125 @@ export default defineComponent({
                 this.$emit('update:modelValue', event.target.value)
             }
         },
+        updateSideValue(event: Event | string | any) {
+            //update the sideInput value
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            this.$emit('update:sideInputVModel', event.target.value)
+        },
         async affirm() {
+            //executes the btnAction
             try {
                 if (this.btnAction) await this.btnAction()
             } catch {
                 return
             }
+        },
+        onInput(event: Event) {
+            //is executed when something is entered in selectInput.
+            if (this.isListVisible && this.currentSelectionIndex >= this.filteredItems.length) {
+                this.currentSelectionIndex = (this.filteredItems.length || 1) - 1
+            }
+            this.updateValue(event)
+            this.$emit('onInput', {
+                modelValue: this.modelValue,
+                options: this.filteredItems,
+            })
+        },
+        onFocus() {
+            //is executed when the selectInput is focussed
+            switch (this.type) {
+                case 'select':
+                case 'time':
+                case 'date':
+                case 'search':
+                    this.isInputFocused = true
+                    if (this.type != 'select') return
+                    this.$emit('onFocus', {
+                        modelValue: this.modelValue,
+                        options: this.filteredItems,
+                    })
+                    break
+                default:
+                    return
+            }
+        },
+        onBlur() {
+            //is executed when the selectInput is no longer focused
+            this.isInputFocused = false
+            if (this.type != 'select') return
+            if (this.controlInput) {
+                if (!this.options?.some(e => this.optionProjection(e) == this.modelValue)) this.updateValue('')
+            }
+            if (this.selectOnBlur) {
+                this.$emit(
+                    'selectItem',
+                    this.options?.find(e => this.optionProjection(e) == this.modelValue)
+                )
+            }
+            this.$emit('onBlur', {
+                modelValue: this.modelValue,
+                options: this.filteredItems,
+            })
+        },
+        onArrowUp() {
+            //pressing the arrow key up selects the upperlying option in the datalist
+            if (this.isListVisible && this.currentSelectionIndex > 0) {
+                this.currentSelectionIndex--
+            }
+            this.scrollSelectionIntoView()
+        },
+        onArrowDown() {
+            //pressing the arrow key down selects the underlying option in the datalist
+            if (this.isListVisible && this.currentSelectionIndex < this.filteredItems.length - 1) {
+                this.currentSelectionIndex++
+            }
+            this.scrollSelectionIntoView()
+        },
+        scrollSelectionIntoView() {
+            //makes it possible to scroll the datalist
+            setTimeout(() => {
+                const list_node = document.querySelector(`#${this.wrapperId} .simple-typeahead-list`) as HTMLElement
+                const active_node = document.querySelector(
+                    `#${this.wrapperId} .simple-typeahead-list-item.simple-typeahead-list-item-active`
+                ) as HTMLElement
+                if (
+                    !(
+                        active_node!.offsetTop >= list_node.scrollTop &&
+                        active_node.offsetTop + active_node.offsetHeight < list_node.scrollTop + list_node.offsetHeight
+                    )
+                ) {
+                    let scroll_to = 0
+                    if (active_node.offsetTop > list_node.scrollTop) {
+                        scroll_to = active_node.offsetTop + active_node.offsetHeight - list_node.offsetHeight
+                    } else if (active_node.offsetTop < list_node.scrollTop) {
+                        scroll_to = active_node.offsetTop
+                    }
+                    list_node.scrollTo(0, scroll_to)
+                }
+            })
+        },
+        selectCurrentSelection() {
+            //takes the currently selected option when pressing enter
+            if (this.currentSelection) {
+                this.selectItem(this.currentSelection)
+            }
+        },
+        async selectItem(item: any) {
+            //will be executed when an option is selected
+            await this.updateValue(this.optionProjection(item))
+            this.currentSelectionIndex = 0
+            document.getElementById(this.id)!.blur()
+            this.$emit('selectItem', item)
+        },
+        escapeRegExp(string: string) {
+            //filters unwanted characters from a string
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        },
+        boldMatchText(text: string) {
+            //makes the text you entered in searchInput bold in options
+            const regexp = new RegExp(`(${this.escapeRegExp(this.modelValue)})`, 'ig')
+            return text.replace(regexp, '<strong>$1</strong>')
         },
     },
 })
@@ -133,74 +503,154 @@ export default defineComponent({
 //material inputs
 .input-contain {
     position: relative;
-
+    border-radius: 0.5rem;
+    .error {
+        background-color: white;
+        color: v-bind(errorColor);
+        position: absolute;
+        z-index: 1;
+        top: 1.7rem;
+        left: 1rem;
+    }
+    .search {
+        content: 'f';
+        background-color: white;
+        position: absolute;
+        z-index: 1;
+        top: 0.5rem;
+        left: 0.2rem;
+    }
     input {
         text-align: start;
-        padding-left: 1.5rem;
-        padding-top: 1rem;
-        height: 3.5rem;
+        padding-left: 1rem;
+        padding-top: 0.5rem;
+        height: 2.5rem;
         width: 100%;
-        line-height: 4rem;
-        border: 2px solid black;
-        border-radius: 1rem;
+        border: 1px solid;
+        border-color: v-bind(borderColorComputed);
+        border-radius: 0.5rem;
         .placeholder-text {
             font-size: 1.4rem; //input fontsize
-            padding: 0 1.2rem;
+            padding: 0 1rem;
         }
         &:focus {
             outline: none;
-            border-color: var(--navbarColor1);
+            border-color: v-bind(borderColorComputed);
             & + .placeholder-text .text {
                 background-color: white;
                 font-size: 1.1rem;
-                transform: translate(0, -100%);
-                border-color: var(--navbarColor1);
+                transform: translate(0, -1.1rem);
+                border-color: v-bind(borderColorComputed);
                 color: var(--navbarColor1);
             }
         }
     }
-    input[type='date'] {
-        &:not(.dirty)::-webkit-datetime-edit {
-            color: transparent;
-            cursor: pointer;
+    input[type='number'] {
+        -moz-appearance: textfield;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-        &:focus::-webkit-datetime-edit {
-            display: block !important;
+    }
+    input[type='range'] + label + input[type='number'] {
+        padding: 0;
+        text-align: center;
+    }
+
+    input[type='range'] {
+        -webkit-appearance: none;
+        appearance: none;
+        border-radius: 0.5rem 0 0 0.5rem;
+        width: v-bind(inputWidth);
+        cursor: pointer;
+        &::-moz-range-track {
+            height: 0.2rem;
+            background: linear-gradient(to right, #293043, #293043), #d7d7d7;
+            background-size: var(--background-size, 0%) 100%;
+            background-repeat: no-repeat;
+            border-radius: 5px;
         }
+        &::-webkit-slider-runnable-track {
+            height: 0.2rem;
+            background: linear-gradient(to right, #293043, #293043), #d7d7d7;
+            background-size: v-bind(rangeTrackSize);
+            background-repeat: no-repeat;
+            border-radius: 5px;
+        }
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1rem;
+            height: 1rem;
+            background: #293043;
+            border: 1px white solid;
+            border-radius: 50%;
+            margin-top: -0.4rem;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        &::-moz-range-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1rem;
+            height: 1rem;
+            background: #293043;
+            border: 1px white solid;
+            border-radius: 50%;
+            margin-top: -0.4rem;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+    }
+    input[type='select'] {
         &::-webkit-calendar-picker-indicator {
-            display: block;
+            opacity: 0;
+        }
+    }
+    input[type='search'] {
+        padding-left: 2rem;
+        &::-webkit-search-cancel-button {
+            display: none;
+        }
+    }
+    input[type='date'],
+    input[type='time'] {
+        &::-webkit-calendar-picker-indicator {
+            display: flex;
+            justify-content: end;
             cursor: pointer;
-            height: auto;
-            width: 5%;
-            position: absolute;
-            left: 94%;
-            right: 0;
-            top: 0;
-            bottom: 0;
+            height: 2rem;
+            width: 2rem;
+            margin-bottom: 0.5rem;
         }
     }
 
     input[type='file'] {
-        line-height: 1rem;
         &::-webkit-file-upload-button {
-            margin-top: 0.05rem;
+            border: none;
+            margin-top: 0.3rem;
             padding: 0.3rem;
         }
     }
-    button {
+    button,
+    input.sideInput {
         align-items: center;
+        text-align: center;
         position: absolute;
+        padding: 0;
         top: 0;
         bottom: 0;
-        left: 80%;
+        left: v-bind(inputWidth);
         right: 0;
-        width: 20%;
-        border-radius: 1rem;
+        width: v-bind(sideWidth);
+        border-radius: 0 0.5rem 0.5rem 0;
+        border-width: 1px;
+        border-color: v-bind(borderColorComputed);
+        border-left: none;
         display: flex;
-        background-color: transparent;
+        background-color: white;
         justify-content: center;
     }
-    .placeholder-text {
+    input + .placeholder-text {
         align-items: center;
         position: absolute;
         top: 0;
@@ -213,33 +663,35 @@ export default defineComponent({
 
         .text {
             font-size: 1.4rem; // placeholder
-            padding: 0 0.5rem;
-            margin: 0 1rem;
+            padding: 0 0rem;
+            margin: 0 0.6rem;
             transform: translate(0);
             color: gray;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             transition: transform 0.15s ease-out, font-size 0.15s ease-out, background-color 0.2s ease-out, color 0.15s ease-out;
         }
     }
     input:focus + .placeholder-text .text,
     input.dirty + .placeholder-text .text,
+    input[type='range'] + .placeholder-text .text,
     input[type='file'] + .placeholder-text .text {
         background-color: white;
-        border-radius: 1rem;
-        font-size: 1.1rem;
-        color: rgb(22, 22, 22);
-        transform: translate(0, -100%);
-        &.text:after {
+        border-radius: 0.5rem 0.5rem 0rem 0rem;
+        font-size: 0.9rem;
+        padding: 0 0.3rem;
+        color: black;
+        transform: translate(0, -1.15rem);
+        &.text.withBorder:after {
             content: '';
             position: absolute;
             left: 0px;
-            // top: 25%;
             width: 100%;
-            border-radius: 1rem 1rem 0rem 0rem;
-            height: 50%;
-            border-top: 2px solid black;
-            border-left: 2px solid black;
-            border-right: 2px solid black;
+            border-radius: 0.5rem 0.5rem 0rem 0rem;
+            height: 45%;
+            border-top: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
+            border-color: v-bind(borderColorComputed);
         }
     }
     input:focus + .placeholder-text .text {
@@ -249,32 +701,32 @@ export default defineComponent({
 
     textarea {
         text-align: start;
-        padding-left: 1.5rem;
+        padding-left: 1rem;
         min-height: 3.5rem;
         width: 100%;
-        border: 2px solid black;
-        border-radius: 1rem;
+        border: 1px solid;
+        border-color: v-bind(borderColorComputed);
+        border-radius: 0.5rem;
         padding-top: 1rem;
         text-shadow: none;
         .placeholder-text {
             font-size: 1.4rem; //input fontsize
             padding: 1rem 1.2rem;
         }
-    }
-
-    textarea:focus {
-        outline: none;
-        border-color: var(--navbarColor1);
-        & + .placeholder-text .text {
-            background-color: white;
-            font-size: 1.1rem;
-            transform: translate(0, -50%);
+        &:focus {
+            outline: none;
             border-color: var(--navbarColor1);
-            color: var(--navbarColor1);
+            & + .placeholder-text .text {
+                background-color: white;
+                font-size: 0.9rem;
+                transform: translate(0, -0.5rem);
+                border-color: var(--navbarColor1);
+                color: var(--navbarColor1);
+            }
         }
     }
     .placeholder-text {
-        align-items: center;
+        align-items: start;
         position: absolute;
         top: 0;
         bottom: 0;
@@ -286,39 +738,65 @@ export default defineComponent({
 
         .text {
             font-size: 1.4rem; // placeholder
-            padding: 0 0.5rem;
-            margin: 0.6rem 1rem;
+            padding: 0 0.3rem;
+            margin: 0.6rem 0.2rem;
             transform: translate(0);
-            color: gray;
             transition: transform 0.15s ease-out, font-size 0.15s ease-out, background-color 0.2s ease-out, color 0.15s ease-out;
         }
     }
     textarea:focus + .placeholder-text .text,
     textarea.dirty + .placeholder-text .text {
         background-color: white;
-        border-radius: 1rem;
-        font-size: 1.1rem;
+        border-radius: 0.5rem;
+        padding: 0 0.3rem;
+        margin: 0.6rem 0.6rem;
+        font-size: 0.9rem;
         color: black;
-        transform: translate(0, -80%);
-        &.text:after {
+        transform: translate(0, -1.3rem);
+        &.text.withBorder:after {
             content: '';
             position: absolute;
             left: 0px;
-            // top: 25%;
             width: 100%;
-            border-radius: 1rem 1rem 0rem 0rem;
-            height: 50%;
-            border-top: 2px solid black;
-            border-left: 2px solid black;
-            border-right: 2px solid black;
+            border-radius: 0.5rem 0.5rem 0rem 0rem;
+            height: 51%;
+            border-top: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
+            border-color: v-bind(borderColorComputed);
         }
     }
-    textarea:focus + .placeholder-text .text {
-        border-color: var(--navbarColor1);
-        color: var(--navbarColor1);
+}
+//select
+.simple-typeahead {
+    position: relative;
+    width: 100%;
+    & > input {
+        margin-bottom: 0;
     }
-    option {
-        text-align: start;
+    .simple-typeahead-list {
+        position: absolute;
+        width: 100%;
+        max-height: 350px;
+        overflow-y: auto;
+        background-color: #fafafa;
+        border-radius: 0 0 0.5rem 0.5rem;
+        border: 1px solid;
+        border-color: v-bind(borderColorComputed);
+        border-top: none;
+        z-index: 1;
+        cursor: pointer;
+        .simple-typeahead-list-item {
+            border-bottom: 1px solid;
+            border-color: v-bind(borderColorComputed);
+            padding: 0.6rem 1rem;
+            &.simple-typeahead-list-item-active {
+                background-color: #e1e1e1;
+            }
+            &:last-child {
+                border-bottom: none;
+            }
+        }
     }
 }
 </style>

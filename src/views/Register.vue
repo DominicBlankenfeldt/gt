@@ -10,70 +10,10 @@
                     <div class="m-4 alert alert-danger text-center" v-if="error">
                         {{ error }}
                     </div>
-                    <div class="input-contain mt-3">
-                        <input
-                            minlength="3"
-                            class="form-control"
-                            id="username"
-                            type="text"
-                            v-model="username"
-                            :class="{ dirty: username }"
-                            autocomplete="off"
-                            style="text-shadow: none"
-                            required
-                        />
-                        <label class="placeholder-text" for="username">
-                            <div class="text">username</div>
-                        </label>
-                    </div>
-                    <div class="input-contain mt-3">
-                        <input
-                            minlength="3"
-                            class="form-control"
-                            id="email"
-                            type="email"
-                            v-model="email"
-                            :class="{ dirty: email }"
-                            autocomplete="off"
-                            style="text-shadow: none"
-                            required
-                        />
-                        <label class="placeholder-text" for="email">
-                            <div class="text">email</div>
-                        </label>
-                    </div>
-                    <div class="input-contain mt-3">
-                        <input
-                            minlength="6"
-                            class="form-control"
-                            id="password"
-                            type="password"
-                            v-model="password"
-                            :class="{ dirty: password }"
-                            autocomplete="off"
-                            style="text-shadow: none"
-                            required
-                        />
-                        <label class="placeholder-text" for="password">
-                            <div class="text">password</div>
-                        </label>
-                    </div>
-                    <div class="input-contain mt-3">
-                        <input
-                            minlength="6"
-                            class="form-control"
-                            id="passwordConfirm"
-                            type="password"
-                            v-model="confirmed"
-                            :class="{ dirty: confirmed }"
-                            autocomplete="off"
-                            style="text-shadow: none"
-                            required
-                        />
-                        <label class="placeholder-text" for="passwordConfirm">
-                            <div class="text">confirm</div>
-                        </label>
-                    </div>
+                    <SexyInput :labelBorder="true" placeholder="username" v-model="username" type="text" required></SexyInput>
+                    <SexyInput :labelBorder="true" placeholder="email" v-model="email" type="email" required></SexyInput>
+                    <SexyInput :labelBorder="true" placeholder="password" v-model="password" type="password" minlength="6" required></SexyInput>
+                    <SexyInput :labelBorder="true" placeholder="confirm" v-model="confirmed" type="password" minlength="6" required></SexyInput>
                     <div class="container" v-if="!registering">
                         <button class="btn" type="submit" :disabled="username.length < 3 || username == 'gast'">
                             <a v-if="!registering">register</a>
@@ -94,9 +34,13 @@
 import { defineComponent } from 'vue'
 import * as API from '@/API'
 import * as type from '@/types'
+import SexyInput from '@/components/SexyInput.vue'
 import { checkPlayer } from '@/global'
 import * as music from '@/music'
 export default defineComponent({
+    components: {
+        SexyInput,
+    },
     data() {
         return {
             confirmed: '',

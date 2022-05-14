@@ -22,35 +22,15 @@
                     <form @submit.prevent="login()" autocomplete="off" class="col-6">
                         <div class="m-4 alert alert-danger text-center" v-if="error">Username or password is not correct</div>
                         <div class="container">
-                            <div class="input-contain">
-                                <input
-                                    minlength="3"
-                                    class="form-control"
-                                    id="email"
-                                    type="email"
-                                    v-model="email"
-                                    :class="{ dirty: email }"
-                                    autocomplete="off"
-                                    style="text-shadow: none"
-                                />
-                                <label class="placeholder-text" for="email">
-                                    <div class="text">email</div>
-                                </label>
-                            </div>
-
-                            <div class="input-contain mt-3">
-                                <input
-                                    minlength="3"
-                                    class="form-control"
-                                    id="password"
-                                    type="password"
-                                    v-model="password"
-                                    :class="{ dirty: password }"
-                                    autocomplete="off"
-                                    style="text-shadow: none"
-                                />
-                                <label class="placeholder-text" for="password"><div class="text">password</div></label>
-                            </div>
+                            <SexyInput :labelBorder="true" placeholder="email" v-model="email" type="email" required></SexyInput>
+                            <SexyInput
+                                :labelBorder="true"
+                                placeholder="password"
+                                v-model="password"
+                                type="password"
+                                minlength="6"
+                                required
+                            ></SexyInput>
                             <div v-if="!loggingIn">
                                 <button class="btn" type="submit" v-if="!loggingIn" style="margin-left: 0px">
                                     <a v-if="!loggingIn">enter your ship.</a>
@@ -79,8 +59,11 @@ import { defineComponent } from 'vue'
 import * as API from '@/API'
 import { currentUser } from '@/router'
 import * as music from '@/music'
-
+import SexyInput from '@/components/SexyInput.vue'
 export default defineComponent({
+    components: {
+        SexyInput,
+    },
     data() {
         return {
             confirmed: '',
