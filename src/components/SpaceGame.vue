@@ -364,6 +364,7 @@
                                     v-model="settingsInput.musicVolume"
                                     style="background-color: darkgrey"
                                     labelStyle="background-color: darkgrey; color: black"
+                                    side-input-style="background-color: darkgrey"
                                     @change="changeVolume(settingsInput.musicVolume)"
                                 />
                             </div>
@@ -374,6 +375,7 @@
                                     type="range"
                                     v-model="settingsInput.effectVolume"
                                     style="background-color: darkgrey"
+                                    side-input-style="background-color: darkgrey"
                                     labelStyle="background-color: darkgrey; color: black"
                                 />
                             </div>
@@ -392,6 +394,7 @@
                                         :selectedProjection="(a:string)=>skillDetails[a]?.name"
                                         @selectItem="event => (settingsInput.abilitys[number].name = event)"
                                         side-input-max-length="1"
+                                        side-input-style="background-color: darkgrey"
                                         :sideInputVModel="settingsInput.abilitys[number].key"
                                         side-input-type="text"
                                         :side-input-on-input="

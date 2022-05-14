@@ -127,7 +127,16 @@
         />
         <!-- /sideInput -->
         <!-- sideInput for rangeInput -->
-        <input type="number" class="sideInput" @input="inputNumber" :value="modelValue" v-if="type == 'range'" min="0" max="100" />
+        <input
+            type="number"
+            class="sideInput"
+            @input="inputNumber"
+            :value="modelValue"
+            :style="sideInputStyle"
+            v-if="type == 'range'"
+            min="0"
+            max="100"
+        />
         <!-- /sideInput for rangeInput -->
         <!-- sideButton -->
         <button v-if="btnText" type="button" @click="affirm()" :class="btnClass">
