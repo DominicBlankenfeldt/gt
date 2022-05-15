@@ -101,6 +101,7 @@ export function createEnemy(
         circleDir: circleDir as type.Dir,
         isGrow: false,
         isMagnet: false,
+        isFear: false,
     })
     return enemies
 }

@@ -350,7 +350,7 @@
                 tabindex="-1"
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
-                @click="unDoChanges()"
+                @onclick="unDoChanges()"
                 style="margin-top: 11vh"
             >
                 <div class="modal-dialog" @click.stop="">
@@ -386,12 +386,15 @@
                                         :labelBorder="true"
                                         :placeholder="`ability ${number}`"
                                         type="select"
-                                        :options="availableAbilitys.filter(a => !usedAbilitys.includes(a))"
+                                        :options="
+                                            availableAbilitys.filter(a => !usedAbilitys.includes(a) || a == settingsInput.abilitys[number].name)
+                                        "
                                         v-model="settingsInput.abilitys[number].name"
                                         style="background-color: darkgrey"
-                                        labelStyle="background-color: darkgrey; color: black"
+                                        labelStyle="background-color:darkgrey; color: black"
                                         :optionProjection="(a:string)=>skillDetails[a]?.name"
                                         :selectedProjection="(a:string)=>skillDetails[a]?.name"
+                                        :selectOnBlur="true"
                                         @selectItem="event => (settingsInput.abilitys[number].name = event)"
                                         side-input-max-length="1"
                                         side-input-style="background-color: darkgrey"
@@ -568,6 +571,7 @@ export default defineComponent({
                 slowEnemyAbility: 0,
                 stopTimeAbility: 0,
                 growAbility: 0,
+                fearAbility: 0,
             },
             skillObject: {} as type.SkillObject,
             passivObject: {} as type.PassivObject,
@@ -733,11 +737,6 @@ export default defineComponent({
                 this.player.daily.tasks = []
                 for (let i = 0; i < 3; i++) {
                     this.player.daily.tasks.push(avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0])
-                    if (this.player.lvlTree.lvl > 5) {
-                        this.player.daily.tasks[i].need *= 5
-                    } else {
-                        this.player.daily.tasks[i].need *= this.player.lvlTree.lvl
-                    }
                 }
             }
         },
@@ -802,11 +801,6 @@ export default defineComponent({
         },
         //game
         async gameloop() {
-            console.log(
-                1.1 ** this.player.daily.tasksDone,
-                1.01 ** (this.player.lvlTree.lvl - 1),
-                int(1.01 ** (this.player.lvlTree.lvl - 1) * 1.1 ** this.player.daily.tasksDone)
-            )
             this.player.playedTime++
             this.multiplicator = 1
             this.handlePlayerAbilities()
@@ -943,6 +937,7 @@ export default defineComponent({
                 slowEnemyAbility: 0,
                 stopTimeAbility: 0,
                 growAbility: 0,
+                fearAbility: 0,
             }
         },
         //total chaos mode
@@ -1653,6 +1648,7 @@ export default defineComponent({
                 'stopTimeAbility',
                 'growAbility',
                 'shotAbility',
+                'fearAbility',
             ] as type.AbilityName[]) {
                 this.coolDowns[ability] > 0 ? (this.coolDowns[ability] -= 1000 / 60) : (this.coolDowns[ability] = 0)
                 if (this.coolDowns[ability] < 0) this.coolDowns[ability] = 0
@@ -1786,9 +1782,17 @@ export default defineComponent({
                             this.stopTimeAbility()
                             this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                             break
+                        case 'fearAbility':
+                            this.fearAbility()
+                            this.player.shop.energyCell.amount -= skillDetails[this.player.settings.abilitys[i].name].tier
                     }
                 }
             }
+        },
+        fearAbility() {
+            this.counters.useAbilities++
+            this.coolDowns['fearAbility'] = 10000
+            this.enemies.forEach(e => (e.isFear = true))
         },
         magnetAbility() {
             this.counters.useAbilities++

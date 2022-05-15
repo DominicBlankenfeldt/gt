@@ -15,6 +15,7 @@ export const skillDetails = {
     slowEnemyAbility: { name: 'snow machine', maxlvl: 1, tier: 2, description: 'gives you the slow enemies effect' },
     stopTimeAbility: { name: 'time machine', maxlvl: 1, tier: 2, description: 'gives you the time stop effect' },
     growAbility: { name: 'growth ray', maxlvl: 1, tier: 2, description: 'gives you the grow effect' },
+    fearAbility: { name: 'fear', maxlvl: 1, tier: 2, description: 'the enemies fly away from you' },
     betterCoin: { name: 'golden coin', maxlvl: 20, tier: 1, description: 'the coin give more score' },
     longerSlowEnemies: { name: 'galactic freeze', maxlvl: 20, tier: 1, description: 'the enemy slow effect holds longer' },
     betterGrowPotion: { name: 'alchemist', maxlvl: 20, tier: 1, description: 'while grown you gain more score' },

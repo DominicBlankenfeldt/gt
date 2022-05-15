@@ -45,7 +45,7 @@
                 ]"
                 :class="{ dirty: modelValue }"
                 type="text"
-                :value="selectedProjection(modelValue)"
+                :value="selectedProjection(modelValue) || modelValue"
                 @input="onInput"
                 @focus="onFocus"
                 @blur="onBlur"
@@ -130,12 +130,12 @@
         <input
             type="number"
             class="sideInput"
-            @input="inputNumber"
+            @input="updateValue"
             :value="modelValue"
             :style="sideInputStyle"
             v-if="type == 'range'"
-            min="0"
-            max="100"
+            :min="element?.min || 0"
+            :max="element?.max || 100"
         />
         <!-- /sideInput for rangeInput -->
         <!-- sideButton -->
@@ -281,7 +281,7 @@ export default defineComponent({
             id2: 'list' + Math.random(), //id for the datalist
             viewPassword: false,
             element: null as unknown as HTMLInputElement, //the standard element
-            isInputFocused: false, //checked if the select Input is focus
+            isListVisible: false, //make the datalist Visible
             currentSelectionIndex: 0, //the index of the selected option in datalist
         }
     },
@@ -293,11 +293,11 @@ export default defineComponent({
         filteredItems() {
             //options that are still possible
             const regexp = new RegExp(this.escapeRegExp(this.modelValue), 'i')
-            return this.options!.filter(item => this.optionProjection(item).match(regexp))
-        },
-        isListVisible() {
-            //make the datalist Visible
-            return this.isInputFocused
+            let array = this.options!.filter(item => this.optionProjection(item).match(regexp))
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            if (!array.length) array = array.concat(this.options!.filter(item => item.match(regexp)))
+            return array
         },
         currentSelection() {
             //the option which is currently selected
@@ -359,17 +359,13 @@ export default defineComponent({
             //makes password visible/invisible
             this.viewPassword = !this.viewPassword
         },
-        async inputNumber(event: Event) {
-            //enables the sideInput during rangeInput
-            await this.updateValue(event)
-        },
         updateValue(event: Event | string | any) {
             //correct the value if necessary and update it
             if (this.controlInput) {
                 if (this.type == 'range') {
                     let inputValue = parseInt(event.target.value)
-                    if (inputValue > (this.element.max || 100)) inputValue = parseInt(this.element.max) || 100
-                    if (inputValue < (this.element.min || 0)) inputValue = parseInt(this.element.min) || 0
+                    if (inputValue > (event.target.max || 100)) inputValue = parseInt(event.target.max) || 100
+                    if (inputValue < (event.target.min || 0)) inputValue = parseInt(event.target.min) || 0
                     if (isNaN(inputValue)) inputValue = 0
                     this.$emit('update:modelValue', inputValue)
                     return
@@ -417,7 +413,7 @@ export default defineComponent({
                 case 'time':
                 case 'date':
                 case 'search':
-                    this.isInputFocused = true
+                    this.isListVisible = true
                     if (this.type != 'select') return
                     this.$emit('onFocus', {
                         modelValue: this.modelValue,
@@ -430,16 +426,24 @@ export default defineComponent({
         },
         onBlur() {
             //is executed when the selectInput is no longer focused
-            this.isInputFocused = false
+            this.isListVisible = false
             if (this.type != 'select') return
             if (this.controlInput) {
                 if (!this.options?.some(e => this.optionProjection(e) == this.modelValue)) this.updateValue('')
             }
             if (this.selectOnBlur) {
-                this.$emit(
-                    'selectItem',
-                    this.options?.find(e => this.optionProjection(e) == this.modelValue)
-                )
+                if (this.options?.find(e => this.optionProjection(e) == this.modelValue)) {
+                    this.$emit(
+                        'selectItem',
+                        this.options?.find(e => this.optionProjection(e) == this.modelValue)
+                    )
+                } else {
+                    if (this.options?.find(e => e == this.modelValue))
+                        this.$emit(
+                            'selectItem',
+                            this.options?.find(e => e == this.modelValue)
+                        )
+                }
             }
             this.$emit('onBlur', {
                 modelValue: this.modelValue,
@@ -635,9 +639,7 @@ export default defineComponent({
 
     input[type='file'] {
         &::-webkit-file-upload-button {
-            border: none;
-            margin-top: 0.3rem;
-            padding: 0.3rem;
+            display: none;
         }
     }
     button,

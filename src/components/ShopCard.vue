@@ -231,11 +231,6 @@ export default defineComponent({
             this.player.daily.tasks = []
             for (let i = 0; i < 3; i++) {
                 this.player.daily.tasks.push(avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0])
-                if (this.player.lvlTree.lvl > 5) {
-                    this.player.daily.tasks[i].need *= 5
-                } else {
-                    this.player.daily.tasks[i].need *= this.player.lvlTree.lvl
-                }
             }
         },
         buyModel() {

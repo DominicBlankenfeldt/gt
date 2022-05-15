@@ -14,6 +14,7 @@ export interface Enemy {
     circleDir: Dir
     isGrow: boolean
     isMagnet: boolean
+    isFear: boolean
 }
 export interface BossEnemy {
     vector: Vector
@@ -187,6 +188,7 @@ export type AbilityName =
     | 'slowEnemyAbility'
     | 'stopTimeAbility'
     | 'growAbility'
+    | 'fearAbility'
 
 export type Key =
     | 'a'
@@ -296,6 +298,7 @@ export type SkillName =
     | 'slowEnemyAbility'
     | 'stopTimeAbility'
     | 'growAbility'
+    | 'fearAbility'
     | 'slowEnemy'
     | 'spawnLessEnemy'
     | 'scoreMultiplicator'
