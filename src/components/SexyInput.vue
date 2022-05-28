@@ -1,12 +1,5 @@
 <template>
     <div class="input-contain mt-3 shadow-none">
-        <!-- error -->
-        <div>
-            <div v-if="error && !isListVisible" class="error">
-                {{ error }}
-            </div>
-        </div>
-        <!-- /error -->
         <!-- search Icon -->
         <div v-if="type == 'search' && (isListVisible || modelValue)" class="search">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -18,14 +11,12 @@
         <!-- /search Icon -->
         <!-- standard input field -->
         <input
-            v-if="type != 'textarea' && type != 'select'"
+            v-if="type != 'textarea' && type != 'select' && type != 'multiSelect'"
             v-bind="$attrs"
             class="form-control shadow-none"
             :type="viewPassword ? 'text' : type"
             :value="modelValue"
             @input="updateValue"
-            @focus="onFocus"
-            @blur="onBlur"
             :class="[{ dirty: modelValue }, type == 'range' ? 'pe-4' : '', error && labelBorder ? 'mt-4' : '']"
             :style="btnText || type == 'password' || sideInputType ? `border-radius: 0.5rem 0 0 0.5rem; width:${inputWidth}` : ''"
             :id="id"
@@ -33,15 +24,24 @@
             autocomplete="off"
         />
         <!-- /standard input field -->
+        <!-- multiSelect list -->
+        <div v-for="multi of multiSelect" :key="JSON.stringify(multi)" class="mb-1">
+            {{ multi }}
+        </div>
+        <!-- /multiSelect list -->
         <!-- options for datalist -->
-        <div :id="wrapperId" class="simple-typeahead input-contain" v-if="type == 'select'">
+        <div :id="wrapperId" class="simple-typeahead input-contain" v-if="type == 'select' || type == 'multiSelect'">
             <input
                 v-bind="$attrs"
                 :id="id"
                 class="simple-typeahead-input form-control shadow-none"
                 :style="[
                     btnText || sideInputType ? `border-radius: 0.5rem 0 0 0.5rem; width:${inputWidth}` : '',
-                    isListVisible ? 'border-radius: 0.5rem 0 0 0' : '',
+                    isListVisible
+                        ? sideInputType
+                            ? 'border-radius: 0.5rem 0 0 0;border: 2px solid'
+                            : 'border-radius: 0.5rem 0.5rem 0 0;border: 2px solid'
+                        : '',
                 ]"
                 :class="{ dirty: modelValue }"
                 type="text"
@@ -49,8 +49,6 @@
                 @input="onInput"
                 @focus="onFocus"
                 @blur="onBlur"
-                @keydown.down.prevent="onArrowDown"
-                @keydown.up.prevent="onArrowUp"
                 @keydown.enter.tab.prevent="selectCurrentSelection"
                 autocomplete="off"
             />
@@ -62,7 +60,7 @@
             </label>
             <!-- /label for select -->
             <div
-                v-if="isListVisible && type == 'select'"
+                v-if="isListVisible && (type == 'select' || type == 'multiSelect')"
                 class="simple-typeahead-list"
                 :style="[btnText || sideInputType ? `width:${inputWidth}` : '']"
             >
@@ -169,6 +167,11 @@
         </button>
         <!-- /sideButton for passwordInput -->
     </div>
+    <!-- error -->
+    <div v-if="error" class="error">
+        {{ error }}
+    </div>
+    <!-- /error -->
 </template>
 
 <script lang="ts">
@@ -184,7 +187,7 @@ export default defineComponent({
             required: true,
         },
         modelValue: {
-            type: String,
+            type: String as any,
             required: true,
         },
         type: {
@@ -214,6 +217,10 @@ export default defineComponent({
         },
         sideInputVModel: {
             type: String,
+        },
+        sideWidth: {
+            type: String,
+            default: '20',
         },
         labelStyle: {
             type: String,
@@ -270,9 +277,8 @@ export default defineComponent({
             type: String,
             default: 'red',
         },
-        sideWidth: {
-            type: String,
-            default: '20',
+        multiSelect: {
+            type: Array,
         },
     },
     data() {
@@ -294,9 +300,8 @@ export default defineComponent({
             //options that are still possible
             const regexp = new RegExp(this.escapeRegExp(this.modelValue), 'i')
             let array = this.options!.filter(item => this.optionProjection(item).match(regexp))
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            if (!array.length) array = array.concat(this.options!.filter(item => item.match(regexp)))
+
+            if (!array.length) array = array.concat(this.options!.filter((item: any) => item.match(regexp)))
             return array
         },
         currentSelection() {
@@ -359,7 +364,7 @@ export default defineComponent({
             //makes password visible/invisible
             this.viewPassword = !this.viewPassword
         },
-        updateValue(event: Event | string | any) {
+        updateValue(event: any) {
             //correct the value if necessary and update it
             if (this.controlInput) {
                 if (this.type == 'range') {
@@ -371,20 +376,15 @@ export default defineComponent({
                     return
                 }
             }
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             if (typeof event == 'string') {
                 this.$emit('update:modelValue', event)
             } else {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 this.$emit('update:modelValue', event.target.value)
             }
         },
-        updateSideValue(event: Event | string | any) {
+        updateSideValue(event: any) {
             //update the sideInput value
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
+
             this.$emit('update:sideInputVModel', event.target.value)
         },
         async affirm() {
@@ -408,21 +408,13 @@ export default defineComponent({
         },
         onFocus() {
             //is executed when the selectInput is focussed
-            switch (this.type) {
-                case 'select':
-                case 'time':
-                case 'date':
-                case 'search':
-                    this.isListVisible = true
-                    if (this.type != 'select') return
-                    this.$emit('onFocus', {
-                        modelValue: this.modelValue,
-                        options: this.filteredItems,
-                    })
-                    break
-                default:
-                    return
-            }
+
+            this.isListVisible = true
+            if (this.type != 'select') return
+            this.$emit('onFocus', {
+                modelValue: this.modelValue,
+                options: this.filteredItems,
+            })
         },
         onBlur() {
             //is executed when the selectInput is no longer focused
@@ -449,20 +441,6 @@ export default defineComponent({
                 modelValue: this.modelValue,
                 options: this.filteredItems,
             })
-        },
-        onArrowUp() {
-            //pressing the arrow key up selects the upperlying option in the datalist
-            if (this.isListVisible && this.currentSelectionIndex > 0) {
-                this.currentSelectionIndex--
-            }
-            this.scrollSelectionIntoView()
-        },
-        onArrowDown() {
-            //pressing the arrow key down selects the underlying option in the datalist
-            if (this.isListVisible && this.currentSelectionIndex < this.filteredItems.length - 1) {
-                this.currentSelectionIndex++
-            }
-            this.scrollSelectionIntoView()
         },
         scrollSelectionIntoView() {
             //makes it possible to scroll the datalist
@@ -514,19 +492,20 @@ export default defineComponent({
 </script>
 <style scoped lang="scss">
 //material inputs
+.error {
+    padding-left: 0.1rem;
+    padding-right: 0.1rem;
+    background-color: transparent;
+    color: v-bind(errorColor);
+    z-index: 1;
+    text-align: start;
+    font-size: 0.8rem;
+}
 .input-contain {
     position: relative;
     border-radius: 0.5rem;
-    .error {
-        background-color: white;
-        color: v-bind(errorColor);
-        position: absolute;
-        z-index: 1;
-        top: 1.7rem;
-        left: 1rem;
-    }
     .search {
-        content: 'f';
+        content: '';
         background-color: white;
         position: absolute;
         z-index: 1;
@@ -542,21 +521,6 @@ export default defineComponent({
         border: 1px solid;
         border-color: v-bind(borderColorComputed);
         border-radius: 0.5rem;
-        .placeholder-text {
-            font-size: 1.4rem; //input fontsize
-            padding: 0 1rem;
-        }
-        &:focus {
-            outline: none;
-            border-color: v-bind(borderColorComputed);
-            & + .placeholder-text .text {
-                background-color: white;
-                font-size: 1.1rem;
-                transform: translate(0, -1.1rem);
-                border-color: v-bind(borderColorComputed);
-                color: var(--navbarColor1);
-            }
-        }
     }
     input[type='number'] {
         -moz-appearance: textfield;
@@ -631,9 +595,8 @@ export default defineComponent({
             display: flex;
             justify-content: end;
             cursor: pointer;
-            height: 2rem;
-            width: 2rem;
-            margin-bottom: 0.5rem;
+            height: 1.5rem;
+            width: 1.5rem;
         }
     }
 
@@ -656,10 +619,12 @@ export default defineComponent({
         border-radius: 0 0.5rem 0.5rem 0;
         border-width: 1px;
         border-color: v-bind(borderColorComputed);
+        border-style: solid;
         border-left: none;
         display: flex;
         background-color: white;
         justify-content: center;
+        outline: none;
     }
     input + .placeholder-text {
         align-items: center;
@@ -673,7 +638,7 @@ export default defineComponent({
         pointer-events: none;
 
         .text {
-            font-size: 1.4rem; // placeholder
+            font-size: 1rem; // placeholder
             padding: 0 0rem;
             margin: 0 0.6rem;
             transform: translate(0);
@@ -697,11 +662,12 @@ export default defineComponent({
             position: absolute;
             left: 0px;
             width: 100%;
+            height: 50%;
+            margin-top: -1px;
             border-radius: 0.5rem 0.5rem 0rem 0rem;
-            height: 45%;
-            border-top: 1px solid;
             border-left: 1px solid;
             border-right: 1px solid;
+            border-top: 1px solid;
             border-color: v-bind(borderColorComputed);
         }
     }
@@ -720,21 +686,6 @@ export default defineComponent({
         border-radius: 0.5rem;
         padding-top: 1rem;
         text-shadow: none;
-        .placeholder-text {
-            font-size: 1.4rem; //input fontsize
-            padding: 1rem 1.2rem;
-        }
-        &:focus {
-            outline: none;
-            border-color: var(--navbarColor1);
-            & + .placeholder-text .text {
-                background-color: white;
-                font-size: 0.9rem;
-                transform: translate(0, -0.5rem);
-                border-color: var(--navbarColor1);
-                color: var(--navbarColor1);
-            }
-        }
     }
     .placeholder-text {
         align-items: start;
@@ -763,14 +714,15 @@ export default defineComponent({
         margin: 0.6rem 0.6rem;
         font-size: 0.9rem;
         color: black;
-        transform: translate(0, -1.3rem);
+        transform: translate(0, -1.2rem);
         &.text.withBorder:after {
             content: '';
             position: absolute;
             left: 0px;
             width: 100%;
+            margin-top: -1px;
             border-radius: 0.5rem 0.5rem 0rem 0rem;
-            height: 51%;
+            height: 50%;
             border-top: 1px solid;
             border-left: 1px solid;
             border-right: 1px solid;
@@ -788,11 +740,11 @@ export default defineComponent({
     .simple-typeahead-list {
         position: absolute;
         width: 100%;
-        max-height: 350px;
+        max-height: 30vh;
         overflow-y: auto;
         background-color: #fafafa;
         border-radius: 0 0 0.5rem 0.5rem;
-        border: 1px solid;
+        border: 2px solid;
         border-color: v-bind(borderColorComputed);
         border-top: none;
         z-index: 1;
@@ -800,6 +752,7 @@ export default defineComponent({
         .simple-typeahead-list-item {
             border-bottom: 1px solid;
             border-color: v-bind(borderColorComputed);
+            border-right: 1px solid;
             padding: 0.6rem 1rem;
             &.simple-typeahead-list-item-active {
                 background-color: #e1e1e1;
@@ -807,6 +760,20 @@ export default defineComponent({
             &:last-child {
                 border-bottom: none;
             }
+        }
+        &::-webkit-scrollbar-track {
+            border-radius: 0 0 0.5rem 0;
+            background-color: transparent;
+        }
+
+        &::-webkit-scrollbar {
+            width: 12px;
+            background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            border-radius: 0.5rem;
+            background-color: #555;
         }
     }
 }
