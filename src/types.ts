@@ -1,18 +1,23 @@
 export interface Player {
-  x: number
-  y: number
-  speed: number
-  size: number
-  score: number
-  id: string 
-  color: string
-  doesMove: (direction: "down" | "up" | "right" | "left", pressedKeys: Record<string, boolean>, AIInfo:AIInfo) => boolean
+  x: number;
+  y: number;
+  speed: number;
+  size: number;
+  score: number;
+  id: string;
+  color: string;
+  survived: number;
+  doesMove: (
+    direction: "down" | "up" | "right" | "left",
+    pressedKeys: Record<string, boolean>,
+    AIInfo: AIInfo
+  ) => boolean;
 }
 export interface AIInfo {
-  enemies: Enemy[],
-  items: Item[],
-  border: [up:number,down:number,right:number,left:number],
-  player: Player
+  enemies: Enemy[];
+  items: Item[];
+  border: [up: number, down: number, right: number, left: number];
+  player: Player;
 }
 
 export interface Enemy {
@@ -24,7 +29,7 @@ export interface Enemy {
   imgsrc: string;
   moveVektor: number[];
   timer: number | null;
-  targetPlayerId: Player["id"]
+  targetPlayerId: Player["id"];
 }
 export interface Item {
   type: string;

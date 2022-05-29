@@ -6,7 +6,8 @@
       <span style="position: absolute">
         <div v-for="player in allPlayers" :key="player.id">
           <span id="scoreSpan"
-            >{{ player.id }}: {{ Math.round(player.score) }}</span
+            >{{ player.id }}({{ player.survived }}):
+            {{ Math.round(player.score) }}</span
           >
         </div>
       </span>
@@ -24,6 +25,32 @@
   </div>
   <div class="game">
     <div
+      v-for="player in players"
+      :key="JSON.stringify(player)"
+      :style="{
+        left: player.x + 'px',
+        top: player.y + 'px',
+        width: player.size + 'px',
+        height: player.size + 'px',
+        backgroundColor: player.color,
+      }"
+      style="position: absolute; border-radius: 50%"
+    ></div>
+    <div
+      :class="Enemy.size"
+      v-for="Enemy of Enemies"
+      :key="Enemy.id"
+      :style="{
+        left: Enemy.x + 'px',
+        top: Enemy.y + 'px',
+        width: Enemy.size + 'px',
+        height: Enemy.size + 'px',
+      }"
+      style="position: absolute; border-radius: 50%"
+    >
+      <img :src="Enemy.imgsrc" alt="enemy" />
+    </div>
+    <div
       :class="item.type"
       v-for="item of items"
       :key="JSON.stringify(item)"
@@ -38,7 +65,7 @@
     >
       <img :src="item.imgsrc" />
     </div>
-    <div v-if="message" id="Message" :class="messageType">{{ message }}</div>
+    <!-- <div v-if="message" id="Message" :class="messageType">{{ message }}</div> -->
     <button
       @click="start()"
       v-if="!gameStarted"
@@ -128,6 +155,8 @@ import { defineComponent } from "vue";
 import { skillTree, production } from "@/global";
 import * as type from "@/types";
 import { createNewAIPlayer, getNewGeneration } from "@/AI";
+import * as API from "@/API";
+import AppVue from "@/App.vue";
 export default defineComponent({
   setup() {
     skillTree;
@@ -159,7 +188,7 @@ export default defineComponent({
       hardCoreMode: false,
       growPotionID: 0,
       gameStarted: false,
-      startingEnemies: 10,
+      startingEnemies: 4,
       borderRight: 0,
       borderLeft: 0,
       borderUp: 0,
@@ -175,10 +204,6 @@ export default defineComponent({
 
   mounted() {
     // start game if not started on enter press
-    document.addEventListener(
-      "keyup",
-      (e) => e.code == "Enter" && !this.gameStarted && this.start()
-    );
 
     window.addEventListener("resize", () => {
       this.changeDisplaySize();
@@ -213,7 +238,7 @@ export default defineComponent({
     start() {
       this.hardCoreMode
         ? (this.startingEnemies = 400)
-        : (this.startingEnemies = 10);
+        : (this.startingEnemies = 4);
       clearTimeout(this.growPotionID);
       for (let player of this.players) player.size = 15;
       this.message = "";
@@ -241,6 +266,7 @@ export default defineComponent({
         return {
           x: 0,
           y: 0,
+          survived: 0,
           score: 0,
           speed: 5,
           size: 15,
@@ -257,8 +283,12 @@ export default defineComponent({
       };
       this.deadPlayers = [];
       this.players = [];
-      for (let i = 0; i < 20; i++) this.players.push(createNewAIPlayer());
 
+      while (this.players.length < 20)
+        this.players.push(
+          API.getData("player" + this.players.length) || createNewAIPlayer()
+        );
+      console.log(this.players);
       for (let player of this.players) {
         player.y = this.borderDown - this.borderUp * 1.5;
         player.x = this.borderRight - this.borderLeft * 2;
@@ -400,7 +430,7 @@ export default defineComponent({
           break;
         case 1:
           type = "bomb";
-          imgsrc = "blue";
+          imgsrc = "yellow";
           break;
         case 2:
           type = "growPotion";

@@ -33,7 +33,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "src/toTxt.js"  ],
   "exclude": [
     "node_modules"
   ]
