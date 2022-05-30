@@ -46,49 +46,36 @@ export function getNewGeneration(players: Player[]): Player[] {
   for (player in players) {
     player = parseInt(player);
     players[player].survived++;
-    if (player < players.length / 4) {
-      players[player].score = 0;
-      newPlayers.push(players[player]);
-      continue;
-    }
-    if (player < players.length / 1.3) {
-      const AIPlayer = players[player] as Player & {
-        getWeigths: () => Tensor[];
-      };
-      const weights = AIPlayer.getWeigths();
 
-      const mutatedWeights = tf.tidy(() => {
-        const mutatedWeights = [];
-        for (let i = 0; i < weights.length; i++) {
-          const tensor = weights[i];
-          const shape = weights[i].shape;
-          const values = tensor.dataSync().slice();
-          for (let j = 0; j < values.length; j++) {
-            if (Math.random() < MUTATION_RATE) {
-              const w = values[j];
-              Math.random() < 0.5
-                ? (values[j] = w + gaussianRand())
-                : (values[j] = w - gaussianRand());
-              if (values[j] < 0) values[j] = 0;
-            }
-          }
-          const newTensor = tf.tensor(values, shape);
-          mutatedWeights[i] = newTensor;
-        }
-        return mutatedWeights;
-      });
-
-      newPlayers.push(
-        createNewAIPlayer(mutatedWeights, players[player].survived)
-      );
-      continue;
-    }
     const AIPlayer = players[0] as Player & {
       getWeigths: () => Tensor[];
     };
-    const newPlayer = createNewAIPlayer(AIPlayer.getWeigths());
-    API.setData("newPlayer", newPlayer);
-    newPlayers.push(newPlayer);
+    const weights = AIPlayer.getWeigths();
+
+    const mutatedWeights = tf.tidy(() => {
+      const mutatedWeights = [];
+      for (let i = 0; i < weights.length; i++) {
+        const tensor = weights[i];
+        const shape = weights[i].shape;
+        const values = tensor.dataSync().slice();
+        for (let j = 0; j < values.length; j++) {
+          if (Math.random() < MUTATION_RATE) {
+            const w = values[j];
+            Math.random() < 0.5
+              ? (values[j] = w + gaussianRand())
+              : (values[j] = w - gaussianRand());
+            if (values[j] < 0) values[j] = 0;
+            if (values[j] > 1) values[j] = 1;
+          }
+        }
+        const newTensor = tf.tensor(values, shape);
+        mutatedWeights[i] = newTensor;
+      }
+      return mutatedWeights;
+    });
+    newPlayers.push(
+      createNewAIPlayer(mutatedWeights, players[player].survived)
+    );
   }
   console.log(newPlayers);
   for (const player in newPlayers) {

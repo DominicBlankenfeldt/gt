@@ -15,7 +15,13 @@ export function getData(key: string): any {
     localStorage.getItem(key) || "false",
     function (key, value) {
       if (typeof value == "string") {
-        if (value.slice(0, 3) == "fun") return eval("(" + value + ")");
+        if (value.slice(0, 3) == "fun") {
+          return eval("(" + value + ")");
+        } else {
+          return value;
+        }
+      } else {
+        return value;
       }
     }
   );
