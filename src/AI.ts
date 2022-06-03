@@ -46,7 +46,10 @@ export function getNewGeneration(players: Player[]): Player[] {
   for (player in players) {
     player = parseInt(player);
     players[player].survived++;
-
+    if (player < 3) {
+      newPlayers.push(players[0]);
+      continue;
+    }
     const AIPlayer = players[0] as Player & {
       getWeigths: () => Tensor[];
     };
@@ -131,15 +134,23 @@ export function createNewAIPlayer(
 
       const closestItem =
         items.length > 0
-          ? items.reduce((a, b) =>
-              d([a.x, a.y], playerPos) < d([b.x, b.y], playerPos) ? a : b
+          ? items.reduce(
+              (a, b) =>
+                Math.sqrt((a.x - player.x) ** 2 + (a.y - player.y) ** 2) <
+                Math.sqrt((b.x - player.x) ** 2 + (b.y - player.y) ** 2)
+                  ? a
+                  : b
+              //  Math.sqrt((b.x - player.x) ** 2 + (b.y - player.y) ** 2);
             )
           : null;
       const closestEnemies = enemies
         .sort((a, b) =>
-          d([a.x, a.y], playerPos) < d([b.x, b.y], playerPos) ? 1 : -1
+          Math.sqrt((a.x - player.x) ** 2 + (a.y - player.y) ** 2) <
+          Math.sqrt((b.x - player.x) ** 2 + (b.y - player.y) ** 2)
+            ? 1
+            : -1
         )
-        .slice(0, NUMBER_OF_ENEMIES);
+        .slice(0, 4);
 
       const rescale = (v: [number, number]) =>
         mul(min(v, [border[2], border[0]]), [
@@ -159,14 +170,12 @@ export function createNewAIPlayer(
       let inputData = [...closestItemData, ...closestEnemiesData];
       inputData = [
         ...inputData,
-        ...Array(NUMBER_OF_ENEMIES * 2 + 3 - inputData.length).fill(-1),
+        ...Array(4 * 2 + 3 - inputData.length).fill(-1),
       ];
-      inputData.length = NUMBER_OF_ENEMIES * 2 + 3;
+      inputData.length = 4 * 2 + 3;
 
       const prediction = (
-        model.predict(
-          tf.tensor(inputData, [1, NUMBER_OF_ENEMIES * 2 + 3])
-        ) as any
+        model.predict(tf.tensor(inputData, [1, 4 * 2 + 3])) as any
       ).arraySync()[0];
 
       if (dir == "up") return prediction[0] > 0.5;
