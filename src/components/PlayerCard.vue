@@ -66,7 +66,7 @@
               :class="{ dirty: player.username }"
               autocomplete="off"
               style="text-shadow: none"
-              ....change="checkUserName()"
+              @change="checkUserName()"
               required
             />
             <label class="placeholder-text" for="username">
@@ -263,12 +263,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-* {
-  font-family: 'Press Start 2P', cursive;
-  font-weight: 1000;
-  color: white;
-  text-shadow: 2px 2px black;
-}
+
 .card {
   background-image: url(/img/uiol/spaceshipinside.png);
   background-size: cover;

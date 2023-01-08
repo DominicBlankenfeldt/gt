@@ -25,9 +25,7 @@ export default defineComponent({
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 * {
   font-family: 'Press Start 2P', cursive;
-  font-weight: 1000;
   text-align: center;
-  font-size: calc(0.4 * (1.5vh + 1.1vw));
 }
 .site {
   background-image: url(/img/space.jpg);

@@ -24,7 +24,7 @@
         <div class="row g-0 mt-1">
           <div class="col-2">{{ fleet.fleetInfo.name }}</div>
           <div class="col-9">{{ fleet.fleetInfo.info }}</div>
-          <button class="col-1 btn btn-outline-success" v-if="fleet.members.length < 5" .........click="joinSpaceFleet(fleet)">join</button>
+          <button class="col-1 btn btn-outline-success" v-if="fleet.members.length < 5" @click="joinSpaceFleet(fleet)">join</button>
           <button class="col-1 btn btn-outline-danger" v-else disabled>full</button>
         </div>
       </div>
@@ -54,17 +54,17 @@
             </div>
             <div class="col-4">
               <div>founder:</div>
-              <div .........click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer member">
+              <div @click="choosePlayer(fleetFounder)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer member">
                 {{ fleetFounder?.username }}
               </div>
             </div>
             <div class="col-4 d-flex flex-column align-items-center">
               <div class="mb-2">members:</div>
               <div v-for="member of fleetMembers" :key="JSON.stringify(member)" class="d-flex flex-row align-items-center">
-                <div .........click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer p-1 member">
+                <div @click="choosePlayer(member.player)" data-bs-toggle="modal" data-bs-target="#playerCard" class="pointer p-1 member">
                   {{ member.player.username }}
                 </div>
-                <button v-if="edit" class="btn shadow-none p-0" .........click="deleteMember(member)">
+                <button v-if="edit" class="btn shadow-none p-0" @click="deleteMember(member)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                     <path
                       d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"
@@ -101,8 +101,8 @@
       </div>
       <div class="card-footer d-flex justify-content-between">
         <div class="col-3" v-if="player.spaceFleet">
-          <button class="btn btn-danger shadow-none" .........click="leaveSpaceFleet()" v-if="user?.uid != fleet.fleetInfo.founder">leave</button>
-          <button class="btn btn-danger shadow-none" .........click="deleteSpaceFleet()" v-else>delete</button>
+          <button class="btn btn-danger shadow-none" @click="leaveSpaceFleet()" v-if="user?.uid != fleet.fleetInfo.founder">leave</button>
+          <button class="btn btn-danger shadow-none" @click="deleteSpaceFleet()" v-else>delete</button>
         </div>
         <div class="col-3" v-if="player.spaceFleet">
           <button class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#skillModal">skills</button>
@@ -113,11 +113,11 @@
             class="btn btn-primary shadow-none"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
-            .........click="buttonSound()"
+            @click="buttonSound()"
           >
             create fleet
           </button>
-          <button v-if="user?.uid == fleet?.fleetInfo.founder" .........click="editSave()" class="btn btn-secondary shadow-none">
+          <button v-if="user?.uid == fleet?.fleetInfo.founder" @click="editSave()" class="btn btn-secondary shadow-none">
             {{ edit ? 'save' : 'edit' }}
           </button>
         </div>
@@ -145,8 +145,8 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" .........click="buttonSound()">Close</button>
-              <button type="button" class="btn btn-success shadow-none" .........click="createFleet()" data-bs-dismiss="modal">create fleet</button>
+              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" @click="buttonSound()">Close</button>
+              <button type="button" class="btn btn-success shadow-none" @click="createFleet()" data-bs-dismiss="modal">create fleet</button>
             </div>
           </div>
         </div>
@@ -164,7 +164,7 @@
               <div v-for="skill of fleet.skills" :key="skill.name">
                 <button
                   class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-                  .........click="lvlSkill(skill)"
+                  @click="lvlSkill(skill)"
                   :data-title="fleetSkillDetails[skill.name].description"
                   :line2="`costs: ${fleetSkillDetails[skill.name].tier}`"
                 >
@@ -175,7 +175,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" .........click="buttonSound()">Close</button>
+              <button type="button" class="btn btn-secondary shadow-none" data-bs-dismiss="modal" @click="buttonSound()">Close</button>
             </div>
           </div>
         </div>
@@ -189,9 +189,9 @@
         tabindex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
-        .........click="closeChoosePlayer()"
+        @click="closeChoosePlayer()"
       >
-        <div class="modal-dialog modal-xl" .........click.stop="">
+        <div class="modal-dialog modal-xl" @click.stop="">
           <div class="modal-content">
             <div v-if="choosenPlayerLoad">
               <PlayerCard :playerProp="choosenPlayer" :editAble="false" />

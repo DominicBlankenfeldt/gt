@@ -1,220 +1,218 @@
-import { ref } from "vue";
-import * as type from "./types";
-import { User } from "firebase/auth";
-export const production = ref(
-  process.env.NODE_ENV === "production" ? true : false
-);
+import { ref } from 'vue';
+import * as type from './types';
+import { User } from 'firebase/auth';
+export const production = ref(process.env.NODE_ENV === 'production' ? true : false);
 export const fleetSkillDetails = {
   bossEnemies: {
-    name: "common superiority",
+    name: 'common superiority',
     maxlvl: 5,
     tier: 1,
-    description: "reduce enemies in a boss fight",
+    description: 'reduce enemies in a boss fight',
   },
   bossDifficulty: {
     name: `together it's easier`,
     maxlvl: 5,
     tier: 1,
-    description: "reduce the difficulty in a boss fight",
+    description: 'reduce the difficulty in a boss fight',
   },
 };
 export const skillDetails = {
   fastAbility: {
-    name: "rocket propulsion",
+    name: 'rocket propulsion',
     maxlvl: 1,
     tier: 1,
-    description: "you can speed up your movement",
+    description: 'you can speed up your movement',
   },
   slowAbility: {
-    name: "sapr flame",
+    name: 'sapr flame',
     maxlvl: 1,
     tier: 1,
-    description: " you can slow down your movement",
+    description: ' you can slow down your movement',
   },
   bombAbility: {
-    name: "remote detonator",
+    name: 'remote detonator',
     maxlvl: 1,
     tier: 1,
-    description: "you can remote ignition the nearest bomb",
+    description: 'you can remote ignition the nearest bomb',
   },
   shotAbility: {
-    name: "plasma thrower",
+    name: 'plasma thrower',
     maxlvl: 1,
     tier: 1,
-    description: " you can shoot at enemies",
+    description: ' you can shoot at enemies',
   },
   magnetAbility: {
-    name: "electro magnet",
+    name: 'electro magnet',
     maxlvl: 1,
     tier: 2,
-    description: "gives you the magnet effect",
+    description: 'gives you the magnet effect',
   },
   slowEnemyAbility: {
-    name: "snow machine",
+    name: 'snow machine',
     maxlvl: 1,
     tier: 2,
-    description: "gives you the slow enemies effect",
+    description: 'gives you the slow enemies effect',
   },
   stopTimeAbility: {
-    name: "time machine",
+    name: 'time machine',
     maxlvl: 1,
     tier: 2,
-    description: "gives you the time stop effect",
+    description: 'gives you the time stop effect',
   },
   growAbility: {
-    name: "growth ray",
+    name: 'growth ray',
     maxlvl: 1,
     tier: 2,
-    description: "gives you the grow effect",
+    description: 'gives you the grow effect',
   },
   fearAbility: {
-    name: "fear",
+    name: 'fear',
     maxlvl: 1,
     tier: 2,
-    description: "the enemies fly away from you",
+    description: 'the enemies fly away from you',
   },
   betterCoin: {
-    name: "golden coin",
+    name: 'golden coin',
     maxlvl: 20,
     tier: 1,
-    description: "the coin give more score",
+    description: 'the coin give more score',
   },
   longerSlowEnemies: {
-    name: "galactic freeze",
+    name: 'galactic freeze',
     maxlvl: 20,
     tier: 1,
-    description: "the enemy slow effect holds longer",
+    description: 'the enemy slow effect holds longer',
   },
   betterGrowPotion: {
-    name: "alchemist",
+    name: 'alchemist',
     maxlvl: 20,
     tier: 1,
-    description: "while grown you gain more score",
+    description: 'while grown you gain more score',
   },
   spawnLessEnemy: {
-    name: "cowards",
+    name: 'cowards',
     maxlvl: 20,
     tier: 1,
-    description: "it takes longer for additional enemies to spawn",
+    description: 'it takes longer for additional enemies to spawn',
   },
   longerStopTime: {
-    name: "time anomaly",
+    name: 'time anomaly',
     maxlvl: 20,
     tier: 1,
-    description: "time stands still longer",
+    description: 'time stands still longer',
   },
   scoreMultiplicator: {
-    name: "golden times",
+    name: 'golden times',
     maxlvl: 20,
     tier: 1,
-    description: "you gain more score over time",
+    description: 'you gain more score over time',
   },
   smallerBlackHole: {
-    name: "cute black holes",
+    name: 'cute black holes',
     maxlvl: 20,
     tier: 1,
-    description: "black holes are smaller",
+    description: 'black holes are smaller',
   },
   slowEnemy: {
-    name: "braking fog",
+    name: 'braking fog',
     maxlvl: 20,
     tier: 1,
-    description: "enemies will slow down",
+    description: 'enemies will slow down',
   },
   longerMagnet: {
-    name: "permanent magnet",
+    name: 'permanent magnet',
     maxlvl: 20,
     tier: 1,
-    description: "the magnet lasts longer",
+    description: 'the magnet lasts longer',
   },
   scorePerEffect: {
-    name: "golden effects",
+    name: 'golden effects',
     maxlvl: 20,
     tier: 2,
-    description: "gives you score per active effect",
+    description: 'gives you score per active effect',
   },
   strongerSlowEnemies: {
-    name: "super snowflake",
+    name: 'super snowflake',
     maxlvl: 20,
     tier: 2,
-    description: "enhances the slow enemies effect",
+    description: 'enhances the slow enemies effect',
   },
   strongerMagnet: {
-    name: "super Magnet",
+    name: 'super Magnet',
     maxlvl: 20,
     tier: 2,
-    description: "enhances the magnet effect",
+    description: 'enhances the magnet effect',
   },
   friendlierDarkhole: {
-    name: "friendlier Darkhole",
+    name: 'friendlier Darkhole',
     maxlvl: 20,
     tier: 2,
-    description: "weakens the attraction of the black holes",
+    description: 'weakens the attraction of the black holes',
   },
   smallerEnemies: {
-    name: "cute enemies",
+    name: 'cute enemies',
     maxlvl: 20,
     tier: 2,
-    description: "makes enemies smaller",
+    description: 'makes enemies smaller',
   },
   shieldGenerator: {
-    name: "shield generator",
+    name: 'shield generator',
     maxlvl: 5,
     tier: 3,
-    description: "regularly gives you a shield",
+    description: 'regularly gives you a shield',
   },
 };
 export const weaponDetails = {
   moreDamage: {
-    name: "power weapon",
+    name: 'power weapon',
     maxlvl: 20,
     tier: 1,
-    description: "your plasma makes more damage",
+    description: 'your plasma makes more damage',
   },
   biggerProjectile: {
-    name: "big plasma",
+    name: 'big plasma',
     maxlvl: 20,
     tier: 1,
-    description: "your plasma gets bigger",
+    description: 'your plasma gets bigger',
   },
   fasterProjectile: {
-    name: "high frequency",
+    name: 'high frequency',
     maxlvl: 20,
     tier: 1,
-    description: "your plasma gets faster",
+    description: 'your plasma gets faster',
   },
   fasterReload: {
-    name: "load automatically",
+    name: 'load automatically',
     maxlvl: 20,
     tier: 1,
-    description: "increases your reload speed",
+    description: 'increases your reload speed',
   },
   scorePerHit: {
-    name: "goldenGun",
+    name: 'goldenGun',
     maxlvl: 20,
     tier: 2,
-    description: "increases the score received from shot enemies",
+    description: 'increases the score received from shot enemies',
   },
   moreHP: {
-    name: "defense systems",
+    name: 'defense systems',
     maxlvl: 2,
     tier: 10,
-    description: "gives you more HP",
+    description: 'gives you more HP',
   },
   munitionsDepot: {
-    name: "munitions depot",
+    name: 'munitions depot',
     maxlvl: 20,
     tier: 2,
-    description: "increases your energyCell storage",
+    description: 'increases your energyCell storage',
   },
 
-  standard: { description: "the standard gun", maxlvl: 0 },
-  shotgun: { description: "shot 3 plasmas", maxlvl: 0 },
-  MG: { description: "faster reload", maxlvl: 0 },
-  aimgun: { description: "plamsa pursues enemies", maxlvl: 0 },
-  splitgun: { description: "plasma shatters after collision", maxlvl: 0 },
-  safegun: { description: "throws plasma around the player", maxlvl: 0 },
-  bazooka: { description: "fires a huge powerful plasma ball", maxlvl: 0 },
+  standard: { description: 'the standard gun', maxlvl: 0 },
+  shotgun: { description: 'shot 3 plasmas', maxlvl: 0 },
+  MG: { description: 'faster reload', maxlvl: 0 },
+  aimgun: { description: 'plamsa pursues enemies', maxlvl: 0 },
+  splitgun: { description: 'plasma shatters after collision', maxlvl: 0 },
+  safegun: { description: 'throws plasma around the player', maxlvl: 0 },
+  bazooka: { description: 'fires a huge powerful plasma ball', maxlvl: 0 },
 };
 export const weaponStats = {
   standard: { dmg: 1, reload: 2, size: 5, spheres: 1 },
@@ -225,51 +223,49 @@ export const weaponStats = {
   safegun: { dmg: 1, reload: 10, size: 2, spheres: 8 },
   bazooka: { dmg: 10, reload: 6, size: 10, spheres: 1 },
 } as type.WeaponStats;
-export const weaponAmount = Object.values(weaponDetails).filter(
-  (w) => !w.maxlvl
-).length;
+export const weaponAmount = Object.values(weaponDetails).filter(w => !w.maxlvl).length;
 export const passivDetails = {
   increaseScore: {
-    name: "all golden",
+    name: 'all golden',
     maxlvl: 50,
-    description: "increases overall score gain",
+    description: 'increases overall score gain',
   },
   increaseGun: {
-    name: "modern weapons",
+    name: 'modern weapons',
     maxlvl: 50,
-    description: "increases all weapon stats",
+    description: 'increases all weapon stats',
   },
   nerfEnemies: {
-    name: "cute enemies",
+    name: 'cute enemies',
     maxlvl: 50,
-    description: "less enemies and\nthey are slower",
+    description: 'less enemies and\nthey are slower',
   },
   moreItems: {
-    name: "oodles items",
+    name: 'oodles items',
     maxlvl: 50,
-    description: "more items spawn",
+    description: 'more items spawn',
   },
   nerfBoss: {
-    name: "cute boss",
+    name: 'cute boss',
     maxlvl: 50,
-    description: "reduce boss hp and\nslow it down",
+    description: 'reduce boss hp and\nslow it down',
   },
   longerEffects: {
-    name: "infinite effects",
+    name: 'infinite effects',
     maxlvl: 50,
-    description: "all effects last longer",
+    description: 'all effects last longer',
   },
   moreScrap: {
-    name: "scrap collector",
+    name: 'scrap collector',
     maxlvl: 50,
-    description: "you get more scrap",
+    description: 'you get more scrap',
   },
   shipStats: {
-    name: "shipStats",
+    name: 'shipStats',
     maxlvl: 50,
-    description: "increases the stats\nof your spaceship",
+    description: 'increases the stats\nof your spaceship',
   },
-  none: { name: "none", maxlvl: 0, description: "<3" },
+  none: { name: 'none', maxlvl: 0, description: '<3' },
 };
 export const passivAmount = Object.values(passivDetails).length;
 export const maxLessStartEnemies = 10;
@@ -278,38 +274,38 @@ export const maxLowerScoreTimer = 10;
 export const maxCurrency = 10000;
 export const shopDetails = {
   energyCell: {
-    name: "energyCell",
+    name: 'energyCell',
     max: 100,
     maxlvl: 3,
-    description: "is needed to use abilities",
+    description: 'is needed to use abilities',
     cost: 1,
     upgradeCost: 2000,
   },
   lessStartEnemies: {
-    name: "corruption",
+    name: 'corruption',
     max: maxLessStartEnemies,
-    description: "fewer enemies appear at the beginning",
+    description: 'fewer enemies appear at the beginning',
     cost: 10,
     upgradeCost: 1000,
   },
   higherDifficultyTimer: {
-    name: "easy mode",
+    name: 'easy mode',
     max: maxHigherDifficultyTimer,
-    description: "it takes longer to increase the difficulty",
+    description: 'it takes longer to increase the difficulty',
     cost: 10,
     upgradeCost: 1000,
   },
   lowerScoreTimer: {
-    name: "faster gold",
+    name: 'faster gold',
     max: maxLowerScoreTimer,
-    description: "the score growth is increased faster",
+    description: 'the score growth is increased faster',
     cost: 10,
     upgradeCost: 1000,
   },
   passivSlots: {
-    name: "passivSlots",
+    name: 'passivSlots',
     max: 3,
-    description: "allows to use several passive",
+    description: 'allows to use several passive',
     cost: 2000,
     upgradeCost: 2000,
   },
@@ -317,38 +313,38 @@ export const shopDetails = {
 export const hangarSize = 5;
 export const houseDetails = {
   skill: {
-    name: "research lab",
+    name: 'research lab',
     startlvl: 0,
     maxlvl: 5,
-    description: "increase your skills max lvl",
+    description: 'increase your skills max lvl',
     upgradeCost: 500000,
   },
   weapon: {
-    name: "weapons lab",
+    name: 'weapons lab',
     startlvl: 0,
     maxlvl: 5,
-    description: "increase your weaponupgrades max lvl",
+    description: 'increase your weaponupgrades max lvl',
     upgradeCost: 500000,
   },
   passiv: {
-    name: "atom lab",
+    name: 'atom lab',
     startlvl: 0,
     maxlvl: 5,
-    description: "increase your passivs max lvl",
+    description: 'increase your passivs max lvl',
     upgradeCost: 500000,
   },
   shop: {
-    name: "shop",
+    name: 'shop',
     startlvl: 1,
     maxlvl: 5,
-    description: "increase max lvl of shop items",
+    description: 'increase max lvl of shop items',
     upgradeCost: 500000,
   },
   hangar: {
-    name: "hangar",
+    name: 'hangar',
     startlvl: 1,
     maxlvl: 5,
-    description: "you are more likely to get better spaceships",
+    description: 'you are more likely to get better spaceships',
     upgradeCost: 500000,
   },
 };
@@ -359,7 +355,7 @@ export const modelDetails = {
     hp: 1,
     scoreMultiplier: 1.5,
     store: 80,
-    color: "#A9A9A9",
+    color: '#A9A9A9',
   }, //DarGray
   uncommon: {
     size: 28,
@@ -367,7 +363,7 @@ export const modelDetails = {
     hp: 1,
     scoreMultiplier: 2,
     store: 90,
-    color: "#006400",
+    color: '#006400',
   }, //DarkGreen
   rare: {
     size: 26,
@@ -375,7 +371,7 @@ export const modelDetails = {
     hp: 2,
     scoreMultiplier: 2.5,
     store: 100,
-    color: "#00008B",
+    color: '#00008B',
   }, //DarkBlue
   epic: {
     size: 24,
@@ -383,7 +379,7 @@ export const modelDetails = {
     hp: 2,
     scoreMultiplier: 3,
     store: 120,
-    color: "#8A2BE2",
+    color: '#8A2BE2',
   }, //BlueVilet
   legendary: {
     size: 22,
@@ -391,77 +387,76 @@ export const modelDetails = {
     hp: 3,
     scoreMultiplier: 3.5,
     store: 150,
-    color: "#B8860B",
+    color: '#B8860B',
   }, //DarkGoldenRod
 };
 export const peculiarityDetails = {
   darkHole: {
-    name: "harmlessly darkhole",
-    description: "a black hole\nonly does damage",
+    name: 'harmlessly darkhole',
+    description: 'a black hole\nonly does damage',
   },
   growPotion: {
-    name: "heal potion",
-    description: "a grow potion\nrestores life",
+    name: 'heal potion',
+    description: 'a grow potion\nrestores life',
   },
   slowSpeed: {
-    name: "cruise control",
-    description:
-      "share four rocket propulsion\nand sapr flame automatically\nin total chaos mode",
+    name: 'cruise control',
+    description: 'share four rocket propulsion\nand sapr flame automatically\nin total chaos mode',
   },
   immunity: {
-    name: "immunity",
-    description: "you are immune for 1 second\nafter a hit",
+    name: 'immunity',
+    description: 'you are immune for 1 second\nafter a hit',
   },
   generator: {
-    name: "generator",
-    description: "buys energy cells\nduring a round",
+    name: 'generator',
+    description: 'buys energy cells\nduring a round',
   },
   autoShot: {
-    name: "autoShot",
-    description: "you automatically\nshoot free plasma",
+    name: 'autoShot',
+    description: 'you automatically\nshoot free plasma',
   },
 };
 export const lvlSkillsDetails = {
   tier1: {
-    name: "tier1",
-    description: "increase your tier1 skills max lvl",
+    name: 'tier1',
+    description: 'increase your tier1 skills max lvl',
     maxlvl: 5,
   },
   tier2: {
-    name: "tier2",
-    description: "increase your tier2 skills max lvl",
+    name: 'tier2',
+    description: 'increase your tier2 skills max lvl',
     maxlvl: 5,
   },
   tier3: {
-    name: "tier3",
-    description: "increase your tier3 skills max lvl",
+    name: 'tier3',
+    description: 'increase your tier3 skills max lvl',
     maxlvl: 5,
   },
 };
 export const lvlWeaponUpgradeDetails = {
   tier1: {
-    name: "tier1",
-    description: "increase your tier1 weaponupgrades max lvl",
+    name: 'tier1',
+    description: 'increase your tier1 weaponupgrades max lvl',
     maxlvl: 5,
   },
   tier2: {
-    name: "tier2",
-    description: "increase your tier2 weaponupgrades max lvl",
+    name: 'tier2',
+    description: 'increase your tier2 weaponupgrades max lvl',
     maxlvl: 5,
   },
 };
 export const lvlPassivDetails = {
   tier1: {
-    name: "tier1",
-    description: "increase your passivs max lvl",
+    name: 'tier1',
+    description: 'increase your passivs max lvl',
     maxlvl: 5,
   },
 };
 export const lvlShopDetails = {
-  tier1: { name: "tier1", description: "you get more scrap", maxlvl: 5 },
+  tier1: { name: 'tier1', description: 'you get more scrap', maxlvl: 5 },
   tier2: {
-    name: "tier2",
-    description: "Items in the store become cheaper",
+    name: 'tier2',
+    description: 'Items in the store become cheaper',
     maxlvl: 5,
   },
 };
@@ -473,16 +468,16 @@ export function checkPlayer(player: type.Player, user?: User) {
   if (user) player.id = player.id || user.uid;
   player.settings = player.settings || {
     abilitys: {
-      1: { key: "1", name: "" },
-      2: { key: "2", name: "" },
-      3: { key: "3", name: "" },
-      4: { key: "4", name: "" },
+      1: { key: '1', name: '' },
+      2: { key: '2', name: '' },
+      3: { key: '3', name: '' },
+      4: { key: '4', name: '' },
     },
     moves: {
-      up: "w",
-      down: "s",
-      left: "a",
-      right: "d",
+      up: 'w',
+      down: 's',
+      left: 'a',
+      right: 'd',
     },
     musicVolume: 50,
     effectVolume: 50,
@@ -492,8 +487,8 @@ export function checkPlayer(player: type.Player, user?: User) {
     hardcore: 0,
     totalchaos: 0,
   };
-  player.username = player.username || "gast";
-  player.img = player.img || "";
+  player.username = player.username || 'gast';
+  player.img = player.img || '';
   player.registeredAt = player.registeredAt || new Date().toJSON();
   player.playedGames = player.playedGames || {
     normal: 0,
@@ -505,20 +500,18 @@ export function checkPlayer(player: type.Player, user?: User) {
     hardcore: 0,
     totalchaos: 0,
   };
-  player.playMode = player.playMode || "normal";
+  player.playMode = player.playMode || 'normal';
   player.playedTime = player.playedTime || 0;
   player.shop = player.shop || {};
   player.shop.currency = player.shop.currency || 0;
   for (const shopElement of Object.keys(shopDetails)) {
-    player.shop[shopElement as type.ShopElement] = player.shop[
-      shopElement as type.ShopElement
-    ] || { amount: 0, reBuy: false, use: false, lvl: 1 };
+    player.shop[shopElement as type.ShopElement] = player.shop[shopElement as type.ShopElement] || { amount: 0, reBuy: false, use: false, lvl: 1 };
   }
   player.weaponTree =
     player.weaponTree ||
     ({
-      weaponType: "standard",
-      weaponAvaibleTypes: ["standard"],
+      weaponType: 'standard',
+      weaponAvaibleTypes: ['standard'],
       weaponPoints: 0,
       weaponUpgrades: [] as type.WeaponUpgrade[],
     } as type.WeaponTree);
@@ -532,18 +525,15 @@ export function checkPlayer(player: type.Player, user?: User) {
       });
     }
   }
-  player.weaponTree.weaponType = player.weaponTree.weaponType || "standard";
-  player.weaponTree.weaponAvaibleTypes = player.weaponTree
-    .weaponAvaibleTypes || ["standard"];
+  player.weaponTree.weaponType = player.weaponTree.weaponType || 'standard';
+  player.weaponTree.weaponAvaibleTypes = player.weaponTree.weaponAvaibleTypes || ['standard'];
   player.skillTree =
     player.skillTree ||
     ({
       skillPoints: 0,
       skills: [] as type.Skill[],
     } as type.SkillTree);
-  for (const skill of Object.entries(skillDetails).flatMap(
-    ([key, value]) => key
-  )) {
+  for (const skill of Object.entries(skillDetails).flatMap(([key, value]) => key)) {
     if (checkSkill(player, skill)) {
       player.skillTree.skills.push({ name: skill as type.SkillName, lvl: 0 });
     }
@@ -551,8 +541,8 @@ export function checkPlayer(player: type.Player, user?: User) {
   player.passivTree =
     player.passivTree ||
     ({
-      passivType: ["none"],
-      passivAvaibleTypes: ["none"],
+      passivType: ['none'],
+      passivAvaibleTypes: ['none'],
       passivPoints: 0,
       passivUpgrades: [] as type.PassivUpgrade[],
     } as type.PassivTree);
@@ -578,14 +568,14 @@ export function checkPlayer(player: type.Player, user?: User) {
     }
   }
   player.ship = player.ship || {
-    models: [{ img: 1, rarity: "common", id: 0 }],
-    selectedModel: { img: 1, rarity: "common", id: 0 },
+    models: [{ img: 1, rarity: 'common', id: 0 }],
+    selectedModel: { img: 1, rarity: 'common', id: 0 },
     autoSell: false,
   };
   player.ship.autoSell = player.ship.autoSell || false;
   player.peculiarities = player.peculiarities || {
     available: [],
-    selected: "" as type.PeculiarityName,
+    selected: '' as type.PeculiarityName,
   };
   player.daily = player.daily || {
     day: 0,
@@ -632,60 +622,26 @@ export function checkPlayer(player: type.Player, user?: User) {
   return player;
 }
 function checkLvlSkill(player: type.Player, lvlSkill: string) {
-  return (
-    player.lvlTree.lvlSkills[
-      player.lvlTree.lvlSkills.findIndex((s) => s.name == lvlSkill)
-    ] === undefined
-  );
+  return player.lvlTree.lvlSkills[player.lvlTree.lvlSkills.findIndex(s => s.name == lvlSkill)] === undefined;
 }
 function checkLvlWeaponUpgrade(player: type.Player, lvlWeaponUpgrade: string) {
-  return (
-    player.lvlTree.lvlWeaponUpgrade[
-      player.lvlTree.lvlWeaponUpgrade.findIndex(
-        (s) => s.name == lvlWeaponUpgrade
-      )
-    ] === undefined
-  );
+  return player.lvlTree.lvlWeaponUpgrade[player.lvlTree.lvlWeaponUpgrade.findIndex(s => s.name == lvlWeaponUpgrade)] === undefined;
 }
 function checkLvlPassiv(player: type.Player, lvlPassiv: string) {
-  return (
-    player.lvlTree.lvlPassiv[
-      player.lvlTree.lvlPassiv.findIndex((s) => s.name == lvlPassiv)
-    ] === undefined
-  );
+  return player.lvlTree.lvlPassiv[player.lvlTree.lvlPassiv.findIndex(s => s.name == lvlPassiv)] === undefined;
 }
 function checkLvlShop(player: type.Player, lvlShop: string) {
-  return (
-    player.lvlTree.lvlShop[
-      player.lvlTree.lvlShop.findIndex((s) => s.name == lvlShop)
-    ] === undefined
-  );
+  return player.lvlTree.lvlShop[player.lvlTree.lvlShop.findIndex(s => s.name == lvlShop)] === undefined;
 }
 function checkHouse(player: type.Player, house: string) {
-  return (
-    player.spaceport.houses[
-      player.spaceport.houses.findIndex((s) => s.name == house)
-    ] === undefined
-  );
+  return player.spaceport.houses[player.spaceport.houses.findIndex(s => s.name == house)] === undefined;
 }
 function checkWeaponUpgrade(player: type.Player, weaponUpgrade: string) {
-  return (
-    player.weaponTree.weaponUpgrades[
-      player.weaponTree.weaponUpgrades.findIndex((s) => s.name == weaponUpgrade)
-    ] === undefined
-  );
+  return player.weaponTree.weaponUpgrades[player.weaponTree.weaponUpgrades.findIndex(s => s.name == weaponUpgrade)] === undefined;
 }
 function checkSkill(player: type.Player, skill: string) {
-  return (
-    player.skillTree.skills[
-      player.skillTree.skills.findIndex((s) => s.name == skill)
-    ] === undefined
-  );
+  return player.skillTree.skills[player.skillTree.skills.findIndex(s => s.name == skill)] === undefined;
 }
 function checkPassivUpgrade(player: type.Player, passivUpgrade: string) {
-  return (
-    player.passivTree.passivUpgrades[
-      player.passivTree.passivUpgrades.findIndex((s) => s.name == passivUpgrade)
-    ] === undefined
-  );
+  return player.passivTree.passivUpgrades[player.passivTree.passivUpgrades.findIndex(s => s.name == passivUpgrade)] === undefined;
 }

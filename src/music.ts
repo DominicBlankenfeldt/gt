@@ -7,7 +7,7 @@ audioElement.setAttribute('src', '/music/Space.mp3');
 audioElement.setAttribute('autoplay', 'autoplay');
 audioElement.loop = true;
 changeVolume(50);
-export function changeVolume(volume: number) {
+export function changeVolume(volume = 50) {
   if (audioElement) audioElement.volume = volume / 5000;
 }
 export function start() {
@@ -20,7 +20,7 @@ export function start() {
   }
   musicStarts.value = true;
 }
-export function itemSound(volume: number, item: type.Item) {
+export function itemSound(volume = 50, item: type.Item) {
   const ItemSound = document.createElement('audio');
   switch (item.type) {
     case 'clearField':
@@ -35,7 +35,7 @@ export function itemSound(volume: number, item: type.Item) {
   ItemSound.volume = volume / 600;
   ItemSound.play();
 }
-export function plasmaSound(volume: number) {
+export function plasmaSound(volume = 50) {
   const PlasmaSound = document.createElement('audio');
   PlasmaSound.setAttribute('id', 'plasmaSound');
   PlasmaSound.setAttribute('src', '/music/PlasmaSound.mp3');
@@ -43,7 +43,7 @@ export function plasmaSound(volume: number) {
   PlasmaSound.volume = volume / 600;
   PlasmaSound.play();
 }
-export function ButtonSound(volume: number) {
+export function ButtonSound(volume = 50) {
   const buttonSound = document.createElement('audio');
   buttonSound.setAttribute('id', 'ButtonSound');
   buttonSound.setAttribute('src', '/music/ButtonPressed.mp3');

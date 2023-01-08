@@ -6,14 +6,14 @@
         <h1>Join a starship crew.</h1>
       </div>
       <div class="card-body">
-        <form ..submit.prevent="register()" autocomplete="off">
+        <form @submit.prevent="register()" autocomplete="off">
           <div class="m-4 alert alert-danger text-center" v-if="error">
             {{ error }}
           </div>
-          <SexyInput :labelBorder="true" placeholder="username" v-model="username" type="text" required></SexyInput>
-          <SexyInput :labelBorder="true" placeholder="email" v-model="email" type="email" required></SexyInput>
-          <SexyInput :labelBorder="true" placeholder="password" v-model="password" type="password" minlength="6" required></SexyInput>
-          <SexyInput :labelBorder="true" placeholder="confirm" v-model="confirmed" type="password" minlength="6" required></SexyInput>
+          <div><TextInput placeholder="username" v-model="username" required></TextInput></div>
+          <div><EmailInput placeholder="email" v-model="email" required></EmailInput></div>
+          <div><PasswordInput placeholder="password" v-model="password" minlength="6" required></PasswordInput></div>
+          <div><PasswordInput placeholder="confirm" v-model="confirmed" minlength="6" required></PasswordInput></div>
           <div class="container" v-if="!registering">
             <button class="btn" type="submit" :disabled="username.length < 3 || username == 'gast'">
               <a v-if="!registering">register</a>
@@ -30,53 +30,43 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { ref } from 'vue';
 import * as API from '../API';
 import * as type from '../types';
-import SexyInput from '../components/SexyInput.vue';
-import { checkPlayer } from '../global';
+import { TextInput, EmailInput, PasswordInput } from 'custom-mbd-components';
 import * as music from '../music';
-export default defineComponent({
-  components: {
-    SexyInput,
-  },
-  data() {
-    return {
-      confirmed: '',
-      password: '',
-      email: '',
-      username: '',
-      error: '',
-      registering: false,
-      player: {} as type.Player,
-    };
-  },
-  async mounted() {
+import router from '../router';
+
+const confirmed = ref('');
+const password = ref('');
+const email = ref('');
+const username = ref('');
+const error = ref('');
+const registering = ref(false);
+const player = ref({} as type.Player);
+
+music.ButtonSound(50);
+
+async function register() {
+  error.value = '';
+  if (confirmed.value !== password.value) {
+    error.value = 'The passwords do not match';
+    return;
+  }
+  registering.value = true;
+  try {
+    player.value.username = username.value;
+    player.value.registeredAt = new Date().toJSON();
+    await API.register(email.value, password.value, player.value);
+    router.push('/home');
+  } catch (e) {
     music.ButtonSound(50);
-  },
-  methods: {
-    async register() {
-      this.error = '';
-      if (this.confirmed !== this.password) {
-        this.error = 'The passwords do not match';
-        return;
-      }
-      this.registering = true;
-      try {
-        this.player.username = this.username;
-        this.player.registeredAt = new Date().toJSON();
-        await API.register(this.email, this.password, this.player);
-        this.$router.push('/home');
-      } catch (e) {
-        music.ButtonSound(50);
-        this.error = 'Unfortunately, the account could not be registered';
-      } finally {
-        this.registering = false;
-      }
-    },
-  },
-});
+    error.value = 'Unfortunately, the account could not be registered';
+  } finally {
+    registering.value = false;
+  }
+}
 </script>
 <style lang="scss" scoped>
 * {

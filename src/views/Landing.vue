@@ -22,8 +22,8 @@
           <form @submit.prevent="login()" autocomplete="off" class="col-6">
             <div class="m-4 alert alert-danger text-center" v-if="error">Username or password is not correct</div>
             <div class="container">
-              <SexyInput :labelBorder="true" placeholder="email" v-model="email" type="email" required></SexyInput>
-              <SexyInput :labelBorder="true" placeholder="password" v-model="password" type="password" minlength="6" required></SexyInput>
+              <div><EmailInput placeholder="email" v-model="email" required></EmailInput></div>
+              <div><PasswordInput placeholder="password" v-model="password" minlength="6" required></PasswordInput></div>
               <div v-if="!loggingIn">
                 <button class="btn" type="submit" v-if="!loggingIn" style="margin-left: 0px">
                   <a v-if="!loggingIn">enter your ship.</a>
@@ -47,61 +47,48 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script lang="ts" setup>
+import { ref } from 'vue';
 import * as API from '../API';
-import { currentUser } from '../router';
+import router, { currentUser } from '../router';
 import * as music from '../music';
-import SexyInput from '../components/SexyInput.vue';
-export default defineComponent({
-  components: {
-    SexyInput,
-  },
-  data() {
-    return {
-      confirmed: '',
-      password: '',
-      email: '',
-      username: '',
-      error: false,
-      loggingIn: false,
-    };
-  },
-  mounted() {
-    if (currentUser) {
-      this.$router.push('/home');
-    }
-    music.ButtonSound(50);
-  },
-  methods: {
-    async login() {
-      this.error = false;
-      this.loggingIn = true;
-      try {
-        await API.login(this.email, this.password);
-        this.email = '';
-        this.password = '';
-        this.$router.push('/home');
-      } catch (e) {
-        await API.logout;
-        this.error = true;
-        console.error({ "couldn't login": e });
-      } finally {
-        this.password = '';
-        this.loggingIn = false;
-      }
-    },
-    register() {
-      this.$router.push('/register');
-    },
-  },
-});
+import { EmailInput, PasswordInput } from 'custom-mbd-components';
+
+const password = ref('');
+const email = ref('');
+const error = ref(false);
+const loggingIn = ref(false);
+
+if (currentUser) {
+  router.push('/home');
+}
+music.ButtonSound(50);
+
+async function login() {
+  error.value = false;
+  loggingIn.value = true;
+  try {
+    await API.login(email.value, password.value);
+    email.value = '';
+    password.value = '';
+    router.push('/home');
+  } catch (e) {
+    await API.logout;
+    error.value = true;
+    console.error({ "couldn't login": e });
+  } finally {
+    password.value = '';
+    loggingIn.value = false;
+  }
+}
+function register() {
+  router.push('/register');
+}
 </script>
 
 <style lang="scss" scoped>
 * {
   color: white;
-  text-shadow: 1px 1px black;
 }
 
 // card

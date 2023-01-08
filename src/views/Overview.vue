@@ -2,11 +2,6 @@
   <div v-if="dataLoad" class="w-75 mt-5" style="margin-left: 12.5vw">
     <PlayerCard :playerProp="player" :editAble="true" />
   </div>
-  <!-- <div class="d-flex justify-content-center">
-        <div v-if="newVersion" @click="reload()" class="footer text-center" style="background-color: gray">
-            there is a new version click here to upgrade
-        </div>
-    </div> -->
 </template>
 
 <script lang="ts">
@@ -55,8 +50,9 @@ export default defineComponent({
       } catch {
         API.logout();
       }
+      this.player = checkPlayer(this.player, this.user) as type.Player;
     }
-    this.player = checkPlayer(this.player, this.user!) as type.Player;
+    console.log(this.player);
     this.buttonSound();
     this.dataLoad = true;
   },
@@ -88,12 +84,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-* {
-  font-family: 'Press Start 2P', cursive;
-  font-weight: 1000;
-  color: white;
-  text-shadow: 2px 2px black;
-}
+
 .card {
   background-image: url(/img/uiol/spaceshipinside.png);
   background-size: cover;
