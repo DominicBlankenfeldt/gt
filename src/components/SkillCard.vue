@@ -1,163 +1,141 @@
 <template>
   <div v-if="dataLoad" style="margin-top: 6vh; color: white">
     <div>
-      <div
-        data-title="you get 1 skillpoint per 1000 highscore in normal mode"
-        class="w-25 d-inline"
-      >
+      <div data-title="you get 1 skillpoint per 1000 highscore in normal mode" class="w-25 d-inline">
         Research Points:
         <br />
-        {{ player.skillTree.skillPoints - usedSkillPoints }}/{{
-          player.skillTree.skillPoints
-        }}
+        {{ player.skillTree.skillPoints - usedSkillPoints }}/{{ player.skillTree.skillPoints }}
       </div>
     </div>
     <div class="row g-0 mt-2">
       <div class="col-1"></div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="skill of tier1Skills" :key="skill.name">
-          <button
-            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-            @click="lvlSkill(skill)"
-            @dblclick="lvlSkillx8(skill)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               skillDetails[skill.name].description +
               '\n' +
-              (skill.lvl <
-              skillDetails[skill.name].maxlvl +
-                (findHouse(player, 'skill') + findlvlSkill(player, 'tier1')) * 3
+              (skill.lvl < skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier1')) * 3
                 ? `costs: ${skillDetails[skill.name].tier}`
                 : 'max lvl')
             "
           >
-            {{ skillDetails[skill.name].name }}
-            <br />
-            lvl: {{ skill.lvl }}/{{
-              skillDetails[skill.name].maxlvl +
-              (findHouse(player, "skill") + findlvlSkill(player, "tier1")) * 3
-            }}
-          </button>
+            <Button class="mt-2 w-100 btn btn-primary align-self-center shadow-none" @click="lvlSkill(skill)" @dblclick="lvlSkillx8(skill)">
+              {{ skillDetails[skill.name].name }}
+              <br />
+              lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier1')) * 3 }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="skill of tier1Abilitys" :key="skill.name">
-          <button
-            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-            @click="lvlSkill(skill)"
-            @dblclick="lvlSkillx8(skill)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               skillDetails[skill.name].description +
               '\n' +
-              (skill.lvl < skillDetails[skill.name].maxlvl
-                ? `costs: ${skillDetails[skill.name].tier}`
-                : 'max lvl')
+              (skill.lvl < skillDetails[skill.name].maxlvl ? `costs: ${skillDetails[skill.name].tier}` : 'max lvl')
             "
           >
-            {{ skillDetails[skill.name].name }}
-            <br />
-            lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
-          </button>
+            <Button class="mt-2 w-100 btn btn-primary align-self-center shadow-none" @click="lvlSkill(skill)" @dblclick="lvlSkillx8(skill)">
+              {{ skillDetails[skill.name].name }}
+              <br />
+              lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="skill of tier2Skills" :key="skill.name">
-          <button
-            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-            @click="lvlSkill(skill)"
-            @dblclick="lvlSkillx8(skill)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               skillDetails[skill.name].description +
               '\n' +
-              (skill.lvl <
-              skillDetails[skill.name].maxlvl +
-                (findHouse(player, 'skill') + findlvlSkill(player, 'tier2')) * 2
+              (skill.lvl < skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier2')) * 2
                 ? `costs: ${skillDetails[skill.name].tier}`
                 : 'max lvl')
             "
-            :disabled="usedSkillPoints < 100"
           >
-            {{ skillDetails[skill.name].name }}
-            <br />
-            lvl: {{ skill.lvl }}/{{
-              skillDetails[skill.name].maxlvl +
-              (findHouse(player, "skill") + findlvlSkill(player, "tier2")) * 2
-            }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+              @click="lvlSkill(skill)"
+              @dblclick="lvlSkillx8(skill)"
+              :disabled="usedSkillPoints < 100"
+            >
+              {{ skillDetails[skill.name].name }}
+              <br />
+              lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier2')) * 2 }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="skill of tier2Abilitys" :key="skill.name">
-          <button
-            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-            @click="lvlSkill(skill)"
-            @dblclick="lvlSkillx8(skill)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               skillDetails[skill.name].description +
               '\n' +
-              (skill.lvl < skillDetails[skill.name].maxlvl
-                ? `costs: ${skillDetails[skill.name].tier}`
-                : 'max lvl')
+              (skill.lvl < skillDetails[skill.name].maxlvl ? `costs: ${skillDetails[skill.name].tier}` : 'max lvl')
             "
-            :disabled="usedSkillPoints < 100"
           >
-            {{ skillDetails[skill.name].name }}
-            <br />
-            lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+              @click="lvlSkill(skill)"
+              @dblclick="lvlSkillx8(skill)"
+              :disabled="usedSkillPoints < 100"
+            >
+              {{ skillDetails[skill.name].name }}
+              <br />
+              lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="skill of tier3Skills" :key="skill.name">
-          <button
-            class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
-            @click="lvlSkill(skill)"
-            @dblclick="lvlSkillx8(skill)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               skillDetails[skill.name].description +
               '\n' +
-              (skill.lvl <
-              skillDetails[skill.name].maxlvl +
-                (findHouse(player, 'skill') + findlvlSkill(player, 'tier3'))
+              (skill.lvl < skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier3'))
                 ? `costs: ${skillDetails[skill.name].tier}`
                 : 'max lvl')
             "
-            :disabled="usedSkillPoints < 200"
           >
-            {{ skillDetails[skill.name].name }}
-            <br />
-            lvl: {{ skill.lvl }}/{{
-              skillDetails[skill.name].maxlvl +
-              (findHouse(player, "skill") + findlvlSkill(player, "tier3"))
-            }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary align-self-center shadow-none"
+              @click="lvlSkill(skill)"
+              @dblclick="lvlSkillx8(skill)"
+              :disabled="usedSkillPoints < 200"
+            >
+              {{ skillDetails[skill.name].name }}
+              <br />
+              lvl: {{ skill.lvl }}/{{ skillDetails[skill.name].maxlvl + (findHouse(player, 'skill') + findlvlSkill(player, 'tier3')) }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="mt-2">
-        <button
-          class="btn btn-danger align-self-center shadow-none"
-          @click="resetSkillTree()"
-        >
-          reset Skilltree
-        </button>
+        <Button class="btn btn-danger align-self-center shadow-none" @click="resetSkillTree()">reset Skilltree</Button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { currentUser } from "../router";
-import { skillDetails } from "../global";
-import {
-  findHouse,
-  findlvlSkill,
-  findlvlWeaponUpgrade,
-  findlvlPassiv,
-} from "../game/helpers";
-import * as type from "../types";
-import * as music from "../music";
+import { defineComponent, PropType } from 'vue';
+import { currentUser } from '../router';
+import { skillDetails } from '../global';
+import { findHouse, findlvlSkill, findlvlWeaponUpgrade, findlvlPassiv } from '../game/helpers';
+import * as type from '../types';
+import * as music from '../music';
+import { Button, Tooltip } from 'custom-mbd-components';
 
 export default defineComponent({
+  components: {
+    Button,
+    Tooltip,
+  },
   setup() {
     currentUser;
     return {
@@ -190,92 +168,56 @@ export default defineComponent({
     tier1Skills() {
       let tier1 = [] as type.Skill[];
       for (let skill of this.player.skillTree.skills) {
-        if (
-          skillDetails[skill.name].tier == 1 &&
-          skillDetails[skill.name].maxlvl != 1
-        ) {
+        if (skillDetails[skill.name].tier == 1 && skillDetails[skill.name].maxlvl != 1) {
           tier1.push(skill);
         }
       }
-      tier1
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1));
       return tier1;
     },
     tier1Abilitys() {
       let tier1 = [] as type.Skill[];
       for (let skill of this.player.skillTree.skills) {
-        if (
-          skillDetails[skill.name].tier == 1 &&
-          skillDetails[skill.name].maxlvl == 1
-        ) {
+        if (skillDetails[skill.name].tier == 1 && skillDetails[skill.name].maxlvl == 1) {
           tier1.push(skill);
         }
       }
-      tier1
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1));
       return tier1;
     },
     tier2Skills() {
       let tier2 = [] as type.Skill[];
       for (let skill of this.player.skillTree.skills) {
-        if (
-          skillDetails[skill.name].tier == 2 &&
-          skillDetails[skill.name].maxlvl != 1
-        ) {
+        if (skillDetails[skill.name].tier == 2 && skillDetails[skill.name].maxlvl != 1) {
           tier2.push(skill);
         }
       }
-      tier2
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1));
       return tier2;
     },
     tier2Abilitys() {
       let tier2 = [] as type.Skill[];
       for (let skill of this.player.skillTree.skills) {
-        if (
-          skillDetails[skill.name].tier == 2 &&
-          skillDetails[skill.name].maxlvl == 1
-        ) {
+        if (skillDetails[skill.name].tier == 2 && skillDetails[skill.name].maxlvl == 1) {
           tier2.push(skill);
         }
       }
-      tier2
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1));
       return tier2;
     },
     tier3Skills() {
       let tier3 = [] as type.Skill[];
       for (let skill of this.player.skillTree.skills) {
-        if (
-          skillDetails[skill.name].tier == 3 &&
-          skillDetails[skill.name].maxlvl != 1
-        ) {
+        if (skillDetails[skill.name].tier == 3 && skillDetails[skill.name].maxlvl != 1) {
           tier3.push(skill);
         }
       }
-      tier3
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier3.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (skillDetails[a.name].maxlvl < skillDetails[b.name].maxlvl ? -1 : 1));
       return tier3;
     },
     usedSkillPoints() {
       let allSkilllvl = 0;
-      for (let skill of this.player.skillTree.skills)
-        allSkilllvl += skill.lvl * skillDetails[skill.name].tier;
+      for (let skill of this.player.skillTree.skills) allSkilllvl += skill.lvl * skillDetails[skill.name].tier;
       return allSkilllvl;
     },
   },
@@ -286,15 +228,11 @@ export default defineComponent({
   methods: {
     lvlSkill(skill: type.Skill) {
       let counter = 1;
-      if (this.pressedKeys["Shift"])
+      if (this.pressedKeys['Shift'])
         counter =
           skillDetails[skill.name].maxlvl +
           (skillDetails[skill.name].maxlvl > 1
-            ? (findHouse(this.player, "skill") +
-                findlvlSkill(
-                  this.player,
-                  ("tier" + skillDetails[skill.name].tier) as type.LvlSkillName
-                )) *
+            ? (findHouse(this.player, 'skill') + findlvlSkill(this.player, ('tier' + skillDetails[skill.name].tier) as type.LvlSkillName)) *
               (4 - skillDetails[skill.name].tier)
             : 0);
       for (let i = 0; i < counter; i++) {
@@ -302,26 +240,17 @@ export default defineComponent({
           skill.lvl <
           skillDetails[skill.name].maxlvl +
             (skillDetails[skill.name].maxlvl > 1
-              ? (findHouse(this.player, "skill") +
-                  findlvlSkill(
-                    this.player,
-                    ("tier" +
-                      skillDetails[skill.name].tier) as type.LvlSkillName
-                  )) *
+              ? (findHouse(this.player, 'skill') + findlvlSkill(this.player, ('tier' + skillDetails[skill.name].tier) as type.LvlSkillName)) *
                 (4 - skillDetails[skill.name].tier)
               : 0)
         )
-          if (
-            this.player.skillTree.skillPoints - this.usedSkillPoints >=
-            skillDetails[skill.name].tier
-          ) {
+          if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
             skill.lvl++;
             if (i == 0) this.buttonSound();
             if (skillDetails[skill.name].maxlvl == 1) {
               for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
                 if (!this.player.settings.abilitys[i].name) {
-                  this.player.settings.abilitys[i].name =
-                    skill.name as type.AbilityName;
+                  this.player.settings.abilitys[i].name = skill.name as type.AbilityName;
                   return;
                 }
               }
@@ -335,19 +264,11 @@ export default defineComponent({
           skill.lvl <
           skillDetails[skill.name].maxlvl +
             (skillDetails[skill.name].maxlvl > 1
-              ? (findHouse(this.player, "skill") +
-                  findlvlSkill(
-                    this.player,
-                    ("tier" +
-                      skillDetails[skill.name].tier) as type.LvlSkillName
-                  )) *
+              ? (findHouse(this.player, 'skill') + findlvlSkill(this.player, ('tier' + skillDetails[skill.name].tier) as type.LvlSkillName)) *
                 (4 - skillDetails[skill.name].tier)
               : 0)
         )
-          if (
-            this.player.skillTree.skillPoints - this.usedSkillPoints >=
-            skillDetails[skill.name].tier
-          ) {
+          if (this.player.skillTree.skillPoints - this.usedSkillPoints >= skillDetails[skill.name].tier) {
             skill.lvl++;
           }
       }
@@ -356,12 +277,11 @@ export default defineComponent({
       this.buttonSound();
       this.player.skillTree.skillPoints -= this.usedSkillPoints;
       for (let skill of this.player.skillTree.skills) {
-        this.player.skillTree.skillPoints +=
-          skill.lvl * skillDetails[skill.name].tier;
+        this.player.skillTree.skillPoints += skill.lvl * skillDetails[skill.name].tier;
         skill.lvl = 0;
       }
       for (let i = 1 as 1 | 2 | 3 | 4; i < 5; i++) {
-        this.player.settings.abilitys[i].name = "" as type.AbilityName;
+        this.player.settings.abilitys[i].name = '' as type.AbilityName;
       }
     },
     buttonSound() {

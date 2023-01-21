@@ -8,14 +8,14 @@
         <form class="form-inline" v-if="!player.spaceFleet">
           <div class="card-body w-100 d-flex justify-content-center">
             <div class="w-50">
-              <SexyInput
+              <TextInput
                 :labelBorder="true"
                 placeholder="search Fleet"
                 v-model="searchInput"
                 type="text"
                 btnText="Search"
                 :btnAction="searchSpaceFleets"
-              ></SexyInput>
+              />
             </div>
           </div>
         </form>
@@ -35,7 +35,7 @@
             <h3 v-if="!edit">{{ fleet?.fleetInfo.name }}</h3>
 
             <div v-else>
-              <SexyInput :labelBorder="true" placeholder="fleetname" v-model="fleet.fleetInfo.name" type="text" required></SexyInput>
+              <TextInput :labelBorder="true" placeholder="fleetname" v-model="fleet.fleetInfo.name" type="text" required />
             </div>
           </div>
 
@@ -95,7 +95,7 @@
             <div>{{ fleet?.fleetInfo.info }}</div>
           </div>
           <div v-else>
-            <SexyInput :labelBorder="true" placeholder="fleet info" v-model="fleet.fleetInfo.info" type="text" required></SexyInput>
+            <TextInput :labelBorder="true" placeholder="fleet info" v-model="fleet.fleetInfo.info" type="text" required />
           </div>
         </div>
       </div>
@@ -132,10 +132,10 @@
             </div>
             <div class="modal-body">
               <div>
-                <SexyInput :labelBorder="true" placeholder="fleetname" v-model="nameInput" type="text" required></SexyInput>
+                <TextInput :labelBorder="true" placeholder="fleetname" v-model="nameInput" type="text" required />
               </div>
               <div>
-                <SexyInput :labelBorder="true" placeholder="Info text" v-model="infoInput" type="textarea" required></SexyInput>
+                <TextareaInput :labelBorder="true" placeholder="Info text" v-model="infoInput" type="textarea" required />
               </div>
               <div class="form-check" style="margin-top: 1rem">
                 <label class="form-check-label" for="flexCheckDefault">
@@ -210,7 +210,7 @@ import { currentUser } from '../router';
 import { checkPlayer, fleetSkillDetails } from '../global';
 import * as music from '../music';
 import PlayerCard from '../components/PlayerCard.vue';
-import SexyInput from '../components/SexyInput.vue';
+import { TextInput, TextareaInput } from 'custom-mbd-components';
 export default defineComponent({
   setup() {
     return {
@@ -219,7 +219,8 @@ export default defineComponent({
   },
   components: {
     PlayerCard,
-    SexyInput,
+    TextInput,
+    TextareaInput,
   },
   data() {
     return {

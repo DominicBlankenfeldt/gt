@@ -2,15 +2,10 @@
   <div v-if="dataLoad" style="margin-top: 6vh; color: white">
     <div>
       <div>
-        <div
-          data-title="you get 1 weaponpoint per 500 highscore in hardcore mode"
-          class="w-25 d-inline"
-        >
+        <div data-title="you get 1 weaponpoint per 500 highscore in hardcore mode" class="w-25 d-inline">
           Weapon Points:
           <br />
-          {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{
-            player.weaponTree.weaponPoints
-          }}
+          {{ player.weaponTree.weaponPoints - usedWeaponPoints }}/{{ player.weaponTree.weaponPoints }}
         </div>
       </div>
     </div>
@@ -18,104 +13,100 @@
       <div class="col-3"></div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="weaponUpgrade of tier1Upgrades" :key="weaponUpgrade.name">
-          <button
-            class="mt-2 w-100 btn btn-primary shadow-none"
-            ..click="lvlWeaponUpgrade(weaponUpgrade)"
-            ..dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               weaponDetails[weaponUpgrade.name].description +
               '\n' +
               (weaponUpgrade.lvl <
-              weaponDetails[weaponUpgrade.name].maxlvl +
-                (findHouse(player, 'weapon') +
-                  findlvlWeaponUpgrade(player, 'tier1')) *
-                  2
+              weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier1')) * 2
                 ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
                 : 'max lvl')
             "
           >
-            {{ weaponDetails[weaponUpgrade.name].name }}
-            <br />
-            lvl: {{ weaponUpgrade.lvl }}/{{
-              weaponDetails[weaponUpgrade.name].maxlvl +
-              (findHouse(player, "weapon") +
-                findlvlWeaponUpgrade(player, "tier1")) *
-                2
-            }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary shadow-none"
+              @click="lvlWeaponUpgrade(weaponUpgrade)"
+              @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+            >
+              {{ weaponDetails[weaponUpgrade.name].name }}
+              <br />
+              lvl: {{ weaponUpgrade.lvl }}/{{
+                weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier1')) * 2
+              }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="weaponUpgrade of tier2Upgrades" :key="weaponUpgrade.name">
-          <button
-            class="mt-2 w-100 btn btn-primary shadow-none"
-            ..click="lvlWeaponUpgrade(weaponUpgrade)"
-            ..dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               weaponDetails[weaponUpgrade.name].description +
               '\n' +
               (weaponUpgrade.lvl <
-              weaponDetails[weaponUpgrade.name].maxlvl +
-                (findHouse(player, 'weapon') +
-                  findlvlWeaponUpgrade(player, 'tier2')) *
-                  2
+              weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier2')) * 2
                 ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
                 : 'max lvl')
             "
-            :disabled="usedWeaponPoints < 40"
           >
-            {{ weaponDetails[weaponUpgrade.name].name }}
-            <br />
-            lvl: {{ weaponUpgrade.lvl }}/{{
-              weaponDetails[weaponUpgrade.name].maxlvl +
-              (findHouse(player, "weapon") +
-                findlvlWeaponUpgrade(player, "tier2")) *
-                2
-            }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary shadow-none"
+              @click="lvlWeaponUpgrade(weaponUpgrade)"
+              @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+              :disabled="usedWeaponPoints < 40"
+            >
+              {{ weaponDetails[weaponUpgrade.name].name }}
+              <br />
+              lvl: {{ weaponUpgrade.lvl }}/{{
+                weaponDetails[weaponUpgrade.name].maxlvl + (findHouse(player, 'weapon') + findlvlWeaponUpgrade(player, 'tier2')) * 2
+              }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
       <div class="d-flex flex-column col-2 mx-1">
         <div v-for="weaponUpgrade of tier10Upgrades" :key="weaponUpgrade.name">
-          <button
-            class="mt-2 w-100 btn btn-primary shadow-none"
-            ..click="lvlWeaponUpgrade(weaponUpgrade)"
-            ..dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
-            :data-title="
+          <Tooltip
+            :tooltip="
               weaponDetails[weaponUpgrade.name].description +
               '\n' +
-              (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl
-                ? `costs: ${weaponDetails[weaponUpgrade.name].tier}`
-                : 'max lvl')
+              (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl ? `costs: ${weaponDetails[weaponUpgrade.name].tier}` : 'max lvl')
             "
-            :disabled="usedWeaponPoints < 70"
           >
-            {{ weaponDetails[weaponUpgrade.name].name }}
-            <br />
-            lvl: {{ weaponUpgrade.lvl }}/{{
-              weaponDetails[weaponUpgrade.name].maxlvl
-            }}
-          </button>
+            <Button
+              class="mt-2 w-100 btn btn-primary shadow-none"
+              @click="lvlWeaponUpgrade(weaponUpgrade)"
+              @dblclick="lvlWeaponUpgradex8(weaponUpgrade)"
+              :disabled="usedWeaponPoints < 70"
+            >
+              {{ weaponDetails[weaponUpgrade.name].name }}
+              <br />
+              lvl: {{ weaponUpgrade.lvl }}/{{ weaponDetails[weaponUpgrade.name].maxlvl }}
+            </Button>
+          </Tooltip>
         </div>
       </div>
     </div>
     <div class="mt-2">
-      <button class="btn btn-danger shadow-none" ..click="resetWeaponTree()">
-        reset weapontree
-      </button>
+      <Button class="btn btn-danger shadow-none" @click="resetWeaponTree()">reset weapontree</Button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { currentUser } from "../router";
-import { weaponDetails, weaponAmount } from "../global";
-import { findHouse, findlvlWeaponUpgrade } from "../game/helpers";
-import * as music from "../music";
-import * as type from "../types";
+import { defineComponent, PropType } from 'vue';
+import { currentUser } from '../router';
+import { weaponDetails, weaponAmount } from '../global';
+import { findHouse, findlvlWeaponUpgrade } from '../game/helpers';
+import * as music from '../music';
+import * as type from '../types';
+import { Button, Tooltip } from 'custom-mbd-components';
 
 export default defineComponent({
+  components: {
+    Button,
+    Tooltip,
+  },
   setup() {
     currentUser;
     return {
@@ -145,60 +136,37 @@ export default defineComponent({
   computed: {
     usedWeaponPoints() {
       let allWeaponlvl = 0;
-      for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades)
-        allWeaponlvl +=
-          weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier;
+      for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) allWeaponlvl += weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier;
       return allWeaponlvl;
     },
     tier1Upgrades() {
       let tier1 = [] as type.WeaponUpgrade[];
       for (let upgrade of this.player.weaponTree.weaponUpgrades) {
-        if (
-          weaponDetails[upgrade.name].tier == 1 &&
-          weaponDetails[upgrade.name].maxlvl != 1
-        ) {
+        if (weaponDetails[upgrade.name].tier == 1 && weaponDetails[upgrade.name].maxlvl != 1) {
           tier1.push(upgrade);
         }
       }
-      tier1
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier1.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1));
       return tier1;
     },
     tier2Upgrades() {
       let tier2 = [] as type.WeaponUpgrade[];
       for (let upgrade of this.player.weaponTree.weaponUpgrades) {
-        if (
-          weaponDetails[upgrade.name].tier == 2 &&
-          weaponDetails[upgrade.name].maxlvl != 1
-        ) {
+        if (weaponDetails[upgrade.name].tier == 2 && weaponDetails[upgrade.name].maxlvl != 1) {
           tier2.push(upgrade);
         }
       }
-      tier2
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier2.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1));
       return tier2;
     },
     tier10Upgrades() {
       let tier10 = [] as type.WeaponUpgrade[];
       for (let upgrade of this.player.weaponTree.weaponUpgrades) {
-        if (
-          weaponDetails[upgrade.name].tier == 10 &&
-          weaponDetails[upgrade.name].maxlvl != 1
-        ) {
+        if (weaponDetails[upgrade.name].tier == 10 && weaponDetails[upgrade.name].maxlvl != 1) {
           tier10.push(upgrade);
         }
       }
-      tier10
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .sort((a, b) =>
-          weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1
-        );
+      tier10.sort((a, b) => (a.name < b.name ? -1 : 1)).sort((a, b) => (weaponDetails[a.name].maxlvl < weaponDetails[b.name].maxlvl ? -1 : 1));
       return tier10;
     },
   },
@@ -210,47 +178,30 @@ export default defineComponent({
     lvlWeaponUpgrade(weaponUpgrade: type.WeaponUpgrade) {
       let counter = 1;
       if (weaponDetails[weaponUpgrade.name].tier < 10) {
-        if (this.pressedKeys["Shift"])
+        if (this.pressedKeys['Shift'])
           counter =
             weaponDetails[weaponUpgrade.name].maxlvl +
-            (findHouse(this.player, "weapon") +
-              findlvlWeaponUpgrade(
-                this.player,
-                ("tier" +
-                  weaponDetails[weaponUpgrade.name]
-                    .tier) as type.LvlWeaponUpgradeName
-              )) *
+            (findHouse(this.player, 'weapon') +
+              findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
               2;
         for (let i = 0; i < counter; i++) {
           if (
             weaponUpgrade.lvl <
             weaponDetails[weaponUpgrade.name].maxlvl +
-              (findHouse(this.player, "weapon") +
-                findlvlWeaponUpgrade(
-                  this.player,
-                  ("tier" +
-                    weaponDetails[weaponUpgrade.name]
-                      .tier) as type.LvlWeaponUpgradeName
-                )) *
+              (findHouse(this.player, 'weapon') +
+                findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
                 2
           )
-            if (
-              this.player.weaponTree.weaponPoints - this.usedWeaponPoints >=
-              weaponDetails[weaponUpgrade.name].tier
-            ) {
+            if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
               weaponUpgrade.lvl++;
               if (i == 0) this.buttonSound();
             }
         }
       } else {
-        if (this.pressedKeys["Shift"])
-          counter = weaponDetails[weaponUpgrade.name].maxlvl;
+        if (this.pressedKeys['Shift']) counter = weaponDetails[weaponUpgrade.name].maxlvl;
         for (let i = 0; i < counter; i++) {
           if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-            if (
-              this.player.weaponTree.weaponPoints - this.usedWeaponPoints >=
-              weaponDetails[weaponUpgrade.name].tier
-            ) {
+            if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
               weaponUpgrade.lvl++;
               if (i == 0) this.buttonSound();
             }
@@ -263,27 +214,16 @@ export default defineComponent({
           if (
             weaponUpgrade.lvl <
             weaponDetails[weaponUpgrade.name].maxlvl +
-              (findHouse(this.player, "weapon") +
-                findlvlWeaponUpgrade(
-                  this.player,
-                  ("tier" +
-                    weaponDetails[weaponUpgrade.name]
-                      .tier) as type.LvlWeaponUpgradeName
-                )) *
+              (findHouse(this.player, 'weapon') +
+                findlvlWeaponUpgrade(this.player, ('tier' + weaponDetails[weaponUpgrade.name].tier) as type.LvlWeaponUpgradeName)) *
                 2
           )
-            if (
-              this.player.weaponTree.weaponPoints - this.usedWeaponPoints >=
-              weaponDetails[weaponUpgrade.name].tier
-            ) {
+            if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
               weaponUpgrade.lvl++;
             }
         } else {
           if (weaponUpgrade.lvl < weaponDetails[weaponUpgrade.name].maxlvl)
-            if (
-              this.player.weaponTree.weaponPoints - this.usedWeaponPoints >=
-              weaponDetails[weaponUpgrade.name].tier
-            ) {
+            if (this.player.weaponTree.weaponPoints - this.usedWeaponPoints >= weaponDetails[weaponUpgrade.name].tier) {
               weaponUpgrade.lvl++;
             }
         }
@@ -293,8 +233,7 @@ export default defineComponent({
       this.buttonSound();
       this.player.weaponTree.weaponPoints -= this.usedWeaponPoints;
       for (let weaponUpgrade of this.player.weaponTree.weaponUpgrades) {
-        this.player.weaponTree.weaponPoints +=
-          weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier;
+        this.player.weaponTree.weaponPoints += weaponUpgrade.lvl * weaponDetails[weaponUpgrade.name].tier;
         weaponUpgrade.lvl = 0;
       }
     },

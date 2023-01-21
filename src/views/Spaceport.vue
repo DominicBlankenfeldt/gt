@@ -1,10 +1,6 @@
 <template>
   <div style="margin-top: 4vh" v-if="dataLoad">
-    <div
-      class="btn-group rounded w-50 mt-2"
-      role="group"
-      aria-label="Basic radio toggle button group"
-    >
+    <div class="btn-group rounded w-50 mt-2" role="group" aria-label="Basic radio toggle button group">
       <input
         type="radio"
         class="btn-check"
@@ -153,36 +149,19 @@
         hangar
       </label>
     </div>
-    <div
-      id="carouselUpgrades"
-      class="carousel slide"
-      data-bs-ride="carousel"
-      data-bs-interval="false"
-    >
+    <div id="carouselUpgrades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
       <div class="carousel-inner">
         <div class="carousel-item">
           <BuildingCard :playerProp="player" style="min-height: 70vh" />
         </div>
         <div class="carousel-item active">
-          <SkillCard
-            :playerProp="player"
-            :pressedKeys="pressedKeys"
-            style="min-height: 70vh"
-          />
+          <SkillCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
         </div>
         <div class="carousel-item">
-          <WeaponCard
-            :playerProp="player"
-            :pressedKeys="pressedKeys"
-            style="min-height: 70vh"
-          />
+          <WeaponCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
         </div>
         <div class="carousel-item">
-          <PassivCard
-            :playerProp="player"
-            :pressedKeys="pressedKeys"
-            style="min-height: 70vh"
-          />
+          <PassivCard :playerProp="player" :pressedKeys="pressedKeys" style="min-height: 70vh" />
         </div>
         <div class="carousel-item">
           <LvlCard :playerProp="player" style="min-height: 70vh" />
@@ -198,19 +177,19 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { checkPlayer } from "../global";
-import { currentUser } from "../router";
-import SkillCard from "../components/SkillCard.vue";
-import WeaponCard from "../components/WeaponCard.vue";
-import PassivCard from "../components/PassivCard.vue";
-import ShopCard from "../components/ShopCard.vue";
-import BuildingCard from "../components/BuildingCard.vue";
-import HangarCard from "../components/HangarCard.vue";
-import LvlCard from "../components/LvlCard.vue";
-import * as API from "../API";
-import * as type from "../types";
-import * as music from "../music";
+import { defineComponent } from 'vue';
+import { checkPlayer } from '../global';
+import { currentUser } from '../router';
+import SkillCard from '../components/SkillCard.vue';
+import WeaponCard from '../components/WeaponCard.vue';
+import PassivCard from '../components/PassivCard.vue';
+import ShopCard from '../components/ShopCard.vue';
+import BuildingCard from '../components/BuildingCard.vue';
+import HangarCard from '../components/HangarCard.vue';
+import LvlCard from '../components/LvlCard.vue';
+import * as API from '../API';
+import * as type from '../types';
+import * as music from '../music';
 export default defineComponent({
   setup() {
     currentUser;
@@ -230,7 +209,7 @@ export default defineComponent({
       timer: 0,
       user: currentUser,
       dataLoad: false,
-      choosenTree: "skillTree",
+      choosenTree: 'skillTree',
       pressedKeys: {} as Record<string, boolean>,
     };
   },

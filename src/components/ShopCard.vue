@@ -9,24 +9,14 @@
     </div>
     <div class="d-flex justify-content-center">
       <div>
-        <div
-          v-for="shopItem of [
-            'energyCell',
-            'lessStartEnemies',
-            'higherDifficultyTimer',
-            'lowerScoreTimer',
-          ]"
-          :key="shopItem"
-          class="mt-2"
-        >
+        <div v-for="shopItem of ['energyCell', 'lessStartEnemies', 'higherDifficultyTimer', 'lowerScoreTimer']" :key="shopItem" class="mt-2">
           <label
             v-if="shopItem != 'energyCell'"
             class="form-check-label w-100 rounded-top unselectable pointer"
             style="height: 3vh"
             @click="
               {
-                (player.shop[shopItem].use = !player.shop[shopItem].use),
-                  buttonSound();
+                (player.shop[shopItem].use = !player.shop[shopItem].use), buttonSound();
               }
             "
             :style="{
@@ -44,29 +34,21 @@
             :data-title="
               shopDetails[shopItem].description +
               '\n' +
-              (player.shop[shopItem].amount <
-              (shopItem == 'energyCell'
-                ? maxEnergyCell
-                : shopDetails[shopItem].max)
+              (player.shop[shopItem].amount < (shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max)
                 ? `costs: ${shopDetails[shopItem].cost}`
                 : 'full')
             "
           >
             {{ shopDetails[shopItem].name }}
             <br />
-            {{ player.shop[shopItem].amount }}/{{
-              shopItem == "energyCell"
-                ? maxEnergyCell
-                : shopDetails[shopItem].max
-            }}
+            {{ player.shop[shopItem].amount }}/{{ shopItem == 'energyCell' ? maxEnergyCell : shopDetails[shopItem].max }}
           </button>
           <div>
             <label
               class="form-check-label w-100 rounded-bottom unselectable py-1 pointer"
               @click="
                 {
-                  (player.shop[shopItem].reBuy = !player.shop[shopItem].reBuy),
-                    buttonSound();
+                  (player.shop[shopItem].reBuy = !player.shop[shopItem].reBuy), buttonSound();
                 }
               "
               :style="{
@@ -80,15 +62,7 @@
         </div>
       </div>
       <div class="d-flex flex-column-reverse">
-        <div
-          v-for="shopElement of [
-            'lowerScoreTimer',
-            'higherDifficultyTimer',
-            'lessStartEnemies',
-          ]"
-          :key="shopElement"
-          class="mt-2"
-        >
+        <div v-for="shopElement of ['lowerScoreTimer', 'higherDifficultyTimer', 'lessStartEnemies']" :key="shopElement" class="mt-2">
           <button
             @click="upgradeShopElement(shopElement)"
             class="w-100 btn btn-primary align-self-center shadow-none ms-1"
@@ -96,14 +70,12 @@
             :data-title="
               shopDetails[shopElement].description +
               '\n' +
-              (player.shop[shopElement].lvl < findHouse(player, 'shop')
-                ? `costs: ${upgradeCosts(shopElement)}`
-                : 'max lvl')
+              (player.shop[shopElement].lvl < findHouse(player, 'shop') ? `costs: ${upgradeCosts(shopElement)}` : 'max lvl')
             "
           >
             upgrade {{ shopDetails[shopElement].name }}
             <br />
-            {{ player.shop[shopElement].lvl }}/{{ findHouse(player, "shop") }}
+            {{ player.shop[shopElement].lvl }}/{{ findHouse(player, 'shop') }}
           </button>
         </div>
       </div>
@@ -115,14 +87,12 @@
           :data-title="
             'unlocks additional passive slots' +
             '\n' +
-            (player.shop['passivSlots'].lvl < findHouse(player, 'shop')
-              ? `costs: ${upgradeCosts('passivSlots')}`
-              : 'max lvl')
+            (player.shop['passivSlots'].lvl < findHouse(player, 'shop') ? `costs: ${upgradeCosts('passivSlots')}` : 'max lvl')
           "
         >
-          {{ shopDetails["passivSlots"].name }}
+          {{ shopDetails['passivSlots'].name }}
           <br />
-          {{ player.shop["passivSlots"].lvl }}/{{ findHouse(player, "shop") }}
+          {{ player.shop['passivSlots'].lvl }}/{{ findHouse(player, 'shop') }}
         </button>
       </div>
       <div class="mt-2 ms-1">
@@ -130,9 +100,7 @@
           @click="buyBuildingLicenses()"
           class="w-100 btn btn-primary align-self-center shadow-none ms-1"
           style="height: 9vh"
-          :data-title="
-            'buy a Building License' + '\n' + `costs: ${licenseCost} scrap`
-          "
+          :data-title="'buy a Building License' + '\n' + `costs: ${licenseCost} scrap`"
         >
           building
           <br />
@@ -142,9 +110,7 @@
           @click="buyModel()"
           class="w-100 btn btn-primary align-self-center shadow-none ms-1 mt-1"
           style="height: 9vh"
-          :data-title="
-            'buy a random spaceship' + '\n' + `costs: ${modelCost} scrap`
-          "
+          :data-title="'buy a random spaceship' + '\n' + `costs: ${modelCost} scrap`"
           :data-bs-toggle="player.shop.currency >= modelCost ? 'modal' : null"
           data-bs-target="#modelModal"
         >
@@ -166,13 +132,7 @@
     </div>
   </div>
   <!-- modal -->
-  <div
-    class="modal fade"
-    id="modelModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
+  <div class="modal fade" id="modelModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -202,16 +162,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { currentUser } from "../router";
-import {
-  passivDetails,
-  passivAmount,
-  shopDetails,
-  modelDetails,
-} from "../global";
-import * as type from "../types";
-import * as music from "../music";
+import { defineComponent, PropType } from 'vue';
+import { currentUser } from '../router';
+import { passivDetails, passivAmount, shopDetails, modelDetails } from '../global';
+import * as type from '../types';
+import * as music from '../music';
 import {
   findHouse,
   findWeaponUpgrade,
@@ -222,8 +177,8 @@ import {
   handleGainXp,
   findlvlShop,
   getRandomInt,
-} from "../game/helpers";
-import { tasks } from "../game/dailyTasks";
+} from '../game/helpers';
+import { tasks } from '../game/dailyTasks';
 export default defineComponent({
   setup() {
     currentUser;
@@ -242,7 +197,7 @@ export default defineComponent({
     return {
       player: {} as type.Player,
       user: currentUser,
-      receiveMessage: "",
+      receiveMessage: '',
       maxEnergyCell: 0,
       dataLoad: false,
       modelCost: 500,
@@ -261,21 +216,16 @@ export default defineComponent({
     this.player = this.playerProp;
     this.maxEnergyCell = Math.round(
       modelDetails[this.player.ship.selectedModel.rarity].store +
-        findWeaponUpgrade(this.player, "munitionsDepot") *
-          percent(findPassivUpgrade(this.player, "shipStats") / 5, "in")
+        findWeaponUpgrade(this.player, 'munitionsDepot') * percent(findPassivUpgrade(this.player, 'shipStats') / 5, 'in')
     );
-    this.modelCost *= percent(findlvlShop(this.player, "tier2") * 10, "de");
-    this.licenseCost *= percent(findlvlShop(this.player, "tier2") * 10, "de");
-    this.tasksCost *= percent(findlvlShop(this.player, "tier2") * 10, "de");
+    this.modelCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de');
+    this.licenseCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de');
+    this.tasksCost *= percent(findlvlShop(this.player, 'tier2') * 10, 'de');
     this.dataLoad = true;
   },
   methods: {
     upgradeCosts(shopElement: type.ShopElement) {
-      return (
-        this.player.shop[shopElement].lvl *
-        shopDetails[shopElement].upgradeCost *
-        percent(findlvlShop(this.player, "tier2") * 10, "de")
-      );
+      return this.player.shop[shopElement].lvl * shopDetails[shopElement].upgradeCost * percent(findlvlShop(this.player, 'tier2') * 10, 'de');
     },
     buyTasks() {
       if (this.player.shop.currency < this.tasksCost) return;
@@ -284,9 +234,7 @@ export default defineComponent({
       let avaibleTasks = Object.values(tasks) as type.Task[];
       this.player.daily.tasks = [];
       for (let i = 0; i < 3; i++) {
-        this.player.daily.tasks.push(
-          avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0]
-        );
+        this.player.daily.tasks.push(avaibleTasks.splice(getRandomInt(avaibleTasks.length - 1), 1)[0]);
       }
     },
     buyModel() {
@@ -295,7 +243,7 @@ export default defineComponent({
       let result = buyModel(this.player, 4, 1);
       this.player = result.player;
       for (let task of this.player.daily.tasks) {
-        if (task.type == "getSpaceShips") {
+        if (task.type == 'getSpaceShips') {
           if (task.need > 0) {
             task.need--;
             if (task.need <= 0) {
@@ -314,21 +262,14 @@ export default defineComponent({
       this.player.spaceport.buildingLicenses++;
     },
     upgradeShopElement(shopElement: type.ShopElement) {
-      if (
-        this.player.shop.currency <= this.upgradeCosts(shopElement) ||
-        this.player.shop[shopElement].lvl >= findHouse(this.player, "shop")
-      )
-        return;
+      if (this.player.shop.currency <= this.upgradeCosts(shopElement) || this.player.shop[shopElement].lvl >= findHouse(this.player, 'shop')) return;
       this.player = payCurrency(this.player, this.upgradeCosts(shopElement));
       this.player.shop[shopElement].lvl++;
     },
     buyShopItem(shopElement: type.ShopElement) {
       if (
         this.player.shop.currency <= shopDetails[shopElement].cost ||
-        this.player.shop[shopElement].amount >=
-          (shopElement != "energyCell"
-            ? shopDetails[shopElement].max
-            : this.maxEnergyCell)
+        this.player.shop[shopElement].amount >= (shopElement != 'energyCell' ? shopDetails[shopElement].max : this.maxEnergyCell)
       )
         return;
       this.buttonSound();
@@ -337,10 +278,7 @@ export default defineComponent({
     },
     buyShopItemx8(shopElement: type.ShopElement) {
       for (let i = 0; i < 8; i++) {
-        if (
-          this.player.shop.currency <= shopDetails[shopElement].cost ||
-          this.player.shop[shopElement].amount >= shopDetails[shopElement].max
-        )
+        if (this.player.shop.currency <= shopDetails[shopElement].cost || this.player.shop[shopElement].amount >= shopDetails[shopElement].max)
           return;
         this.player = payCurrency(this.player, shopDetails[shopElement].cost);
         this.player.shop[shopElement].amount++;

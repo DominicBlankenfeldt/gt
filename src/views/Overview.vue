@@ -52,7 +52,6 @@ export default defineComponent({
       }
       this.player = checkPlayer(this.player, this.user) as type.Player;
     }
-    console.log(this.player);
     this.buttonSound();
     this.dataLoad = true;
   },

@@ -341,45 +341,39 @@
           <div class="modal-content">
             <div class="modal-body" style="background-color: grey">
               <div>
-                <SexyInput
-                  :labelBorder="true"
+                <RangeInput
                   placeholder="music volume"
-                  type="range"
                   v-model="settingsInput.musicVolume"
                   style="background-color: darkgrey"
-                  labelStyle="background-color: darkgrey; color: black"
+                  labelClass="bg-darkgrey"
                   side-input-style="background-color: darkgrey"
                   @change="changeVolume(settingsInput.musicVolume)"
                 />
               </div>
               <div>
-                <SexyInput
-                  :labelBorder="true"
+                <RangeInput
                   placeholder="effect volume"
-                  type="range"
                   v-model="settingsInput.effectVolume"
                   style="background-color: darkgrey"
                   side-input-style="background-color: darkgrey"
-                  labelStyle="background-color: darkgrey; color: black"
+                  labelClass="bg-darkgrey"
                 />
               </div>
 
               <div class="row mt-1" v-for="number of 4" :key="number">
                 <div>
-                  <SexyInput
-                    :labelBorder="true"
+                  <SelectInput
                     :placeholder="`ability ${number}`"
-                    type="select"
                     :options="availableAbilitys.filter(a => !usedAbilitys.includes(a) || a == settingsInput.abilitys[number].name)"
                     v-model="settingsInput.abilitys[number].name"
                     style="background-color: darkgrey"
-                    labelStyle="background-color:darkgrey; color: black"
+                    labelClass="bg-darkgrey"
                     :optionProjection="(a:string)=>skillDetails[a]?.name"
                     :selectedProjection="(a:string)=>skillDetails[a]?.name"
                     :selectOnBlur="true"
                     @selectItem="event => (settingsInput.abilitys[number].name = event)"
                     side-input-max-length="1"
-                    side-input-style="background-color: darkgrey"
+                    sideInputClass="bg-darkgrey"
                     :sideInputVModel="settingsInput.abilitys[number].key"
                     side-input-type="text"
                     :side-input-on-input="
@@ -398,13 +392,11 @@
               </div>
               <div class="row">
                 <div v-for="direction in ['up', 'down', 'left', 'right']" :key="direction" class="col-6">
-                  <SexyInput
-                    :labelBorder="true"
+                  <TextInput
                     :placeholder="`move ${direction}`"
-                    type="text"
                     v-model="settingsInput.moves[direction]"
                     style="background-color: darkgrey"
-                    labelStyle="background-color: darkgrey; color: black"
+                    labelClass="bg-darkgrey"
                     maxlength="1"
                     oninput="this.value = this.value.replace(/[^a-z0-9]/g, '').replace(/(\..*)\./g, '$1');"
                   />
@@ -430,8 +422,8 @@
                 </div>
               </div>
               <div class="row justify-content-end mt-1">
-                <button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</button>
-                <button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="saveSettings()" data-bs-dismiss="modal">save</button>
+                <Button data-bs-dismiss="modal" class="btn btn-danger mx-2 col-4" @click.stop="unDoChanges()">cancel</Button>
+                <Button class="btn btn-success col-3" :disabled="!checkSettings" @click.stop="saveSettings()" data-bs-dismiss="modal">save</Button>
               </div>
             </div>
           </div>
@@ -470,11 +462,14 @@ import { currentUser } from '../router';
 import * as music from '../music';
 import * as type from '../types';
 import * as API from '../API';
-import SexyInput from './SexyInput.vue';
+import { TextInput, SelectInput, RangeInput, Button } from 'custom-mbd-components';
 
 export default defineComponent({
   components: {
-    SexyInput,
+    TextInput,
+    SelectInput,
+    RangeInput,
+    Button,
   },
   setup() {
     production;

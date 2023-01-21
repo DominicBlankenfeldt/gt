@@ -1,26 +1,15 @@
 <template>
   <div v-if="dataLoad" style="margin-top: 6vh; color: white">
     <div>
-      <div
-        data-title="you get 1 passivpoint per 2000 highscore in totalchaos mode"
-        class="w-25 d-inline"
-      >
+      <div data-title="you get 1 passivpoint per 2000 highscore in totalchaos mode" class="w-25 d-inline">
         Atom Points:
         <br />
-        {{ player.passivTree.passivPoints - usedPassivPoints }}/{{
-          player.passivTree.passivPoints
-        }}
+        {{ player.passivTree.passivPoints - usedPassivPoints }}/{{ player.passivTree.passivPoints }}
       </div>
     </div>
     <div class="d-flex j...stify-content-center">
-      <div
-        v-for="passivUpgrade of player.passivTree.passivUpgrades"
-        :key="passivUpgrade.name"
-      >
-        <div
-          class="mx-1"
-          v-if="player.passivTree.passivType.includes(passivUpgrade.name)"
-        >
+      <div v-for="passivUpgrade of player.passivTree.passivUpgrades" :key="passivUpgrade.name">
+        <div class="mx-1" v-if="player.passivTree.passivType.includes(passivUpgrade.name)">
           <button
             class="mt-2 w-100 btn btn-primary shadow-none rounded-0 rounded-top"
             @click="lvlPassivUpgrade(passivUpgrade)"
@@ -30,11 +19,7 @@
               '\n' +
               (passivUpgrade.lvl <
               passivDetails[passivUpgrade.name].maxlvl +
-                (passivUpgrade.name != 'none'
-                  ? (findHouse(player, 'passiv') +
-                      findlvlPassiv(player, 'tier1')) *
-                    5
-                  : 0)
+                (passivUpgrade.name != 'none' ? (findHouse(player, 'passiv') + findlvlPassiv(player, 'tier1')) * 5 : 0)
                 ? passivUpgrade.name != 'none'
                   ? 'costs: 1'
                   : ''
@@ -45,39 +30,26 @@
             <br />
             lvl: {{ passivUpgrade.lvl }}/{{
               passivDetails[passivUpgrade.name].maxlvl +
-              (passivUpgrade.name != "none"
-                ? findHouse(player, "passiv" + findlvlPassiv(player, "tier1")) *
-                  5
-                : 0)
+              (passivUpgrade.name != 'none' ? findHouse(player, 'passiv' + findlvlPassiv(player, 'tier1')) * 5 : 0)
             }}
           </button>
-          <button
-            class="w-100 btn btn-danger shadow-none rounded-0 rounded-bottom"
-            @click="resetPassiv(passivUpgrade)"
-          >
-            reset
-          </button>
+          <button class="w-100 btn btn-danger shadow-none rounded-0 rounded-bottom" @click="resetPassiv(passivUpgrade)">reset</button>
         </div>
       </div>
     </div>
     <div class="mt-2">
-      <button
-        class="btn btn-danger align-self-center shadow-none"
-        @click="resetPassivTree()"
-      >
-        reset passivtree
-      </button>
+      <button class="btn btn-danger align-self-center shadow-none" @click="resetPassivTree()">reset passivtree</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { currentUser } from "../router";
-import { passivDetails, passivAmount } from "../global";
-import { findHouse, findlvlPassiv } from "../game/helpers";
-import * as type from "../types";
-import * as music from "../music";
+import { defineComponent, PropType } from 'vue';
+import { currentUser } from '../router';
+import { passivDetails, passivAmount } from '../global';
+import { findHouse, findlvlPassiv } from '../game/helpers';
+import * as type from '../types';
+import * as music from '../music';
 
 export default defineComponent({
   setup() {
@@ -109,8 +81,7 @@ export default defineComponent({
   computed: {
     usedPassivPoints() {
       let allPassivlvl = 0;
-      for (let passivUpgrade of this.player.passivTree.passivUpgrades)
-        allPassivlvl += passivUpgrade.lvl;
+      for (let passivUpgrade of this.player.passivTree.passivUpgrades) allPassivlvl += passivUpgrade.lvl;
       return allPassivlvl;
     },
   },
@@ -121,20 +92,13 @@ export default defineComponent({
   methods: {
     lvlPassivUpgrade(passivUpgrade: type.PassivUpgrade) {
       let counter = 1;
-      if (passivUpgrade.name == "none") return;
-      if (this.pressedKeys["Shift"])
-        counter =
-          passivDetails[passivUpgrade.name].maxlvl +
-          (findHouse(this.player, "passiv") +
-            findlvlPassiv(this.player, "tier1")) *
-            5;
+      if (passivUpgrade.name == 'none') return;
+      if (this.pressedKeys['Shift'])
+        counter = passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5;
       for (let i = 0; i < counter; i++) {
         if (
           passivUpgrade.lvl <
-          passivDetails[passivUpgrade.name].maxlvl +
-            (findHouse(this.player, "passiv") +
-              findlvlPassiv(this.player, "tier1")) *
-              5
+          passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5
         )
           if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
             passivUpgrade.lvl++;
@@ -143,14 +107,11 @@ export default defineComponent({
       }
     },
     lvlPassivUpgradex8(passivUpgrade: type.PassivUpgrade) {
-      if (passivUpgrade.name == "none") return;
+      if (passivUpgrade.name == 'none') return;
       for (let i = 0; i < 8; i++) {
         if (
           passivUpgrade.lvl <
-          passivDetails[passivUpgrade.name].maxlvl +
-            (findHouse(this.player, "passiv") +
-              findlvlPassiv(this.player, "tier1")) *
-              5
+          passivDetails[passivUpgrade.name].maxlvl + (findHouse(this.player, 'passiv') + findlvlPassiv(this.player, 'tier1')) * 5
         )
           if (this.player.passivTree.passivPoints - this.usedPassivPoints > 0) {
             passivUpgrade.lvl++;

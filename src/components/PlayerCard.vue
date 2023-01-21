@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-default" v-if="dataLoad">
+  <div class="card card-default text-light" v-if="dataLoad">
     <div class="card-header header row g-0">
       <div v-if="player.username.length < 3 || player.username == 'gast'" class="alert alert-danger">invalid username</div>
     </div>
@@ -13,9 +13,9 @@
         </div>
         <div v-if="editProfile">
           <!-- Button trigger modal -->
-          <button type="button" @click="buttonSound()" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <Button type="button" @click="buttonSound()" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
             change profile picture
-          </button>
+          </Button>
 
           <!-- Modal -->
           <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" @click="buttonSound()">
@@ -57,21 +57,18 @@
             </u>
           </h4>
           <div v-else class="input-contain col-11 mt-3" style="height: 5vh">
-            <input
+            <TextInput
+              placeholder="username"
               minlength="3"
               class="form-control"
               id="username"
               type="text"
               v-model="player.username"
-              :class="{ dirty: player.username }"
               autocomplete="off"
               style="text-shadow: none"
               @change="checkUserName()"
               required
             />
-            <label class="placeholder-text" for="username">
-              <div class="text">username</div>
-            </label>
           </div>
         </div>
         <div class="col-6 gy-2">
@@ -142,23 +139,23 @@
           <div class="col-8"></div>
           <div class="col-4" v-if="editAble">
             <div v-if="!editProfile">
-              <button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</button>
+              <Button class="btn btn-primary shadow-none w-50" @click="toggleEdit(false)">edit profile</Button>
             </div>
             <div v-if="editProfile">
-              <button
+              <Button
                 class="btn btn-success shadow-none w-50"
                 @click="toggleEdit(true)"
                 :disabled="player.username.length < 3 || player.username == 'gast'"
               >
                 save profile
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </div>
       <div v-if="editAble">
         <div class="footer-header">
-          <a href="https://discord.gg/G3UHhTaUNf">Join us on discord</a>
+          <a class="text-light" href="https://discord.gg/G3UHhTaUNf">Join us on discord</a>
         </div>
       </div>
     </div>
@@ -171,7 +168,12 @@ import * as API from '../API';
 import * as type from '../types';
 import * as music from '../music';
 import { skillDetails } from '../global';
+import { Button, TextInput } from 'custom-mbd-components';
 export default defineComponent({
+  components: {
+    Button,
+    TextInput,
+  },
   setup() {
     return {
       skillDetails,

@@ -49,5 +49,9 @@ export function ButtonSound(volume = 50) {
   buttonSound.setAttribute('src', '/music/ButtonPressed.mp3');
   buttonSound.setAttribute('autoplay', 'autoplay');
   buttonSound.volume = volume / 600;
-  buttonSound.play();
+  try {
+    buttonSound.play();
+  } catch {
+    return;
+  }
 }
